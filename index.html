@@ -9,13 +9,23 @@
 <body>
     <div id="game-container">
         <h1>Craps Dice Game</h1>
-        <button id="rollButton">Roll Dice</button>
+        <div id="players">
+            <p>Current Shooter: <span id="shooter-name">Player 1</span></p>
+            <button id="rollButton">Roll Dice</button>
+        </div>
         <div id="dice-container">
             <div id="dice1" class="dice">🎲</div>
             <div id="dice2" class="dice">🎲</div>
         </div>
         <p id="gameStatus">Click "Roll Dice" to start.</p>
         <p id="pointStatus"></p>
+        
+        <div id="betting-area">
+            <h2>Place your Bets</h2>
+            <p id="betting-status"></p>
+            <input type="number" id="betAmount" placeholder="Bet amount" min="1">
+            <button id="betButton">Place Bet</button>
+        </div>
     </div>
     <script src="app.js"></script>
 </body>
