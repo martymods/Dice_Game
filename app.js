@@ -1,28 +1,39 @@
 let point = null;
 let currentPlayerIndex = 0;
-let players = [
-    { name: "Player 1", balance: 100, bet: 0 },
-    { name: "Player 2", balance: 100, bet: 0 },
-    { name: "Player 3", balance: 100, bet: 0 },
-];
+let players = [];
 let currentBet = 0;
 let isSinglePlayer = false;
+let socket = io();
 
 // Show title screen
-document.getElementById('title-screen').addEventListener('click', startGame);
+document.getElementById('title-screen').addEventListener('click', showNameInput);
 
-// Main menu buttons
+// Name input screen
+document.getElementById('startButton').addEventListener('click', startGameWithName);
 document.getElementById('singlePlayerBtn').addEventListener('click', startSinglePlayer);
 document.getElementById('hostGameBtn').addEventListener('click', hostGame);
 document.getElementById('joinGameBtn').addEventListener('click', joinGame);
 
-// Switch to the main menu screen after title
-function startGame() {
+// Multiplayer buttons
+document.getElementById('rollButton').addEventListener('click', rollDice);
+document.getElementById('betButton').addEventListener('click', placeBet);
+
+function showNameInput() {
     document.getElementById('title-screen').classList.add('hidden');
+    document.getElementById('name-input').classList.remove('hidden');
+}
+
+function startGameWithName() {
+    const name = document.getElementById('playerName').value;
+    if (!name) return alert("Please enter a name");
+
+    players.push({ name, balance: 100, bet: 0 });
+    socket.emit('newPlayer', name);  // Send player name to the server
+
+    document.getElementById('name-input').classList.add('hidden');
     document.getElementById('main-menu').classList.remove('hidden');
 }
 
-// Start Single Player mode
 function startSinglePlayer() {
     isSinglePlayer = true;
     document.getElementById('main-menu').classList.add('hidden');
@@ -30,34 +41,29 @@ function startSinglePlayer() {
     updatePlayerInfo();
 }
 
-// Host a multiplayer game
 function hostGame() {
     alert("Hosting multiplayer game (Not Implemented)");
-    // Multiplayer hosting logic can be added here (e.g., using websockets or peer-to-peer)
 }
 
-// Join a multiplayer game
 function joinGame() {
     alert("Joining multiplayer game (Not Implemented)");
-    // Multiplayer joining logic can be added here
 }
 
-// Game Logic Functions
 function updatePlayerInfo() {
     document.getElementById('shooter-name').textContent = players[currentPlayerIndex].name;
 }
 
-document.getElementById('rollButton').addEventListener('click', rollDice);
-document.getElementById('betButton').addEventListener('click', placeBet);
-
 function rollDice() {
     const dice1 = Math.floor(Math.random() * 6) + 1;
     const dice2 = Math.floor(Math.random() * 6) + 1;
-    
-    document.getElementById('dice1').textContent = dice1;
-    document.getElementById('dice2').textContent = dice2;
+
+    // Display dice images
+    document.getElementById('dice1').innerHTML = `<img src="dice${dice1}.png" alt="Dice 1">`;
+    document.getElementById('dice2').innerHTML = `<img src="dice${dice2}.png" alt="Dice 2">`;
 
     const sum = dice1 + dice2;
+    const player = players[currentPlayerIndex];
+    socket.emit('diceRoll', { sum, playerName: player.name });
 
     if (point === null) {
         if (sum === 7 || sum === 11) {
@@ -89,39 +95,27 @@ function rollDice() {
             document.getElementById('pointStatus').textContent = "Your point is: " + point;
         }
     }
-
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-    updatePlayerInfo();
-}
-
-function handleBets(result) {
-    players.forEach(player => {
-        if (player.bet > 0) {
-            if (result === 'win') {
-                player.balance += player.bet;
-            } else if (result === 'lose') {
-                player.balance -= player.bet;
-            }
-            player.bet = 0;
-        }
-    });
-
-    let bettingStatus = '';
-    players.forEach(player => {
-        bettingStatus += `${player.name}: $${player.balance} | Bet: $${player.bet} <br>`;
-    });
-    document.getElementById('betting-status').innerHTML = bettingStatus;
 }
 
 function placeBet() {
     const betAmount = parseInt(document.getElementById('betAmount').value);
-    if (isNaN(betAmount) || betAmount <= 0) {
-        alert("Please enter a valid bet amount.");
-        return;
-    }
+    if (isNaN(betAmount) || betAmount <= 0) return alert("Please enter a valid bet amount.");
 
     players[currentPlayerIndex].bet = betAmount;
-    document.getElementById('betAmount').value = '';
-    handleBets('');
-    document.getElementById('betting-status').textContent = `${players[currentPlayerIndex].name} has placed a bet of $${betAmount}.`;
+    socket.emit('placeBet', { playerName: players[currentPlayerIndex].name, betAmount });
+
+    document.getElementById('betting-status').textContent = `${players[currentPlayerIndex].name} placed a bet of $${betAmount}`;
+}
+
+function handleBets(result) {
+    if (result === 'win') {
+        players[currentPlayerIndex].balance += players[currentPlayerIndex].bet;
+    } else if (result === 'lose') {
+        players[currentPlayerIndex].balance -= players[currentPlayerIndex].bet;
+    }
+    updateBalance();
+}
+
+function updateBalance() {
+    document.getElementById('betting-status').textContent = `${players[currentPlayerIndex].name} has $${players[currentPlayerIndex].balance}`;
 }

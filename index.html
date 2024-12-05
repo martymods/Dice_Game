@@ -13,6 +13,13 @@
         <p>Click anywhere to start!</p>
     </div>
 
+    <!-- Name Input -->
+    <div id="name-input" class="screen hidden">
+        <h2>Enter your name</h2>
+        <input type="text" id="playerName" placeholder="Enter your name">
+        <button id="startButton">Start Game</button>
+    </div>
+
     <!-- Main Menu -->
     <div id="main-menu" class="screen hidden">
         <h2>Main Menu</h2>
@@ -29,8 +36,8 @@
             <button id="rollButton">Roll Dice</button>
         </div>
         <div id="dice-container">
-            <div id="dice1" class="dice">🎲</div>
-            <div id="dice2" class="dice">🎲</div>
+            <div id="dice1" class="dice"></div>
+            <div id="dice2" class="dice"></div>
         </div>
         <p id="gameStatus">Click "Roll Dice" to start.</p>
         <p id="pointStatus"></p>
@@ -43,6 +50,7 @@
         </div>
     </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
