@@ -7,7 +7,22 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
+    <!-- Title Screen -->
+    <div id="title-screen" class="screen">
+        <h1>Craps Dice Game</h1>
+        <p>Click anywhere to start!</p>
+    </div>
+
+    <!-- Main Menu -->
+    <div id="main-menu" class="screen hidden">
+        <h2>Main Menu</h2>
+        <button id="singlePlayerBtn">Play Single Player</button>
+        <button id="hostGameBtn">Host Multiplayer Game</button>
+        <button id="joinGameBtn">Join Multiplayer Game</button>
+    </div>
+
+    <!-- Game Container -->
+    <div id="game-container" class="hidden">
         <h1>Craps Dice Game</h1>
         <div id="players">
             <p>Current Shooter: <span id="shooter-name">Player 1</span></p>
@@ -19,7 +34,7 @@
         </div>
         <p id="gameStatus">Click "Roll Dice" to start.</p>
         <p id="pointStatus"></p>
-        
+
         <div id="betting-area">
             <h2>Place your Bets</h2>
             <p id="betting-status"></p>
@@ -27,6 +42,7 @@
             <button id="betButton">Place Bet</button>
         </div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>

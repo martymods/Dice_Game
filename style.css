@@ -8,17 +8,17 @@ body {
     background-color: #f0f0f0;
 }
 
-#game-container {
+.screen {
     text-align: center;
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
 }
 
-.dice {
-    font-size: 80px;
-    margin: 0 10px;
+.hidden {
+    display: none;
 }
 
 button {
@@ -34,6 +34,19 @@ button {
 
 button:hover {
     background-color: #45a049;
+}
+
+.dice {
+    font-size: 80px;
+    margin: 0 10px;
+}
+
+#game-container {
+    text-align: center;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 #players {

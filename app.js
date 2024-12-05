@@ -1,6 +1,3 @@
-document.getElementById('rollButton').addEventListener('click', rollDice);
-document.getElementById('betButton').addEventListener('click', placeBet);
-
 let point = null;
 let currentPlayerIndex = 0;
 let players = [
@@ -9,24 +6,59 @@ let players = [
     { name: "Player 3", balance: 100, bet: 0 },
 ];
 let currentBet = 0;
+let isSinglePlayer = false;
 
+// Show title screen
+document.getElementById('title-screen').addEventListener('click', startGame);
+
+// Main menu buttons
+document.getElementById('singlePlayerBtn').addEventListener('click', startSinglePlayer);
+document.getElementById('hostGameBtn').addEventListener('click', hostGame);
+document.getElementById('joinGameBtn').addEventListener('click', joinGame);
+
+// Switch to the main menu screen after title
+function startGame() {
+    document.getElementById('title-screen').classList.add('hidden');
+    document.getElementById('main-menu').classList.remove('hidden');
+}
+
+// Start Single Player mode
+function startSinglePlayer() {
+    isSinglePlayer = true;
+    document.getElementById('main-menu').classList.add('hidden');
+    document.getElementById('game-container').classList.remove('hidden');
+    updatePlayerInfo();
+}
+
+// Host a multiplayer game
+function hostGame() {
+    alert("Hosting multiplayer game (Not Implemented)");
+    // Multiplayer hosting logic can be added here (e.g., using websockets or peer-to-peer)
+}
+
+// Join a multiplayer game
+function joinGame() {
+    alert("Joining multiplayer game (Not Implemented)");
+    // Multiplayer joining logic can be added here
+}
+
+// Game Logic Functions
 function updatePlayerInfo() {
-    // Update current shooter and balance
     document.getElementById('shooter-name').textContent = players[currentPlayerIndex].name;
 }
 
+document.getElementById('rollButton').addEventListener('click', rollDice);
+document.getElementById('betButton').addEventListener('click', placeBet);
+
 function rollDice() {
-    // Generate two random dice rolls (values between 1 and 6)
     const dice1 = Math.floor(Math.random() * 6) + 1;
     const dice2 = Math.floor(Math.random() * 6) + 1;
     
-    // Display dice values on the screen
     document.getElementById('dice1').textContent = dice1;
     document.getElementById('dice2').textContent = dice2;
 
     const sum = dice1 + dice2;
 
-    // Handle the come-out roll (initial roll)
     if (point === null) {
         if (sum === 7 || sum === 11) {
             document.getElementById('gameStatus').textContent = "You win! 🎉";
@@ -37,47 +69,43 @@ function rollDice() {
             handleBets('lose');
             document.getElementById('pointStatus').textContent = "";
         } else {
-            point = sum; // Set the point
+            point = sum;
             document.getElementById('gameStatus').textContent = "Point is " + point + ". Keep rolling!";
             document.getElementById('pointStatus').textContent = "Your point is: " + point;
         }
     } else {
-        // Handle point rolls
         if (sum === point) {
             document.getElementById('gameStatus').textContent = "You win! 🎉";
             handleBets('win');
             document.getElementById('pointStatus').textContent = "";
-            point = null; // Reset point
+            point = null;
         } else if (sum === 7) {
             document.getElementById('gameStatus').textContent = "You lose! 💔";
             handleBets('lose');
             document.getElementById('pointStatus').textContent = "";
-            point = null; // Reset point
+            point = null;
         } else {
             document.getElementById('gameStatus').textContent = "Keep rolling!";
             document.getElementById('pointStatus').textContent = "Your point is: " + point;
         }
     }
 
-    // Switch player turns
     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
     updatePlayerInfo();
 }
 
 function handleBets(result) {
-    // Check the bets for each player and update balances
     players.forEach(player => {
         if (player.bet > 0) {
             if (result === 'win') {
-                player.balance += player.bet; // Player wins
+                player.balance += player.bet;
             } else if (result === 'lose') {
-                player.balance -= player.bet; // Player loses
+                player.balance -= player.bet;
             }
-            player.bet = 0; // Reset the bet after the roll
+            player.bet = 0;
         }
     });
 
-    // Update balance information in the UI
     let bettingStatus = '';
     players.forEach(player => {
         bettingStatus += `${player.name}: $${player.balance} | Bet: $${player.bet} <br>`;
@@ -92,9 +120,8 @@ function placeBet() {
         return;
     }
 
-    // Place the bet for the current player
     players[currentPlayerIndex].bet = betAmount;
-    document.getElementById('betAmount').value = ''; // Clear the input
-    handleBets(''); // Update bet status without resolving any outcome yet
+    document.getElementById('betAmount').value = '';
+    handleBets('');
     document.getElementById('betting-status').textContent = `${players[currentPlayerIndex].name} has placed a bet of $${betAmount}.`;
 }
