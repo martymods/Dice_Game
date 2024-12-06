@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Craps Dice Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="menu">
+        <h1>Craps Dice Game</h1>
+        <button id="hostGame">Host Multiplayer Game</button>
+        <button id="joinGame">Join Multiplayer Game</button>
+        <button id="singlePlayer">Play Single Player</button>
+    </div>
+
+    <div id="hostMenu" style="display:none;">
+        <h2>Host Multiplayer Game</h2>
+        <label for="numPlayers">Select number of players (1–12):</label>
+        <input id="numPlayers" type="number" min="1" max="12" value="4">
+        <button id="startHosting">Start Hosting</button>
+        <button id="backToMenuFromHost">Back to Main Menu</button>
+    </div>
+
+    <div id="joinMenu" style="display:none;">
+        <h2>Join Multiplayer Game</h2>
+        <div id="gameList"></div>
+        <button id="refreshGames">Refresh Game List</button>
+        <button id="backToMenuFromJoin">Back to Main Menu</button>
+    </div>
+
+    <div id="gameArea" style="display:none;">
+        <h2 id="gameTitle">Single Player</h2>
+        <div id="playersList" style="display:none;">
+            <h3>Players in Game:</h3>
+            <ul id="playerNames"></ul>
+        </div>
+        <div id="diceContainer">
+            <div>
+                <img id="dice1Image" src="" alt="Dice 1" width="100" height="100">
+                <p id="dice1Result">Dice 1: -</p>
+            </div>
+            <div>
+                <img id="dice2Image" src="" alt="Dice 2" width="100" height="100">
+                <p id="dice2Result">Dice 2: -</p>
+            </div>
+        </div>
+        <p id="diceTotalResult">Total: -</p>
+        <p id="gameStatus">Game Status: Roll the dice!</p>
+        <button id="rollDiceButton">Roll Dice</button>
+        <button id="backToMenuFromGame">Back to Main Menu</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
