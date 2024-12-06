@@ -1,0 +1,22 @@
+{
+  "name": "dice-game",
+  "version": "1.0.0",
+  "description": "Dice game project",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "16.x"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/martymods/Dice_Game.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
