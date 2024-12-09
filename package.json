@@ -10,8 +10,9 @@
     "node": "16.x"
   },
   "dependencies": {
+    "socket.io": "^4.5.1",
     "express": "^4.17.1"
-  },
+},
   "devDependencies": {},
   "repository": {
     "type": "git",
