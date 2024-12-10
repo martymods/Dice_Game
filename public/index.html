@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Game</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1>Welcome to Dice Game</h1>
+    <button onclick="startSinglePlayer()">Single Player</button>
+    <button onclick="showCreateGame()">Host Game</button>
+    <button onclick="showJoinGame()">Join Game</button>
+
+    <div id="singlePlayerContainer" style="display:none;">
+        <h2>Single Player Mode</h2>
+        <div id="betting-area">
+            <p id="betting-status"></p>
+            <input type="number" id="betAmount" placeholder="Enter your bet" />
+            <button id="betButton">Place Bet</button>
+        </div>
+        <div id="dice-container">
+            <img id="dice1" src="/images/dice1.png" alt="Dice 1" />
+            <img id="dice2" src="/images/dice2.png" alt="Dice 2" />
+        </div>
+        <p id="gameStatus"></p>
+        <p id="rent-status"></p>
+        <button id="rollButton">Roll Dice</button>
+        <button id="quitButton">Quit Game</button>
+    </div>
+
+    <div id="hostGameContainer" style="display:none;">
+        <h2>Host Game</h2>
+        <p id="host-status"></p>
+        <button id="rollButton">Roll Dice</button>
+        <button id="betButton">Place Bet</button>
+        <button id="quitButton">Quit Game</button>
+    </div>
+
+    <div id="joinGameContainer" style="display:none;">
+        <h2>Join Game</h2>
+        <div id="availableGames"></div>
+        <button onclick="returnToMainMenu()">Back to Main Menu</button>
+    </div>
+
+    <script src="/client.js"></script>
+    <script src="/app.js"></script>
+</body>
+</html>
+
