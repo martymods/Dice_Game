@@ -34,14 +34,17 @@ function setupSinglePlayer() {
     const bet50Button = document.getElementById('bet50Button');
     const bet100Button = document.getElementById('bet100Button');
 
+    // Ensure all elements exist
     if (!rollButton || !betButton || !quitButton || !bettingStatus || !gameStatus || !rentStatus || !leaderboard) {
         console.error('One or more required elements are missing in the DOM.');
         return;
     }
 
+    // Set the initial values on the screen
     bettingStatus.textContent = `Balance: $${balance} | Bet: $${currentBet}`;
     rentStatus.textContent = `Rent Due: $${rent} in ${maxTurns} rolls`;
 
+    // Show all the necessary buttons
     rollButton.style.display = 'inline-block';
     betButton.style.display = 'inline-block';
     quitButton.style.display = 'inline-block';
@@ -154,3 +157,4 @@ function setupMultiplayer(roomName, playerName) {
     console.log('Multiplayer mode active.');
     // Implement Multiplayer setup logic here (similar to Single Player)
 }
+
