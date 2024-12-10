@@ -1,0 +1,128 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSinglePlayer = urlParams.has('singlePlayer');
+    const roomName = urlParams.get('room');
+    const playerName = urlParams.get('player');
+
+    if (isSinglePlayer) {
+        setupSinglePlayer();
+    } else if (roomName && playerName) {
+        setupMultiplayer(roomName, playerName);
+    } else {
+        console.error('Invalid game mode.');
+    }
+});
+
+// Single Player Setup
+function setupSinglePlayer() {
+    console.log('Single Player mode active.');
+    let balance = 300;
+    let currentBet = 0;
+    let turns = 0;
+    let rent = 400;
+    let maxTurns = 6;
+
+    const rollButton = document.getElementById('rollButton');
+    const betButton = document.getElementById('betButton');
+    const quitButton = document.getElementById('quitButton');
+    const bettingStatus = document.getElementById('betting-status');
+    const gameStatus = document.getElementById('gameStatus');
+    const rentStatus = document.getElementById('rent-status');
+
+    if (!rollButton || !betButton || !quitButton || !bettingStatus || !gameStatus || !rentStatus) {
+        console.error('One or more required elements are missing in the DOM.');
+        return;
+    }
+
+    bettingStatus.textContent = `Balance: $${balance} | Bet: $${currentBet}`;
+    rentStatus.textContent = `Rent Due: $${rent} in ${maxTurns} rolls`;
+
+    rollButton.style.display = 'inline-block';
+    betButton.style.display = 'inline-block';
+    quitButton.style.display = 'inline-block';
+
+    rollButton.addEventListener('click', () => {
+        if (currentBet > 0) {
+            const dice1 = Math.floor(Math.random() * 6) + 1;
+            const dice2 = Math.floor(Math.random() * 6) + 1;
+            const sum = dice1 + dice2;
+
+            document.getElementById('dice1').src = `/images/dice${dice1}.png`;
+            document.getElementById('dice2').src = `/images/dice${dice2}.png`;
+
+            if (sum === 7 || sum === 11) {
+                balance += currentBet;
+                gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
+            } else if (sum === 2 || sum === 3 || sum === 12) {
+                balance -= currentBet;
+                gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
+            } else {
+                gameStatus.textContent = `Roll: ${sum}`;
+            }
+
+            currentBet = 0;
+            bettingStatus.textContent = `Balance: $${balance} | Bet: $${currentBet}`;
+
+            turns++;
+            if (turns >= maxTurns) {
+                if (balance >= rent) {
+                    rent *= 2;
+                    maxTurns = Math.min(maxTurns + 1, 12);
+                    rentStatus.textContent = `Rent Due: $${rent} in ${maxTurns} rolls`;
+                    turns = 0;
+                    alert('You paid the rent! Rent has increased!');
+                } else {
+                    alert('Game Over. You could not pay the rent.');
+                    quitGame();
+                }
+            }
+        } else {
+            alert('Place a bet first!');
+        }
+    });
+
+    betButton.addEventListener('click', () => {
+        const betAmount = parseInt(document.getElementById('betAmount').value);
+        if (isNaN(betAmount) || betAmount <= 0 || betAmount > balance) {
+            alert('Invalid bet amount.');
+        } else {
+            currentBet = betAmount;
+            balance -= betAmount;
+            bettingStatus.textContent = `Balance: $${balance} | Bet: $${currentBet}`;
+            document.getElementById('betAmount').value = '';
+        }
+    });
+
+    quitButton.addEventListener('click', quitGame);
+}
+
+// Multiplayer Setup
+function setupMultiplayer(roomName, playerName) {
+    console.log(`Multiplayer mode active in room: ${roomName}, player: ${playerName}`);
+    const playerDisplay = document.getElementById('player-name');
+    if (!playerDisplay) {
+        console.error('Player name display element not found.');
+        return;
+    }
+    playerDisplay.textContent = `Player: ${playerName}`;
+
+    const rollButton = document.getElementById('rollButton');
+    const betButton = document.getElementById('betButton');
+    const quitButton = document.getElementById('quitButton');
+
+    if (!rollButton || !betButton || !quitButton) {
+        console.error('One or more required elements are missing in the DOM.');
+        return;
+    }
+
+    rollButton.style.display = 'inline-block';
+    betButton.style.display = 'inline-block';
+    quitButton.style.display = 'inline-block';
+
+    quitButton.addEventListener('click', quitGame);
+}
+
+function quitGame() {
+    console.log('Returning to the main menu...');
+    window.location.href = '/';
+}
