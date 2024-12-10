@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Game</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1 id="gameTitle">Dice Game</h1>
+    <div id="singlePlayerContainer" style="display:none;">
+        <h2>Single Player Mode</h2>
+        <p id="rent-status"></p>
+        <p id="betting-status"></p>
+        <div id="betting-area">
+            <input type="number" id="betAmount" placeholder="Enter your bet">
+            <button id="betButton">Place Bet</button>
+            <button id="bet25Button">Bet 25%</button>
+            <button id="bet50Button">Bet 50%</button>
+            <button id="bet100Button">Bet 100%</button>
+        </div>
+        <div id="dice-container">
+            <img id="dice1" src="/images/dice1.png" alt="Dice 1">
+            <img id="dice2" src="/images/dice2.png" alt="Dice 2">
+        </div>
+        <p id="gameStatus"></p>
+        <button id="rollButton">Roll Dice</button>
+        <button id="quitButton">Quit Game</button>
+        <div id="leaderboard"></div>
+    </div>
+
+    <div id="multiplayerContainer" style="display:none;">
+        <h2 id="multiplayerTitle"></h2>
+        <p id="multiplayerStatus"></p>
+        <div id="dice-container">
+            <img id="dice1" src="/images/dice1.png" alt="Dice 1">
+            <img id="dice2" src="/images/dice2.png" alt="Dice 2">
+        </div>
+        <button id="rollButton">Roll Dice</button>
+        <button id="quitButton">Quit Game</button>
+    </div>
+    
+    <script src="/app.js"></script>
+</body>
+</html>
