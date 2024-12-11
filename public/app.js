@@ -111,52 +111,6 @@ async function setupSinglePlayer() {
         }
     }
 
-    function showItemPopup() {
-        const popup = document.getElementById('itemPopup');
-        const itemList = document.getElementById('itemList');
-    
-        if (!popup || !itemList) {
-            console.error('Item popup or list not found.');
-            return;
-        }
-    
-        popup.style.display = 'block';
-        itemList.innerHTML = '';
-    
-        const shuffledItems = items.sort(() => 0.5 - Math.random()).slice(0, 3);
-        shuffledItems.forEach(item => {
-            const itemButton = document.createElement('button');
-            itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
-            itemButton.classList.add(item.rarity.toLowerCase());
-            itemButton.onclick = () => handleItemPurchase(item);
-            itemList.appendChild(itemButton);
-        });
-    
-        const skipButton = document.createElement('button');
-        skipButton.textContent = 'Save Money';
-        skipButton.onclick = () => {
-            popup.style.display = 'none';
-        };
-        itemList.appendChild(skipButton);
-    }
-
-    function handleItemPurchase(item) {
-        if (balance >= item.cost) {
-            balance -= item.cost;
-            items.push(item);
-            playSound("/sounds/UI_Buy1.ogg");
-            alert(`You purchased ${item.name}!`);
-            popup.style.display = 'none';
-            displayInventory();
-        } else {
-            alert('Not enough money to buy this item.');
-        }
-    }
-
-    function displayInventory() {
-        inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
-    }
-
     function updateUIAfterRoll() {
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
         turns++;
@@ -176,6 +130,7 @@ async function setupSinglePlayer() {
             } else {
                 alert('Game Over. You couldn’t pay the rent, and the landlord isn’t happy!');
                 displayLeaderboard(balance);
+                showGameOverButton();
                 return;
             }
         }
@@ -183,6 +138,7 @@ async function setupSinglePlayer() {
         if (balance <= 0) {
             alert('Game Over. You have no money left.');
             displayLeaderboard(balance);
+            showGameOverButton();
         }
     }
 
@@ -190,49 +146,8 @@ async function setupSinglePlayer() {
         window.location.href = '/';
     }
 
-    function getItemColor(rarity) {
-        switch (rarity) {
-            case 'Common':
-                return 'gray';
-            case 'Uncommon':
-                return 'blue';
-            case 'Rare':
-                return 'purple';
-            case 'Very Rare':
-                return 'gold';
-            default:
-                return 'white';
-        }
-    }
-
-    function animateDice(dice1, dice2, callback) {
-        const dice1Element = document.getElementById('dice1');
-        const dice2Element = document.getElementById('dice2');
-
-        if (!dice1Element || !dice2Element) {
-            console.error('Dice elements not found.');
-            return;
-        }
-
-        let counter = 0;
-        const interval = setInterval(() => {
-            dice1Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
-            dice2Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
-            counter++;
-
-            if (counter >= 10) {
-                clearInterval(interval);
-                dice1Element.src = `/images/dice${dice1}.png`;
-                dice2Element.src = `/images/dice${dice2}.png`;
-                callback();
-            }
-        }, 100);
-    }
-
-    function playSound(sounds, randomize = false) {
-        let soundFile = Array.isArray(sounds) && randomize ? sounds[Math.floor(Math.random() * sounds.length)] : sounds;
-        const audio = new Audio(soundFile);
-        audio.play().catch(err => console.error('Audio play error:', err));
+    function showGameOverButton() {
+        document.getElementById('gameOverContainer').style.display = 'block';
     }
 
     function displayLeaderboard(score) {
@@ -259,4 +174,35 @@ async function setupSinglePlayer() {
 
         leaderboardContainer.style.display = 'block';
     }
+
+    function playSound(sounds, randomize = false) {
+        let soundFile = Array.isArray(sounds) && randomize ? sounds[Math.floor(Math.random() * sounds.length)] : sounds;
+        const audio = new Audio(soundFile);
+        audio.play().catch(err => console.error('Audio play error:', err));
+    }
+
+    function animateDice(dice1, dice2, callback) {
+        const dice1Element = document.getElementById('dice1');
+        const dice2Element = document.getElementById('dice2');
+
+        if (!dice1Element || !dice2Element) {
+            console.error('Dice elements not found.');
+            return;
+        }
+
+        let counter = 0;
+        const interval = setInterval(() => {
+            dice1Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
+            dice2Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
+            counter++;
+
+            if (counter >= 10) {
+                clearInterval(interval);
+                dice1Element.src = `/images/dice${dice1}.png`;
+                dice2Element.src = `/images/dice${dice2}.png`;
+                callback();
+            }
+        }, 100);
+    }
 }
+
