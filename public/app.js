@@ -1,3 +1,5 @@
+import { availableItems } from './items.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const isSinglePlayer = urlParams.has('singlePlayer');
@@ -17,7 +19,6 @@ async function setupSinglePlayer() {
     let turns = 0;
     let rent = 400; // Initial rent value set to 400
     let maxTurns = 6;
-    let progression = 1;
     let items = [];
 
     const rollButton = document.getElementById('rollButton');
@@ -29,11 +30,10 @@ async function setupSinglePlayer() {
     const inventoryDisplay = document.getElementById('inventory-list');
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
-
     const bet25Button = document.getElementById('bet25Button');
     const bet50Button = document.getElementById('bet50Button');
     const bet100Button = document.getElementById('bet100Button');
-    const gameOverButton = document.getElementById('gameOverButton'); // Add a game over button reference
+    const gameOverButton = document.getElementById('gameOverButton');
 
     const requiredElements = [
         rollButton, betButton, quitButton, bettingStatus, gameStatus, rentStatus,
@@ -47,22 +47,15 @@ async function setupSinglePlayer() {
         }
     }
 
-    const script = document.createElement('script');
-    script.src = '/items.js';
-    document.head.appendChild(script);
+    bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+    rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns} rolls`;
 
-    script.onload = () => {
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
-        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns} rolls`;
-
-        rollButton.addEventListener('click', () => handleRollDice());
-        betButton.addEventListener('click', () => handlePlaceBet());
-        quitButton.addEventListener('click', quitGame);
-
-        bet25Button.addEventListener('click', () => setBet(balance * 0.25));
-        bet50Button.addEventListener('click', () => setBet(balance * 0.5));
-        bet100Button.addEventListener('click', () => setBet(balance));
-    };
+    rollButton.addEventListener('click', () => handleRollDice());
+    betButton.addEventListener('click', () => handlePlaceBet());
+    quitButton.addEventListener('click', quitGame);
+    bet25Button.addEventListener('click', () => setBet(balance * 0.25));
+    bet50Button.addEventListener('click', () => setBet(balance * 0.5));
+    bet100Button.addEventListener('click', () => setBet(balance));
 
     function setBet(amount) {
         if (amount > balance) amount = balance;
@@ -71,8 +64,6 @@ async function setupSinglePlayer() {
     }
 
     function handleRollDice() {
-        playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
-
         if (currentBet <= 0) {
             alert('Place a bet first!');
             return;
@@ -83,8 +74,6 @@ async function setupSinglePlayer() {
         const sum = dice1 + dice2;
 
         animateDice(dice1, dice2, () => {
-            playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"]);
-
             if (sum === 7 || sum === 11) {
                 balance += currentBet * 2;
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
@@ -100,8 +89,6 @@ async function setupSinglePlayer() {
     }
 
     function handlePlaceBet() {
-        playSound("/sounds/UI_Click1.ogg");
-
         const betAmount = parseInt(document.getElementById('betAmount').value);
         if (isNaN(betAmount) || betAmount <= 0 || betAmount > balance) {
             alert('Invalid bet amount.');
@@ -111,32 +98,54 @@ async function setupSinglePlayer() {
         }
     }
 
-    function showItemPopup() {
-        const popup = document.getElementById('buy-item-container');
-        const itemList = document.getElementById('item-list');
-    
-        if (!popup || !itemList) {
-            console.error('Item popup or list not found.');
-            return;
+    function updateUIAfterRoll() {
+        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+        turns++;
+
+        const rollsRemaining = maxTurns - turns;
+        if (rollsRemaining > 0) {
+            rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
+        } else {
+            if (balance >= rent) {
+                balance -= rent;
+                rent *= 4;
+                maxTurns++;
+                turns = 0;
+                alert('You paid the rent! Time for a shopping spree!');
+                showItemPopup();
+            } else {
+                alert('Game Over. You couldn’t pay the rent.');
+                displayLeaderboard(balance);
+            }
         }
-    
+
+        if (balance <= 0) {
+            alert('Game Over. You have no money left.');
+            displayLeaderboard(balance);
+        }
+    }
+
+    function showItemPopup() {
         popup.style.display = 'block';
+        const randomItems = getRandomItems();
+        displayItems(randomItems);
+    }
+
+    function getRandomItems() {
+        return availableItems.sort(() => 0.5 - Math.random()).slice(0, 3);
+    }
+
+    function displayItems(items) {
         itemList.innerHTML = '';
-    
-        const shuffledItems = items.sort(() => 0.5 - Math.random()).slice(0, 3);
-        shuffledItems.forEach(item => {
-            const itemButton = document.createElement('button');
-            itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
-            itemButton.classList.add(item.rarity.toLowerCase());
-            itemButton.onclick = () => handleItemPurchase(item);
-            itemList.appendChild(itemButton);
+        items.forEach(item => {
+            const itemElement = document.createElement('button');
+            itemElement.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
+            itemElement.onclick = () => handleItemPurchase(item);
+            itemList.appendChild(itemElement);
         });
-    
         const skipButton = document.createElement('button');
         skipButton.textContent = 'Save Money';
-        skipButton.onclick = () => {
-            popup.style.display = 'none';
-        };
+        skipButton.onclick = () => { popup.style.display = 'none'; };
         itemList.appendChild(skipButton);
     }
 
@@ -144,7 +153,6 @@ async function setupSinglePlayer() {
         if (balance >= item.cost) {
             balance -= item.cost;
             items.push(item);
-            playSound("/sounds/UI_Buy1.ogg");
             alert(`You purchased ${item.name}!`);
             popup.style.display = 'none';
             displayInventory();
@@ -157,69 +165,19 @@ async function setupSinglePlayer() {
         inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
     }
 
-    function updateUIAfterRoll() {
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
-        turns++;
-
-        const rollsRemaining = maxTurns - turns;
-        if (rollsRemaining === 1) {
-            rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in <span style="color: orange; font-weight: bold;">1</span> roll`;
-        } else if (rollsRemaining > 0) {
-            rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
-        } else {
-            if (balance >= rent) {
-                rent *= 4;
-                maxTurns = Math.min(maxTurns + 1, 12);
-                turns = 0;
-                alert('You paid the rent! Now get ready for even more demands!');
-                showItemPopup();  // Show the item popup after paying the rent
-            } else {
-                alert('Game Over. You couldn’t pay the rent, and the landlord isn’t happy!');
-                displayLeaderboard(balance);
-                return;
-            }
-        }
-
-        if (balance <= 0) {
-            alert('Game Over. You have no money left.');
-            displayLeaderboard(balance);
-        }
-    }
-
     function quitGame() {
         window.location.href = '/';
-    }
-
-    function getItemColor(rarity) {
-        switch (rarity) {
-            case 'Common':
-                return 'gray';
-            case 'Uncommon':
-                return 'blue';
-            case 'Rare':
-                return 'purple';
-            case 'Very Rare':
-                return 'gold';
-            default:
-                return 'white';
-        }
     }
 
     function animateDice(dice1, dice2, callback) {
         const dice1Element = document.getElementById('dice1');
         const dice2Element = document.getElementById('dice2');
 
-        if (!dice1Element || !dice2Element) {
-            console.error('Dice elements not found.');
-            return;
-        }
-
         let counter = 0;
         const interval = setInterval(() => {
             dice1Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
             dice2Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
             counter++;
-
             if (counter >= 10) {
                 clearInterval(interval);
                 dice1Element.src = `/images/dice${dice1}.png`;
@@ -227,36 +185,5 @@ async function setupSinglePlayer() {
                 callback();
             }
         }, 100);
-    }
-
-    function playSound(sounds, randomize = false) {
-        let soundFile = Array.isArray(sounds) && randomize ? sounds[Math.floor(Math.random() * sounds.length)] : sounds;
-        const audio = new Audio(soundFile);
-        audio.play().catch(err => console.error('Audio play error:', err));
-    }
-
-    function displayLeaderboard(score) {
-        const leaderboardContainer = document.getElementById('leaderboardContainer');
-
-        if (!leaderboardContainer) {
-            console.error('Leaderboard container not found.');
-            return;
-        }
-
-        const playerName = prompt('Enter your name for the leaderboard:');
-
-        if (playerName) {
-            const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-            leaderboard.push({ name: playerName, score });
-            leaderboard.sort((a, b) => b.score - a.score);
-            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-        }
-
-        const topPlayers = JSON.parse(localStorage.getItem('leaderboard')) || [];
-        leaderboardContainer.innerHTML = '<h2>Leaderboard</h2>' +
-            topPlayers.map(player => `<p>${player.name}: $${player.score.toLocaleString()}</p>`).join('') +
-            '<button id="gameOverButton" onclick="window.location.href=\'/\'">Return to Main Menu</button>'; // Game Over button
-
-        leaderboardContainer.style.display = 'block';
     }
 }
