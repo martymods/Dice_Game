@@ -15,7 +15,7 @@ async function setupSinglePlayer() {
     let balance = 300;
     let currentBet = 0;
     let turns = 0;
-    let rent = 1600;
+    let rent = 400; // Initial rent value set to 400
     let maxTurns = 6;
     let progression = 1;
     let items = [];
@@ -33,10 +33,11 @@ async function setupSinglePlayer() {
     const bet25Button = document.getElementById('bet25Button');
     const bet50Button = document.getElementById('bet50Button');
     const bet100Button = document.getElementById('bet100Button');
+    const gameOverButton = document.getElementById('gameOverButton'); // Add a game over button reference
 
     const requiredElements = [
         rollButton, betButton, quitButton, bettingStatus, gameStatus, rentStatus,
-        inventoryDisplay, popup, itemList, bet25Button, bet50Button, bet100Button
+        inventoryDisplay, popup, itemList, bet25Button, bet50Button, bet100Button, gameOverButton
     ];
 
     for (const element of requiredElements) {
@@ -254,7 +255,7 @@ async function setupSinglePlayer() {
         const topPlayers = JSON.parse(localStorage.getItem('leaderboard')) || [];
         leaderboardContainer.innerHTML = '<h2>Leaderboard</h2>' +
             topPlayers.map(player => `<p>${player.name}: $${player.score.toLocaleString()}</p>`).join('') +
-            '<button onclick="window.location.href='/'">Return to Main Menu</button>';
+            '<button id="gameOverButton" onclick="window.location.href=\'/\'">Return to Main Menu</button>'; // Game Over button
 
         leaderboardContainer.style.display = 'block';
     }
