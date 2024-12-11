@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function setupSinglePlayer() {
     console.log('Single Player mode active.');
 
-    let balance = 1500;
+    let balance = 300;
     let currentBet = 0;
     let turns = 0;
     let rent = 400; // Initial rent value set to 400
