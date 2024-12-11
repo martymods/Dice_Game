@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function setupSinglePlayer() {
     console.log('Single Player mode active.');
 
-    let balance = 300;
+    let balance = 1500;
     let currentBet = 0;
     let turns = 0;
     let rent = 400; // Initial rent value set to 400
@@ -48,20 +48,35 @@ async function setupSinglePlayer() {
         }
     }
 
-    bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
-    rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns} rolls`;
+    let itemsList = []; // Placeholder for items to be loaded from items.js
 
-    rollButton.addEventListener('click', () => handleRollDice());
-    betButton.addEventListener('click', () => handlePlaceBet());
-    quitButton.addEventListener('click', quitGame);
+    // Load items from items.js dynamically
+    const script = document.createElement('script');
+    script.src = '/items.js'; // Ensure items.js defines `itemsList`
+    document.head.appendChild(script);
 
-    bet25Button.addEventListener('click', () => setBet(balance * 0.25));
-    bet50Button.addEventListener('click', () => setBet(balance * 0.5));
-    bet100Button.addEventListener('click', () => setBet(balance));
+    script.onload = () => {
+        if (!itemsList || itemsList.length === 0) {
+            console.error('Items list is empty or not loaded from items.js.');
+            return;
+        }
+
+        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns} rolls`;
+
+        rollButton.addEventListener('click', () => handleRollDice());
+        betButton.addEventListener('click', () => handlePlaceBet());
+        quitButton.addEventListener('click', quitGame);
+
+        bet25Button.addEventListener('click', () => setBet(balance * 0.25));
+        bet50Button.addEventListener('click', () => setBet(balance * 0.5));
+        bet100Button.addEventListener('click', () => setBet(balance));
+    };
 
     function setBet(amount) {
+        if (amount > balance) amount = balance;
         currentBet = Math.floor(amount);
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+        bettingStatus.textContent = `Balance: $${(balance - currentBet).toLocaleString()} | Bet: $${currentBet}`;
     }
 
     function handleRollDice() {
@@ -102,44 +117,8 @@ async function setupSinglePlayer() {
             alert('Invalid bet amount.');
         } else {
             currentBet = betAmount;
-            bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+            bettingStatus.textContent = `Balance: $${(balance - currentBet).toLocaleString()} | Bet: $${currentBet}`;
         }
-    }
-
-    function updateUIAfterRoll() {
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
-        turns++;
-
-        const rollsRemaining = maxTurns - turns;
-        if (rollsRemaining === 1) {
-            rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in <span style="color: orange; font-weight: bold;">1</span> roll`;
-        } else if (rollsRemaining > 0) {
-            rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
-        } else {
-            if (balance >= rent) {
-                balance -= rent; // Deduct rent payment
-                rent *= progression < 9 ? 4 : 5; // Rent increases
-                maxTurns++;
-                turns = 0;
-                alert('You paid the rent! Now get ready for even more demands!');
-                showItemPopup();
-            } else {
-                endGame();
-            }
-        }
-
-        if (balance <= 0) {
-            endGame();
-        }
-    }
-
-    function endGame() {
-        alert('Game Over. You couldn’t pay the rent.');
-        gameOverContainer.innerHTML = `
-            <h2>Game Over</h2>
-            <button onclick="window.location.href='/'">Return to Main Menu</button>
-        `;
-        gameOverContainer.style.display = 'block';
     }
 
     function showItemPopup() {
