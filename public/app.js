@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function setupSinglePlayer() {
     console.log('Single Player mode active.');
 
-    let balance = 300;
+    let balance = 1500;
     let currentBet = 0;
     let turns = 0;
     let rent = 400; // Initial rent value set to 400
@@ -48,37 +48,29 @@ async function setupSinglePlayer() {
         }
     }
 
-    const script = document.createElement('script');
-    script.src = '/items.js';
-    document.head.appendChild(script);
+    bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+    rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns} rolls`;
 
-    script.onload = () => {
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
-        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns} rolls`;
+    rollButton.addEventListener('click', () => handleRollDice());
+    betButton.addEventListener('click', () => handlePlaceBet());
+    quitButton.addEventListener('click', quitGame);
 
-        rollButton.addEventListener('click', () => handleRollDice());
-        betButton.addEventListener('click', () => handlePlaceBet());
-        quitButton.addEventListener('click', quitGame);
-
-        bet25Button.addEventListener('click', () => setBet(balance * 0.25));
-        bet50Button.addEventListener('click', () => setBet(balance * 0.5));
-        bet100Button.addEventListener('click', () => setBet(balance));
-    };
+    bet25Button.addEventListener('click', () => setBet(balance * 0.25));
+    bet50Button.addEventListener('click', () => setBet(balance * 0.5));
+    bet100Button.addEventListener('click', () => setBet(balance));
 
     function setBet(amount) {
-        if (amount > balance) amount = balance;
         currentBet = Math.floor(amount);
-        balance -= currentBet;
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
     }
 
     function handleRollDice() {
-        playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
-
         if (currentBet <= 0) {
             alert('Place a bet first!');
             return;
         }
+
+        playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
 
         const dice1 = Math.floor(Math.random() * 6) + 1;
         const dice2 = Math.floor(Math.random() * 6) + 1;
@@ -91,6 +83,7 @@ async function setupSinglePlayer() {
                 balance += currentBet * 2; // Win: double the bet
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
             } else if (sum === 2 || sum === 3 || sum === 12) {
+                balance -= currentBet; // Loss: deduct the bet from balance
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
             } else {
                 gameStatus.textContent = `Roll: ${sum}`;
@@ -109,7 +102,6 @@ async function setupSinglePlayer() {
             alert('Invalid bet amount.');
         } else {
             currentBet = betAmount;
-            balance -= currentBet;
             bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
         }
     }
@@ -129,7 +121,7 @@ async function setupSinglePlayer() {
                 rent *= progression < 9 ? 4 : 5; // Rent increases
                 maxTurns++;
                 turns = 0;
-                alert('You paid the rent! Time to hustle more!');
+                alert('You paid the rent! Now get ready for even more demands!');
                 showItemPopup();
             } else {
                 endGame();
@@ -219,5 +211,3 @@ async function setupSinglePlayer() {
         sound.play().catch(err => console.error('Audio play error:', err));
     }
 }
-
-
