@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Game - Single Player</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <h1>Craps Dice Game</h1>
+        <div id="player-info">
+            <p id="betting-status">Balance: $0 | Bet: $0</p>
+            <p id="rent-status">Rent Due: $0 in 0 rolls</p>
+        </div>
+        <div id="controls">
+            <button id="rollButton">Roll Dice</button>
+            <input type="number" id="betAmount" placeholder="Enter Bet Amount" min="1">
+            <button id="betButton">Place Bet</button>
+            <button id="bet25Button">Bet 25%</button>
+            <button id="bet50Button">Bet 50%</button>
+            <button id="bet100Button">Bet 100%</button>
+            <button id="quitButton">Quit Game</button>
+        </div>
+        <div id="dice-container">
+            <img id="dice1" class="dice" src="/images/dice1.png" alt="Dice 1">
+            <img id="dice2" class="dice" src="/images/dice1.png" alt="Dice 2">
+        </div>
+        <p id="gameStatus"></p>
+        <div id="buy-item-container" style="display: none;">
+            <h2>Buy an Item</h2>
+            <div id="item-list"></div>
+            <button id="saveMoneyButton">Save Money</button>
+        </div>
+        <div id="inventory">
+            <h3>Inventory</h3>
+            <ul id="inventory-list"></ul>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
