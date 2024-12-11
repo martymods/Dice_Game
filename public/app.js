@@ -15,7 +15,7 @@ async function setupSinglePlayer() {
     let balance = 1500;
     let currentBet = 0;
     let turns = 0;
-    let rent = 400; // Initial rent value set to 400
+    let rent = 400; // Initial rent value
     let maxTurns = 6;
     let progression = 1;
     let items = [];
@@ -48,30 +48,35 @@ async function setupSinglePlayer() {
         }
     }
 
-    let itemsList = []; // Placeholder for items to be loaded from items.js
+    let itemsList; // Variable to hold items loaded from items.js
 
-    // Load items from items.js dynamically
+    // Load items.js dynamically
     const script = document.createElement('script');
     script.src = '/items.js'; // Ensure items.js defines `itemsList`
     document.head.appendChild(script);
 
     script.onload = () => {
-        if (!itemsList || itemsList.length === 0) {
+        if (typeof itemsList === 'undefined' || !itemsList || itemsList.length === 0) {
             console.error('Items list is empty or not loaded from items.js.');
+            alert('Failed to load items. Please refresh the page.');
             return;
         }
 
+        initializeGame();
+    };
+
+    function initializeGame() {
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
         rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns} rolls`;
 
-        rollButton.addEventListener('click', () => handleRollDice());
-        betButton.addEventListener('click', () => handlePlaceBet());
+        rollButton.addEventListener('click', handleRollDice);
+        betButton.addEventListener('click', handlePlaceBet);
         quitButton.addEventListener('click', quitGame);
 
         bet25Button.addEventListener('click', () => setBet(balance * 0.25));
         bet50Button.addEventListener('click', () => setBet(balance * 0.5));
         bet100Button.addEventListener('click', () => setBet(balance));
-    };
+    }
 
     function setBet(amount) {
         if (amount > balance) amount = balance;
@@ -98,7 +103,7 @@ async function setupSinglePlayer() {
                 balance += currentBet * 2; // Win: double the bet
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
             } else if (sum === 2 || sum === 3 || sum === 12) {
-                balance -= currentBet; // Loss: deduct the bet from balance
+                balance -= currentBet; // Loss: deduct the bet
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
             } else {
                 gameStatus.textContent = `Roll: ${sum}`;
@@ -161,32 +166,5 @@ async function setupSinglePlayer() {
 
     function quitGame() {
         window.location.href = '/';
-    }
-
-    function animateDice(dice1, dice2, callback) {
-        const dice1Element = document.getElementById('dice1');
-        const dice2Element = document.getElementById('dice2');
-
-        let counter = 0;
-        const interval = setInterval(() => {
-            dice1Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
-            dice2Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
-            counter++;
-
-            if (counter >= 10) {
-                clearInterval(interval);
-                dice1Element.src = `/images/dice${dice1}.png`;
-                dice2Element.src = `/images/dice${dice2}.png`;
-                callback();
-            }
-        }, 100);
-    }
-
-    function playSound(sounds, randomize = false) {
-        let soundFile = Array.isArray(sounds) && randomize
-            ? sounds[Math.floor(Math.random() * sounds.length)]
-            : sounds;
-        const sound = new Audio(soundFile);
-        sound.play().catch(err => console.error('Audio play error:', err));
     }
 }
