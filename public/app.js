@@ -15,7 +15,7 @@ async function setupSinglePlayer() {
     let balance = 300;
     let currentBet = 0;
     let turns = 0;
-    let rent = 400;
+    let rent = 1600;
     let maxTurns = 6;
     let progression = 1;
     let items = [];
@@ -170,10 +170,10 @@ async function setupSinglePlayer() {
                 rent *= 4;
                 maxTurns = Math.min(maxTurns + 1, 12);
                 turns = 0;
-                alert('You paid the rent! Time to keep hustling!');
+                alert('You paid the rent! Now get ready for even more demands!');
                 showItemPopup();
             } else {
-                alert('Game Over. You could not pay the rent.');
+                alert('Game Over. You couldn’t pay the rent, and the landlord isn’t happy!');
                 displayLeaderboard(balance);
                 return;
             }
