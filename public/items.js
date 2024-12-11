@@ -1,4 +1,4 @@
-const availableItems = [
+window.itemsList = [
     { name: 'Loaded Dice 🎲', rarity: 'Common', cost: 50, description: 'Boosts rolls of 2 and 3, giving you an edge against other players.' },
     { name: 'Forged Papers 📜', rarity: 'Common', cost: 100, description: 'Recruit 3 allies.' },
     { name: 'Old Gang Leader’s Blade 🔪', rarity: 'Very Rare', cost: 200, description: 'Yields +9 coins each roll. Loses 1 DreamCoin for each duplicate symbol.' },
