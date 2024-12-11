@@ -138,7 +138,6 @@ async function setupSinglePlayer() {
         };
         itemList.appendChild(skipButton);
     }
-    
 
     function handleItemPurchase(item) {
         if (balance >= item.cost) {
