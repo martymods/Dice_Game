@@ -1,6 +1,6 @@
 // app.js
 
-import itemEffects from './itemEffects.js'; // Import item effects
+import itemEffects from './itemEffects.js'; // Ensure this path is correct
 
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -23,7 +23,7 @@ async function setupSinglePlayer() {
     let maxTurns = 6;
     let progression = 1;
     let items = [];
-    let dreamCoins = 0; // New DreamCoin balance
+    let dreamCoins = 0;
 
     const rollButton = document.getElementById('rollButton');
     const betButton = document.getElementById('betButton');
@@ -51,27 +51,15 @@ async function setupSinglePlayer() {
         }
     }
 
-    const script = document.createElement('script');
-    script.src = '/items.js';
-    document.head.appendChild(script);
+    updateUI();
 
-    script.onload = () => {
-        if (typeof window.itemsList === 'undefined' || !window.itemsList || window.itemsList.length === 0) {
-            console.error('Items list is empty or not loaded from items.js.');
-            alert('Failed to load items. Please refresh the page.');
-            return;
-        }
+    rollButton.addEventListener('click', handleRollDice);
+    betButton.addEventListener('click', handlePlaceBet);
+    quitButton.addEventListener('click', quitGame);
 
-        updateUI();
-
-        rollButton.addEventListener('click', handleRollDice);
-        betButton.addEventListener('click', handlePlaceBet);
-        quitButton.addEventListener('click', quitGame);
-
-        bet25Button.addEventListener('click', () => setBet(balance * 0.25));
-        bet50Button.addEventListener('click', () => setBet(balance * 0.5));
-        bet100Button.addEventListener('click', () => setBet(balance));
-    };
+    bet25Button.addEventListener('click', () => setBet(balance * 0.25));
+    bet50Button.addEventListener('click', () => setBet(balance * 0.5));
+    bet100Button.addEventListener('click', () => setBet(balance));
 
     function setBet(amount) {
         if (amount > balance) amount = balance;
@@ -96,7 +84,6 @@ async function setupSinglePlayer() {
 
             let rollBonus = 0;
 
-            // Check for passive effects
             items.forEach(item => {
                 if (item.name === 'Loaded Dice 🎲') {
                     rollBonus += itemEffects.loadedDiceEffect(sum, currentBet);
@@ -107,17 +94,17 @@ async function setupSinglePlayer() {
             });
 
             if (sum === 7 || sum === 11) {
-                balance += currentBet * 2 + rollBonus; // Double winnings plus bonus
+                balance += currentBet * 2 + rollBonus;
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
             } else if (sum === 2 || sum === 3 || sum === 12) {
-                balance -= currentBet; // Deduct the bet
+                balance -= currentBet;
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
             } else {
-                balance += rollBonus; // Apply bonus
+                balance += rollBonus;
                 gameStatus.textContent = `Roll: ${sum}`;
             }
 
-            currentBet = 0; // Reset bet after roll
+            currentBet = 0;
             updateUIAfterRoll();
         });
     }
@@ -158,7 +145,7 @@ async function setupSinglePlayer() {
 
     function handleItemPurchase(item) {
         if (balance >= item.cost) {
-            balance -= item.cost; // Deduct item cost
+            balance -= item.cost;
             items.push(item);
             if (item.name === 'Forged Papers 📜') {
                 items = itemEffects.forgedPapersEffect(items);
@@ -167,7 +154,7 @@ async function setupSinglePlayer() {
             alert(`You purchased ${item.name}!`);
             popup.style.display = 'none';
             displayInventory();
-            updateUI(); // Update UI after purchase
+            updateUI();
         } else {
             alert('Not enough money to buy this item.');
         }
@@ -253,3 +240,5 @@ async function setupSinglePlayer() {
         audio.play().catch(err => console.error('Audio play error:', err));
     }
 }
+
+export default setupSinglePlayer;
