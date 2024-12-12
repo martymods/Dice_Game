@@ -59,8 +59,7 @@ async function setupSinglePlayer() {
             return;
         }
 
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
-        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns} rolls`;
+        updateUI();
 
         rollButton.addEventListener('click', handleRollDice);
         betButton.addEventListener('click', handlePlaceBet);
@@ -74,7 +73,7 @@ async function setupSinglePlayer() {
     function setBet(amount) {
         if (amount > balance) amount = balance;
         currentBet = Math.floor(amount);
-        bettingStatus.textContent = `Balance: $${(balance - currentBet).toLocaleString()} | Bet: $${currentBet}`;
+        updateUI();
     }
 
     function handleRollDice() {
@@ -93,16 +92,16 @@ async function setupSinglePlayer() {
             playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"]);
 
             if (sum === 7 || sum === 11) {
-                balance += currentBet * 2;
+                balance += currentBet * 2; // Double the winnings
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
             } else if (sum === 2 || sum === 3 || sum === 12) {
-                balance -= currentBet;
+                balance -= currentBet; // Deduct the bet
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
             } else {
                 gameStatus.textContent = `Roll: ${sum}`;
             }
 
-            currentBet = 0;
+            currentBet = 0; // Reset bet after roll
             updateUIAfterRoll();
         });
     }
@@ -115,7 +114,7 @@ async function setupSinglePlayer() {
             alert('Invalid bet amount.');
         } else {
             currentBet = betAmount;
-            bettingStatus.textContent = `Balance: $${(balance - currentBet).toLocaleString()} | Bet: $${currentBet}`;
+            updateUI();
         }
     }
 
@@ -143,12 +142,13 @@ async function setupSinglePlayer() {
 
     function handleItemPurchase(item) {
         if (balance >= item.cost) {
-            balance -= item.cost;
+            balance -= item.cost; // Deduct item cost
             items.push(item);
             playSound("/sounds/UI_Buy1.ogg");
             alert(`You purchased ${item.name}!`);
             popup.style.display = 'none';
             displayInventory();
+            updateUI(); // Update UI after purchase
         } else {
             alert('Not enough money to buy this item.');
         }
@@ -159,7 +159,7 @@ async function setupSinglePlayer() {
     }
 
     function updateUIAfterRoll() {
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+        updateUI();
         turns++;
 
         const rollsRemaining = maxTurns - turns;
@@ -186,6 +186,10 @@ async function setupSinglePlayer() {
             alert('Game Over. You have no money left.');
             quitGame();
         }
+    }
+
+    function updateUI() {
+        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
     }
 
     function quitGame() {
