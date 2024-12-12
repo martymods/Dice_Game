@@ -229,5 +229,54 @@ async function setupSinglePlayer() {
         const soundFile = Array.isArray(sounds) && randomize ? sounds[Math.floor(Math.random() * sounds.length)] : sounds;
         const audio = new Audio(soundFile);
         audio.play().catch(err => console.error('Audio play error:', err));
+    }import itemEffects from './itemEffects.js';
+
+async function setupSinglePlayer() {
+    // Existing declarations
+    let dreamCoins = 0; // New DreamCoin value
+    const inventory = [];
+
+    function handleRollDice() {
+        // Roll dice logic
+        const rollBonus = inventory.reduce((acc, item) => {
+            if (item.name === 'Loaded Dice 🎲') acc += itemEffects.loadedDiceEffect(sum, currentBet);
+            if (item.name === 'Old Gang Leader’s Blade 🔪') {
+                dreamCoins += itemEffects.gangLeaderBladeEffect(inventory);
+            }
+            if (item.name === "Neighborhood OG's Manual 📘") {
+                acc += itemEffects.ogManualEffect(inventory, currentBet * 0.1); // Example bonus
+            }
+            return acc;
+        }, 0);
+
+        balance += rollBonus; // Add bonus to balance
+        updateUI(); // Update balance and DreamCoin UI
     }
+
+    function handleItemPurchase(item) {
+        if (balance >= item.cost) {
+            balance -= item.cost;
+            inventory.push(item);
+            if (item.name === 'Forged Papers 📜') {
+                itemEffects.forgedPapersEffect(inventory);
+            }
+            updateInventory();
+        }
+    }
+
+    function updateUI() {
+        // Update balance
+        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+        // Update DreamCoin UI if applicable
+        if (dreamCoins > 0) {
+            rentStatus.innerHTML += `<img src="public/images/DW_Logo.png" alt="DreamCoin" style="width: 20px; height: 20px;"> ${dreamCoins}`;
+        }
+    }
+
+    function updateInventory() {
+        inventoryDisplay.innerHTML = inventory.map(item => {
+            return `<li>${item.name} (${item.description}) ${item.count ? `x${item.count}` : ''}</li>`;
+        }).join('');
+    }
+
 }
