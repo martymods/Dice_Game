@@ -1,3 +1,5 @@
+// app.js
+
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const isSinglePlayer = urlParams.has('singlePlayer');
@@ -15,7 +17,7 @@ async function setupSinglePlayer() {
     let balance = 300;
     let currentBet = 0;
     let turns = 0;
-    let rent = 400; // Initial rent value set to 400
+    let rent = 400;
     let maxTurns = 6;
     let progression = 1;
     let items = [];
@@ -29,7 +31,6 @@ async function setupSinglePlayer() {
     const inventoryDisplay = document.getElementById('inventory-list');
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
-    const gameOverContainer = document.getElementById('gameOverContainer');
 
     const bet25Button = document.getElementById('bet25Button');
     const bet50Button = document.getElementById('bet50Button');
@@ -37,8 +38,7 @@ async function setupSinglePlayer() {
 
     const requiredElements = [
         rollButton, betButton, quitButton, bettingStatus, gameStatus, rentStatus,
-        inventoryDisplay, popup, itemList, gameOverContainer,
-        bet25Button, bet50Button, bet100Button
+        inventoryDisplay, popup, itemList, bet25Button, bet50Button, bet100Button
     ];
 
     for (const element of requiredElements) {
@@ -68,8 +68,7 @@ async function setupSinglePlayer() {
     function setBet(amount) {
         if (amount > balance) amount = balance;
         currentBet = Math.floor(amount);
-        balance -= currentBet;
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+        bettingStatus.textContent = `Balance: $${(balance - currentBet).toLocaleString()} | Bet: $${currentBet}`;
     }
 
     function handleRollDice() {
@@ -88,15 +87,15 @@ async function setupSinglePlayer() {
             playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"]);
 
             if (sum === 7 || sum === 11) {
-                balance += currentBet * 2; // Win: double the bet
+                balance += currentBet * 2;
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
             } else if (sum === 2 || sum === 3 || sum === 12) {
+                balance -= currentBet;
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
             } else {
                 gameStatus.textContent = `Roll: ${sum}`;
             }
 
-            currentBet = 0; // Reset the bet after a roll
             updateUIAfterRoll();
         });
     }
@@ -109,56 +108,18 @@ async function setupSinglePlayer() {
             alert('Invalid bet amount.');
         } else {
             currentBet = betAmount;
-            balance -= currentBet;
-            bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+            bettingStatus.textContent = `Balance: $${(balance - currentBet).toLocaleString()} | Bet: $${currentBet}`;
         }
-    }
-
-    function updateUIAfterRoll() {
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
-        turns++;
-
-        const rollsRemaining = maxTurns - turns;
-        if (rollsRemaining === 1) {
-            rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in <span style="color: orange; font-weight: bold;">1</span> roll`;
-        } else if (rollsRemaining > 0) {
-            rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
-        } else {
-            if (balance >= rent) {
-                balance -= rent; // Deduct rent payment
-                rent *= progression < 9 ? 4 : 5; // Rent increases
-                maxTurns++;
-                turns = 0;
-                alert('You paid the rent! Time to hustle more!');
-                showItemPopup();
-            } else {
-                endGame();
-            }
-        }
-
-        if (balance <= 0) {
-            endGame();
-        }
-    }
-
-    function endGame() {
-        alert('Game Over. You couldn’t pay the rent.');
-        gameOverContainer.innerHTML = `
-            <h2>Game Over</h2>
-            <button onclick="window.location.href='/'">Return to Main Menu</button>
-        `;
-        gameOverContainer.style.display = 'block';
     }
 
     function showItemPopup() {
         popup.style.display = 'block';
         itemList.innerHTML = '';
 
-        const shuffledItems = itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
-        shuffledItems.forEach(item => {
+        availableItems.forEach(item => {
             const itemButton = document.createElement('button');
-            itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
-            itemButton.classList.add(item.rarity.toLowerCase());
+            itemButton.textContent = `${item.name} - $${item.cost.toLocaleString()} - ${item.description}`;
+            itemButton.style.backgroundColor = getItemColor(item.rarity);
             itemButton.onclick = () => handleItemPurchase(item);
             itemList.appendChild(itemButton);
         });
@@ -166,6 +127,7 @@ async function setupSinglePlayer() {
         const skipButton = document.createElement('button');
         skipButton.textContent = 'Save Money';
         skipButton.onclick = () => {
+            playSound("/sounds/UI_Click1.ogg");
             popup.style.display = 'none';
         };
         itemList.appendChild(skipButton);
@@ -188,13 +150,62 @@ async function setupSinglePlayer() {
         inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
     }
 
+    function updateUIAfterRoll() {
+        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+        turns++;
+
+        const rollsRemaining = maxTurns - turns;
+        if (rollsRemaining === 1) {
+            rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in <span style="color: orange; font-weight: bold;">1</span> roll`;
+        } else if (rollsRemaining > 0) {
+            rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
+        } else {
+            if (balance >= rent) {
+                rent *= 2;
+                maxTurns = Math.min(maxTurns + 1, 12);
+                turns = 0;
+                alert('You paid the rent! Time to keep hustling!');
+                showItemPopup();
+            } else {
+                alert('Game Over. You could not pay the rent.');
+                displayLeaderboard(balance);
+                return;
+            }
+        }
+
+        if (balance <= 0) {
+            alert('Game Over. You have no money left.');
+            displayLeaderboard(balance);
+        }
+    }
+
     function quitGame() {
         window.location.href = '/';
+    }
+
+    function getItemColor(rarity) {
+        switch (rarity) {
+            case 'Common':
+                return 'gray';
+            case 'Uncommon':
+                return 'blue';
+            case 'Rare':
+                return 'purple';
+            case 'Very Rare':
+                return 'gold';
+            default:
+                return 'white';
+        }
     }
 
     function animateDice(dice1, dice2, callback) {
         const dice1Element = document.getElementById('dice1');
         const dice2Element = document.getElementById('dice2');
+
+        if (!dice1Element || !dice2Element) {
+            console.error('Dice elements not found.');
+            return;
+        }
 
         let counter = 0;
         const interval = setInterval(() => {
@@ -212,10 +223,33 @@ async function setupSinglePlayer() {
     }
 
     function playSound(sounds, randomize = false) {
-        let soundFile = Array.isArray(sounds) && randomize
-            ? sounds[Math.floor(Math.random() * sounds.length)]
-            : sounds;
-        const sound = new Audio(soundFile);
-        sound.play().catch(err => console.error('Audio play error:', err));
+        let soundFile = Array.isArray(sounds) && randomize ? sounds[Math.floor(Math.random() * sounds.length)] : sounds;
+        const audio = new Audio(soundFile);
+        audio.play().catch(err => console.error('Audio play error:', err));
+    }
+
+    function displayLeaderboard(score) {
+        const leaderboardContainer = document.getElementById('leaderboardContainer');
+
+        if (!leaderboardContainer) {
+            console.error('Leaderboard container not found.');
+            return;
+        }
+
+        const playerName = prompt('Enter your name for the leaderboard:');
+
+        if (playerName) {
+            const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+            leaderboard.push({ name: playerName, score });
+            leaderboard.sort((a, b) => b.score - a.score);
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+        }
+
+        const topPlayers = JSON.parse(localStorage.getItem('leaderboard')) || [];
+        leaderboardContainer.innerHTML = '<h2>Leaderboard</h2>' +
+            topPlayers.map(player => `<p>${player.name}: $${player.score.toLocaleString()}</p>`).join('') +
+            '<button onclick="window.location.href='/'">Return to Main Menu</button>';
+
+        leaderboardContainer.style.display = 'block';
     }
 }
