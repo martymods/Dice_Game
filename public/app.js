@@ -1,6 +1,6 @@
 // app.js
 
-import itemEffects from './itemEffects.js'; // Ensure this path is correct
+import itemEffects from '/images/itemEffects.js'; // Ensure this path is correct
 
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
