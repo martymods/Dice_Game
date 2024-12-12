@@ -53,11 +53,17 @@ async function setupSinglePlayer() {
     document.head.appendChild(script);
 
     script.onload = () => {
+        if (typeof window.itemsList === 'undefined' || !window.itemsList || window.itemsList.length === 0) {
+            console.error('Items list is empty or not loaded from items.js.');
+            alert('Failed to load items. Please refresh the page.');
+            return;
+        }
+
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
         rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns} rolls`;
 
-        rollButton.addEventListener('click', () => handleRollDice());
-        betButton.addEventListener('click', () => handlePlaceBet());
+        rollButton.addEventListener('click', handleRollDice);
+        betButton.addEventListener('click', handlePlaceBet);
         quitButton.addEventListener('click', quitGame);
 
         bet25Button.addEventListener('click', () => setBet(balance * 0.25));
@@ -72,12 +78,12 @@ async function setupSinglePlayer() {
     }
 
     function handleRollDice() {
-        playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
-
         if (currentBet <= 0) {
             alert('Place a bet first!');
             return;
         }
+
+        playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
 
         const dice1 = Math.floor(Math.random() * 6) + 1;
         const dice2 = Math.floor(Math.random() * 6) + 1;
@@ -96,6 +102,7 @@ async function setupSinglePlayer() {
                 gameStatus.textContent = `Roll: ${sum}`;
             }
 
+            currentBet = 0;
             updateUIAfterRoll();
         });
     }
@@ -116,9 +123,10 @@ async function setupSinglePlayer() {
         popup.style.display = 'block';
         itemList.innerHTML = '';
 
-        availableItems.forEach(item => {
+        const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
+        shuffledItems.forEach(item => {
             const itemButton = document.createElement('button');
-            itemButton.textContent = `${item.name} - $${item.cost.toLocaleString()} - ${item.description}`;
+            itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
             itemButton.style.backgroundColor = getItemColor(item.rarity);
             itemButton.onclick = () => handleItemPurchase(item);
             itemList.appendChild(itemButton);
@@ -161,21 +169,22 @@ async function setupSinglePlayer() {
             rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
         } else {
             if (balance >= rent) {
-                rent *= 2;
-                maxTurns = Math.min(maxTurns + 1, 12);
+                balance -= rent;
+                rent *= progression <= 9 ? 4 : 5;
+                maxTurns++;
+                progression++;
                 turns = 0;
-                alert('You paid the rent! Time to keep hustling!');
+                alert('You paid the rent! Get ready for the next stage.');
                 showItemPopup();
             } else {
-                alert('Game Over. You could not pay the rent.');
-                displayLeaderboard(balance);
-                return;
+                alert('Game Over. You couldn’t pay the rent.');
+                quitGame();
             }
         }
 
         if (balance <= 0) {
             alert('Game Over. You have no money left.');
-            displayLeaderboard(balance);
+            quitGame();
         }
     }
 
@@ -185,27 +194,17 @@ async function setupSinglePlayer() {
 
     function getItemColor(rarity) {
         switch (rarity) {
-            case 'Common':
-                return 'gray';
-            case 'Uncommon':
-                return 'blue';
-            case 'Rare':
-                return 'purple';
-            case 'Very Rare':
-                return 'gold';
-            default:
-                return 'white';
+            case 'Common': return 'gray';
+            case 'Uncommon': return 'blue';
+            case 'Rare': return 'purple';
+            case 'Very Rare': return 'gold';
+            default: return 'white';
         }
     }
 
     function animateDice(dice1, dice2, callback) {
         const dice1Element = document.getElementById('dice1');
         const dice2Element = document.getElementById('dice2');
-
-        if (!dice1Element || !dice2Element) {
-            console.error('Dice elements not found.');
-            return;
-        }
 
         let counter = 0;
         const interval = setInterval(() => {
@@ -223,33 +222,8 @@ async function setupSinglePlayer() {
     }
 
     function playSound(sounds, randomize = false) {
-        let soundFile = Array.isArray(sounds) && randomize ? sounds[Math.floor(Math.random() * sounds.length)] : sounds;
+        const soundFile = Array.isArray(sounds) && randomize ? sounds[Math.floor(Math.random() * sounds.length)] : sounds;
         const audio = new Audio(soundFile);
         audio.play().catch(err => console.error('Audio play error:', err));
-    }
-
-    function displayLeaderboard(score) {
-        const leaderboardContainer = document.getElementById('leaderboardContainer');
-
-        if (!leaderboardContainer) {
-            console.error('Leaderboard container not found.');
-            return;
-        }
-
-        const playerName = prompt('Enter your name for the leaderboard:');
-
-        if (playerName) {
-            const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-            leaderboard.push({ name: playerName, score });
-            leaderboard.sort((a, b) => b.score - a.score);
-            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-        }
-
-        const topPlayers = JSON.parse(localStorage.getItem('leaderboard')) || [];
-        leaderboardContainer.innerHTML = '<h2>Leaderboard</h2>' +
-            topPlayers.map(player => `<p>${player.name}: $${player.score.toLocaleString()}</p>`).join('') +
-            '<button onclick="window.location.href='/'">Return to Main Menu</button>';
-
-        leaderboardContainer.style.display = 'block';
     }
 }
