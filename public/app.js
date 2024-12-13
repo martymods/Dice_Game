@@ -1,3 +1,5 @@
+// app.js
+
 import itemEffects from './itemEffects.js'; // Import item effects
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -32,6 +34,8 @@ async function setupSinglePlayer() {
     const inventoryDisplay = document.getElementById('inventory-list');
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
+    const gameOverContainer = document.getElementById('gameOverContainer');
+    const landlordVideo = document.getElementById('landlordVideo');
 
     const bet25Button = document.getElementById('bet25Button');
     const bet50Button = document.getElementById('bet50Button');
@@ -39,7 +43,7 @@ async function setupSinglePlayer() {
 
     const requiredElements = [
         rollButton, betButton, quitButton, bettingStatus, gameStatus, rentStatus,
-        inventoryDisplay, popup, itemList, bet25Button, bet50Button, bet100Button
+        inventoryDisplay, popup, itemList, gameOverContainer, bet25Button, bet50Button, bet100Button
     ];
 
     for (const element of requiredElements) {
@@ -49,21 +53,27 @@ async function setupSinglePlayer() {
         }
     }
 
-    if (!window.itemsList || window.itemsList.length === 0) {
-        console.error('Items list is empty or not loaded from items.js.');
-        alert('Failed to load items. Please refresh the page.');
-        return;
-    }
-    console.log('Items list loaded successfully:', window.itemsList);
-    updateUI();
+    const script = document.createElement('script');
+    script.src = '/items.js';
+    document.head.appendChild(script);
 
-    rollButton.addEventListener('click', handleRollDice);
-    betButton.addEventListener('click', handlePlaceBet);
-    quitButton.addEventListener('click', quitGame);
+    script.onload = () => {
+        if (typeof window.itemsList === 'undefined' || !window.itemsList || window.itemsList.length === 0) {
+            console.error('Items list is empty or not loaded from items.js.');
+            alert('Failed to load items. Please refresh the page.');
+            return;
+        }
 
-    bet25Button.addEventListener('click', () => setBet(balance * 0.25));
-    bet50Button.addEventListener('click', () => setBet(balance * 0.5));
-    bet100Button.addEventListener('click', () => setBet(balance));
+        updateUI();
+
+        rollButton.addEventListener('click', handleRollDice);
+        betButton.addEventListener('click', handlePlaceBet);
+        quitButton.addEventListener('click', quitGame);
+
+        bet25Button.addEventListener('click', () => setBet(balance * 0.25));
+        bet50Button.addEventListener('click', () => setBet(balance * 0.5));
+        bet100Button.addEventListener('click', () => setBet(balance));
+    };
 
     function setBet(amount) {
         if (amount > balance) amount = balance;
@@ -88,6 +98,7 @@ async function setupSinglePlayer() {
 
             let rollBonus = 0;
 
+            // Check for passive effects
             items.forEach(item => {
                 if (item.name === 'Loaded Dice 🎲') {
                     rollBonus += itemEffects.loadedDiceEffect(sum, currentBet);
@@ -98,17 +109,17 @@ async function setupSinglePlayer() {
             });
 
             if (sum === 7 || sum === 11) {
-                balance += currentBet * 2 + rollBonus;
+                balance += currentBet * 2 + rollBonus; // Double winnings plus bonus
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
             } else if (sum === 2 || sum === 3 || sum === 12) {
-                balance -= currentBet;
+                balance -= currentBet; // Deduct the bet
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
             } else {
-                balance += rollBonus;
+                balance += rollBonus; // Apply bonus
                 gameStatus.textContent = `Roll: ${sum}`;
             }
 
-            currentBet = 0;
+            currentBet = 0; // Reset bet after roll
             updateUIAfterRoll();
         });
     }
@@ -128,12 +139,6 @@ async function setupSinglePlayer() {
     function showItemPopup() {
         popup.style.display = 'block';
         itemList.innerHTML = '';
-
-        if (!window.itemsList || window.itemsList.length === 0) {
-            console.error('Items list is empty or not loaded from items.js.');
-            alert('No items available to purchase. Please try again later.');
-            return;
-        }
 
         const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
         shuffledItems.forEach(item => {
@@ -155,13 +160,16 @@ async function setupSinglePlayer() {
 
     function handleItemPurchase(item) {
         if (balance >= item.cost) {
-            balance -= item.cost;
+            balance -= item.cost; // Deduct item cost
             items.push(item);
+            if (item.name === 'Forged Papers 📜') {
+                items = itemEffects.forgedPapersEffect(items);
+            }
             playSound("/sounds/UI_Buy1.ogg");
             alert(`You purchased ${item.name}!`);
             popup.style.display = 'none';
             displayInventory();
-            updateUI();
+            updateUI(); // Update UI after purchase
         } else {
             alert('Not enough money to buy this item.');
         }
@@ -190,14 +198,14 @@ async function setupSinglePlayer() {
                 alert('You paid the rent! Get ready for the next stage.');
                 showItemPopup();
             } else {
-                alert('Game Over. You couldn’t pay the rent.');
-                quitGame();
+                landlordVideo.play();
+                gameOverContainer.style.display = 'block';
             }
         }
 
         if (balance <= 0) {
-            alert('Game Over. You have no money left.');
-            quitGame();
+            landlordVideo.play();
+            gameOverContainer.style.display = 'block';
         }
     }
 
