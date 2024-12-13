@@ -150,47 +150,32 @@ async function setupSinglePlayer() {
         }
     }
 
-    function showItemPopup() {
-        popup.style.display = 'block';
-        itemList.innerHTML = '';
+    function handleGameOver() {
+        const deathSound = new Audio('/sounds/Death0.ogg');
+        deathSound.play().catch(err => console.error('Death sound error:', err));
 
-        const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
-        shuffledItems.forEach(item => {
-            const itemButton = document.createElement('button');
-            itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
-            itemButton.style.backgroundColor = getItemColor(item.rarity);
-            itemButton.onclick = () => handleItemPurchase(item);
-            itemList.appendChild(itemButton);
-        });
+        landlordVideo.style.display = 'block';
+        landlordVideo.style.zIndex = '1';
+        landlordVideo.style.width = '80%';
+        landlordVideo.style.height = '80%';
+        landlordVideo.style.position = 'absolute';
+        landlordVideo.style.top = '10%';
+        landlordVideo.style.left = '10%';
+        landlordVideo.style.backgroundColor = 'black';
+        landlordVideo.loop = false;
+        landlordVideo.play().catch(err => console.error('Video play error:', err));
 
-        const skipButton = document.createElement('button');
-        skipButton.textContent = 'Save Money';
-        skipButton.onclick = () => {
-            playSound("/sounds/UI_Click1.ogg");
-            popup.style.display = 'none';
-        };
-        itemList.appendChild(skipButton);
-    }
+        gameOverContainer.style.display = 'block';
 
-    function handleItemPurchase(item) {
-        if (balance >= item.cost) {
-            balance -= item.cost; // Deduct item cost
-            items.push(item);
-            if (item.name === 'Forged Papers 📜') {
-                items = itemEffects.forgedPapersEffect(items);
-            }
-            playSound("/sounds/UI_Buy1.ogg");
-            alert(`You purchased ${item.name}!`);
-            popup.style.display = 'none';
-            displayInventory();
-            updateUI(); // Update UI after purchase
-        } else {
-            alert('Not enough money to buy this item.');
-        }
-    }
-
-    function displayInventory() {
-        inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
+        // Hide unnecessary UI elements
+        rollButton.style.display = 'none';
+        betButton.style.display = 'none';
+        bet25Button.style.display = 'none';
+        bet50Button.style.display = 'none';
+        bet100Button.style.display = 'none';
+        document.getElementById('betAmount').style.display = 'none';
+        gameTitle.textContent = 'The Other Half';
+        document.body.style.backgroundColor = 'black';
     }
 
     function updateUIAfterRoll() {
@@ -219,32 +204,6 @@ async function setupSinglePlayer() {
         if (balance <= 0) {
             handleGameOver();
         }
-    }
-
-    function handleGameOver() {
-        const deathSound = new Audio('/sounds/Death0.ogg');
-        deathSound.play().catch(err => console.error('Death sound error:', err));
-
-        landlordVideo.style.display = 'block';
-        landlordVideo.style.zIndex = '1';
-        landlordVideo.style.width = '100%';
-        landlordVideo.style.height = '100%';
-        landlordVideo.style.position = 'absolute';
-        landlordVideo.style.top = '0';
-        landlordVideo.style.left = '0';
-        landlordVideo.style.backgroundColor = 'black';
-        landlordVideo.play().catch(err => console.error('Video play error:', err));
-
-        gameOverContainer.style.display = 'block';
-
-        // Hide unnecessary UI elements
-        rollButton.style.display = 'none';
-        betButton.style.display = 'none';
-        bet25Button.style.display = 'none';
-        bet50Button.style.display = 'none';
-        bet100Button.style.display = 'none';
-        document.getElementById('betAmount').style.display = 'none';
-        gameTitle.textContent = 'The Other Half';
     }
 
     function updateUI() {
