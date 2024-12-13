@@ -54,7 +54,7 @@ async function setupSinglePlayer() {
         alert('Failed to load items. Please refresh the page.');
         return;
     }
-
+    console.log('Items list loaded successfully:', window.itemsList);
     updateUI();
 
     rollButton.addEventListener('click', handleRollDice);
