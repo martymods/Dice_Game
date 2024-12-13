@@ -222,9 +222,12 @@ async function setupSinglePlayer() {
                 maxTurns++;
                 progression++;
                 turns = 0;
-                alert('You paid the rent! Get ready for the next stage.');
-                showItemPopup();
-            } else {
+                // Randomly pick a statement
+            const randomStatement = rentPaidStatements[Math.floor(Math.random() * rentPaidStatements.length)];
+            alert(randomStatement);
+
+            showItemPopup();
+        } else {
                 handleGameOver();
             }
         }
