@@ -1,5 +1,3 @@
-// app.js
-
 import itemEffects from './itemEffects.js'; // Import item effects
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -51,27 +49,21 @@ async function setupSinglePlayer() {
         }
     }
 
-    const script = document.createElement('script');
-    script.src = '/items.js';
-    document.head.appendChild(script);
+    if (!window.itemsList || window.itemsList.length === 0) {
+        console.error('Items list is empty or not loaded from items.js.');
+        alert('Failed to load items. Please refresh the page.');
+        return;
+    }
 
-    script.onload = () => {
-        if (typeof window.itemsList === 'undefined' || !window.itemsList || window.itemsList.length === 0) {
-            console.error('Items list is empty or not loaded from items.js.');
-            alert('Failed to load items. Please refresh the page.');
-            return;
-        }
+    updateUI();
 
-        updateUI();
+    rollButton.addEventListener('click', handleRollDice);
+    betButton.addEventListener('click', handlePlaceBet);
+    quitButton.addEventListener('click', quitGame);
 
-        rollButton.addEventListener('click', handleRollDice);
-        betButton.addEventListener('click', handlePlaceBet);
-        quitButton.addEventListener('click', quitGame);
-
-        bet25Button.addEventListener('click', () => setBet(balance * 0.25));
-        bet50Button.addEventListener('click', () => setBet(balance * 0.5));
-        bet100Button.addEventListener('click', () => setBet(balance));
-    };
+    bet25Button.addEventListener('click', () => setBet(balance * 0.25));
+    bet50Button.addEventListener('click', () => setBet(balance * 0.5));
+    bet100Button.addEventListener('click', () => setBet(balance));
 
     function setBet(amount) {
         if (amount > balance) amount = balance;
@@ -96,7 +88,6 @@ async function setupSinglePlayer() {
 
             let rollBonus = 0;
 
-            // Check for passive effects
             items.forEach(item => {
                 if (item.name === 'Loaded Dice 🎲') {
                     rollBonus += itemEffects.loadedDiceEffect(sum, currentBet);
@@ -107,17 +98,17 @@ async function setupSinglePlayer() {
             });
 
             if (sum === 7 || sum === 11) {
-                balance += currentBet * 2 + rollBonus; // Double winnings plus bonus
+                balance += currentBet * 2 + rollBonus;
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
             } else if (sum === 2 || sum === 3 || sum === 12) {
-                balance -= currentBet; // Deduct the bet
+                balance -= currentBet;
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
             } else {
-                balance += rollBonus; // Apply bonus
+                balance += rollBonus;
                 gameStatus.textContent = `Roll: ${sum}`;
             }
 
-            currentBet = 0; // Reset bet after roll
+            currentBet = 0;
             updateUIAfterRoll();
         });
     }
@@ -137,6 +128,12 @@ async function setupSinglePlayer() {
     function showItemPopup() {
         popup.style.display = 'block';
         itemList.innerHTML = '';
+
+        if (!window.itemsList || window.itemsList.length === 0) {
+            console.error('Items list is empty or not loaded from items.js.');
+            alert('No items available to purchase. Please try again later.');
+            return;
+        }
 
         const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
         shuffledItems.forEach(item => {
@@ -158,16 +155,13 @@ async function setupSinglePlayer() {
 
     function handleItemPurchase(item) {
         if (balance >= item.cost) {
-            balance -= item.cost; // Deduct item cost
+            balance -= item.cost;
             items.push(item);
-            if (item.name === 'Forged Papers 📜') {
-                items = itemEffects.forgedPapersEffect(items);
-            }
             playSound("/sounds/UI_Buy1.ogg");
             alert(`You purchased ${item.name}!`);
             popup.style.display = 'none';
             displayInventory();
-            updateUI(); // Update UI after purchase
+            updateUI();
         } else {
             alert('Not enough money to buy this item.');
         }
@@ -253,6 +247,3 @@ async function setupSinglePlayer() {
         audio.play().catch(err => console.error('Audio play error:', err));
     }
 }
-
-
-export default setupSinglePlayer;
