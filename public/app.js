@@ -226,18 +226,25 @@ async function setupSinglePlayer() {
         deathSound.play().catch(err => console.error('Death sound error:', err));
 
         landlordVideo.style.display = 'block';
-        landlordVideo.style.zIndex = '-1';
+        landlordVideo.style.zIndex = '1';
         landlordVideo.style.width = '100%';
         landlordVideo.style.height = '100%';
+        landlordVideo.style.position = 'absolute';
+        landlordVideo.style.top = '0';
+        landlordVideo.style.left = '0';
+        landlordVideo.style.backgroundColor = 'black';
         landlordVideo.play().catch(err => console.error('Video play error:', err));
 
         gameOverContainer.style.display = 'block';
+
+        // Hide unnecessary UI elements
         rollButton.style.display = 'none';
         betButton.style.display = 'none';
         bet25Button.style.display = 'none';
         bet50Button.style.display = 'none';
         bet100Button.style.display = 'none';
-        gameTitle.style.display = 'none';
+        document.getElementById('betAmount').style.display = 'none';
+        gameTitle.textContent = 'The Other Half';
     }
 
     function updateUI() {
