@@ -210,7 +210,13 @@ async function setupSinglePlayer() {
         "You made it through! But the better you perform, the more I expect—rent’s going up!"
     ];
 
-    const rollsRemaining = maxTurns - turns;
+    const voiceClips = [
+            "/sounds/Lord_voice_0.ogg",
+            "/sounds/Lord_voice_1.ogg",
+            "/sounds/Lord_voice_2.ogg"
+        ];
+
+        const rollsRemaining = maxTurns - turns;
         if (rollsRemaining === 1) {
             rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in <span style="color: orange; font-weight: bold;">1</span> roll`;
         } else if (rollsRemaining > 0) {
@@ -222,6 +228,11 @@ async function setupSinglePlayer() {
                 maxTurns++;
                 progression++;
                 turns = 0;
+                
+                 // Play random voice clip
+                const randomClip = voiceClips[Math.floor(Math.random() * voiceClips.length)];
+                playSound(randomClip);
+                
                 // Randomly pick a statement
             const randomStatement = rentPaidStatements[Math.floor(Math.random() * rentPaidStatements.length)];
             alert(randomStatement);
