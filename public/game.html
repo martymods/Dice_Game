@@ -9,6 +9,7 @@
 <body>
     <div id="game-container">
         <h1>Craps Dice Game</h1>
+        <video id="landlordVideo" src="/public/video/LandLord_video.mp4" autoplay muted loop style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></video>
         <div id="player-info">
             <p id="betting-status">Balance: $0 | Bet: $0</p>
             <p id="rent-status">Rent Due: $0 in 0 rolls</p>
@@ -40,11 +41,10 @@
         <!-- Game Over Button (hidden initially) -->
         <div id="gameOverContainer" style="display: none;">
             <h2>Game Over</h2>
-            <button id="gameOverButton">Return to Main Menu</button>
+            <button id="gameOverButton" onclick="window.location.href='/';">Return to Main Menu</button>
         </div>
     </div>
 
-    <script src="items.js"></script>
-    <script type="module" src="app.js"></script>
+    <script src="app.js" type="module"></script>
 </body>
 </html>
