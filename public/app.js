@@ -194,10 +194,23 @@ async function setupSinglePlayer() {
     }
 
     function updateUIAfterRoll() {
-        updateUI();
-        turns++;
+    updateUI();
+    turns++;
 
-        const rollsRemaining = maxTurns - turns;
+    const rentPaidStatements = [
+        "Well done! You paid the rent. But success has its price—the rent just went up!",
+        "Congratulations on keeping up! I knew you could handle more, so I raised the rent!",
+        "Impressive! You’ve survived another month. Let’s see if you can handle next month’s new rent.",
+        "Good job paying the rent! But comfort is costly—your rent just increased.",
+        "You did it! The rent’s paid. Now let’s see how you handle my latest adjustment.",
+        "You’re doing so well! I couldn’t resist rewarding you with higher rent.",
+        "Bravo! You’ve proven your worth… and now you’ll prove you can pay even more.",
+        "Rent paid! Your reward? A bigger challenge. I’ve raised the stakes—and the rent!",
+        "Fantastic work! To celebrate, I’ve made the rent a little more interesting for next time.",
+        "You made it through! But the better you perform, the more I expect—rent’s going up!"
+    ];
+
+    const rollsRemaining = maxTurns - turns;
         if (rollsRemaining === 1) {
             rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in <span style="color: orange; font-weight: bold;">1</span> roll`;
         } else if (rollsRemaining > 0) {
