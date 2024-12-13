@@ -50,7 +50,8 @@ const itemsList = [
     { name: 'Crime Syndicate 🕴️', rarity: 'Very Rare', cost: 400, description: 'Doubles the payout of all criminal hustlers in play.' },
     { name: 'Haunted Die 👻', rarity: 'Rare', cost: 220, description: 'Every roll grants a 50% chance of earning double payouts or losing $2.' },
     { name: 'Insider Trader 📈', rarity: 'Uncommon', cost: 130, description: 'Doubles payouts when rolling a sequence (e.g., 1, 2, 3).' },
-    { name: 'Snake Oil Salesman 🐍', rarity: 'Rare', cost: 180, description: 'Grants $2 per turn for every common item you own.' }    { name: 'Collector’s Charm 🧿', rarity: 'Very Rare', description: 'Doubles the payouts of all rare and very rare hustlers and items in your squad.', cost: 550 },
+    { name: 'Snake Oil Salesman 🐍', rarity: 'Rare', cost: 180, description: 'Grants $2 per turn for every common item you own.' }
+    { name: 'Collector’s Charm 🧿', rarity: 'Very Rare', description: 'Doubles the payouts of all rare and very rare hustlers and items in your squad.', cost: 550 },
     { name: 'Cracked Dice 🎲', rarity: 'Common', description: 'Nets $2 for every failed roll.', cost: 50 },
     { name: 'Gutter Stash 🛢️', rarity: 'Uncommon', description: 'Gain $5 if two or more slots are empty at the end of your roll.', cost: 90 },
     { name: 'Street Gold Chain ⛓️', rarity: 'Common', description: 'Adds $1 to every payout from hustlers in the "bling" category (Goldfinger, Dame, Magpie, etc.).', cost: 70 },
