@@ -9,7 +9,8 @@
 <body>
     <div id="game-container">
         <h1>Craps Dice Game</h1>
-        <video id="landlordVideo" src="/public/video/LandLord_video.mp4" autoplay muted loop style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></video>
+        <video id="landlordVideo" src="/public/video/LandLord_video.mp4" autoplay muted loop style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;" onerror="console.error('Video failed to load. Check the file path.')"></video>
+
         <div id="player-info">
             <p id="betting-status">Balance: $0 | Bet: $0</p>
             <p id="rent-status">Rent Due: $0 in 0 rolls</p>
