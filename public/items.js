@@ -1,4 +1,4 @@
-window.itemsList = [
+const itemsList = [
     { name: 'Loaded Dice 🎲', rarity: 'Common', cost: 50, description: 'Boosts rolls of 2 and 3, giving you an edge against other players.' },
     { name: 'Forged Papers 📜', rarity: 'Common', cost: 100, description: 'Recruit 3 allies.' },
     { name: 'Old Gang Leader’s Blade 🔪', rarity: 'Very Rare', cost: 200, description: 'Yields +9 coins each roll. Loses 1 DreamCoin for each duplicate symbol.' },
@@ -71,3 +71,6 @@ window.itemsList = [
     { name: 'Stacked Wallet 💼', rarity: 'Common', description: 'Adds $1 per hustler with a payout higher than $3.', cost: 50 },
     { name: 'Loan Shark’s Ledger 📒', rarity: 'Rare', description: 'Allows you to borrow $10 at the cost of -$1 per turn until repaid.', cost: 150 }
 ];
+
+// Ensure the script exposes the `itemsList` globally
+window.itemsList = itemsList;
