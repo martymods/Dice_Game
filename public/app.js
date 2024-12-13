@@ -89,28 +89,6 @@ async function setupSinglePlayer() {
         });
     };
 
-    // Add help icon
-    const helpIcon = document.createElement('div');
-    helpIcon.id = 'helpIcon';
-    helpIcon.innerHTML = '❓';
-    helpIcon.style.position = 'fixed';
-    helpIcon.style.bottom = '10px';
-    helpIcon.style.right = '10px';
-    helpIcon.style.backgroundColor = 'white';
-    helpIcon.style.borderRadius = '50%';
-    helpIcon.style.width = '40px';
-    helpIcon.style.height = '40px';
-    helpIcon.style.display = 'flex';
-    helpIcon.style.justifyContent = 'center';
-    helpIcon.style.alignItems = 'center';
-    helpIcon.style.cursor = 'pointer';
-    helpIcon.style.boxShadow = '0px 4px 6px rgba(0, 0, 0, 0.1)';
-    document.body.appendChild(helpIcon);
-
-    helpIcon.addEventListener('click', () => {
-        alert('Basic Rules:\n1. Roll dice and try to hit winning numbers.\n2. Manage your balance to pay rent.\n3. Purchase items to boost your chances.');
-    });
-
     function setBet(amount) {
         if (amount > balance) amount = balance;
         currentBet = Math.floor(amount);
@@ -134,6 +112,7 @@ async function setupSinglePlayer() {
 
             let rollBonus = 0;
 
+            // Check for passive effects
             items.forEach(item => {
                 if (item.name === 'Loaded Dice 🎲') {
                     rollBonus += itemEffects.loadedDiceEffect(sum, currentBet);
@@ -144,17 +123,17 @@ async function setupSinglePlayer() {
             });
 
             if (sum === 7 || sum === 11) {
-                balance += currentBet * 2 + rollBonus;
+                balance += currentBet * 2 + rollBonus; // Double winnings plus bonus
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
             } else if (sum === 2 || sum === 3 || sum === 12) {
-                balance -= currentBet;
+                balance -= currentBet; // Deduct the bet
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
             } else {
-                balance += rollBonus;
+                balance += rollBonus; // Apply bonus
                 gameStatus.textContent = `Roll: ${sum}`;
             }
 
-            currentBet = 0;
+            currentBet = 0; // Reset bet after roll
             updateUIAfterRoll();
         });
     }
@@ -171,31 +150,94 @@ async function setupSinglePlayer() {
         }
     }
 
+    function showItemPopup() {
+        popup.style.display = 'block';
+        itemList.innerHTML = '';
+
+        const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
+        shuffledItems.forEach(item => {
+            const itemButton = document.createElement('button');
+            itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
+            itemButton.style.backgroundColor = getItemColor(item.rarity);
+            itemButton.onclick = () => handleItemPurchase(item);
+            itemList.appendChild(itemButton);
+        });
+
+        const skipButton = document.createElement('button');
+        skipButton.textContent = 'Save Money';
+        skipButton.onclick = () => {
+            playSound("/sounds/UI_Click1.ogg");
+            popup.style.display = 'none';
+        };
+        itemList.appendChild(skipButton);
+    }
+
+    function handleItemPurchase(item) {
+        if (balance >= item.cost) {
+            balance -= item.cost; // Deduct item cost
+            items.push(item);
+            if (item.name === 'Forged Papers 📜') {
+                items = itemEffects.forgedPapersEffect(items);
+            }
+            playSound("/sounds/UI_Buy1.ogg");
+            alert(`You purchased ${item.name}!`);
+            popup.style.display = 'none';
+            displayInventory();
+            updateUI(); // Update UI after purchase
+        } else {
+            alert('Not enough money to buy this item.');
+        }
+    }
+
+    function displayInventory() {
+        inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
+    }
+
+    function updateUIAfterRoll() {
+        updateUI();
+        turns++;
+
+        const rollsRemaining = maxTurns - turns;
+        if (rollsRemaining === 1) {
+            rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in <span style="color: orange; font-weight: bold;">1</span> roll`;
+        } else if (rollsRemaining > 0) {
+            rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
+        } else {
+            if (balance >= rent) {
+                balance -= rent;
+                rent *= progression <= 9 ? 4 : 5;
+                maxTurns++;
+                progression++;
+                turns = 0;
+                alert('You paid the rent! Get ready for the next stage.');
+                showItemPopup();
+            } else {
+                handleGameOver();
+            }
+        }
+
+        if (balance <= 0) {
+            handleGameOver();
+        }
+    }
+
     function handleGameOver() {
         const deathSound = new Audio('/sounds/Death0.ogg');
         deathSound.play().catch(err => console.error('Death sound error:', err));
 
-        document.body.style.backgroundColor = 'black';
         landlordVideo.style.display = 'block';
-        landlordVideo.style.zIndex = '1';
-        landlordVideo.style.width = '80%';
-        landlordVideo.style.height = '60%';
-        landlordVideo.style.margin = '0 auto';
-        landlordVideo.style.position = 'absolute';
-        landlordVideo.style.top = '20%';
-        landlordVideo.style.left = '10%';
+        landlordVideo.style.zIndex = '-1';
+        landlordVideo.style.width = '100%';
+        landlordVideo.style.height = '100%';
         landlordVideo.play().catch(err => console.error('Video play error:', err));
 
         gameOverContainer.style.display = 'block';
-
-        // Hide unnecessary UI elements
         rollButton.style.display = 'none';
         betButton.style.display = 'none';
         bet25Button.style.display = 'none';
         bet50Button.style.display = 'none';
         bet100Button.style.display = 'none';
-        document.getElementById('betAmount').style.display = 'none';
-        gameTitle.textContent = 'The Other Half';
+        gameTitle.style.display = 'none';
     }
 
     function updateUI() {
