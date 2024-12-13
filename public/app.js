@@ -225,19 +225,25 @@ async function setupSinglePlayer() {
         const deathSound = new Audio('/sounds/Death0.ogg');
         deathSound.play().catch(err => console.error('Death sound error:', err));
 
-        landlordVideo.style.display = 'block';
-        landlordVideo.style.zIndex = '-1';
-        landlordVideo.style.width = '100%';
-        landlordVideo.style.height = '100%';
-        landlordVideo.play().catch(err => console.error('Video play error:', err));
-
-        gameOverContainer.style.display = 'block';
+        // Hide UI elements
         rollButton.style.display = 'none';
         betButton.style.display = 'none';
         bet25Button.style.display = 'none';
         bet50Button.style.display = 'none';
         bet100Button.style.display = 'none';
+        bettingStatus.style.display = 'none';
+        rentStatus.style.display = 'none';
+        inventoryDisplay.style.display = 'none';
         gameTitle.style.display = 'none';
+
+        landlordVideo.style.display = 'block';
+        landlordVideo.loop = false;
+        landlordVideo.play().catch(err => console.error('Video play error:', err));
+
+        landlordVideo.addEventListener('ended', () => {
+            landlordVideo.style.display = 'none';
+            gameOverContainer.style.display = 'block';
+        });
     }
 
     function updateUI() {
