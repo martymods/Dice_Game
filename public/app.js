@@ -217,19 +217,8 @@ async function setupSinglePlayer() {
     }
 
     function quitGame() {
-    const landlordVideo = document.getElementById('landlordVideo');
-    const gameOverContainer = document.getElementById('gameOverContainer');
-
-    if (landlordVideo) {
-        landlordVideo.style.display = 'block'; // Show the video
-        landlordVideo.play().catch(err => console.error('Video play error:', err)); // Play the video
+        window.location.href = '/';
     }
-
-    if (gameOverContainer) {
-        gameOverContainer.style.display = 'block'; // Show the game-over popup
-    }
-}
-
 
     function getItemColor(rarity) {
         switch (rarity) {
