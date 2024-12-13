@@ -237,7 +237,17 @@ async function setupSinglePlayer() {
         gameTitle.style.display = 'none';
 
         landlordVideo.style.display = 'block';
+        landlordVideo.style.width = '80%';
+        landlordVideo.style.height = 'auto';
+        landlordVideo.style.position = 'absolute';
+        landlordVideo.style.top = '10%';
+        landlordVideo.style.left = '10%';
+        landlordVideo.style.zIndex = '10';
+        landlordVideo.style.backgroundColor = 'black';
+        landlordVideo.style.border = '2px solid white';
+        landlordVideo.style.boxShadow = '0px 0px 10px rgba(255, 255, 255, 0.7)';
         landlordVideo.loop = false;
+
         landlordVideo.play().catch(err => console.error('Video play error:', err));
 
         landlordVideo.addEventListener('ended', () => {
