@@ -221,17 +221,6 @@ async function setupSinglePlayer() {
     }
 
     function handleGameOver() {
-        landlordVideo.style.display = 'block';
-        landlordVideo.play().catch(err => console
-            handleGameOver();
-        }
-
-        if (balance <= 0) {
-            handleGameOver();
-        }
-    }
-
-    function handleGameOver() {
         const deathSound = new Audio('/sounds/Death0.ogg');
         deathSound.play().catch(err => console.error('Death sound error:', err));
 
@@ -301,3 +290,4 @@ async function setupSinglePlayer() {
         audio.play().catch(err => console.error('Audio play error:', err));
     }
 }
+
