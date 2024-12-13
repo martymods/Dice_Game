@@ -41,6 +41,10 @@ async function setupSinglePlayer() {
     const bet50Button = document.getElementById('bet50Button');
     const bet100Button = document.getElementById('bet100Button');
 
+    const ambienceSound = new Audio('/sounds/Ambience0.ogg');
+    ambienceSound.loop = true;
+    ambienceSound.play().catch(err => console.error('Ambience sound error:', err));
+
     const requiredElements = [
         rollButton, betButton, quitButton, bettingStatus, gameStatus, rentStatus,
         inventoryDisplay, popup, itemList, gameOverContainer, bet25Button, bet50Button, bet100Button
@@ -70,9 +74,18 @@ async function setupSinglePlayer() {
         betButton.addEventListener('click', handlePlaceBet);
         quitButton.addEventListener('click', quitGame);
 
-        bet25Button.addEventListener('click', () => setBet(balance * 0.25));
-        bet50Button.addEventListener('click', () => setBet(balance * 0.5));
-        bet100Button.addEventListener('click', () => setBet(balance));
+        bet25Button.addEventListener('click', () => {
+            playSound('/sounds/UI_Click1.ogg');
+            setBet(balance * 0.25);
+        });
+        bet50Button.addEventListener('click', () => {
+            playSound('/sounds/UI_Click1.ogg');
+            setBet(balance * 0.5);
+        });
+        bet100Button.addEventListener('click', () => {
+            playSound('/sounds/UI_Click1.ogg');
+            setBet(balance);
+        });
     };
 
     function setBet(amount) {
@@ -198,21 +211,54 @@ async function setupSinglePlayer() {
                 alert('You paid the rent! Get ready for the next stage.');
                 showItemPopup();
             } else {
-                landlordVideo.play();
-                gameOverContainer.style.display = 'block';
+                handleGameOver();
             }
         }
 
         if (balance <= 0) {
-            landlordVideo.play();
-            gameOverContainer.style.display = 'block';
+            handleGameOver();
         }
+    }
+
+    function handleGameOver() {
+        landlordVideo.style.display = 'block';
+        landlordVideo.play().catch(err => console
+            handleGameOver();
+        }
+
+        if (balance <= 0) {
+            handleGameOver();
+        }
+    }
+
+    function handleGameOver() {
+        const deathSound = new Audio('/sounds/Death0.ogg');
+        deathSound.play().catch(err => console.error('Death sound error:', err));
+
+        landlordVideo.style.display = 'block';
+        landlordVideo.play().catch(err => console.error('Video play error:', err));
+
+        gameOverContainer.style.display = 'block';
     }
 
     function updateUI() {
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
         if (dreamCoins > 0) {
+            rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
             rentStatus.innerHTML += ` <img src="/images/DW_Logo.png" alt="DreamCoin" style="width: 20px; height: 20px;"> ${dreamCoins}`;
+        }
+
+        updateBackgroundImage();
+    }
+
+    function updateBackgroundImage() {
+        const rollsRemaining = maxTurns - turns;
+        if (rollsRemaining === maxTurns) {
+            document.body.style.backgroundImage = "url('/images/LandLord0.png')";
+        } else if (rollsRemaining <= maxTurns / 2 && rollsRemaining > 2) {
+            document.body.style.backgroundImage = "url('/images/LandLord1.png')";
+        } else if (rollsRemaining <= 2) {
+            document.body.style.backgroundImage = "url('/images/LandLord2.png')";
         }
     }
 
