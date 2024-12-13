@@ -290,4 +290,3 @@ async function setupSinglePlayer() {
         audio.play().catch(err => console.error('Audio play error:', err));
     }
 }
-
