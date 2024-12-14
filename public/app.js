@@ -85,7 +85,12 @@ async function setupSinglePlayer() {
     let progression = 1;
     let items = [];
     let dreamCoins = 0; // New DreamCoin balance
+    let gameStartTime = Date.now();
 
+    // Increment games played
+    playerStats.gamesPlayed++;
+    saveStats();
+    
     const rollButton = document.getElementById('rollButton');
     const betButton = document.getElementById('betButton');
     const quitButton = document.getElementById('quitButton');
@@ -402,5 +407,70 @@ async function setupSinglePlayer() {
         const soundFile = Array.isArray(sounds) && randomize ? sounds[Math.floor(Math.random() * sounds.length)] : sounds;
         const audio = new Audio(soundFile);
         audio.play().catch(err => console.error('Audio play error:', err));
+    }
+function updateUIAfterRoll() {
+        updateUI();
+        turns++;
+
+        const rollsRemaining = maxTurns - turns;
+        if (rollsRemaining === 1) {
+            rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in <span style="color: orange; font-weight: bold;">1</span> roll`;
+        } else if (rollsRemaining > 0) {
+            rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
+        } else {
+            if (balance >= rent) {
+                balance -= rent;
+                rent *= progression <= 9 ? 4 : 5;
+                maxTurns++;
+                progression++;
+                turns = 0;
+
+                playerStats.totalDaysPassed += 30;
+                playerStats.monthsUnlocked = Math.max(playerStats.monthsUnlocked, progression);
+                saveStats();
+
+                showItemPopup();
+            } else {
+                handleGameOver();
+            }
+        }
+
+        if (balance <= 0) {
+            handleGameOver();
+        }
+    }
+
+    function handleGameOver() {
+        const gameEndTime = Date.now();
+        const timePlayed = Math.floor((gameEndTime - gameStartTime) / 1000);
+        playerStats.totalTimePlayed += timePlayed;
+        playerStats.evictions++;
+        playerStats.currentWinStreak = 0;
+        saveStats();
+
+        const deathSound = new Audio('/sounds/Death0.ogg');
+        deathSound.play().catch(err => console.error('Death sound error:', err));
+
+        gameOverContainer.style.display = 'block';
+    }
+
+    function handleGameWin() {
+        playerStats.gamesWon++;
+        playerStats.currentWinStreak++;
+        playerStats.longestWinStreak = Math.max(
+            playerStats.longestWinStreak,
+            playerStats.currentWinStreak
+        );
+        saveStats();
+    }
+
+    function trackMoneyWon(amount) {
+        playerStats.totalMoneyWon += amount;
+        saveStats();
+    }
+
+    function trackMoneyLost(amount) {
+        playerStats.totalMoneyLost += amount;
+        saveStats();
     }
 }
