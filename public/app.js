@@ -5,7 +5,7 @@ window.itemEffects = window.itemEffects || {}; // Remove if you are including it
 
 // Import item effects for modules only
 if (typeof window === "undefined") {
-    import itemEffects from './itemEffects.js';
+    
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -502,3 +502,7 @@ function displayStats() {
         </ul>
     `;
 }
+window.startSinglePlayer = function () {
+    window.location.href = 'game.html?singlePlayer=true';
+};
+
