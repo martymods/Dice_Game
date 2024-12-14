@@ -16,24 +16,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeInventoryButton = document.getElementById('closeInventoryButton');
     const inventoryItems = document.getElementById('inventoryItems');
 
-    // Toggle Inventory Modal
-    inventoryButton.addEventListener('click', () => {
-        populateInventory();
-        inventoryModal.classList.remove('hidden');
-    });
-
-    closeInventoryButton.addEventListener('click', () => {
-        inventoryModal.classList.add('hidden');
-    });
-
-    // Populate Inventory
-    function populateInventory() {
-        inventoryItems.innerHTML = '';
-        items.forEach(item => {
-            const listItem = document.createElement('li');
-            listItem.textContent = `${item.name} (${item.description})`;
-            inventoryItems.appendChild(listItem);
+    // Add checks to ensure these elements exist
+    if (inventoryButton && inventoryModal && closeInventoryButton) {
+        // Toggle Inventory Modal
+        inventoryButton.addEventListener('click', () => {
+            populateInventory();
+            inventoryModal.classList.remove('hidden');
         });
+
+        closeInventoryButton.addEventListener('click', () => {
+            inventoryModal.classList.add('hidden');
+        });
+
+        // Populate Inventory
+        function populateInventory() {
+            inventoryItems.innerHTML = '';
+            items.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${item.name} (${item.description})`;
+                inventoryItems.appendChild(listItem);
+            });
+        }
     }
 
     if (urlParams.has('stats')) {
@@ -41,9 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (isSinglePlayer) {
         setupSinglePlayer();
     } else {
-    console.log('No specific game mode detected. Defaulting to Main Menu.');
-}
+        console.log('No specific game mode detected. Defaulting to Main Menu.');
+    }
 });
+
 
 // Ensure playerStats and related functions are globally accessible
 if (!window.playerStats) {
@@ -672,4 +676,3 @@ function displayStats() {
 window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
 };
-
