@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (isSinglePlayer) {
         setupSinglePlayer();
     } else {
-        console.error('Invalid game mode.');
-    }
+    console.log('No specific game mode detected. Defaulting to Main Menu.');
+}
 });
 
 // Ensure playerStats and related functions are globally accessible
