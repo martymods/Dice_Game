@@ -34,10 +34,7 @@
             <div id="item-list"></div>
             <button id="saveMoneyButton">Save Money</button>
         </div>
-        <div id="inventory">
-            <h3>Inventory</h3>
-            <ul id="inventory-list"></ul>
-        </div>
+        
         <div id="leaderboardContainer" style="display: none;"></div>
         <!-- Game Over Button (hidden initially) -->
         <div id="gameOverContainer" style="display: none;">
@@ -45,7 +42,19 @@
             <button id="gameOverButton" onclick="window.location.href='/';">Return to Main Menu</button>
         </div>
     </div>
+   <!-- Inventory Button -->
+<button id="inventoryButton">Inventory</button>
+
+<!-- Inventory Modal -->
+<div id="inventoryModal" class="hidden">
+    <div id="inventoryContent">
+        <h2>Your Inventory</h2>
+        <ul id="inventoryItems"></ul>
+        <button id="closeInventoryButton">Close</button>
+    </div>
+</div>
+
+    
 
     <script src="app.js" type="module"></script>
 </body>
-</html>
