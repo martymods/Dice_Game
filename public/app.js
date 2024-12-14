@@ -3,18 +3,13 @@
 // Ensure the required items are accessible globally
 window.itemEffects = window.itemEffects || {}; // Remove if you are including it via another script
 
-// Import item effects for modules only
-if (typeof window === "undefined") {
-    
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     const inventoryButton = document.getElementById('inventoryButton');
     const inventoryModal = document.getElementById('inventoryModal');
     const closeInventoryButton = document.getElementById('closeInventoryButton');
     const inventoryItems = document.getElementById('inventoryItems');
 
-    // Safely handle inventory elements
+    // Check and safely handle inventory elements
     if (inventoryButton && inventoryModal && closeInventoryButton) {
         console.log('Inventory elements found. Adding event listeners.');
 
@@ -31,7 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Populate inventory with items
         function populateInventory() {
-            if (!window.items) return; // Ensure global items exist
+            if (!window.items) {
+                console.warn('No items to display in the inventory.');
+                return;
+            }
+
             inventoryItems.innerHTML = ''; // Clear previous items
             items.forEach(item => {
                 const listItem = document.createElement('li');
@@ -55,8 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('No specific game mode detected. Defaulting to Main Menu.');
     }
 });
-
-
 
 // Ensure playerStats and related functions are globally accessible
 if (!window.playerStats) {
@@ -685,4 +682,3 @@ function displayStats() {
 window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
 };
-
