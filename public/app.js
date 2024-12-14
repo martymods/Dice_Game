@@ -44,10 +44,9 @@ function saveStats() {
 
 // Display stats on the Main Menu
 function displayStats() {
-    loadStats();
-    const statsContainer = document.getElementById('statsContainer');
-    statsContainer.innerHTML = `
-        <h2>Player Stats</h2>
+    loadStats(); // Ensure stats are loaded from localStorage
+    const statsList = document.getElementById('stats-list');
+    statsList.innerHTML = `
         <ul>
             <li>Games Played: ${playerStats.gamesPlayed}</li>
             <li>Games Won: ${playerStats.gamesWon}</li>
@@ -61,7 +60,6 @@ function displayStats() {
             <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
             <li>Total Days Passed: ${playerStats.totalDaysPassed}</li>
         </ul>
-        <button onclick="window.location.href='index.html';">Back to Menu</button>
     `;
 }
 
