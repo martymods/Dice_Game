@@ -8,7 +8,7 @@
 </head>
 <body>
     <div id="stats-container">
-        <h2>Player Stats</h2>
+        <h1>Player Stats</h1>
         <div id="stats-list">
             <!-- Stats will be dynamically loaded here -->
         </div>
@@ -16,9 +16,7 @@
     </div>
     <script src="app.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            displayStats();
-        });
+        document.addEventListener('DOMContentLoaded', displayStats);
     </script>
 </body>
 </html>
