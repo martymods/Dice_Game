@@ -428,20 +428,34 @@ async function setupSinglePlayer() {
         }, 100);
     }
 
-    function playSound(sounds, randomize = false) {
-        const soundFile = Array.isArray(sounds) && randomize
-            ? sounds[Math.floor(Math.random() * sounds.length)]
-            : sounds;
-    
-        const audio = new Audio(soundFile);
-    
-        // Resume audio context if necessary
+   function playSound(sounds, randomize = false) {
+    let soundFile = Array.isArray(sounds) && randomize
+        ? sounds[Math.floor(Math.random() * sounds.length)]
+        : sounds;
+
+    let audio = new Audio(soundFile);
+
+    // Resume audio context if needed (Safari-specific)
+    const resumeAudioContext = () => {
         if (typeof audio.resume === "function") {
             audio.resume().catch(err => console.error("Audio context resume error:", err));
         }
-    
-        audio.play().catch(err => console.error('Audio play error:', err));
-    }
+    };
+
+    // Play the audio and handle errors
+    audio.play()
+        .then(() => {
+            console.log(`Playing sound: ${soundFile}`);
+        })
+        .catch(err => {
+            console.error('Audio play error:', err);
+            if (err.name === "NotAllowedError" || err.name === "NotSupportedError") {
+                // Retry after user interaction
+                document.body.addEventListener("click", resumeAudioContext, { once: true });
+            }
+        });
+}
+
        
     function updateUIAfterRoll() {
         updateUI();
