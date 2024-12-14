@@ -6,14 +6,75 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const isSinglePlayer = urlParams.has('singlePlayer');
 
-    if (isSinglePlayer) {
+    if (urlParams.has('stats')) {
+        displayStats();
+    } else if (isSinglePlayer) {
         setupSinglePlayer();
     } else {
         console.error('Invalid game mode.');
     }
 });
 
+const playerStats = {
+    gamesPlayed: 0,
+    gamesWon: 0,
+    evictions: 0,
+    monthsUnlocked: 0,
+    totalMoneyWon: 0,
+    totalMoneyLost: 0,
+    hustlersRecruited: 0,
+    totalTimePlayed: 0, // In seconds
+    currentWinStreak: 0,
+    longestWinStreak: 0,
+    totalDaysPassed: 0
+};
+
+// Load stats from localStorage
+function loadStats() {
+    const savedStats = localStorage.getItem('playerStats');
+    if (savedStats) {
+        Object.assign(playerStats, JSON.parse(savedStats));
+    }
+}
+
+// Save stats to localStorage
+function saveStats() {
+    localStorage.setItem('playerStats', JSON.stringify(playerStats));
+}
+
+// Display stats on the Main Menu
+function displayStats() {
+    loadStats();
+    const statsContainer = document.getElementById('statsContainer');
+    statsContainer.innerHTML = `
+        <h2>Player Stats</h2>
+        <ul>
+            <li>Games Played: ${playerStats.gamesPlayed}</li>
+            <li>Games Won: ${playerStats.gamesWon}</li>
+            <li>Times Evicted: ${playerStats.evictions}</li>
+            <li>Months Unlocked: ${playerStats.monthsUnlocked}/12</li>
+            <li>Total Money Won: $${playerStats.totalMoneyWon.toLocaleString()}</li>
+            <li>Total Money Lost: $${playerStats.totalMoneyLost.toLocaleString()}</li>
+            <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
+            <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
+            <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
+            <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
+            <li>Total Days Passed: ${playerStats.totalDaysPassed}</li>
+        </ul>
+        <button onclick="window.location.href='index.html';">Back to Menu</button>
+    `;
+}
+
+// Format time in HH:MM:SS
+function formatTime(seconds) {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs}h ${mins}m ${secs}s`;
+}
+
 async function setupSinglePlayer() {
+    loadStats();
     console.log('Single Player mode active.');
 
     let balance = 300;
