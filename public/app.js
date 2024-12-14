@@ -215,8 +215,18 @@ async function setupSinglePlayer() {
                 showWinningAmount(winnings);
     
             } else if (sum === 2 || sum === 3 || sum === 12) {
-                balance -= currentBet; // Deduct the bet
+                const loss = currentBet; // Loss amount
+                balance -= loss; // Deduct the bet
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
+    
+                // Play Loser sound
+                playSound("/sounds/Loser_0.ogg");
+    
+                // Trigger flashing screen effect
+                flashScreen('red');
+    
+                // Show losing amount
+                showLosingAmount(loss);
             } else {
                 balance += rollBonus; // Apply bonus
                 gameStatus.textContent = `Roll: ${sum}`;
@@ -226,7 +236,6 @@ async function setupSinglePlayer() {
             updateUIAfterRoll();
         });
     }
-    
 
     function handlePlaceBet() {
         playSound("/sounds/UI_Click1.ogg");
@@ -552,13 +561,15 @@ async function setupSinglePlayer() {
         const body = document.body;
         const originalBackgroundColor = getComputedStyle(body).backgroundColor;
     
-        // Flash effect
-        body.style.transition = 'background-color 0.3s ease';
+        // Apply flash effect
+        body.style.transition = 'background-color 0.2s ease';
         body.style.backgroundColor = color; // Flash color
         setTimeout(() => {
+            body.style.transition = 'background-color 0.5s ease';
             body.style.backgroundColor = originalBackgroundColor;
-        }, 300); // Duration of the flash
+        }, 200); // Short flash duration
     }
+    
     
     function showWinningAmount(amount) {
         const winAmountDiv = document.createElement('div');
@@ -586,6 +597,33 @@ async function setupSinglePlayer() {
         }, 2000);
     }
     
+    function showLosingAmount(amount) {
+        const loseAmountDiv = document.createElement('div');
+        loseAmountDiv.textContent = `-$${amount.toLocaleString()}`;
+        loseAmountDiv.style.position = 'absolute';
+        loseAmountDiv.style.top = '50%';
+        loseAmountDiv.style.left = '50%';
+        loseAmountDiv.style.transform = 'translate(-50%, -50%)';
+        loseAmountDiv.style.fontSize = '48px';
+        loseAmountDiv.style.color = 'red';
+        loseAmountDiv.style.textShadow = '0 0 10px red, 0 0 20px crimson, 0 0 30px darkred';
+        loseAmountDiv.style.fontWeight = 'bold';
+        loseAmountDiv.style.transition = 'opacity 2s ease-out';
+        loseAmountDiv.style.opacity = '1';
+        loseAmountDiv.style.zIndex = '9999';
+    
+        document.body.appendChild(loseAmountDiv);
+    
+        // Fade out and remove after 2 seconds
+        setTimeout(() => {
+            loseAmountDiv.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(loseAmountDiv);
+            }, 2000);
+        }, 2000);
+    }
+    
+    
         
 }// Stats Display Logic
 function displayStats() {
@@ -610,3 +648,4 @@ function displayStats() {
 window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
 };
+
