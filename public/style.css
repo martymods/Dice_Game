@@ -207,3 +207,87 @@ h1 {
     }
 }
 
+/* Inventory Button */
+#inventoryButton {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#inventoryButton:hover {
+    background-color: #0056b3;
+}
+
+/* Inventory Modal */
+#inventoryModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#inventoryContent {
+    background: white;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+#inventoryContent h2 {
+    margin-bottom: 20px;
+}
+
+#inventoryItems {
+    list-style: none;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    text-align: left;
+}
+
+#inventoryItems li {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+#closeInventoryButton {
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+#closeInventoryButton:hover {
+    background-color: #666;
+}
+
+/* Hide Modal by Default */
+.hidden {
+    display: none;
+}
+
+/* Hide inventory section by default */
+#inventory {
+    display: none;
+}
