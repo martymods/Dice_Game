@@ -165,4 +165,5 @@ window.itemEffects = {
     }
 };
 
-export default itemEffects;
+// No export statement is needed because we are attaching itemEffects to the global window object
+
