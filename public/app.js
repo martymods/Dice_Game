@@ -1,4 +1,5 @@
 // app.js
+
 // Ensure the required items are accessible globally
 window.itemEffects = window.itemEffects || {}; // Remove if you are including it via another script
 
@@ -119,6 +120,7 @@ async function setupSinglePlayer() {
     ambienceSound.loop = true;
     ambienceSound.play().catch(err => console.error('Ambience sound error:', err));
 
+     // Ensure necessary elements exist
     const requiredElements = [
         rollButton, betButton, quitButton, bettingStatus, gameStatus, rentStatus,
         inventoryDisplay, popup, itemList, gameOverContainer, bet25Button, bet50Button, bet100Button
