@@ -166,3 +166,41 @@ body {
 #leaderboardContainer button:hover, #gameOverContainer button:hover {
     background-color: #666;
 }
+#stats-container {
+    margin: auto;
+    text-align: center;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+}
+
+#stats-list {
+    margin: 20px 0;
+    text-align: left;
+}
+
+#stats-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+#stats-list li {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.back-button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+}
