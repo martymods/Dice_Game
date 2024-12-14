@@ -228,16 +228,22 @@ async function setupSinglePlayer() {
     function showItemPopup() {
         popup.style.display = 'block';
         itemList.innerHTML = '';
-
+    
         const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
         shuffledItems.forEach(item => {
             const itemButton = document.createElement('button');
             itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
             itemButton.style.backgroundColor = getItemColor(item.rarity);
-            itemButton.onclick = () => handleItemPurchase(item);
+            itemButton.onclick = () => {
+                handleItemPurchase(item);
+    
+                // Play random Lord voice clip
+                const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
+                playSound(voiceClips, true);
+            };
             itemList.appendChild(itemButton);
         });
-
+    
         const skipButton = document.createElement('button');
         skipButton.textContent = 'Save Money';
         skipButton.onclick = () => {
@@ -245,7 +251,7 @@ async function setupSinglePlayer() {
             popup.style.display = 'none';
         };
         itemList.appendChild(skipButton);
-    }
+    } 
 
     function handleItemPurchase(item) {
         if (balance >= item.cost) {
@@ -413,10 +419,19 @@ async function setupSinglePlayer() {
     }
 
     function playSound(sounds, randomize = false) {
-        const soundFile = Array.isArray(sounds) && randomize ? sounds[Math.floor(Math.random() * sounds.length)] : sounds;
+        const soundFile = Array.isArray(sounds) && randomize
+            ? sounds[Math.floor(Math.random() * sounds.length)]
+            : sounds;
+    
         const audio = new Audio(soundFile);
+    
+        // Resume audio context if necessary
+        if (typeof audio.resume === "function") {
+            audio.resume().catch(err => console.error("Audio context resume error:", err));
+        }
+    
         audio.play().catch(err => console.error('Audio play error:', err));
-    }
+    }    
 function updateUIAfterRoll() {
         updateUI();
         turns++;
