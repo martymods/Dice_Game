@@ -11,6 +11,30 @@ if (typeof window === "undefined") {
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const isSinglePlayer = urlParams.has('singlePlayer');
+    const inventoryButton = document.getElementById('inventoryButton');
+    const inventoryModal = document.getElementById('inventoryModal');
+    const closeInventoryButton = document.getElementById('closeInventoryButton');
+    const inventoryItems = document.getElementById('inventoryItems');
+
+    // Toggle Inventory Modal
+    inventoryButton.addEventListener('click', () => {
+        populateInventory();
+        inventoryModal.classList.remove('hidden');
+    });
+
+    closeInventoryButton.addEventListener('click', () => {
+        inventoryModal.classList.add('hidden');
+    });
+
+    // Populate Inventory
+    function populateInventory() {
+        inventoryItems.innerHTML = '';
+        items.forEach(item => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${item.name} (${item.description})`;
+            inventoryItems.appendChild(listItem);
+        });
+    }
 
     if (urlParams.has('stats')) {
         displayStats();
