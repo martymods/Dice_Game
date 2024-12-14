@@ -1,4 +1,6 @@
 // app.js
+// Ensure the required items are accessible globally
+window.itemEffects = window.itemEffects || {}; // Remove if you are including it via another script
 
 // Import item effects for modules only
 if (typeof window === "undefined") {
