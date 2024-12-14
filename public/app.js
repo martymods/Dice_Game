@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeInventoryButton = document.getElementById('closeInventoryButton');
     const inventoryItems = document.getElementById('inventoryItems');
 
-    // Check and safely handle inventory elements
-    if (inventoryButton && inventoryModal && closeInventoryButton) {
+    // Handle inventory functionality only if elements exist
+    if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems) {
         console.log('Inventory elements found. Adding event listeners.');
 
         // Open inventory modal
@@ -39,19 +39,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     } else {
-        console.warn('One or more required inventory elements are missing in the DOM.');
+        console.log('Inventory elements not found. Skipping inventory initialization.');
     }
 
-    // Proceed with game logic
+    // Determine game mode
     const urlParams = new URLSearchParams(window.location.search);
     const isSinglePlayer = urlParams.has('singlePlayer');
 
     if (urlParams.has('stats')) {
         displayStats();
     } else if (isSinglePlayer) {
-        setupSinglePlayer();
+        setupSinglePlayer(); // Initialize single-player mode
     } else {
-        console.log('No specific game mode detected. Defaulting to Main Menu.');
+        console.log('Main menu mode detected.');
     }
 });
 
@@ -114,6 +114,11 @@ if (!window.playerStats) {
     };
 }
 
+const missingElements = requiredElements.filter(el => !el);
+    if (missingElements.length > 0) {
+        console.error('One or more required elements are missing in the DOM for single-player mode.');
+        return;
+    }
 
 async function setupSinglePlayer() {
     loadStats();
@@ -125,7 +130,7 @@ async function setupSinglePlayer() {
     let rent = 400;
     let maxTurns = 6;
     let progression = 1;
-    let items = [];
+    let items = []; // Inventory for single-player
     let dreamCoins = 0; // New DreamCoin balance
     let gameStartTime = Date.now();
 
@@ -180,9 +185,20 @@ async function setupSinglePlayer() {
 
         updateUI();
 
-        rollButton.addEventListener('click', handleRollDice);
-        betButton.addEventListener('click', handlePlaceBet);
-        quitButton.addEventListener('click', quitGame);
+        rollButton.addEventListener('click', () => {
+            console.log('Roll Dice button clicked.');
+            // Add roll dice logic here
+        });
+    
+        betButton.addEventListener('click', () => {
+            console.log('Place Bet button clicked.');
+            // Add betting logic here
+        });
+    
+        quitButton.addEventListener('click', () => {
+            console.log('Quit Game button clicked.');
+            window.location.href = '/';
+        });
 
         bet25Button.addEventListener('click', () => {
             playSound('/sounds/UI_Click1.ogg');
@@ -661,16 +677,22 @@ async function setupSinglePlayer() {
         
 }// Stats Display Logic
 function displayStats() {
-    loadStats(); // Ensure stats are loaded from localStorage
     const statsList = document.getElementById('stats-list');
+    if (!statsList) {
+        console.error('Stats list element is missing.');
+        return;
+    }
+
+    // Load stats from localStorage and display them
+    const stats = JSON.parse(localStorage.getItem('playerStats')) || {};
     statsList.innerHTML = `
         <ul>
-            <li>Games Played: ${playerStats.gamesPlayed}</li>
-            <li>Games Won: ${playerStats.gamesWon}</li>
-            <li>Times Evicted: ${playerStats.evictions}</li>
-            <li>Months Unlocked: ${playerStats.monthsUnlocked}/12</li>
-            <li>Total Money Won: $${playerStats.totalMoneyWon.toLocaleString()}</li>
-            <li>Total Money Lost: $${playerStats.totalMoneyLost.toLocaleString()}</li>
+            <li>Games Played: ${stats.gamesPlayed || 0}</li>
+            <li>Games Won: ${stats.gamesWon || 0}</li>
+            <li>Times Evicted: ${stats.evictions || 0}</li>
+            <li>Months Unlocked: ${stats.monthsUnlocked || 0}/12</li>
+            <li>Total Money Won: $${(stats.totalMoneyWon || 0).toLocaleString()}</li>
+            <li>Total Money Lost: $${(stats.totalMoneyLost || 0).toLocaleString()}</li>
             <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
             <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
             <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
