@@ -209,6 +209,13 @@ async function setupSinglePlayer() {
             if (sum === 7 || sum === 11) {
                 balance += currentBet * 2 + rollBonus; // Double winnings plus bonus
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
+               
+                // Play Winner sound
+                playSound("/sounds/Winner_0.ogg");
+
+                // Trigger flashing screen effect
+                flashScreen();
+
             } else if (sum === 2 || sum === 3 || sum === 12) {
                 balance -= currentBet; // Deduct the bet
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
@@ -428,34 +435,20 @@ async function setupSinglePlayer() {
         }, 100);
     }
 
-   function playSound(sounds, randomize = false) {
-    let soundFile = Array.isArray(sounds) && randomize
-        ? sounds[Math.floor(Math.random() * sounds.length)]
-        : sounds;
-
-    let audio = new Audio(soundFile);
-
-    // Resume audio context if needed (Safari-specific)
-    const resumeAudioContext = () => {
+    function playSound(sounds, randomize = false) {
+        const soundFile = Array.isArray(sounds) && randomize
+            ? sounds[Math.floor(Math.random() * sounds.length)]
+            : sounds;
+    
+        const audio = new Audio(soundFile);
+    
+        // Resume audio context if necessary
         if (typeof audio.resume === "function") {
             audio.resume().catch(err => console.error("Audio context resume error:", err));
         }
-    };
-
-    // Play the audio and handle errors
-    audio.play()
-        .then(() => {
-            console.log(`Playing sound: ${soundFile}`);
-        })
-        .catch(err => {
-            console.error('Audio play error:', err);
-            if (err.name === "NotAllowedError" || err.name === "NotSupportedError") {
-                // Retry after user interaction
-                document.body.addEventListener("click", resumeAudioContext, { once: true });
-            }
-        });
-}
-
+    
+        audio.play().catch(err => console.error('Audio play error:', err));
+    }
        
     function updateUIAfterRoll() {
         updateUI();
@@ -552,6 +545,16 @@ async function setupSinglePlayer() {
         playerStats.totalMoneyLost += amount;
         saveStats();
     }
+    function flashScreen() {
+        const body = document.body;
+        const originalBackgroundColor = getComputedStyle(body).backgroundColor;
+    
+        // Flash effect
+        body.style.backgroundColor = 'gold'; // Flash color
+        setTimeout(() => {
+            body.style.backgroundColor = originalBackgroundColor;
+        }, 100); // Short duration for the flash
+    }    
 }// Stats Display Logic
 function displayStats() {
     loadStats(); // Ensure stats are loaded from localStorage
