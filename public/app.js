@@ -175,29 +175,23 @@ async function setupSinglePlayer() {
             alert('Place a bet first!');
             return;
         }
-
+    
         playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
-
+    
         const dice1 = Math.floor(Math.random() * 6) + 1;
         const dice2 = Math.floor(Math.random() * 6) + 1;
         const sum = dice1 + dice2;
-
+    
         animateDice(dice1, dice2, () => {
             playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"]);
-
+    
             let rollBonus = 0;
-
+    
             // Check for passive effects
             items.forEach(item => {
                 if (item.name === 'Forged Papers 📜') {
-                    const updatedInventory = itemEffects.forgedPapersEffect(items);
-                    if (updatedInventory) {
-                        items = updatedInventory;
-                    } else {
-                        console.error('Failed to apply Forged Papers effect.');
-                    }
+                    items = itemEffects.forgedPapersEffect(items);
                 }
-                
                 if (item.name === 'Loaded Dice 🎲') {
                     rollBonus += itemEffects.loadedDiceEffect(sum, currentBet);
                 }
@@ -205,17 +199,17 @@ async function setupSinglePlayer() {
                     dreamCoins += itemEffects.gangLeaderBladeEffect(items);
                 }
             });
-
+    
             if (sum === 7 || sum === 11) {
                 balance += currentBet * 2 + rollBonus; // Double winnings plus bonus
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
-               
+    
                 // Play Winner sound
                 playSound("/sounds/Winner_0.ogg");
-
+    
                 // Trigger flashing screen effect
-                flashScreen();
-
+                flashScreen('gold');
+    
             } else if (sum === 2 || sum === 3 || sum === 12) {
                 balance -= currentBet; // Deduct the bet
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
@@ -223,11 +217,12 @@ async function setupSinglePlayer() {
                 balance += rollBonus; // Apply bonus
                 gameStatus.textContent = `Roll: ${sum}`;
             }
-
+    
             currentBet = 0; // Reset bet after roll
             updateUIAfterRoll();
         });
     }
+    
 
     function handlePlaceBet() {
         playSound("/sounds/UI_Click1.ogg");
@@ -519,12 +514,16 @@ async function setupSinglePlayer() {
         playerStats.evictions++;
         playerStats.currentWinStreak = 0;
         saveStats();
-
+    
+        // Trigger red flash for game over
+        flashScreen('red');
+    
         const deathSound = new Audio('/sounds/Death0.ogg');
         deathSound.play().catch(err => console.error('Death sound error:', err));
-
+    
         gameOverContainer.style.display = 'block';
     }
+    
 
     function handleGameWin() {
         playerStats.gamesWon++;
@@ -545,16 +544,18 @@ async function setupSinglePlayer() {
         playerStats.totalMoneyLost += amount;
         saveStats();
     }
-    function flashScreen() {
+    function flashScreen(color) {
         const body = document.body;
         const originalBackgroundColor = getComputedStyle(body).backgroundColor;
     
         // Flash effect
-        body.style.backgroundColor = 'gold'; // Flash color
+        body.style.transition = 'background-color 0.3s ease';
+        body.style.backgroundColor = color; // Flash color
         setTimeout(() => {
             body.style.backgroundColor = originalBackgroundColor;
-        }, 100); // Short duration for the flash
-    }    
+        }, 300); // Duration of the flash
+    }
+        
 }// Stats Display Logic
 function displayStats() {
     loadStats(); // Ensure stats are loaded from localStorage
@@ -578,3 +579,4 @@ function displayStats() {
 window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
 };
+
