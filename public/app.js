@@ -189,6 +189,15 @@ async function setupSinglePlayer() {
 
             // Check for passive effects
             items.forEach(item => {
+                if (item.name === 'Forged Papers 📜') {
+                    const updatedInventory = itemEffects.forgedPapersEffect(items);
+                    if (updatedInventory) {
+                        items = updatedInventory;
+                    } else {
+                        console.error('Failed to apply Forged Papers effect.');
+                    }
+                }
+                
                 if (item.name === 'Loaded Dice 🎲') {
                     rollBonus += itemEffects.loadedDiceEffect(sum, currentBet);
                 }
