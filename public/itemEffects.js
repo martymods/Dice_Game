@@ -12,20 +12,22 @@ window.itemEffects = {
     // Add allies for Forged Papers
     forgedPapersEffect: (inventory) => {
         const allies = [
-            { name: 'Street Rat 🐀', count: 1 },
-            { name: 'Pigeon 🕊️', count: 1 },
-            { name: 'Tortoise 🐢', count: 1 }
+            { name: 'Street Rat 🐀', count: 1, description: 'A cunning street ally.' },
+            { name: 'Pigeon 🕊️', count: 1, description: 'A swift messenger ally.' },
+            { name: 'Tortoise 🐢', count: 1, description: 'A slow but steady ally.' }
         ];
+    
         allies.forEach(ally => {
             const existing = inventory.find(item => item.name === ally.name);
-            if (existing) {
-                existing.count += ally.count;
-            } else {
-                inventory.push(ally);
+            if (!existing) {
+                // Add the ally only if it doesn't already exist
+                inventory.push({ ...ally });
             }
         });
+    
         return inventory;
     },
+    
 
     // Add DreamCoin generation for Old Gang Leader’s Blade
     gangLeaderBladeEffect: (inventory) => {
@@ -164,6 +166,10 @@ window.itemEffects = {
         return { inventory, reward: 0 };
     }
 };
+
+// No export statement is needed because we are attaching itemEffects to the global window object
+
+
 
 // No export statement is needed because we are attaching itemEffects to the global window object
 
