@@ -1,6 +1,6 @@
 // itemEffects.js
 
-const itemEffects = {
+window.itemEffects = {
     // Passive bonus for Loaded Dice
     loadedDiceEffect: (roll, currentBet) => {
         if (roll === 2) return Math.floor(currentBet * 0.2); // 20% bonus for rolling a 2
