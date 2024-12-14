@@ -1,6 +1,9 @@
 // app.js
 
-import itemEffects from './itemEffects.js'; // Import item effects
+// Import item effects for modules only
+if (typeof window === "undefined") {
+    import itemEffects from './itemEffects.js';
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -15,60 +18,63 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-const playerStats = {
-    gamesPlayed: 0,
-    gamesWon: 0,
-    evictions: 0,
-    monthsUnlocked: 0,
-    totalMoneyWon: 0,
-    totalMoneyLost: 0,
-    hustlersRecruited: 0,
-    totalTimePlayed: 0, // In seconds
-    currentWinStreak: 0,
-    longestWinStreak: 0,
-    totalDaysPassed: 0
-};
+// Ensure `playerStats` and related functions are initialized once
+if (!window.playerStats) {
+    window.playerStats = {
+        gamesPlayed: 0,
+        gamesWon: 0,
+        evictions: 0,
+        monthsUnlocked: 0,
+        totalMoneyWon: 0,
+        totalMoneyLost: 0,
+        hustlersRecruited: 0,
+        totalTimePlayed: 0, // In seconds
+        currentWinStreak: 0,
+        longestWinStreak: 0,
+        totalDaysPassed: 0
+    };
 
-// Load stats from localStorage
-function loadStats() {
-    const savedStats = localStorage.getItem('playerStats');
-    if (savedStats) {
-        Object.assign(playerStats, JSON.parse(savedStats));
-    }
-}
+    window.loadStats = function () {
+        const savedStats = localStorage.getItem('playerStats');
+        if (savedStats) {
+            Object.assign(window.playerStats, JSON.parse(savedStats));
+        }
+    };
 
-// Save stats to localStorage
-function saveStats() {
-    localStorage.setItem('playerStats', JSON.stringify(playerStats));
-}
+    window.saveStats = function () {
+        localStorage.setItem('playerStats', JSON.stringify(window.playerStats));
+    };
 
-// Display stats on the Main Menu
-function displayStats() {
-    loadStats(); // Ensure stats are loaded from localStorage
-    const statsList = document.getElementById('stats-list');
-    statsList.innerHTML = `
-        <ul>
-            <li>Games Played: ${playerStats.gamesPlayed}</li>
-            <li>Games Won: ${playerStats.gamesWon}</li>
-            <li>Times Evicted: ${playerStats.evictions}</li>
-            <li>Months Unlocked: ${playerStats.monthsUnlocked}/12</li>
-            <li>Total Money Won: $${playerStats.totalMoneyWon.toLocaleString()}</li>
-            <li>Total Money Lost: $${playerStats.totalMoneyLost.toLocaleString()}</li>
-            <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
-            <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
-            <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
-            <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
-            <li>Total Days Passed: ${playerStats.totalDaysPassed}</li>
-        </ul>
-    `;
-}
+    window.displayStats = function () {
+        window.loadStats();
+        const statsList = document.getElementById('stats-list');
+        statsList.innerHTML = `
+            <ul>
+                <li>Games Played: ${playerStats.gamesPlayed}</li>
+                <li>Games Won: ${playerStats.gamesWon}</li>
+                <li>Times Evicted: ${playerStats.evictions}</li>
+                <li>Months Unlocked: ${playerStats.monthsUnlocked}/12</li>
+                <li>Total Money Won: $${playerStats.totalMoneyWon.toLocaleString()}</li>
+                <li>Total Money Lost: $${playerStats.totalMoneyLost.toLocaleString()}</li>
+                <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
+                <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
+                <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
+                <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
+                <li>Total Days Passed: ${playerStats.totalDaysPassed}</li>
+            </ul>
+        `;
+    };
 
-// Format time in HH:MM:SS
-function formatTime(seconds) {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hrs}h ${mins}m ${secs}s`;
+    window.formatTime = function (seconds) {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${hrs}h ${mins}m ${secs}s`;
+    };
+
+    window.startSinglePlayer = function () {
+        window.location.href = 'game.html?singlePlayer=true';
+    };
 }
 
 async function setupSinglePlayer() {
