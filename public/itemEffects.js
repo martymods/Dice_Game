@@ -1,5 +1,6 @@
 // itemEffects.js
 
+// Make all functions globally accessible
 window.itemEffects = {
     // Passive bonus for Loaded Dice
     loadedDiceEffect: (roll, currentBet) => {
