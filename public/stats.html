@@ -14,9 +14,11 @@
         </div>
         <button onclick="window.location.href='index.html'" class="back-button">Back to Menu</button>
     </div>
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', displayStats);
+        document.addEventListener('DOMContentLoaded', () => {
+            displayStats();
+        });
     </script>
 </body>
 </html>
