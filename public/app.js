@@ -201,7 +201,8 @@ async function setupSinglePlayer() {
             });
     
             if (sum === 7 || sum === 11) {
-                balance += currentBet * 2 + rollBonus; // Double winnings plus bonus
+                const winnings = currentBet * 2 + rollBonus; // Calculate winnings
+                balance += winnings; // Update balance
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
     
                 // Play Winner sound
@@ -209,6 +210,9 @@ async function setupSinglePlayer() {
     
                 // Trigger flashing screen effect
                 flashScreen('gold');
+    
+                // Show winning amount
+                showWinningAmount(winnings);
     
             } else if (sum === 2 || sum === 3 || sum === 12) {
                 balance -= currentBet; // Deduct the bet
@@ -555,6 +559,33 @@ async function setupSinglePlayer() {
             body.style.backgroundColor = originalBackgroundColor;
         }, 300); // Duration of the flash
     }
+    
+    function showWinningAmount(amount) {
+        const winAmountDiv = document.createElement('div');
+        winAmountDiv.textContent = `+$${amount.toLocaleString()}`;
+        winAmountDiv.style.position = 'absolute';
+        winAmountDiv.style.top = '50%';
+        winAmountDiv.style.left = '50%';
+        winAmountDiv.style.transform = 'translate(-50%, -50%)';
+        winAmountDiv.style.fontSize = '48px';
+        winAmountDiv.style.color = 'limegreen';
+        winAmountDiv.style.textShadow = '0 0 10px limegreen, 0 0 20px lime, 0 0 30px green';
+        winAmountDiv.style.fontWeight = 'bold';
+        winAmountDiv.style.transition = 'opacity 2s ease-out';
+        winAmountDiv.style.opacity = '1';
+        winAmountDiv.style.zIndex = '9999';
+    
+        document.body.appendChild(winAmountDiv);
+    
+        // Fade out and remove after 2 seconds
+        setTimeout(() => {
+            winAmountDiv.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(winAmountDiv);
+            }, 2000);
+        }, 2000);
+    }
+    
         
 }// Stats Display Logic
 function displayStats() {
