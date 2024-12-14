@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Ensure `playerStats` and related functions are initialized once
+// Ensure playerStats and related functions are globally accessible
 if (!window.playerStats) {
     window.playerStats = {
         gamesPlayed: 0,
@@ -78,6 +78,7 @@ if (!window.playerStats) {
         window.location.href = 'game.html?singlePlayer=true';
     };
 }
+
 
 async function setupSinglePlayer() {
     loadStats();
