@@ -14,22 +14,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeInventoryButton = document.getElementById('closeInventoryButton');
     const inventoryItems = document.getElementById('inventoryItems');
 
-    // Only add event listeners if required elements exist
+    // Safely handle inventory elements
     if (inventoryButton && inventoryModal && closeInventoryButton) {
+        console.log('Inventory elements found. Adding event listeners.');
+
         // Open inventory modal
         inventoryButton.addEventListener('click', () => {
-            populateInventory(); // Populate inventory items
-            inventoryModal.classList.remove('hidden'); // Show modal
+            populateInventory();
+            inventoryModal.classList.remove('hidden');
         });
 
         // Close inventory modal
         closeInventoryButton.addEventListener('click', () => {
-            inventoryModal.classList.add('hidden'); // Hide modal
+            inventoryModal.classList.add('hidden');
         });
 
         // Populate inventory with items
         function populateInventory() {
-            if (!window.items) return; // Ensure items exist globally
+            if (!window.items) return; // Ensure global items exist
             inventoryItems.innerHTML = ''; // Clear previous items
             items.forEach(item => {
                 const listItem = document.createElement('li');
@@ -38,10 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     } else {
-        console.error('One or more required inventory elements are missing in the DOM.');
+        console.warn('One or more required inventory elements are missing in the DOM.');
     }
 
-    // Proceed with other game initialization
+    // Proceed with game logic
     const urlParams = new URLSearchParams(window.location.search);
     const isSinglePlayer = urlParams.has('singlePlayer');
 
@@ -53,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('No specific game mode detected. Defaulting to Main Menu.');
     }
 });
+
 
 
 // Ensure playerStats and related functions are globally accessible
@@ -682,3 +685,4 @@ function displayStats() {
 window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
 };
+
