@@ -432,38 +432,69 @@ async function setupSinglePlayer() {
         }
     
         audio.play().catch(err => console.error('Audio play error:', err));
-    }    
-function updateUIAfterRoll() {
+    }
+       
+    function updateUIAfterRoll() {
         updateUI();
         turns++;
-
+    
+        const rentPaidStatements = [
+            "Well done! You paid the rent. But success has its price—the rent just went up!",
+            "Congratulations on keeping up! I knew you could handle more, so I raised the rent!",
+            "Impressive! You’ve survived another month. Let’s see if you can handle next month’s new rent.",
+            "Good job paying the rent! But comfort is costly—your rent just increased.",
+            "You did it! The rent’s paid. Now let’s see how you handle my latest adjustment.",
+            "You’re doing so well! I couldn’t resist rewarding you with higher rent.",
+            "Bravo! You’ve proven your worth… and now you’ll prove you can pay even more.",
+            "Rent paid! Your reward? A bigger challenge. I’ve raised the stakes—and the rent!",
+            "Fantastic work! To celebrate, I’ve made the rent a little more interesting for next time.",
+            "You made it through! But the better you perform, the more I expect—rent’s going up!"
+        ];
+    
+        const voiceClips = [
+            "/sounds/Lord_voice_0.ogg",
+            "/sounds/Lord_voice_1.ogg",
+            "/sounds/Lord_voice_2.ogg"
+        ];
+    
         const rollsRemaining = maxTurns - turns;
-        if (rollsRemaining === 1) {
-            rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in <span style="color: orange; font-weight: bold;">1</span> roll`;
-        } else if (rollsRemaining > 0) {
+    
+        if (rollsRemaining > 0) {
             rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
         } else {
             if (balance >= rent) {
+                // Deduct rent and adjust progression
                 balance -= rent;
                 rent *= progression <= 9 ? 4 : 5;
                 maxTurns++;
                 progression++;
                 turns = 0;
-
+    
+                // Update player stats
                 playerStats.totalDaysPassed += 30;
                 playerStats.monthsUnlocked = Math.max(playerStats.monthsUnlocked, progression);
                 saveStats();
-
+    
+                // Play random Lord voice clip
+                const randomClip = voiceClips[Math.floor(Math.random() * voiceClips.length)];
+                playSound(randomClip);
+    
+                // Display congratulatory popup
+                const randomStatement = rentPaidStatements[Math.floor(Math.random() * rentPaidStatements.length)];
+                alert(randomStatement);
+    
+                // Show item popup
                 showItemPopup();
             } else {
                 handleGameOver();
             }
         }
-
+    
         if (balance <= 0) {
             handleGameOver();
         }
     }
+    
 
     function handleGameOver() {
         const gameEndTime = Date.now();
