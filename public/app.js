@@ -28,20 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeInventoryButton = document.getElementById('closeInventoryButton');
     const inventoryItems = document.getElementById('inventoryItems');
 
-    // Inventory functionality
-    if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems) {
-        console.log('Inventory elements found. Adding event listeners.');
-
-        inventoryButton.addEventListener('click', () => {
-            populateInventory();
-            inventoryModal.classList.remove('hidden');
-        });
-
-        closeInventoryButton.addEventListener('click', () => {
-            inventoryModal.classList.add('hidden');
-        });
-
-        // Inventory functionality
+// Inventory functionality
 if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems) {
     console.log('Inventory elements found. Adding event listeners.');
 
@@ -71,20 +58,18 @@ if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems)
     console.warn('One or more required inventory elements are missing in the DOM.');
 }
 
+// Determine game mode
+const urlParams = new URLSearchParams(window.location.search);
+const isSinglePlayer = urlParams.has('singlePlayer');
 
-    // Determine game mode
-    const urlParams = new URLSearchParams(window.location.search);
-    const isSinglePlayer = urlParams.has('singlePlayer');
-
-    if (urlParams.has('stats')) {
-        displayStats();
-    } else if (isSinglePlayer) {
-        setupSinglePlayer();
-    } else {
-        console.log('Main menu mode detected.');
-    }
-});
- // Closing `DOMContentLoaded` listener
+if (urlParams.has('stats')) {
+    displayStats();
+} else if (isSinglePlayer) {
+    setupSinglePlayer();
+} else {
+    console.log('Main menu mode detected.');
+}
+}); // This closes the DOMContentLoaded event listener properly
 
 // Ensure playerStats and related functions are globally accessible
 if (!window.playerStats) {
