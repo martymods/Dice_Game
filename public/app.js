@@ -1,6 +1,10 @@
 // app.js
 
 // Ensure the required items are accessible globally
+window.startSinglePlayer = function () {
+    window.location.href = 'game.html?singlePlayer=true';
+};
+
 window.itemEffects = window.itemEffects || {}; // Remove if you are including it via another script
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,7 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const inventoryItems = document.getElementById('inventoryItems');
 
     // Handle inventory functionality only if elements exist
-    if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems) {
+    if (!inventoryButton || !inventoryModal || !closeInventoryButton) {
+        console.error('One or more required inventory elements are missing in the DOM.');
+        return; // This is now within a function scope.
+    }
+
         console.log('Inventory elements found. Adding event listeners.');
 
         // Open inventory modal
@@ -112,13 +120,15 @@ if (!window.playerStats) {
     window.startSinglePlayer = function () {
         window.location.href = 'game.html?singlePlayer=true';
     };
+    
 }
 
 const missingElements = requiredElements.filter(el => !el);
-    if (missingElements.length > 0) {
-        console.error('One or more required elements are missing in the DOM for single-player mode.');
-        return;
-    }
+   if (!inventoryButton || !inventoryModal || !closeInventoryButton) {
+    console.error('One or more required inventory elements are missing in the DOM.');
+} else {
+    // Proceed with setting up inventory event listeners.
+}
 
 async function setupSinglePlayer() {
     loadStats();
