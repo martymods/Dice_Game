@@ -186,57 +186,57 @@ async function setupSinglePlayer() {
         'bet100Button'
     ];
 
-    const missingElements = requiredElements.filter(id => !document.getElementById(id));
+        const missingElements = requiredElements.filter(id => !document.getElementById(id));
     if (missingElements.length > 0) {
         console.error(`One or more required elements are missing in the DOM: ${missingElements.join(', ')}`);
         return;
     }
 
     updateUI();
-};
 
-        rollButton.addEventListener('click', () => {
-            console.log('Roll Dice button clicked.');
-            // Add roll dice logic here
-        });
-    
-        betButton.addEventListener('click', () => {
-            console.log('Place Bet button clicked.');
-            // Add betting logic here
-        });
-    
-        quitButton.addEventListener('click', () => {
-            console.log('Quit Game button clicked.');
-            window.location.href = '/';
-        });
+    rollButton.addEventListener('click', () => {
+        console.log('Roll Dice button clicked.');
+        // Add roll dice logic here
+    });
 
-        bet25Button.addEventListener('click', () => {
-            playSound('/sounds/UI_Click1.ogg');
-            setBet(balance * 0.25);
-        });
-        bet50Button.addEventListener('click', () => {
-            playSound('/sounds/UI_Click1.ogg');
-            setBet(balance * 0.5);
-        });
-        bet100Button.addEventListener('click', () => {
-            playSound('/sounds/UI_Click1.ogg');
-            setBet(balance);
-        });
+    betButton.addEventListener('click', () => {
+        console.log('Place Bet button clicked.');
+        // Add betting logic here
+    });
 
-    }; // Closing brace for script.onload
+    quitButton.addEventListener('click', () => {
+        console.log('Quit Game button clicked.');
+        window.location.href = '/';
+    });
 
-    function setBet(amount) {
-        if (amount > balance) amount = balance;
-        currentBet = Math.floor(amount);
-        updateUI();
+    bet25Button.addEventListener('click', () => {
+        playSound('/sounds/UI_Click1.ogg');
+        setBet(balance * 0.25);
+    });
+
+    bet50Button.addEventListener('click', () => {
+        playSound('/sounds/UI_Click1.ogg');
+        setBet(balance * 0.5);
+    });
+
+    bet100Button.addEventListener('click', () => {
+        playSound('/sounds/UI_Click1.ogg');
+        setBet(balance);
+    });
+} // Closing brace for script.onload
+
+function setBet(amount) {
+    if (amount > balance) amount = balance;
+    currentBet = Math.floor(amount);
+    updateUI();
+}
+
+function handleRollDice() {
+    if (currentBet <= 0) {
+        alert('Place a bet first!');
+        return;
     }
 
-    function handleRollDice() {
-        if (currentBet <= 0) {
-            alert('Place a bet first!');
-            return;
-        }
-    
         playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
     
         const dice1 = Math.floor(Math.random() * 6) + 1;
