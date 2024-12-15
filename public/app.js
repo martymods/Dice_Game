@@ -210,6 +210,18 @@ if (!window.playerStats) {
 async function setupSinglePlayer() {
     console.log('Single Player mode active.');
 
+    const rollButton = document.getElementById('rollButton');
+    const betButton = document.getElementById('betButton');
+
+    if (rollButton && betButton) {
+        rollButton.addEventListener('click', handleRollDice);
+        betButton.addEventListener('click', handlePlaceBet);
+        console.log('Single Player setup completed.');
+    } else {
+        console.error('Required game buttons are missing.');
+    }
+}
+
 
 // Ensure necessary elements exist
 const requiredElementIds = [
