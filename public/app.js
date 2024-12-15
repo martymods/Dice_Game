@@ -357,51 +357,44 @@ function handleRollDice() {
                 const winnings = currentBet * 2 + rollBonus; // Calculate winnings
                 balance += winnings; // Update balance
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
-    
-                // Play Winner sound
                 playSound("/sounds/Winner_0.ogg");
-    
-                // Trigger flashing screen effect
                 flashScreen('gold');
-    
-                // Show winning amount
                 showWinningAmount(winnings);
-    
             } else if (sum === 2 || sum === 3 || sum === 12) {
-                const loss = currentBet; // Loss amount
-                balance -= loss; // Deduct the bet
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
-    
-                // Play Loser sound
                 playSound("/sounds/Loser_0.ogg");
-    
-                // Trigger flashing screen effect
                 flashScreen('red');
-    
-                // Show losing amount
-                showLosingAmount(loss);
+                showLosingAmount(currentBet);
             } else {
-                balance += rollBonus; // Apply bonus
+                balance += rollBonus; // Apply bonus if applicable
                 gameStatus.textContent = `Roll: ${sum}`;
             }
     
-            currentBet = 0; // Reset bet after roll
-            updateUIAfterRoll();
+            currentBet = 0; // Reset the bet after roll
+            updateUI(); // Update UI with the new balance
+            console.log(`Dice rolled: ${dice1}, ${dice2} (Sum: ${sum})`);
         });
     }
 
     function handlePlaceBet() {
         playSound("/sounds/UI_Click1.ogg");
-
+    
         const betAmount = parseInt(document.getElementById('betAmount').value);
-        if (isNaN(betAmount) || betAmount <= 0 || betAmount > balance) {
+        if (isNaN(betAmount) || betAmount <= 0) {
             alert('Invalid bet amount.');
-        } else {
-            currentBet = betAmount;
-            updateUI();
+            return;
         }
+        if (betAmount > balance) {
+            alert('Bet amount exceeds balance.');
+            return;
+        }
+    
+        currentBet = betAmount;
+        balance -= currentBet; // Deduct the bet from the balance
+        updateUI(); // Update the UI to reflect the new balance and bet
+        console.log(`Bet placed: $${currentBet}`);
     }
-
+    
     function showItemPopup() {
         popup.style.display = 'block';
         itemList.innerHTML = '';
