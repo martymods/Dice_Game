@@ -222,16 +222,13 @@ async function setupSinglePlayer() {
             playSound('/sounds/UI_Click1.ogg');
             setBet(balance);
         });
-
-        // Missing closing brace for script.onload
-    };
+    }; // Closing brace for script.onload
 
     function setBet(amount) {
         if (amount > balance) amount = balance;
         currentBet = Math.floor(amount);
         updateUI();
     }
-
 
     function handleRollDice() {
         if (currentBet <= 0) {
