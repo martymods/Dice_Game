@@ -157,24 +157,32 @@ async function setupSinglePlayer() {
         return;
     }
 
-    // Example initialization for existing elements
-    const rollButton = document.getElementById('rollButton');
-    const betButton = document.getElementById('betButton');
-    const quitButton = document.getElementById('quitButton');
-    const bettingStatus = document.getElementById('betting-status');
+// Example initialization for existing elements
+const rollButton = document.getElementById('rollButton');
+const betButton = document.getElementById('betButton');
+const quitButton = document.getElementById('quitButton');
+const bettingStatus = document.getElementById('betting-status');
+const rentStatus = document.getElementById('rent-status');
+const bet25Button = document.getElementById('bet25Button');
+const bet50Button = document.getElementById('bet50Button');
+const bet100Button = document.getElementById('bet100Button');
 
+// Ensure all required elements exist before adding event listeners
+if (rollButton && betButton && quitButton && bettingStatus && rentStatus && bet25Button && bet50Button && bet100Button) {
     rollButton.addEventListener('click', () => console.log('Roll button clicked'));
     betButton.addEventListener('click', () => console.log('Bet button clicked'));
     quitButton.addEventListener('click', () => console.log('Quit button clicked'));
 
     console.log('Single Player setup completed.');
+} else {
+    console.error('One or more required elements are missing in the DOM.');
 }
 
-    const script = document.createElement('script');
-    script.src = '/items.js';
-    document.head.appendChild(script);
+const script = document.createElement('script');
+script.src = '/items.js';
+document.head.appendChild(script);
 
-    script.onload = () => {
+script.onload = () => {
     const requiredElements = [
         'bettingStatus',
         'rentStatus',
@@ -186,11 +194,14 @@ async function setupSinglePlayer() {
         'bet100Button'
     ];
 
-        const missingElements = requiredElements.filter(id => !document.getElementById(id));
+    const missingElements = requiredElements.filter(id => !document.getElementById(id));
     if (missingElements.length > 0) {
         console.error(`One or more required elements are missing in the DOM: ${missingElements.join(', ')}`);
         return;
     }
+
+    console.log('All required elements are present.');
+};
 
     updateUI();
 
