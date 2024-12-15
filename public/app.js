@@ -673,7 +673,7 @@ async function setupSinglePlayer() {
     
     
         
-}// Stats Display Logic
+// Stats Display Logic
 function displayStats() {
     const statsList = document.getElementById('stats-list');
     if (!statsList) {
@@ -691,14 +691,17 @@ function displayStats() {
             <li>Months Unlocked: ${stats.monthsUnlocked || 0}/12</li>
             <li>Total Money Won: $${(stats.totalMoneyWon || 0).toLocaleString()}</li>
             <li>Total Money Lost: $${(stats.totalMoneyLost || 0).toLocaleString()}</li>
-            <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
-            <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
-            <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
-            <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
-            <li>Total Days Passed: ${playerStats.totalDaysPassed}</li>
+            <li>Hustlers Recruited: ${stats.hustlersRecruited || 0}</li>
+            <li>Total Time Played: ${formatTime(stats.totalTimePlayed || 0)}</li>
+            <li>Current Winning Streak: ${stats.currentWinStreak || 0}</li>
+            <li>Longest Winning Streak: ${stats.longestWinStreak || 0}</li>
+            <li>Total Days Passed: ${stats.totalDaysPassed || 0}</li>
         </ul>
     `;
 }
+
+// Define the startSinglePlayer function globally
 window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
 };
+
