@@ -1,19 +1,81 @@
 // app.js
 
-    // Declare global variables for game state
-    let balance = 300; // Starting balance
-    let currentBet = 0;
-    let turns = 0;
-    let rent = 400;
-    let maxTurns = 6;
-    let progression = 1;
-    let items = []; // Inventory for single-player
-    let dreamCoins = 0; // New DreamCoin balance
-    let gameStartTime = Date.now();
+// Declare global variables for game state
+let balance = 300; // Starting balance
+let currentBet = 0;
+let turns = 0;
+let rent = 400;
+let maxTurns = 6;
+let progression = 1;
+let items = []; // Inventory for single-player
+let dreamCoins = 0; // New DreamCoin balance
+let gameStartTime = Date.now();
 
-    playerStats.gamesPlayed++;
-    saveStats();
+// Ensure playerStats and related functions are globally accessible
+if (!window.playerStats) {
+    window.playerStats = {
+        gamesPlayed: 0,
+        gamesWon: 0,
+        evictions: 0,
+        monthsUnlocked: 0,
+        totalMoneyWon: 0,
+        totalMoneyLost: 0,
+        hustlersRecruited: 0,
+        totalTimePlayed: 0,
+        currentWinStreak: 0,
+        longestWinStreak: 0,
+        totalDaysPassed: 0
+    };
 
+    window.loadStats = function () {
+        const savedStats = localStorage.getItem('playerStats');
+        if (savedStats) {
+            Object.assign(window.playerStats, JSON.parse(savedStats));
+        }
+    };
+
+    window.saveStats = function () {
+        localStorage.setItem('playerStats', JSON.stringify(window.playerStats));
+    };
+
+    window.displayStats = function () {
+        window.loadStats();
+        const statsList = document.getElementById('stats-list');
+        if (statsList) {
+            statsList.innerHTML = `
+                <ul>
+                    <li>Games Played: ${playerStats.gamesPlayed}</li>
+                    <li>Games Won: ${playerStats.gamesWon}</li>
+                    <li>Times Evicted: ${playerStats.evictions}</li>
+                    <li>Months Unlocked: ${playerStats.monthsUnlocked}/12</li>
+                    <li>Total Money Won: $${playerStats.totalMoneyWon.toLocaleString()}</li>
+                    <li>Total Money Lost: $${playerStats.totalMoneyLost.toLocaleString()}</li>
+                    <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
+                    <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
+                    <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
+                    <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
+                    <li>Total Days Passed: ${playerStats.totalDaysPassed}</li>
+                </ul>
+            `;
+        } else {
+            console.error('Stats list element is missing.');
+        }
+    };
+
+    window.formatTime = function (seconds) {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${hrs}h ${mins}m ${secs}s`;
+    };
+
+    // Load stats from localStorage
+    loadStats();
+}
+
+// Increment gamesPlayed and save stats
+playerStats.gamesPlayed++;
+saveStats();
 
 // Ensure the required items are accessible globally
 window.itemEffects = window.itemEffects || {};
