@@ -29,33 +29,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Populate inventory with items
-        function populateInventory() {
-            if (!window.items || window.items.length === 0) {
-                console.warn('No items to display in the inventory.');
-                return;
-            }
-            inventoryItems.innerHTML = '';
-            window.items.forEach(item => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `${item.name} (${item.description})`;
-                inventoryItems.appendChild(listItem);
-            });
-        }
-    } else {
-        console.warn('One or more required inventory elements are missing in the DOM.');
+function populateInventory() {
+    if (!window.items || window.items.length === 0) {
+        console.warn('No items to display in the inventory.');
+        return;
     }
-    
-    // Determine game mode
-    const urlParams = new URLSearchParams(window.location.search);
-    const isSinglePlayer = urlParams.has('singlePlayer');
+    inventoryItems.innerHTML = ''; // Clear existing items
+    window.items.forEach(item => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${item.name} (${item.description})`; // Fixed backticks
+        inventoryItems.appendChild(listItem);
+    });
+}
 
-    if (urlParams.has('stats')) {
-        displayStats();
-    } else if (isSinglePlayer) {
-        setupSinglePlayer();
-    } else {
-        console.log('Main menu mode detected.');
-    }
+} else {
+    console.warn('One or more required inventory elements are missing in the DOM.');
+}
+
+// Determine game mode
+const urlParams = new URLSearchParams(window.location.search);
+const isSinglePlayer = urlParams.has('singlePlayer');
+
+if (urlParams.has('stats')) {
+    displayStats();
+} else if (isSinglePlayer) {
+    setupSinglePlayer();
+} else {
+    console.log('Main menu mode detected.');
+}
 });
 
 // Ensure playerStats and related functions are globally accessible
@@ -520,28 +521,29 @@ function handleRollDice() {
     }
 
     function playSound(sounds, randomize = false) {
-        const soundFile = Array.isArray(sounds) && randomize
-            ? sounds[Math.floor(Math.random() * sounds.length)]
-            : sounds;
-    
-        const audio = new Audio(soundFile);
-    
-        // Resume audio context if necessary
-        if (typeof audio.resume === "function") {
-            audio.resume().catch(err => console.error("Audio context resume error:", err));
-        }
-    
-        audio.play().catch(err => console.error('Audio play error:', err));
+    const soundFile = Array.isArray(sounds) && randomize
+        ? sounds[Math.floor(Math.random() * sounds.length)]
+        : sounds;
+
+    const audio = new Audio(soundFile);
+
+    // Resume audio context if necessary
+    if (typeof audio.resume === "function") {
+        audio.resume().catch(err => console.error("Audio context resume error:", err));
     }
-       
+
+    audio.play().catch(err => console.error('Audio play error:', err));
+}
+
+if (!window.updateUIAfterRoll) { // Ensure no duplicate declarations
     function updateUIAfterRoll() {
         updateUI();
         turns++;
-    
+
         const rentPaidStatements = [
             "Well done! You paid the rent. But success has its price—the rent just went up!",
             "Congratulations on keeping up! I knew you could handle more, so I raised the rent!",
-            "Impressive! You’ve survived another month. Let’s see if you can handle next month’s new rent.",
+            "Impressive! You’ve survived another month. Let’s see if you can handle next month’s new rent!",
             "Good job paying the rent! But comfort is costly—your rent just increased.",
             "You did it! The rent’s paid. Now let’s see how you handle my latest adjustment.",
             "You’re doing so well! I couldn’t resist rewarding you with higher rent.",
@@ -550,7 +552,7 @@ function handleRollDice() {
             "Fantastic work! To celebrate, I’ve made the rent a little more interesting for next time.",
             "You made it through! But the better you perform, the more I expect—rent’s going up!"
         ];
-    
+
         const voiceClips = [
             "/sounds/Lord_voice_0.ogg",
             "/sounds/Lord_voice_1.ogg",
