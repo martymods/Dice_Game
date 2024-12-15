@@ -29,35 +29,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Populate inventory with items
-function populateInventory() {
-    if (!window.items || window.items.length === 0) {
-        console.warn('No items to display in the inventory.');
-        return;
+        function populateInventory() {
+            if (!window.items || window.items.length === 0) {
+                console.warn('No items to display in the inventory.');
+                return;
+            }
+            inventoryItems.innerHTML = ''; // Clear existing items
+            window.items.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${item.name} (${item.description})`; // Fixed backticks
+                inventoryItems.appendChild(listItem);
+            });
+        }
+    } else {
+        console.warn('One or more required inventory elements are missing in the DOM.');
     }
-    inventoryItems.innerHTML = ''; // Clear existing items
-    window.items.forEach(item => {
-        const listItem = document.createElement('li');
-        listItem.textContent = `${item.name} (${item.description})`; // Fixed backticks
-        inventoryItems.appendChild(listItem);
-    });
-}
 
-} else {
-    console.warn('One or more required inventory elements are missing in the DOM.');
-}
+    // Determine game mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSinglePlayer = urlParams.has('singlePlayer');
 
-// Determine game mode
-const urlParams = new URLSearchParams(window.location.search);
-const isSinglePlayer = urlParams.has('singlePlayer');
-
-if (urlParams.has('stats')) {
-    displayStats();
-} else if (isSinglePlayer) {
-    setupSinglePlayer();
-} else {
-    console.log('Main menu mode detected.');
-}
-});
+    if (urlParams.has('stats')) {
+        displayStats();
+    } else if (isSinglePlayer) {
+        setupSinglePlayer();
+    } else {
+        console.log('Main menu mode detected.');
+    }
+}); // Closing `DOMContentLoaded` listener
 
 // Ensure playerStats and related functions are globally accessible
 if (!window.playerStats) {
@@ -730,10 +729,3 @@ function displayStats() {
     `;
 }
 
-// Define the startSinglePlayer function globally
-window.startSinglePlayer = function () {
-    window.location.href = 'game.html?singlePlayer=true';
-};
-
-// Ensure script logic ends properly
-console.log('Script loaded successfully.');
