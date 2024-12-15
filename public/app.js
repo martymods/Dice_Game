@@ -1,5 +1,20 @@
 // app.js
 
+    // Declare global variables for game state
+    let balance = 300; // Starting balance
+    let currentBet = 0;
+    let turns = 0;
+    let rent = 400;
+    let maxTurns = 6;
+    let progression = 1;
+    let items = []; // Inventory for single-player
+    let dreamCoins = 0; // New DreamCoin balance
+    let gameStartTime = Date.now();
+
+    playerStats.gamesPlayed++;
+    saveStats();
+
+
 // Ensure the required items are accessible globally
 window.itemEffects = window.itemEffects || {};
 
@@ -34,14 +49,13 @@ if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems)
 
     inventoryButton.addEventListener('click', () => {
         populateInventory();
-        inventoryModal.style.display = 'block'; // Ensure modal is shown
+        inventoryModal.style.display = 'block'; // Show modal
     });
 
     closeInventoryButton.addEventListener('click', () => {
-        inventoryModal.style.display = 'none'; // Ensure modal is hidden
+        inventoryModal.style.display = 'none'; // Hide modal
     });
 
-    // Populate inventory with items
     function populateInventory() {
         if (!window.items || window.items.length === 0) {
             console.warn('No items to display in the inventory.');
@@ -134,18 +148,6 @@ if (!window.playerStats) {
 async function setupSinglePlayer() {
     console.log('Single Player mode active.');
 
-    let balance = 300;
-    let currentBet = 0;
-    let turns = 0;
-    let rent = 400;
-    let maxTurns = 6;
-    let progression = 1;
-    let items = []; // Inventory for single-player
-    let dreamCoins = 0; // New DreamCoin balance
-    let gameStartTime = Date.now();
-
-    playerStats.gamesPlayed++;
-    saveStats();
 
 // Ensure necessary elements exist
 const requiredElementIds = [
@@ -497,7 +499,6 @@ function handleRollDice() {
         updateBackgroundImage();
     }
     
-
     function updateBackgroundImage() {
         const rollsRemaining = maxTurns - turns;
         if (rollsRemaining === maxTurns) {
