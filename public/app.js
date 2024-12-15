@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inventoryItems = document.getElementById('inventoryItems');
 
     // Inventory functionality
-    if (inventoryButton && inventoryModal && closeInventoryButton) {
+    if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems) {
         console.log('Inventory elements found. Adding event listeners.');
 
         inventoryButton.addEventListener('click', () => {
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Populate inventory with items
         function populateInventory() {
-            if (!window.items) {
+            if (!window.items || window.items.length === 0) {
                 console.warn('No items to display in the inventory.');
                 return;
             }
@@ -134,29 +134,41 @@ async function setupSinglePlayer() {
     playerStats.gamesPlayed++;
     saveStats();
 
+    // Ensure necessary elements exist
+    const requiredElementIds = [
+        'rollButton',
+        'betButton',
+        'quitButton',
+        'betting-status',
+        'gameStatus',
+        'rent-status',
+        'inventory-list',
+        'buy-item-container',
+        'item-list',
+        'gameOverContainer',
+        'bet25Button',
+        'bet50Button',
+        'bet100Button'
+    ];
 
-    const missingElements = requiredElements.filter(id => !document.getElementById(id));
+    const missingElements = requiredElementIds.filter(id => !document.getElementById(id));
     if (missingElements.length > 0) {
         console.error(`One or more required elements are missing in the DOM: ${missingElements.join(', ')}`);
         return;
     }
 
-    const ambienceSound = new Audio('/sounds/Ambience0.ogg');
-    ambienceSound.loop = true;
-    ambienceSound.play().catch(err => console.error('Ambience sound error:', err));
+    // Example initialization for existing elements
+    const rollButton = document.getElementById('rollButton');
+    const betButton = document.getElementById('betButton');
+    const quitButton = document.getElementById('quitButton');
+    const bettingStatus = document.getElementById('betting-status');
 
-     // Ensure necessary elements exist
-    const requiredElements = [
-        rollButton, betButton, quitButton, bettingStatus, gameStatus, rentStatus,
-        inventoryDisplay, popup, itemList, gameOverContainer, bet25Button, bet50Button, bet100Button
-    ];
+    rollButton.addEventListener('click', () => console.log('Roll button clicked'));
+    betButton.addEventListener('click', () => console.log('Bet button clicked'));
+    quitButton.addEventListener('click', () => console.log('Quit button clicked'));
 
-    for (const element of requiredElements) {
-        if (!element) {
-            console.error('One or more required elements are missing in the DOM.');
-            return;
-        }
-    }
+    console.log('Single Player setup completed.');
+}
 
     const script = document.createElement('script');
     script.src = '/items.js';
