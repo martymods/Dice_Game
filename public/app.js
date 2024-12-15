@@ -1,51 +1,50 @@
 // app.js
 
 // Ensure the required items are accessible globally
+window.itemEffects = window.itemEffects || {};
+
+// Define the startSinglePlayer function globally
 window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
 };
 
-window.itemEffects = window.itemEffects || {}; // Remove if you are including it via another script
-
 document.addEventListener('DOMContentLoaded', () => {
+    // Get DOM elements
     const inventoryButton = document.getElementById('inventoryButton');
     const inventoryModal = document.getElementById('inventoryModal');
     const closeInventoryButton = document.getElementById('closeInventoryButton');
     const inventoryItems = document.getElementById('inventoryItems');
 
-    // Handle inventory functionality only if elements exist
-    if (!inventoryButton || !inventoryModal || !closeInventoryButton || !inventoryItems) {
-        console.error('One or more required inventory elements are missing in the DOM.');
-    } else {
+    // Inventory functionality
+    if (inventoryButton && inventoryModal && closeInventoryButton) {
         console.log('Inventory elements found. Adding event listeners.');
 
-        // Open inventory modal
         inventoryButton.addEventListener('click', () => {
             populateInventory();
             inventoryModal.classList.remove('hidden');
         });
 
-        // Close inventory modal
         closeInventoryButton.addEventListener('click', () => {
             inventoryModal.classList.add('hidden');
         });
 
         // Populate inventory with items
         function populateInventory() {
-            if (!window.items || window.items.length === 0) {
+            if (!window.items) {
                 console.warn('No items to display in the inventory.');
                 return;
             }
-
-            inventoryItems.innerHTML = ''; // Clear previous items
+            inventoryItems.innerHTML = '';
             window.items.forEach(item => {
                 const listItem = document.createElement('li');
                 listItem.textContent = `${item.name} (${item.description})`;
                 inventoryItems.appendChild(listItem);
             });
         }
+    } else {
+        console.warn('One or more required inventory elements are missing in the DOM.');
     }
-
+    
     // Determine game mode
     const urlParams = new URLSearchParams(window.location.search);
     const isSinglePlayer = urlParams.has('singlePlayer');
@@ -53,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (urlParams.has('stats')) {
         displayStats();
     } else if (isSinglePlayer) {
-        setupSinglePlayer(); // Initialize single-player mode
+        setupSinglePlayer();
     } else {
         console.log('Main menu mode detected.');
     }
@@ -69,7 +68,7 @@ if (!window.playerStats) {
         totalMoneyWon: 0,
         totalMoneyLost: 0,
         hustlersRecruited: 0,
-        totalTimePlayed: 0, // In seconds
+        totalTimePlayed: 0,
         currentWinStreak: 0,
         longestWinStreak: 0,
         totalDaysPassed: 0
@@ -89,28 +88,28 @@ if (!window.playerStats) {
     window.displayStats = function () {
         window.loadStats();
         const statsList = document.getElementById('stats-list');
-        if (!statsList) {
+        if (statsList) {
+            statsList.innerHTML = `
+                <ul>
+                    <li>Games Played: ${playerStats.gamesPlayed}</li>
+                    <li>Games Won: ${playerStats.gamesWon}</li>
+                    <li>Times Evicted: ${playerStats.evictions}</li>
+                    <li>Months Unlocked: ${playerStats.monthsUnlocked}/12</li>
+                    <li>Total Money Won: $${playerStats.totalMoneyWon.toLocaleString()}</li>
+                    <li>Total Money Lost: $${playerStats.totalMoneyLost.toLocaleString()}</li>
+                    <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
+                    <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
+                    <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
+                    <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
+                    <li>Total Days Passed: ${playerStats.totalDaysPassed}</li>
+                </ul>
+            `;
+        } else {
             console.error('Stats list element is missing.');
-            return;
         }
-        statsList.innerHTML = `
-            <ul>
-                <li>Games Played: ${playerStats.gamesPlayed}</li>
-                <li>Games Won: ${playerStats.gamesWon}</li>
-                <li>Times Evicted: ${playerStats.evictions}</li>
-                <li>Months Unlocked: ${playerStats.monthsUnlocked}/12</li>
-                <li>Total Money Won: $${playerStats.totalMoneyWon.toLocaleString()}</li>
-                <li>Total Money Lost: $${playerStats.totalMoneyLost.toLocaleString()}</li>
-                <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
-                <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
-                <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
-                <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
-                <li>Total Days Passed: ${playerStats.totalDaysPassed}</li>
-            </ul>
-        `;
     };
-
-    window.formatTime = function (seconds) {
+    
+   window.formatTime = function (seconds) {
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
@@ -118,8 +117,8 @@ if (!window.playerStats) {
     };
 }
 
+// Function to set up single-player mode
 async function setupSinglePlayer() {
-    loadStats();
     console.log('Single Player mode active.');
 
     let balance = 300;
@@ -135,28 +134,12 @@ async function setupSinglePlayer() {
     playerStats.gamesPlayed++;
     saveStats();
 
-    const requiredElements = [
-        'rollButton',
-        'betButton',
-        'quitButton',
-        'betting-status',
-        'gameStatus',
-        'rent-status',
-        'inventory-list',
-        'buy-item-container',
-        'item-list',
-        'gameOverContainer',
-        'bet25Button',
-        'bet50Button',
-        'bet100Button'
-    ];
 
     const missingElements = requiredElements.filter(id => !document.getElementById(id));
     if (missingElements.length > 0) {
         console.error(`One or more required elements are missing in the DOM: ${missingElements.join(', ')}`);
         return;
     }
-
 
     const ambienceSound = new Audio('/sounds/Ambience0.ogg');
     ambienceSound.loop = true;
