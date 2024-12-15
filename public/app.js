@@ -222,6 +222,7 @@ async function setupSinglePlayer() {
             playSound('/sounds/UI_Click1.ogg');
             setBet(balance);
         });
+
     }; // Closing brace for script.onload
 
     function setBet(amount) {
