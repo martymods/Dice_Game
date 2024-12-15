@@ -41,22 +41,36 @@ document.addEventListener('DOMContentLoaded', () => {
             inventoryModal.classList.add('hidden');
         });
 
-        // Populate inventory with items
-        function populateInventory() {
-            if (!window.items || window.items.length === 0) {
-                console.warn('No items to display in the inventory.');
-                return;
-            }
-            inventoryItems.innerHTML = ''; // Clear existing items
-            window.items.forEach(item => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `${item.name} (${item.description})`;
-                inventoryItems.appendChild(listItem);
-            });
+        // Inventory functionality
+if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems) {
+    console.log('Inventory elements found. Adding event listeners.');
+
+    inventoryButton.addEventListener('click', () => {
+        populateInventory();
+        inventoryModal.classList.remove('hidden');
+    });
+
+    closeInventoryButton.addEventListener('click', () => {
+        inventoryModal.classList.add('hidden');
+    });
+
+    // Populate inventory with items
+    function populateInventory() {
+        if (!window.items || window.items.length === 0) {
+            console.warn('No items to display in the inventory.');
+            return;
         }
-    } else {
-        console.warn('One or more required inventory elements are missing in the DOM.');
+        inventoryItems.innerHTML = ''; // Clear existing items
+        window.items.forEach(item => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${item.name} (${item.description})`;
+            inventoryItems.appendChild(listItem);
+        });
     }
+} else {
+    console.warn('One or more required inventory elements are missing in the DOM.');
+}
+
 
     // Determine game mode
     const urlParams = new URLSearchParams(window.location.search);
@@ -148,28 +162,29 @@ async function setupSinglePlayer() {
     playerStats.gamesPlayed++;
     saveStats();
 
-    // Ensure necessary elements exist
-    const requiredElementIds = [
-        'rollButton',
-        'betButton',
-        'quitButton',
-        'betting-status',
-        'gameStatus',
-        'rent-status',
-        'inventory-list',
-        'buy-item-container',
-        'item-list',
-        'gameOverContainer',
-        'bet25Button',
-        'bet50Button',
-        'bet100Button'
-    ];
+// Ensure necessary elements exist
+const requiredElementIds = [
+    'rollButton',
+    'betButton',
+    'quitButton',
+    'betting-status',
+    'gameStatus',
+    'rent-status',
+    'inventoryItems', // Corrected to ensure inventory list is properly referenced
+    'buy-item-container',
+    'item-list',
+    'gameOverContainer',
+    'bet25Button',
+    'bet50Button',
+    'bet100Button'
+];
 
-    const missingElements = requiredElementIds.filter(id => !document.getElementById(id));
-    if (missingElements.length > 0) {
-        console.error(`One or more required elements are missing in the DOM: ${missingElements.join(', ')}`);
-        return;
-    }
+const missingElements = requiredElementIds.filter(id => !document.getElementById(id));
+if (missingElements.length > 0) {
+    console.error(`One or more required elements are missing in the DOM: ${missingElements.join(', ')}`);
+    return;
+}
+
 
 // Example initialization for existing elements
 const rollButton = document.getElementById('rollButton');
@@ -186,11 +201,14 @@ if (rollButton && betButton && quitButton && bettingStatus && rentStatus && bet2
     rollButton.addEventListener('click', () => console.log('Roll button clicked'));
     betButton.addEventListener('click', () => console.log('Bet button clicked'));
     quitButton.addEventListener('click', () => console.log('Quit button clicked'));
-
+    bet25Button.addEventListener('click', () => console.log('Bet 25% button clicked'));
+    bet50Button.addEventListener('click', () => console.log('Bet 50% button clicked'));
+    bet100Button.addEventListener('click', () => console.log('Bet 100% button clicked'));
     console.log('Single Player setup completed.');
 } else {
     console.error('One or more required elements are missing in the DOM.');
 }
+
 
 const script = document.createElement('script');
 script.src = '/items.js';
