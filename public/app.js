@@ -729,9 +729,10 @@ function displayStats() {
         </ul>
     `;
 }
-
 // Define the startSinglePlayer function globally
 window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
 };
-    
+
+// Closing script logic or additional required code
+console.log('Script loaded successfully.');
