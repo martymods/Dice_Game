@@ -175,13 +175,25 @@ async function setupSinglePlayer() {
     document.head.appendChild(script);
 
     script.onload = () => {
-        if (typeof window.itemsList === 'undefined' || !window.itemsList || window.itemsList.length === 0) {
-            console.error('Items list is empty or not loaded from items.js.');
-            alert('Failed to load items. Please refresh the page.');
-            return;
-        }
+    const requiredElements = [
+        'bettingStatus',
+        'rentStatus',
+        'rollButton',
+        'betButton',
+        'quitButton',
+        'bet25Button',
+        'bet50Button',
+        'bet100Button'
+    ];
 
-        updateUI();
+    const missingElements = requiredElements.filter(id => !document.getElementById(id));
+    if (missingElements.length > 0) {
+        console.error(`One or more required elements are missing in the DOM: ${missingElements.join(', ')}`);
+        return;
+    }
+
+    updateUI();
+};
 
         rollButton.addEventListener('click', () => {
             console.log('Roll Dice button clicked.');
@@ -438,14 +450,18 @@ async function setupSinglePlayer() {
     }
 
     function updateUI() {
+    if (bettingStatus && rentStatus) {
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
         if (dreamCoins > 0) {
             rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
             rentStatus.innerHTML += ` <img src="/images/DW_Logo.png" alt="DreamCoin" style="width: 20px; height: 20px;"> ${dreamCoins}`;
         }
-
-        updateBackgroundImage();
+    } else {
+        console.error("One or more required elements (bettingStatus, rentStatus) are missing in the DOM.");
     }
+
+    updateBackgroundImage();
+}
 
     function updateBackgroundImage() {
         const rollsRemaining = maxTurns - turns;
