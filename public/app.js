@@ -742,4 +742,4 @@ function displayStats() {
         </ul>
     `;
 }
-
+}
