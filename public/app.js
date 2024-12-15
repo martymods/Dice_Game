@@ -8,6 +8,19 @@ window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
 };
 
+// Ensure global functions for menu navigation
+window.showCreateGame = function () {
+    alert("Host Game feature is not implemented yet.");
+};
+
+window.showJoinGame = function () {
+    alert("Join Game feature is not implemented yet.");
+};
+
+window.viewLeaderboard = function () {
+    alert("Leaderboard feature is not implemented yet.");
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     // Get DOM elements
     const inventoryButton = document.getElementById('inventoryButton');
@@ -37,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             inventoryItems.innerHTML = ''; // Clear existing items
             window.items.forEach(item => {
                 const listItem = document.createElement('li');
-                listItem.textContent = `${item.name} (${item.description})`; // Fixed backticks
+                listItem.textContent = `${item.name} (${item.description})`;
                 inventoryItems.appendChild(listItem);
             });
         }
@@ -56,7 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         console.log('Main menu mode detected.');
     }
-}); // Closing `DOMContentLoaded` listener
+});
+ // Closing `DOMContentLoaded` listener
 
 // Ensure playerStats and related functions are globally accessible
 if (!window.playerStats) {
