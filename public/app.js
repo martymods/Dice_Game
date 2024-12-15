@@ -223,6 +223,7 @@ async function setupSinglePlayer() {
             setBet(balance);
         });
 
+        // Missing closing brace for script.onload
     };
 
     function setBet(amount) {
@@ -230,6 +231,7 @@ async function setupSinglePlayer() {
         currentBet = Math.floor(amount);
         updateUI();
     }
+
 
     function handleRollDice() {
         if (currentBet <= 0) {
