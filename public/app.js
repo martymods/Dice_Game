@@ -34,11 +34,11 @@ if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems)
 
     inventoryButton.addEventListener('click', () => {
         populateInventory();
-        inventoryModal.classList.remove('hidden');
+        inventoryModal.style.display = 'block'; // Ensure modal is shown
     });
 
     closeInventoryButton.addEventListener('click', () => {
-        inventoryModal.classList.add('hidden');
+        inventoryModal.style.display = 'none'; // Ensure modal is hidden
     });
 
     // Populate inventory with items
@@ -479,18 +479,24 @@ function handleRollDice() {
     }
 
     function updateUI() {
-    if (bettingStatus && rentStatus) {
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
-        if (dreamCoins > 0) {
-            rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
-            rentStatus.innerHTML += ` <img src="/images/DW_Logo.png" alt="DreamCoin" style="width: 20px; height: 20px;"> ${dreamCoins}`;
+        const bettingStatus = document.getElementById('betting-status');
+        const rentStatus = document.getElementById('rent-status');
+    
+        if (bettingStatus && rentStatus) {
+            bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+            if (dreamCoins > 0) {
+                rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
+                rentStatus.innerHTML += ` <img src="/images/DW_Logo.png" alt="DreamCoin" style="width: 20px; height: 20px;"> ${dreamCoins}`;
+            } else {
+                rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
+            }
+        } else {
+            console.error("One or more required elements (bettingStatus, rentStatus) are missing in the DOM.");
         }
-    } else {
-        console.error("One or more required elements (bettingStatus, rentStatus) are missing in the DOM.");
+    
+        updateBackgroundImage();
     }
-
-    updateBackgroundImage();
-}
+    
 
     function updateBackgroundImage() {
         const rollsRemaining = maxTurns - turns;
