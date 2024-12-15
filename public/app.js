@@ -1,20 +1,22 @@
 // app.js
 
-// Ensure global functions are defined first
+// Ensure the required items are accessible globally
 window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
 };
 
-// Safely handle inventory elements
+window.itemEffects = window.itemEffects || {}; // Remove if you are including it via another script
+
 document.addEventListener('DOMContentLoaded', () => {
     const inventoryButton = document.getElementById('inventoryButton');
     const inventoryModal = document.getElementById('inventoryModal');
     const closeInventoryButton = document.getElementById('closeInventoryButton');
     const inventoryItems = document.getElementById('inventoryItems');
 
+    // Handle inventory functionality only if elements exist
     if (!inventoryButton || !inventoryModal || !closeInventoryButton) {
         console.error('One or more required inventory elements are missing in the DOM.');
-        return;
+        return; // Exit the DOMContentLoaded handler
     }
 
     console.log('Inventory elements found. Adding event listeners.');
@@ -38,15 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         inventoryItems.innerHTML = ''; // Clear previous items
-        items.forEach(item => {
+        window.items.forEach(item => {
             const listItem = document.createElement('li');
             listItem.textContent = `${item.name} (${item.description})`;
             inventoryItems.appendChild(listItem);
         });
-    }
-
-    } else {
-        console.log('Inventory elements not found. Skipping inventory initialization.');
     }
 
     // Determine game mode
