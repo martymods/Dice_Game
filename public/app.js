@@ -1,51 +1,50 @@
 // app.js
 
-// Ensure the required items are accessible globally
+// Ensure global functions are defined first
 window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
 };
 
-window.itemEffects = window.itemEffects || {}; // Remove if you are including it via another script
-
+// Safely handle inventory elements
 document.addEventListener('DOMContentLoaded', () => {
     const inventoryButton = document.getElementById('inventoryButton');
     const inventoryModal = document.getElementById('inventoryModal');
     const closeInventoryButton = document.getElementById('closeInventoryButton');
     const inventoryItems = document.getElementById('inventoryItems');
 
-    // Handle inventory functionality only if elements exist
     if (!inventoryButton || !inventoryModal || !closeInventoryButton) {
         console.error('One or more required inventory elements are missing in the DOM.');
-        return; // This is now within a function scope.
+        return;
     }
 
-        console.log('Inventory elements found. Adding event listeners.');
+    console.log('Inventory elements found. Adding event listeners.');
 
-        // Open inventory modal
-        inventoryButton.addEventListener('click', () => {
-            populateInventory();
-            inventoryModal.classList.remove('hidden');
-        });
+    // Open inventory modal
+    inventoryButton.addEventListener('click', () => {
+        populateInventory();
+        inventoryModal.classList.remove('hidden');
+    });
 
-        // Close inventory modal
-        closeInventoryButton.addEventListener('click', () => {
-            inventoryModal.classList.add('hidden');
-        });
+    // Close inventory modal
+    closeInventoryButton.addEventListener('click', () => {
+        inventoryModal.classList.add('hidden');
+    });
 
-        // Populate inventory with items
-        function populateInventory() {
-            if (!window.items) {
-                console.warn('No items to display in the inventory.');
-                return;
-            }
-
-            inventoryItems.innerHTML = ''; // Clear previous items
-            items.forEach(item => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `${item.name} (${item.description})`;
-                inventoryItems.appendChild(listItem);
-            });
+    // Populate inventory with items
+    function populateInventory() {
+        if (!window.items) {
+            console.warn('No items to display in the inventory.');
+            return;
         }
+
+        inventoryItems.innerHTML = ''; // Clear previous items
+        items.forEach(item => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${item.name} (${item.description})`;
+            inventoryItems.appendChild(listItem);
+        });
+    }
+
     } else {
         console.log('Inventory elements not found. Skipping inventory initialization.');
     }
