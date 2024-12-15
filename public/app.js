@@ -14,37 +14,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const inventoryItems = document.getElementById('inventoryItems');
 
     // Handle inventory functionality only if elements exist
-    if (!inventoryButton || !inventoryModal || !closeInventoryButton) {
+    if (!inventoryButton || !inventoryModal || !closeInventoryButton || !inventoryItems) {
         console.error('One or more required inventory elements are missing in the DOM.');
-        return; // Exit the DOMContentLoaded handler
-    }
+    } else {
+        console.log('Inventory elements found. Adding event listeners.');
 
-    console.log('Inventory elements found. Adding event listeners.');
-
-    // Open inventory modal
-    inventoryButton.addEventListener('click', () => {
-        populateInventory();
-        inventoryModal.classList.remove('hidden');
-    });
-
-    // Close inventory modal
-    closeInventoryButton.addEventListener('click', () => {
-        inventoryModal.classList.add('hidden');
-    });
-
-    // Populate inventory with items
-    function populateInventory() {
-        if (!window.items) {
-            console.warn('No items to display in the inventory.');
-            return;
-        }
-
-        inventoryItems.innerHTML = ''; // Clear previous items
-        window.items.forEach(item => {
-            const listItem = document.createElement('li');
-            listItem.textContent = `${item.name} (${item.description})`;
-            inventoryItems.appendChild(listItem);
+        // Open inventory modal
+        inventoryButton.addEventListener('click', () => {
+            populateInventory();
+            inventoryModal.classList.remove('hidden');
         });
+
+        // Close inventory modal
+        closeInventoryButton.addEventListener('click', () => {
+            inventoryModal.classList.add('hidden');
+        });
+
+        // Populate inventory with items
+        function populateInventory() {
+            if (!window.items || window.items.length === 0) {
+                console.warn('No items to display in the inventory.');
+                return;
+            }
+
+            inventoryItems.innerHTML = ''; // Clear previous items
+            window.items.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${item.name} (${item.description})`;
+                inventoryItems.appendChild(listItem);
+            });
+        }
     }
 
     // Determine game mode
@@ -90,6 +89,10 @@ if (!window.playerStats) {
     window.displayStats = function () {
         window.loadStats();
         const statsList = document.getElementById('stats-list');
+        if (!statsList) {
+            console.error('Stats list element is missing.');
+            return;
+        }
         statsList.innerHTML = `
             <ul>
                 <li>Games Played: ${playerStats.gamesPlayed}</li>
@@ -113,18 +116,6 @@ if (!window.playerStats) {
         const secs = seconds % 60;
         return `${hrs}h ${mins}m ${secs}s`;
     };
-
-    window.startSinglePlayer = function () {
-        window.location.href = 'game.html?singlePlayer=true';
-    };
-    
-}
-
-const missingElements = requiredElements.filter(el => !el);
-   if (!inventoryButton || !inventoryModal || !closeInventoryButton) {
-    console.error('One or more required inventory elements are missing in the DOM.');
-} else {
-    // Proceed with setting up inventory event listeners.
 }
 
 async function setupSinglePlayer() {
@@ -141,26 +132,31 @@ async function setupSinglePlayer() {
     let dreamCoins = 0; // New DreamCoin balance
     let gameStartTime = Date.now();
 
-    // Increment games played
     playerStats.gamesPlayed++;
     saveStats();
-    
-    const rollButton = document.getElementById('rollButton');
-    const betButton = document.getElementById('betButton');
-    const quitButton = document.getElementById('quitButton');
-    const bettingStatus = document.getElementById('betting-status');
-    const gameStatus = document.getElementById('gameStatus');
-    const rentStatus = document.getElementById('rent-status');
-    const inventoryDisplay = document.getElementById('inventory-list');
-    const popup = document.getElementById('buy-item-container');
-    const itemList = document.getElementById('item-list');
-    const gameOverContainer = document.getElementById('gameOverContainer');
-    const landlordVideo = document.getElementById('landlordVideo');
-    const gameTitle = document.querySelector('h1');
 
-    const bet25Button = document.getElementById('bet25Button');
-    const bet50Button = document.getElementById('bet50Button');
-    const bet100Button = document.getElementById('bet100Button');
+    const requiredElements = [
+        'rollButton',
+        'betButton',
+        'quitButton',
+        'betting-status',
+        'gameStatus',
+        'rent-status',
+        'inventory-list',
+        'buy-item-container',
+        'item-list',
+        'gameOverContainer',
+        'bet25Button',
+        'bet50Button',
+        'bet100Button'
+    ];
+
+    const missingElements = requiredElements.filter(id => !document.getElementById(id));
+    if (missingElements.length > 0) {
+        console.error(`One or more required elements are missing in the DOM: ${missingElements.join(', ')}`);
+        return;
+    }
+
 
     const ambienceSound = new Audio('/sounds/Ambience0.ogg');
     ambienceSound.loop = true;
