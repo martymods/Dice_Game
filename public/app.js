@@ -1,4 +1,3 @@
-// app.js
 let isSinglePlayer = false; // Initialize globally
 
 // Declare global variables for game state
@@ -73,10 +72,10 @@ if (!window.playerStats) {
     // Load stats from localStorage
     loadStats();
 }
+
 // Increment gamesPlayed and save stats
 playerStats.gamesPlayed++;
 saveStats();
-
 // Ensure the required items are accessible globally
 window.itemEffects = window.itemEffects || {};
 
@@ -99,7 +98,6 @@ window.viewLeaderboard = function () {
     alert("Leaderboard feature is not implemented yet.");
 };
 document.addEventListener('DOMContentLoaded', () => {
-    // Get DOM elements
     const inventoryButton = document.getElementById('inventoryButton');
     const inventoryModal = document.getElementById('inventoryModal');
     const closeInventoryButton = document.getElementById('closeInventoryButton');
@@ -110,6 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inventory functionality
     if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems) {
         console.log('Inventory elements found. Adding event listeners.');
+
+        inventoryModal.style.display = 'none'; // Ensure inventory starts closed
 
         inventoryButton.addEventListener('click', () => {
             populateInventory();
@@ -152,10 +152,12 @@ function setupSinglePlayer() {
 
     const rollButton = document.getElementById('rollButton');
     const betButton = document.getElementById('betButton');
+    const quitButton = document.getElementById('quitButton');
 
-    if (rollButton && betButton) {
+    if (rollButton && betButton && quitButton) {
         rollButton.addEventListener('click', handleRollDice);
         betButton.addEventListener('click', handlePlaceBet);
+        quitButton.addEventListener('click', quitGame);
         console.log('Single Player setup completed.');
     } else {
         console.error('Required game buttons are missing.');
@@ -196,73 +198,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const quitButton = document.getElementById('quitButton');
 
     if (rollButton && betButton && quitButton && bettingStatus && rentStatus && bet25Button && bet50Button && bet100Button) {
-        rollButton.addEventListener('click', () => console.log('Roll button clicked'));
-        betButton.addEventListener('click', () => console.log('Bet button clicked'));
-        quitButton.addEventListener('click', () => console.log('Quit button clicked'));
-        bet25Button.addEventListener('click', () => console.log('Bet 25% button clicked'));
-        bet50Button.addEventListener('click', () => console.log('Bet 50% button clicked'));
-        bet100Button.addEventListener('click', () => console.log('Bet 100% button clicked'));
-        console.log('Single Player setup completed.');
+        rollButton.addEventListener('click', handleRollDice);
+        betButton.addEventListener('click', handlePlaceBet);
+        quitButton.addEventListener('click', quitGame);
+        bet25Button.addEventListener('click', () => setBet(balance * 0.25));
+        bet50Button.addEventListener('click', () => setBet(balance * 0.5));
+        bet100Button.addEventListener('click', () => setBet(balance));
+        console.log('All Single Player buttons are configured.');
     } else {
         console.error('One or more required elements are missing in the DOM.');
     }
 });
-const script = document.createElement('script');
-script.src = '/items.js';
-document.head.appendChild(script);
-
-script.onload = () => {
-    const requiredElements = [
-        'bettingStatus',
-        'rentStatus',
-        'rollButton',
-        'betButton',
-        'quitButton',
-        'bet25Button',
-        'bet50Button',
-        'bet100Button'
-    ];
-
-    const missingElements = requiredElements.filter(id => !document.getElementById(id));
-    if (missingElements.length > 0) {
-        console.error(`One or more required elements are missing in the DOM: ${missingElements.join(', ')}`);
-        return;
-    }
-
-    console.log('All required elements are present.');
-
-    updateUI();
-
-    rollButton.addEventListener('click', () => {
-        console.log('Roll Dice button clicked.');
-        // Add roll dice logic here
-    });
-
-    betButton.addEventListener('click', () => {
-        console.log('Place Bet button clicked.');
-        // Add betting logic here
-    });
-
-    quitButton.addEventListener('click', () => {
-        console.log('Quit Game button clicked.');
-        window.location.href = '/';
-    });
-
-    bet25Button.addEventListener('click', () => {
-        playSound('/sounds/UI_Click1.ogg');
-        setBet(balance * 0.25);
-    });
-
-    bet50Button.addEventListener('click', () => {
-        playSound('/sounds/UI_Click1.ogg');
-        setBet(balance * 0.5);
-    });
-
-    bet100Button.addEventListener('click', () => {
-        playSound('/sounds/UI_Click1.ogg');
-        setBet(balance);
-    });
-};
 function setBet(amount) {
     if (amount > balance) amount = balance;
     currentBet = Math.floor(amount);
@@ -275,26 +221,19 @@ function handleRollDice() {
         return;
     }
 
-    playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
+    playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg"], true);
 
     const dice1 = Math.floor(Math.random() * 6) + 1;
     const dice2 = Math.floor(Math.random() * 6) + 1;
     const sum = dice1 + dice2;
 
     animateDice(dice1, dice2, () => {
-        playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"]);
-
+        playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg"]);
         let rollBonus = 0;
 
         items.forEach(item => {
-            if (item.name === 'Forged Papers 📜') {
-                items = itemEffects.forgedPapersEffect(items);
-            }
             if (item.name === 'Loaded Dice 🎲') {
                 rollBonus += itemEffects.loadedDiceEffect(sum, currentBet);
-            }
-            if (item.name === "Old Gang Leader’s Blade 🔪") {
-                dreamCoins += itemEffects.gangLeaderBladeEffect(items);
             }
         });
 
@@ -302,12 +241,10 @@ function handleRollDice() {
             const winnings = currentBet * 2 + rollBonus;
             balance += winnings;
             gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
-            playSound("/sounds/Winner_0.ogg");
             flashScreen('gold');
             showWinningAmount(winnings);
         } else if (sum === 2 || sum === 3 || sum === 12) {
             gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
-            playSound("/sounds/Loser_0.ogg");
             flashScreen('red');
             showLosingAmount(currentBet);
         } else {
@@ -317,12 +254,11 @@ function handleRollDice() {
 
         currentBet = 0;
         updateUI();
-        console.log(`Dice rolled: ${dice1}, ${dice2} (Sum: ${sum})`);
     });
 }
+
 function handlePlaceBet() {
     playSound("/sounds/UI_Click1.ogg");
-
     const betAmount = parseInt(document.getElementById('betAmount').value);
     if (isNaN(betAmount) || betAmount <= 0) {
         alert('Invalid bet amount.');
@@ -336,25 +272,18 @@ function handlePlaceBet() {
     currentBet = betAmount;
     balance -= currentBet;
     updateUI();
-    console.log(`Bet placed: $${currentBet}`);
 }
 
 function quitGame() {
     window.location.href = '/';
 }
-
 function updateUI() {
     const bettingStatus = document.getElementById('betting-status');
     const rentStatus = document.getElementById('rent-status');
 
     if (bettingStatus && rentStatus) {
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
-        if (dreamCoins > 0) {
-            rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
-            rentStatus.innerHTML += ` <img src="/images/DW_Logo.png" alt="DreamCoin" style="width: 20px; height: 20px;"> ${dreamCoins}`;
-        } else {
-            rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
-        }
+        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
     } else {
         console.error("One or more required elements (bettingStatus, rentStatus) are missing in the DOM.");
     }
@@ -372,6 +301,7 @@ function updateBackgroundImage() {
         document.body.style.backgroundImage = "url('/images/LandLord2.png')";
     }
 }
+
 function flashScreen(color) {
     const body = document.body;
     const originalBackgroundColor = getComputedStyle(body).backgroundColor;
@@ -384,54 +314,28 @@ function flashScreen(color) {
     }, 200);
 }
 
-function showWinningAmount(amount) {
-    const winAmountDiv = document.createElement('div');
-    winAmountDiv.textContent = `+$${amount.toLocaleString()}`;
-    winAmountDiv.style.position = 'absolute';
-    winAmountDiv.style.top = '50%';
-    winAmountDiv.style.left = '50%';
-    winAmountDiv.style.transform = 'translate(-50%, -50%)';
-    winAmountDiv.style.fontSize = '48px';
-    winAmountDiv.style.color = 'limegreen';
-    winAmountDiv.style.textShadow = '0 0 10px limegreen, 0 0 20px lime, 0 0 30px green';
-    winAmountDiv.style.fontWeight = 'bold';
-    winAmountDiv.style.transition = 'opacity 2s ease-out';
-    winAmountDiv.style.opacity = '1';
-    winAmountDiv.style.zIndex = '9999';
+function animateDice(dice1, dice2, callback) {
+    const dice1Element = document.getElementById('dice1');
+    const dice2Element = document.getElementById('dice2');
 
-    document.body.appendChild(winAmountDiv);
+    if (!dice1Element || !dice2Element) {
+        console.error('Dice elements are missing in the DOM.');
+        return;
+    }
 
-    setTimeout(() => {
-        winAmountDiv.style.opacity = '0';
-        setTimeout(() => {
-            document.body.removeChild(winAmountDiv);
-        }, 2000);
-    }, 2000);
-}
+    let counter = 0;
+    const interval = setInterval(() => {
+        dice1Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
+        dice2Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
+        counter++;
 
-function showLosingAmount(amount) {
-    const loseAmountDiv = document.createElement('div');
-    loseAmountDiv.textContent = `-$${amount.toLocaleString()}`;
-    loseAmountDiv.style.position = 'absolute';
-    loseAmountDiv.style.top = '50%';
-    loseAmountDiv.style.left = '50%';
-    loseAmountDiv.style.transform = 'translate(-50%, -50%)';
-    loseAmountDiv.style.fontSize = '48px';
-    loseAmountDiv.style.color = 'red';
-    loseAmountDiv.style.textShadow = '0 0 10px red, 0 0 20px crimson, 0 0 30px darkred';
-    loseAmountDiv.style.fontWeight = 'bold';
-    loseAmountDiv.style.transition = 'opacity 2s ease-out';
-    loseAmountDiv.style.opacity = '1';
-    loseAmountDiv.style.zIndex = '9999';
-
-    document.body.appendChild(loseAmountDiv);
-
-    setTimeout(() => {
-        loseAmountDiv.style.opacity = '0';
-        setTimeout(() => {
-            document.body.removeChild(loseAmountDiv);
-        }, 2000);
-    }, 2000);
+        if (counter >= 10) {
+            clearInterval(interval);
+            dice1Element.src = `/images/dice${dice1}.png`;
+            dice2Element.src = `/images/dice${dice2}.png`;
+            callback();
+        }
+    }, 100);
 }
 document.addEventListener('DOMContentLoaded', () => {
     const inventoryButton = document.getElementById('inventoryButton');
@@ -468,159 +372,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 function handleGameOver() {
-    const gameEndTime = Date.now();
-    const timePlayed = Math.floor((gameEndTime - gameStartTime) / 1000);
-    playerStats.totalTimePlayed += timePlayed;
-    playerStats.evictions++;
-    playerStats.currentWinStreak = 0;
-    saveStats();
+    const gameOverContainer = document.getElementById('gameOverContainer');
+    if (!gameOverContainer) {
+        console.error('Game Over container element is missing.');
+        return;
+    }
 
     flashScreen('red');
-
     const deathSound = new Audio('/sounds/Death0.ogg');
     deathSound.play().catch(err => console.error('Death sound error:', err));
 
-    const gameOverContainer = document.getElementById('gameOverContainer');
-    if (gameOverContainer) {
-        gameOverContainer.style.display = 'block';
-    } else {
-        console.error('Game Over container element is missing.');
-    }
+    gameOverContainer.style.display = 'block';
 }
 
 function handleGameWin() {
     playerStats.gamesWon++;
     playerStats.currentWinStreak++;
-    playerStats.longestWinStreak = Math.max(
-        playerStats.longestWinStreak,
-        playerStats.currentWinStreak
-    );
+    playerStats.longestWinStreak = Math.max(playerStats.longestWinStreak, playerStats.currentWinStreak);
     saveStats();
 }
-
-function updateUIAfterRoll() {
-    updateUI();
-    turns++;
-
-    const rentPaidStatements = [
-        "Well done! You paid the rent. But success has its price—the rent just went up!",
-        "Congratulations on keeping up! I knew you could handle more, so I raised the rent!",
-        "Impressive! You’ve survived another month. Let’s see if you can handle next month’s new rent!",
-        "Good job paying the rent! But comfort is costly—your rent just increased.",
-        "You did it! The rent’s paid. Now let’s see how you handle my latest adjustment.",
-        "You’re doing so well! I couldn’t resist rewarding you with higher rent.",
-        "Bravo! You’ve proven your worth… and now you’ll prove you can pay even more.",
-        "Rent paid! Your reward? A bigger challenge. I’ve raised the stakes—and the rent!",
-        "Fantastic work! To celebrate, I’ve made the rent a little more interesting for next time.",
-        "You made it through! But the better you perform, the more I expect—rent’s going up!"
-    ];
-
-    const rollsRemaining = maxTurns - turns;
-    const rentStatus = document.getElementById('rent-status');
-    if (rollsRemaining > 0 && rentStatus) {
-        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
-    } else {
-        if (balance >= rent) {
-            balance -= rent;
-            rent *= progression <= 9 ? 4 : 5;
-            maxTurns++;
-            progression++;
-            turns = 0;
-
-            playerStats.totalDaysPassed += 30;
-            playerStats.monthsUnlocked = Math.max(playerStats.monthsUnlocked, progression);
-            saveStats();
-
-            const randomStatement = rentPaidStatements[Math.floor(Math.random() * rentPaidStatements.length)];
-            alert(randomStatement);
-
-            showItemPopup();
-        } else {
-            handleGameOver();
-        }
-    }
-
-    if (balance <= 0) {
-        handleGameOver();
-    }
-}
-function showItemPopup() {
-    const popup = document.getElementById('buy-item-container');
-    const itemList = document.getElementById('item-list');
-
-    if (!popup || !itemList) {
-        console.error('Required popup elements are missing.');
-        return;
-    }
-
-    popup.style.display = 'block';
-    itemList.innerHTML = '';
-
-    const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
-    shuffledItems.forEach(item => {
-        const itemButton = document.createElement('button');
-        itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
-        itemButton.style.backgroundColor = getItemColor(item.rarity);
-        itemButton.onclick = () => {
-            handleItemPurchase(item);
-        };
-        itemList.appendChild(itemButton);
-    });
-
-    const skipButton = document.createElement('button');
-    skipButton.textContent = 'Save Money';
-    skipButton.onclick = () => {
-        popup.style.display = 'none';
-    };
-    itemList.appendChild(skipButton);
-}
-
-function handleItemPurchase(item) {
-    if (balance >= item.cost) {
-        balance -= item.cost;
-        items.push(item);
-        alert(`You purchased ${item.name}!`);
-        const popup = document.getElementById('buy-item-container');
-        if (popup) popup.style.display = 'none';
-        updateUI();
-    } else {
-        alert('Not enough money to buy this item.');
-    }
-}
-
-function getItemColor(rarity) {
-    switch (rarity) {
-        case 'Common': return 'gray';
-        case 'Uncommon': return 'blue';
-        case 'Rare': return 'purple';
-        case 'Very Rare': return 'gold';
-        default: return 'white';
-    }
-}
-function animateDice(dice1, dice2, callback) {
-    const dice1Element = document.getElementById('dice1');
-    const dice2Element = document.getElementById('dice2');
-
-    if (!dice1Element || !dice2Element) {
-        console.error('Dice elements are missing in the DOM.');
-        return;
-    }
-
-    let counter = 0;
-    const interval = setInterval(() => {
-        dice1Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
-        dice2Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
-        counter++;
-
-        if (counter >= 10) {
-            clearInterval(interval);
-            dice1Element.src = `/images/dice${dice1}.png`;
-            dice2Element.src = `/images/dice${dice2}.png`;
-            callback();
-        }
-    }, 100);
-}
-
 function playSound(sounds, randomize = false) {
     const soundFile = Array.isArray(sounds) && randomize
         ? sounds[Math.floor(Math.random() * sounds.length)]
@@ -629,17 +399,14 @@ function playSound(sounds, randomize = false) {
     const audio = new Audio(soundFile);
     audio.play().catch(err => console.error('Audio play error:', err));
 }
-function flashScreen(color) {
-    const body = document.body;
-    const originalBackgroundColor = getComputedStyle(body).backgroundColor;
 
-    body.style.transition = 'background-color 0.2s ease';
-    body.style.backgroundColor = color;
-    setTimeout(() => {
-        body.style.transition = 'background-color 0.5s ease';
-        body.style.backgroundColor = originalBackgroundColor;
-    }, 200);
+function formatTime(seconds) {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs}h ${mins}m ${secs}s`;
 }
+
 function trackMoneyWon(amount) {
     playerStats.totalMoneyWon += amount;
     saveStats();
@@ -650,122 +417,6 @@ function trackMoneyLost(amount) {
     saveStats();
 }
 
-function displayStats() {
-    const statsList = document.getElementById('stats-list');
-    if (!statsList) {
-        console.error('Stats list element is missing.');
-        return;
-    }
-
-    const stats = JSON.parse(localStorage.getItem('playerStats')) || {};
-    statsList.innerHTML = `
-        <ul>
-            <li>Games Played: ${stats.gamesPlayed || 0}</li>
-            <li>Games Won: ${stats.gamesWon || 0}</li>
-            <li>Times Evicted: ${stats.evictions || 0}</li>
-            <li>Months Unlocked: ${stats.monthsUnlocked || 0}/12</li>
-            <li>Total Money Won: $${(stats.totalMoneyWon || 0).toLocaleString()}</li>
-            <li>Total Money Lost: $${(stats.totalMoneyLost || 0).toLocaleString()}</li>
-            <li>Hustlers Recruited: ${stats.hustlersRecruited || 0}</li>
-            <li>Total Time Played: ${formatTime(stats.totalTimePlayed || 0)}</li>
-            <li>Current Winning Streak: ${stats.currentWinStreak || 0}</li>
-            <li>Longest Winning Streak: ${stats.longestWinStreak || 0}</li>
-            <li>Total Days Passed: ${stats.totalDaysPassed || 0}</li>
-        </ul>
-    `;
-}
-function formatTime(seconds) {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hrs}h ${mins}m ${secs}s`;
-}
-function showWinningAmount(amount) {
-    const winAmountDiv = document.createElement('div');
-    winAmountDiv.textContent = `+$${amount.toLocaleString()}`;
-    winAmountDiv.style.position = 'absolute';
-    winAmountDiv.style.top = '50%';
-    winAmountDiv.style.left = '50%';
-    winAmountDiv.style.transform = 'translate(-50%, -50%)';
-    winAmountDiv.style.fontSize = '48px';
-    winAmountDiv.style.color = 'limegreen';
-    winAmountDiv.style.textShadow = '0 0 10px limegreen, 0 0 20px lime, 0 0 30px green';
-    winAmountDiv.style.fontWeight = 'bold';
-    winAmountDiv.style.transition = 'opacity 2s ease-out';
-    winAmountDiv.style.opacity = '1';
-    winAmountDiv.style.zIndex = '9999';
-
-    document.body.appendChild(winAmountDiv);
-
-    setTimeout(() => {
-        winAmountDiv.style.opacity = '0';
-        setTimeout(() => {
-            document.body.removeChild(winAmountDiv);
-        }, 2000);
-    }, 2000);
-}
-
-function showLosingAmount(amount) {
-    const loseAmountDiv = document.createElement('div');
-    loseAmountDiv.textContent = `-$${amount.toLocaleString()}`;
-    loseAmountDiv.style.position = 'absolute';
-    loseAmountDiv.style.top = '50%';
-    loseAmountDiv.style.left = '50%';
-    loseAmountDiv.style.transform = 'translate(-50%, -50%)';
-    loseAmountDiv.style.fontSize = '48px';
-    loseAmountDiv.style.color = 'red';
-    loseAmountDiv.style.textShadow = '0 0 10px red, 0 0 20px crimson, 0 0 30px darkred';
-    loseAmountDiv.style.fontWeight = 'bold';
-    loseAmountDiv.style.transition = 'opacity 2s ease-out';
-    loseAmountDiv.style.opacity = '1';
-    loseAmountDiv.style.zIndex = '9999';
-
-    document.body.appendChild(loseAmountDiv);
-
-    setTimeout(() => {
-        loseAmountDiv.style.opacity = '0';
-        setTimeout(() => {
-            document.body.removeChild(loseAmountDiv);
-        }, 2000);
-    }, 2000);
-}
-document.addEventListener('DOMContentLoaded', () => {
-    const inventoryButton = document.getElementById('inventoryButton');
-    const inventoryModal = document.getElementById('inventoryModal');
-    const closeInventoryButton = document.getElementById('closeInventoryButton');
-    const inventoryItems = document.getElementById('inventoryItems');
-
-    if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems) {
-        inventoryModal.style.display = 'none'; // Ensure the inventory is closed by default
-
-        inventoryButton.addEventListener('click', () => {
-            populateInventory();
-            inventoryModal.style.display = 'block';
-        });
-
-        closeInventoryButton.addEventListener('click', () => {
-            inventoryModal.style.display = 'none';
-        });
-
-        function populateInventory() {
-            if (!window.items || window.items.length === 0) {
-                console.warn('No items to display in the inventory.');
-                return;
-            }
-            inventoryItems.innerHTML = '';
-            window.items.forEach(item => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `${item.name} (${item.description})`;
-                inventoryItems.appendChild(listItem);
-            });
-        }
-    } else {
-        console.warn('One or more required inventory elements are missing in the DOM.');
-    }
-});
-function quitGame() {
-    window.location.href = '/';
-}
 function logMissingElements(elementIds) {
     const missingElements = elementIds.filter(id => !document.getElementById(id));
     if (missingElements.length > 0) {
@@ -773,26 +424,6 @@ function logMissingElements(elementIds) {
     }
     return missingElements;
 }
-document.addEventListener('DOMContentLoaded', () => {
-    const requiredElementIds = [
-        'rollButton',
-        'betButton',
-        'quitButton',
-        'betting-status',
-        'gameStatus',
-        'rent-status',
-        'inventoryItems',
-        'buy-item-container',
-        'item-list',
-        'gameOverContainer',
-        'bet25Button',
-        'bet50Button',
-        'bet100Button'
-    ];
 
-    const missingElements = logMissingElements(requiredElementIds);
-
-    if (missingElements.length === 0) {
-        console.log('All required elements are present.');
     }
 });
