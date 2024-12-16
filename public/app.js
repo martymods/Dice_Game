@@ -1,4 +1,6 @@
 // app.js
+let isSinglePlayer = false; // Initialize globally
+
 
 // Declare global variables for game state
 let balance = 300; // Starting balance
@@ -106,6 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const inventoryModal = document.getElementById('inventoryModal');
     const closeInventoryButton = document.getElementById('closeInventoryButton');
     const inventoryItems = document.getElementById('inventoryItems');
+    const urlParams = new URLSearchParams(window.location.search);
+    isSinglePlayer = urlParams.has('singlePlayer'); // Update global variable
+});
 
 // Inventory functionality
 if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems) {
@@ -208,20 +213,31 @@ if (!window.playerStats) {
     };
 }
 
-// Function to set up single-player mode
-async function setupSinglePlayer() {
-    console.log('Single Player mode active.');
-
-    const rollButton = document.getElementById('rollButton');
-    const betButton = document.getElementById('betButton');
-
-    if (rollButton && betButton) {
-        rollButton.addEventListener('click', handleRollDice);
-        betButton.addEventListener('click', handlePlaceBet);
-        console.log('Single Player setup completed.');
+    // Setup Single Player
+    if (isSinglePlayer) {
+        setupSinglePlayer();
     } else {
-        console.error('Required game buttons are missing.');
+        console.log('Main menu mode detected.');
     }
+
+    // Check for required elements
+    if (!rollButton || !betButton || !quitButton) {
+        console.error('Required elements are missing in the DOM');
+        return;
+    }
+
+    // Add event listeners
+    rollButton.addEventListener('click', handleRollDice);
+    betButton.addEventListener('click', handlePlaceBet);
+    quitButton.addEventListener('click', () => {
+        console.log('Quit Game clicked');
+        window.location.href = '/';
+    });
+});
+
+function setupSinglePlayer() {
+    console.log('Single Player mode active');
+    // Additional single-player setup logic
 }
 
 
