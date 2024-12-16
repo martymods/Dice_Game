@@ -191,6 +191,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const bet25Button = document.getElementById('bet25Button');
     const bet50Button = document.getElementById('bet50Button');
     const bet100Button = document.getElementById('bet100Button');
+    const rollButton = document.getElementById('rollButton');
+    const betButton = document.getElementById('betButton');
+    const quitButton = document.getElementById('quitButton');
 
     if (rollButton && betButton && quitButton && bettingStatus && rentStatus && bet25Button && bet50Button && bet100Button) {
         rollButton.addEventListener('click', () => console.log('Roll button clicked'));
