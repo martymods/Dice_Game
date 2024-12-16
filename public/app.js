@@ -81,9 +81,11 @@ saveStats();
 window.itemEffects = window.itemEffects || {};
 
 // Define the startSinglePlayer function globally
-window.startSinglePlayer = function () {
+function startSinglePlayer() {
     window.location.href = 'game.html?singlePlayer=true';
-};
+}
+window.startSinglePlayer = startSinglePlayer;
+
 
 // Ensure global functions for menu navigation
 window.showCreateGame = function () {
@@ -243,14 +245,34 @@ const requiredElementIds = [
 const missingElements = requiredElementIds.filter(id => !document.getElementById(id));
 if (missingElements.length > 0) {
     console.error(`One or more required elements are missing in the DOM: ${missingElements.join(', ')}`);
-    return;
+} else {
+    console.log('All required elements are present.');
 }
 
 
+
 // Example initialization for existing elements
-const rollButton = document.getElementById('rollButton');
-const betButton = document.getElementById('betButton');
-const quitButton = document.getElementById('quitButton');
+function setupSinglePlayer() {
+    console.log('Single Player mode active.');
+
+    const rollButton = document.getElementById('rollButton');
+    const betButton = document.getElementById('betButton');
+    const quitButton = document.getElementById('quitButton');
+
+    if (rollButton && betButton) {
+        rollButton.addEventListener('click', handleRollDice);
+        betButton.addEventListener('click', handlePlaceBet);
+        quitButton.addEventListener('click', quitGame);
+        console.log('Single Player setup completed.');
+    } else {
+        console.error('Required game buttons are missing.');
+    }
+}
+
+if (isSinglePlayer) {
+    setupSinglePlayer();
+}
+
 const bettingStatus = document.getElementById('betting-status');
 const rentStatus = document.getElementById('rent-status');
 const bet25Button = document.getElementById('bet25Button');
