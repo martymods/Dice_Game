@@ -392,7 +392,7 @@ function handleRollDice() {
             updateUI(); // Update UI with the new balance
             console.log(`Dice rolled: ${dice1}, ${dice2} (Sum: ${sum})`);
         });
-    }
+    
 
     function handlePlaceBet() {
         playSound("/sounds/UI_Click1.ogg");
