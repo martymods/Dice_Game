@@ -1,63 +1,24 @@
 // app.js
 
 // Ensure the required items are accessible globally
-window.startSinglePlayer = function () {
-    window.location.href = 'game.html?singlePlayer=true';
-};
-
 window.itemEffects = window.itemEffects || {}; // Remove if you are including it via another script
 
+// Import item effects for modules only
+if (typeof window === "undefined") {
+    
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    const inventoryButton = document.getElementById('inventoryButton');
-    const inventoryModal = document.getElementById('inventoryModal');
-    const closeInventoryButton = document.getElementById('closeInventoryButton');
-    const inventoryItems = document.getElementById('inventoryItems');
-
-    // Handle inventory functionality only if elements exist
-    if (!inventoryButton || !inventoryModal || !closeInventoryButton) {
-        console.error('One or more required inventory elements are missing in the DOM.');
-        return; // Exit the DOMContentLoaded handler
-    }
-
-    console.log('Inventory elements found. Adding event listeners.');
-
-    // Open inventory modal
-    inventoryButton.addEventListener('click', () => {
-        populateInventory();
-        inventoryModal.classList.remove('hidden');
-    });
-
-    // Close inventory modal
-    closeInventoryButton.addEventListener('click', () => {
-        inventoryModal.classList.add('hidden');
-    });
-
-    // Populate inventory with items
-    function populateInventory() {
-        if (!window.items) {
-            console.warn('No items to display in the inventory.');
-            return;
-        }
-
-        inventoryItems.innerHTML = ''; // Clear previous items
-        window.items.forEach(item => {
-            const listItem = document.createElement('li');
-            listItem.textContent = `${item.name} (${item.description})`;
-            inventoryItems.appendChild(listItem);
-        });
-    }
-
-    // Determine game mode
     const urlParams = new URLSearchParams(window.location.search);
     const isSinglePlayer = urlParams.has('singlePlayer');
 
     if (urlParams.has('stats')) {
         displayStats();
     } else if (isSinglePlayer) {
-        setupSinglePlayer(); // Initialize single-player mode
+        setupSinglePlayer();
     } else {
-        console.log('Main menu mode detected.');
-    }
+    console.log('No specific game mode detected. Defaulting to Main Menu.');
+}
 });
 
 // Ensure playerStats and related functions are globally accessible
@@ -90,7 +51,7 @@ if (!window.playerStats) {
     window.displayStats = function () {
         window.loadStats();
         const statsList = document.getElementById('stats-list');
-        statsList.innerHTML = `
+        statsList.innerHTML = 
             <ul>
                 <li>Games Played: ${playerStats.gamesPlayed}</li>
                 <li>Games Won: ${playerStats.gamesWon}</li>
@@ -104,28 +65,21 @@ if (!window.playerStats) {
                 <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
                 <li>Total Days Passed: ${playerStats.totalDaysPassed}</li>
             </ul>
-        `;
+        ;
     };
 
     window.formatTime = function (seconds) {
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
-        return `${hrs}h ${mins}m ${secs}s`;
+        return ${hrs}h ${mins}m ${secs}s;
     };
 
     window.startSinglePlayer = function () {
         window.location.href = 'game.html?singlePlayer=true';
     };
-    
 }
 
-const missingElements = requiredElements.filter(el => !el);
-   if (!inventoryButton || !inventoryModal || !closeInventoryButton) {
-    console.error('One or more required inventory elements are missing in the DOM.');
-} else {
-    // Proceed with setting up inventory event listeners.
-}
 
 async function setupSinglePlayer() {
     loadStats();
@@ -137,7 +91,7 @@ async function setupSinglePlayer() {
     let rent = 400;
     let maxTurns = 6;
     let progression = 1;
-    let items = []; // Inventory for single-player
+    let items = [];
     let dreamCoins = 0; // New DreamCoin balance
     let gameStartTime = Date.now();
 
@@ -192,20 +146,9 @@ async function setupSinglePlayer() {
 
         updateUI();
 
-        rollButton.addEventListener('click', () => {
-            console.log('Roll Dice button clicked.');
-            // Add roll dice logic here
-        });
-    
-        betButton.addEventListener('click', () => {
-            console.log('Place Bet button clicked.');
-            // Add betting logic here
-        });
-    
-        quitButton.addEventListener('click', () => {
-            console.log('Quit Game button clicked.');
-            window.location.href = '/';
-        });
+        rollButton.addEventListener('click', handleRollDice);
+        betButton.addEventListener('click', handlePlaceBet);
+        quitButton.addEventListener('click', quitGame);
 
         bet25Button.addEventListener('click', () => {
             playSound('/sounds/UI_Click1.ogg');
@@ -227,72 +170,58 @@ async function setupSinglePlayer() {
         updateUI();
     }
 
-    function handleRollDice() {
-        if (currentBet <= 0) {
-            alert('Place a bet first!');
-            return;
-        }
-    
-        playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
-    
-        const dice1 = Math.floor(Math.random() * 6) + 1;
-        const dice2 = Math.floor(Math.random() * 6) + 1;
-        const sum = dice1 + dice2;
-    
-        animateDice(dice1, dice2, () => {
-            playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"]);
-    
-            let rollBonus = 0;
-    
-            // Check for passive effects
-            items.forEach(item => {
-                if (item.name === 'Forged Papers 📜') {
-                    items = itemEffects.forgedPapersEffect(items);
-                }
-                if (item.name === 'Loaded Dice 🎲') {
-                    rollBonus += itemEffects.loadedDiceEffect(sum, currentBet);
-                }
-                if (item.name === "Old Gang Leader’s Blade 🔪") {
-                    dreamCoins += itemEffects.gangLeaderBladeEffect(items);
-                }
-            });
-    
-            if (sum === 7 || sum === 11) {
-                const winnings = currentBet * 2 + rollBonus; // Calculate winnings
-                balance += winnings; // Update balance
-                gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
-    
-                // Play Winner sound
-                playSound("/sounds/Winner_0.ogg");
-    
-                // Trigger flashing screen effect
-                flashScreen('gold');
-    
-                // Show winning amount
-                showWinningAmount(winnings);
-    
-            } else if (sum === 2 || sum === 3 || sum === 12) {
-                const loss = currentBet; // Loss amount
-                balance -= loss; // Deduct the bet
-                gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
-    
-                // Play Loser sound
-                playSound("/sounds/Loser_0.ogg");
-    
-                // Trigger flashing screen effect
-                flashScreen('red');
-    
-                // Show losing amount
-                showLosingAmount(loss);
-            } else {
-                balance += rollBonus; // Apply bonus
-                gameStatus.textContent = `Roll: ${sum}`;
-            }
-    
-            currentBet = 0; // Reset bet after roll
-            updateUIAfterRoll();
-        });
+function handleRollDice() {
+    if (currentBet <= 0) {
+        alert('Place a bet first!');
+        return;
     }
+
+    playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
+
+    const dice1 = Math.floor(Math.random() * 6) + 1;
+    const dice2 = Math.floor(Math.random() * 6) + 1;
+    const sum = dice1 + dice2;
+
+    animateDice(dice1, dice2, () => {
+        playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"]);
+
+        let rollBonus = 0;
+
+        // Check for passive effects
+        items.forEach(item => {
+            if (item.name === 'Forged Papers 📜') {
+                items = itemEffects.forgedPapersEffect(items);
+            }
+            if (item.name === 'Loaded Dice 🎲') {
+                rollBonus += itemEffects.loadedDiceEffect(sum, currentBet);
+            }
+            if (item.name === "Old Gang Leader’s Blade 🔪") {
+                dreamCoins += itemEffects.gangLeaderBladeEffect(items);
+            }
+        });
+
+        if (sum === 7 || sum === 11) {
+            balance += currentBet * 2 + rollBonus; // Double winnings plus bonus
+            gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
+
+            // Play Winner sound
+            playSound("/sounds/Winner_0.ogg");
+
+            // Trigger flashing screen effect
+            flashScreen('gold');
+
+        } else if (sum === 2 || sum === 3 || sum === 12) {
+            balance -= currentBet; // Deduct the bet
+            gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
+        } else {
+            balance += rollBonus; // Apply bonus
+            gameStatus.textContent = `Roll: ${sum}`;
+        }
+
+        currentBet = 0; // Reset bet after roll
+        updateUIAfterRoll();
+    });
+}
 
     function handlePlaceBet() {
         playSound("/sounds/UI_Click1.ogg");
@@ -313,7 +242,7 @@ async function setupSinglePlayer() {
         const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
         shuffledItems.forEach(item => {
             const itemButton = document.createElement('button');
-            itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
+            itemButton.textContent = ${item.name} (${item.rarity}) - $${item.cost.toLocaleString()};
             itemButton.style.backgroundColor = getItemColor(item.rarity);
             itemButton.onclick = () => {
                 handleItemPurchase(item);
@@ -342,7 +271,7 @@ async function setupSinglePlayer() {
                 items = itemEffects.forgedPapersEffect(items);
             }
             playSound("/sounds/UI_Buy1.ogg");
-            alert(`You purchased ${item.name}!`);
+            alert(You purchased ${item.name}!);
             popup.style.display = 'none';
             displayInventory();
             updateUI(); // Update UI after purchase
@@ -352,7 +281,7 @@ async function setupSinglePlayer() {
     }
 
     function displayInventory() {
-        inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
+        inventoryDisplay.innerHTML = items.map(item => <li>${item.name} (${item.description})</li>).join('');
     }
 
     function updateUIAfterRoll() {
@@ -380,7 +309,7 @@ async function setupSinglePlayer() {
     
         const rollsRemaining = maxTurns - turns;
         if (rollsRemaining > 0) {
-            rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
+            rentStatus.textContent = Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls;
         } else {
             if (balance >= rent) {
                 balance -= rent;
@@ -447,10 +376,10 @@ async function setupSinglePlayer() {
     }
 
     function updateUI() {
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+        bettingStatus.textContent = Balance: $${balance.toLocaleString()} | Bet: $${currentBet};
         if (dreamCoins > 0) {
-            rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
-            rentStatus.innerHTML += ` <img src="/images/DW_Logo.png" alt="DreamCoin" style="width: 20px; height: 20px;"> ${dreamCoins}`;
+            rentStatus.innerHTML = Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls;
+            rentStatus.innerHTML +=  <img src="/images/DW_Logo.png" alt="DreamCoin" style="width: 20px; height: 20px;"> ${dreamCoins};
         }
 
         updateBackgroundImage();
@@ -487,14 +416,14 @@ async function setupSinglePlayer() {
 
         let counter = 0;
         const interval = setInterval(() => {
-            dice1Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
-            dice2Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
+            dice1Element.src = /images/dice${Math.floor(Math.random() * 6) + 1}.png;
+            dice2Element.src = /images/dice${Math.floor(Math.random() * 6) + 1}.png;
             counter++;
 
             if (counter >= 10) {
                 clearInterval(interval);
-                dice1Element.src = `/images/dice${dice1}.png`;
-                dice2Element.src = `/images/dice${dice2}.png`;
+                dice1Element.src = /images/dice${dice1}.png;
+                dice2Element.src = /images/dice${dice2}.png;
                 callback();
             }
         }, 100);
@@ -541,7 +470,7 @@ async function setupSinglePlayer() {
         const rollsRemaining = maxTurns - turns;
     
         if (rollsRemaining > 0) {
-            rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
+            rentStatus.textContent = Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls;
         } else {
             if (balance >= rent) {
                 // Deduct rent and adjust progression
@@ -584,16 +513,12 @@ async function setupSinglePlayer() {
         playerStats.evictions++;
         playerStats.currentWinStreak = 0;
         saveStats();
-    
-        // Trigger red flash for game over
-        flashScreen('red');
-    
+
         const deathSound = new Audio('/sounds/Death0.ogg');
         deathSound.play().catch(err => console.error('Death sound error:', err));
-    
+
         gameOverContainer.style.display = 'block';
     }
-    
 
     function handleGameWin() {
         playerStats.gamesWon++;
@@ -614,99 +539,37 @@ async function setupSinglePlayer() {
         playerStats.totalMoneyLost += amount;
         saveStats();
     }
-    function flashScreen(color) {
-        const body = document.body;
-        const originalBackgroundColor = getComputedStyle(body).backgroundColor;
-    
-        // Apply flash effect
-        body.style.transition = 'background-color 0.2s ease';
-        body.style.backgroundColor = color; // Flash color
-        setTimeout(() => {
-            body.style.transition = 'background-color 0.5s ease';
-            body.style.backgroundColor = originalBackgroundColor;
-        }, 200); // Short flash duration
-    }
-    
-    
-    function showWinningAmount(amount) {
-        const winAmountDiv = document.createElement('div');
-        winAmountDiv.textContent = `+$${amount.toLocaleString()}`;
-        winAmountDiv.style.position = 'absolute';
-        winAmountDiv.style.top = '50%';
-        winAmountDiv.style.left = '50%';
-        winAmountDiv.style.transform = 'translate(-50%, -50%)';
-        winAmountDiv.style.fontSize = '48px';
-        winAmountDiv.style.color = 'limegreen';
-        winAmountDiv.style.textShadow = '0 0 10px limegreen, 0 0 20px lime, 0 0 30px green';
-        winAmountDiv.style.fontWeight = 'bold';
-        winAmountDiv.style.transition = 'opacity 2s ease-out';
-        winAmountDiv.style.opacity = '1';
-        winAmountDiv.style.zIndex = '9999';
-    
-        document.body.appendChild(winAmountDiv);
-    
-        // Fade out and remove after 2 seconds
-        setTimeout(() => {
-            winAmountDiv.style.opacity = '0';
-            setTimeout(() => {
-                document.body.removeChild(winAmountDiv);
-            }, 2000);
-        }, 2000);
-    }
-    
-    function showLosingAmount(amount) {
-        const loseAmountDiv = document.createElement('div');
-        loseAmountDiv.textContent = `-$${amount.toLocaleString()}`;
-        loseAmountDiv.style.position = 'absolute';
-        loseAmountDiv.style.top = '50%';
-        loseAmountDiv.style.left = '50%';
-        loseAmountDiv.style.transform = 'translate(-50%, -50%)';
-        loseAmountDiv.style.fontSize = '48px';
-        loseAmountDiv.style.color = 'red';
-        loseAmountDiv.style.textShadow = '0 0 10px red, 0 0 20px crimson, 0 0 30px darkred';
-        loseAmountDiv.style.fontWeight = 'bold';
-        loseAmountDiv.style.transition = 'opacity 2s ease-out';
-        loseAmountDiv.style.opacity = '1';
-        loseAmountDiv.style.zIndex = '9999';
-    
-        document.body.appendChild(loseAmountDiv);
-    
-        // Fade out and remove after 2 seconds
-        setTimeout(() => {
-            loseAmountDiv.style.opacity = '0';
-            setTimeout(() => {
-                document.body.removeChild(loseAmountDiv);
-            }, 2000);
-        }, 2000);
-    }
-    
-    
-        
-}// Stats Display Logic
-function displayStats() {
-    const statsList = document.getElementById('stats-list');
-    if (!statsList) {
-        console.error('Stats list element is missing.');
-        return;
-    }
+ function flashScreen(color) {
+    const body = document.body;
+    const originalBackgroundColor = getComputedStyle(body).backgroundColor;
 
-    // Load stats from localStorage and display them
-    const stats = JSON.parse(localStorage.getItem('playerStats')) || {};
-    statsList.innerHTML = `
+    // Flash effect
+    body.style.transition = 'background-color 0.3s ease';
+    body.style.backgroundColor = color; // Flash color
+    setTimeout(() => {
+        body.style.backgroundColor = originalBackgroundColor;
+    }, 300); // Duration of the flash
+}
+
+// Stats Display Logic
+function displayStats() {
+    loadStats(); // Ensure stats are loaded from localStorage
+    const statsList = document.getElementById('stats-list');
+    statsList.innerHTML = 
         <ul>
-            <li>Games Played: ${stats.gamesPlayed || 0}</li>
-            <li>Games Won: ${stats.gamesWon || 0}</li>
-            <li>Times Evicted: ${stats.evictions || 0}</li>
-            <li>Months Unlocked: ${stats.monthsUnlocked || 0}/12</li>
-            <li>Total Money Won: $${(stats.totalMoneyWon || 0).toLocaleString()}</li>
-            <li>Total Money Lost: $${(stats.totalMoneyLost || 0).toLocaleString()}</li>
+            <li>Games Played: ${playerStats.gamesPlayed}</li>
+            <li>Games Won: ${playerStats.gamesWon}</li>
+            <li>Times Evicted: ${playerStats.evictions}</li>
+            <li>Months Unlocked: ${playerStats.monthsUnlocked}/12</li>
+            <li>Total Money Won: $${playerStats.totalMoneyWon.toLocaleString()}</li>
+            <li>Total Money Lost: $${playerStats.totalMoneyLost.toLocaleString()}</li>
             <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
             <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
             <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
             <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
             <li>Total Days Passed: ${playerStats.totalDaysPassed}</li>
         </ul>
-    `;
+    ;
 }
 window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
