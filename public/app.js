@@ -143,7 +143,8 @@ if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems)
 
 // Determine game mode
 const urlParams = new URLSearchParams(window.location.search);
-const isSinglePlayer = urlParams.has('singlePlayer');
+isSinglePlayer = urlParams.has('singlePlayer'); // Use the globally declared variable
+
 
 if (urlParams.has('stats')) {
     displayStats();
