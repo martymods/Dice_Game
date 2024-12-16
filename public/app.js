@@ -1007,6 +1007,3 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSinglePlayer();
     updateUI();
 });
-
-}
-}
