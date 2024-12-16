@@ -467,3 +467,332 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('One or more required inventory elements are missing in the DOM.');
     }
 });
+function handleGameOver() {
+    const gameEndTime = Date.now();
+    const timePlayed = Math.floor((gameEndTime - gameStartTime) / 1000);
+    playerStats.totalTimePlayed += timePlayed;
+    playerStats.evictions++;
+    playerStats.currentWinStreak = 0;
+    saveStats();
+
+    flashScreen('red');
+
+    const deathSound = new Audio('/sounds/Death0.ogg');
+    deathSound.play().catch(err => console.error('Death sound error:', err));
+
+    const gameOverContainer = document.getElementById('gameOverContainer');
+    if (gameOverContainer) {
+        gameOverContainer.style.display = 'block';
+    } else {
+        console.error('Game Over container element is missing.');
+    }
+}
+
+function handleGameWin() {
+    playerStats.gamesWon++;
+    playerStats.currentWinStreak++;
+    playerStats.longestWinStreak = Math.max(
+        playerStats.longestWinStreak,
+        playerStats.currentWinStreak
+    );
+    saveStats();
+}
+
+function updateUIAfterRoll() {
+    updateUI();
+    turns++;
+
+    const rentPaidStatements = [
+        "Well done! You paid the rent. But success has its price—the rent just went up!",
+        "Congratulations on keeping up! I knew you could handle more, so I raised the rent!",
+        "Impressive! You’ve survived another month. Let’s see if you can handle next month’s new rent!",
+        "Good job paying the rent! But comfort is costly—your rent just increased.",
+        "You did it! The rent’s paid. Now let’s see how you handle my latest adjustment.",
+        "You’re doing so well! I couldn’t resist rewarding you with higher rent.",
+        "Bravo! You’ve proven your worth… and now you’ll prove you can pay even more.",
+        "Rent paid! Your reward? A bigger challenge. I’ve raised the stakes—and the rent!",
+        "Fantastic work! To celebrate, I’ve made the rent a little more interesting for next time.",
+        "You made it through! But the better you perform, the more I expect—rent’s going up!"
+    ];
+
+    const rollsRemaining = maxTurns - turns;
+    const rentStatus = document.getElementById('rent-status');
+    if (rollsRemaining > 0 && rentStatus) {
+        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
+    } else {
+        if (balance >= rent) {
+            balance -= rent;
+            rent *= progression <= 9 ? 4 : 5;
+            maxTurns++;
+            progression++;
+            turns = 0;
+
+            playerStats.totalDaysPassed += 30;
+            playerStats.monthsUnlocked = Math.max(playerStats.monthsUnlocked, progression);
+            saveStats();
+
+            const randomStatement = rentPaidStatements[Math.floor(Math.random() * rentPaidStatements.length)];
+            alert(randomStatement);
+
+            showItemPopup();
+        } else {
+            handleGameOver();
+        }
+    }
+
+    if (balance <= 0) {
+        handleGameOver();
+    }
+}
+function showItemPopup() {
+    const popup = document.getElementById('buy-item-container');
+    const itemList = document.getElementById('item-list');
+
+    if (!popup || !itemList) {
+        console.error('Required popup elements are missing.');
+        return;
+    }
+
+    popup.style.display = 'block';
+    itemList.innerHTML = '';
+
+    const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
+    shuffledItems.forEach(item => {
+        const itemButton = document.createElement('button');
+        itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
+        itemButton.style.backgroundColor = getItemColor(item.rarity);
+        itemButton.onclick = () => {
+            handleItemPurchase(item);
+        };
+        itemList.appendChild(itemButton);
+    });
+
+    const skipButton = document.createElement('button');
+    skipButton.textContent = 'Save Money';
+    skipButton.onclick = () => {
+        popup.style.display = 'none';
+    };
+    itemList.appendChild(skipButton);
+}
+
+function handleItemPurchase(item) {
+    if (balance >= item.cost) {
+        balance -= item.cost;
+        items.push(item);
+        alert(`You purchased ${item.name}!`);
+        const popup = document.getElementById('buy-item-container');
+        if (popup) popup.style.display = 'none';
+        updateUI();
+    } else {
+        alert('Not enough money to buy this item.');
+    }
+}
+
+function getItemColor(rarity) {
+    switch (rarity) {
+        case 'Common': return 'gray';
+        case 'Uncommon': return 'blue';
+        case 'Rare': return 'purple';
+        case 'Very Rare': return 'gold';
+        default: return 'white';
+    }
+}
+function animateDice(dice1, dice2, callback) {
+    const dice1Element = document.getElementById('dice1');
+    const dice2Element = document.getElementById('dice2');
+
+    if (!dice1Element || !dice2Element) {
+        console.error('Dice elements are missing in the DOM.');
+        return;
+    }
+
+    let counter = 0;
+    const interval = setInterval(() => {
+        dice1Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
+        dice2Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
+        counter++;
+
+        if (counter >= 10) {
+            clearInterval(interval);
+            dice1Element.src = `/images/dice${dice1}.png`;
+            dice2Element.src = `/images/dice${dice2}.png`;
+            callback();
+        }
+    }, 100);
+}
+
+function playSound(sounds, randomize = false) {
+    const soundFile = Array.isArray(sounds) && randomize
+        ? sounds[Math.floor(Math.random() * sounds.length)]
+        : sounds;
+
+    const audio = new Audio(soundFile);
+    audio.play().catch(err => console.error('Audio play error:', err));
+}
+function flashScreen(color) {
+    const body = document.body;
+    const originalBackgroundColor = getComputedStyle(body).backgroundColor;
+
+    body.style.transition = 'background-color 0.2s ease';
+    body.style.backgroundColor = color;
+    setTimeout(() => {
+        body.style.transition = 'background-color 0.5s ease';
+        body.style.backgroundColor = originalBackgroundColor;
+    }, 200);
+}
+function trackMoneyWon(amount) {
+    playerStats.totalMoneyWon += amount;
+    saveStats();
+}
+
+function trackMoneyLost(amount) {
+    playerStats.totalMoneyLost += amount;
+    saveStats();
+}
+
+function displayStats() {
+    const statsList = document.getElementById('stats-list');
+    if (!statsList) {
+        console.error('Stats list element is missing.');
+        return;
+    }
+
+    const stats = JSON.parse(localStorage.getItem('playerStats')) || {};
+    statsList.innerHTML = `
+        <ul>
+            <li>Games Played: ${stats.gamesPlayed || 0}</li>
+            <li>Games Won: ${stats.gamesWon || 0}</li>
+            <li>Times Evicted: ${stats.evictions || 0}</li>
+            <li>Months Unlocked: ${stats.monthsUnlocked || 0}/12</li>
+            <li>Total Money Won: $${(stats.totalMoneyWon || 0).toLocaleString()}</li>
+            <li>Total Money Lost: $${(stats.totalMoneyLost || 0).toLocaleString()}</li>
+            <li>Hustlers Recruited: ${stats.hustlersRecruited || 0}</li>
+            <li>Total Time Played: ${formatTime(stats.totalTimePlayed || 0)}</li>
+            <li>Current Winning Streak: ${stats.currentWinStreak || 0}</li>
+            <li>Longest Winning Streak: ${stats.longestWinStreak || 0}</li>
+            <li>Total Days Passed: ${stats.totalDaysPassed || 0}</li>
+        </ul>
+    `;
+}
+function formatTime(seconds) {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs}h ${mins}m ${secs}s`;
+}
+function showWinningAmount(amount) {
+    const winAmountDiv = document.createElement('div');
+    winAmountDiv.textContent = `+$${amount.toLocaleString()}`;
+    winAmountDiv.style.position = 'absolute';
+    winAmountDiv.style.top = '50%';
+    winAmountDiv.style.left = '50%';
+    winAmountDiv.style.transform = 'translate(-50%, -50%)';
+    winAmountDiv.style.fontSize = '48px';
+    winAmountDiv.style.color = 'limegreen';
+    winAmountDiv.style.textShadow = '0 0 10px limegreen, 0 0 20px lime, 0 0 30px green';
+    winAmountDiv.style.fontWeight = 'bold';
+    winAmountDiv.style.transition = 'opacity 2s ease-out';
+    winAmountDiv.style.opacity = '1';
+    winAmountDiv.style.zIndex = '9999';
+
+    document.body.appendChild(winAmountDiv);
+
+    setTimeout(() => {
+        winAmountDiv.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(winAmountDiv);
+        }, 2000);
+    }, 2000);
+}
+
+function showLosingAmount(amount) {
+    const loseAmountDiv = document.createElement('div');
+    loseAmountDiv.textContent = `-$${amount.toLocaleString()}`;
+    loseAmountDiv.style.position = 'absolute';
+    loseAmountDiv.style.top = '50%';
+    loseAmountDiv.style.left = '50%';
+    loseAmountDiv.style.transform = 'translate(-50%, -50%)';
+    loseAmountDiv.style.fontSize = '48px';
+    loseAmountDiv.style.color = 'red';
+    loseAmountDiv.style.textShadow = '0 0 10px red, 0 0 20px crimson, 0 0 30px darkred';
+    loseAmountDiv.style.fontWeight = 'bold';
+    loseAmountDiv.style.transition = 'opacity 2s ease-out';
+    loseAmountDiv.style.opacity = '1';
+    loseAmountDiv.style.zIndex = '9999';
+
+    document.body.appendChild(loseAmountDiv);
+
+    setTimeout(() => {
+        loseAmountDiv.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(loseAmountDiv);
+        }, 2000);
+    }, 2000);
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const inventoryButton = document.getElementById('inventoryButton');
+    const inventoryModal = document.getElementById('inventoryModal');
+    const closeInventoryButton = document.getElementById('closeInventoryButton');
+    const inventoryItems = document.getElementById('inventoryItems');
+
+    if (inventoryButton && inventoryModal && closeInventoryButton && inventoryItems) {
+        inventoryModal.style.display = 'none'; // Ensure the inventory is closed by default
+
+        inventoryButton.addEventListener('click', () => {
+            populateInventory();
+            inventoryModal.style.display = 'block';
+        });
+
+        closeInventoryButton.addEventListener('click', () => {
+            inventoryModal.style.display = 'none';
+        });
+
+        function populateInventory() {
+            if (!window.items || window.items.length === 0) {
+                console.warn('No items to display in the inventory.');
+                return;
+            }
+            inventoryItems.innerHTML = '';
+            window.items.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${item.name} (${item.description})`;
+                inventoryItems.appendChild(listItem);
+            });
+        }
+    } else {
+        console.warn('One or more required inventory elements are missing in the DOM.');
+    }
+});
+function quitGame() {
+    window.location.href = '/';
+}
+function logMissingElements(elementIds) {
+    const missingElements = elementIds.filter(id => !document.getElementById(id));
+    if (missingElements.length > 0) {
+        console.error(`Missing DOM elements: ${missingElements.join(', ')}`);
+    }
+    return missingElements;
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const requiredElementIds = [
+        'rollButton',
+        'betButton',
+        'quitButton',
+        'betting-status',
+        'gameStatus',
+        'rent-status',
+        'inventoryItems',
+        'buy-item-container',
+        'item-list',
+        'gameOverContainer',
+        'bet25Button',
+        'bet50Button',
+        'bet100Button'
+    ];
+
+    const missingElements = logMissingElements(requiredElementIds);
+
+    if (missingElements.length === 0) {
+        console.log('All required elements are present.');
+    }
+});
