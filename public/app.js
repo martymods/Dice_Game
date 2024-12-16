@@ -316,7 +316,6 @@ script.onload = () => {
     }
 
     console.log('All required elements are present.');
-};
 
     updateUI();
 
@@ -349,7 +348,7 @@ script.onload = () => {
         playSound('/sounds/UI_Click1.ogg');
         setBet(balance);
     });
-} // Closing brace for script.onload
+}; // Fixed: This closes the script.onload function properly
 
 function setBet(amount) {
     if (amount > balance) amount = balance;
@@ -362,6 +361,8 @@ function handleRollDice() {
         alert('Place a bet first!');
         return;
     }
+    // Add roll dice logic here
+}
 
         playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
     
