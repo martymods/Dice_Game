@@ -251,24 +251,6 @@ if (missingElements.length > 0) {
 
 
 
-// Example initialization for existing elements
-function setupSinglePlayer() {
-    console.log('Single Player mode active.');
-
-    const rollButton = document.getElementById('rollButton');
-    const betButton = document.getElementById('betButton');
-    const quitButton = document.getElementById('quitButton');
-
-    if (rollButton && betButton) {
-        rollButton.addEventListener('click', handleRollDice);
-        betButton.addEventListener('click', handlePlaceBet);
-        quitButton.addEventListener('click', quitGame);
-        console.log('Single Player setup completed.');
-    } else {
-        console.error('Required game buttons are missing.');
-    }
-}
-
 if (isSinglePlayer) {
     setupSinglePlayer();
 }
@@ -348,7 +330,8 @@ script.onload = () => {
         playSound('/sounds/UI_Click1.ogg');
         setBet(balance);
     });
-}; // Fixed: This closes the script.onload function properly
+};
+
 
 function setBet(amount) {
     if (amount > balance) amount = balance;
