@@ -256,6 +256,7 @@ async function setupSinglePlayer() {
                 }
             } else if (sum === 2 || sum === 3 || sum === 12) {
                 // Losing roll
+                balance -= currentBet; // Deduct the bet on loss
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
                 playSound("/sounds/Loser_0.ogg");
                 flashScreen('red');
@@ -279,6 +280,7 @@ async function setupSinglePlayer() {
             }, 1000); // Restore after 1 second
         });
     }
+    
     
     
     function activateOnFire() {
@@ -507,9 +509,6 @@ async function setupSinglePlayer() {
         const dice1Element = document.getElementById('dice1');
         const dice2Element = document.getElementById('dice2');
     
-        dice1Element.style.animation = 'rollDice 1s ease';
-        dice2Element.style.animation = 'rollDice 1s ease';
-    
         let counter = 0;
         const interval = setInterval(() => {
             const dice1Src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}${onFire ? '.gif' : '.png'}`;
@@ -522,14 +521,10 @@ async function setupSinglePlayer() {
                 clearInterval(interval);
                 dice1Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice1}${onFire ? '.gif' : '.png'}`;
                 dice2Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice2}${onFire ? '.gif' : '.png'}`;
-    
-                dice1Element.style.animation = ''; // Reset animation
-                dice2Element.style.animation = ''; // Reset animation
                 callback();
             }
         }, 100);
     }
-    
     
     
 
@@ -749,4 +744,3 @@ window.startSinglePlayer = function () {
         window.location.href = 'game.html?singlePlayer=true';
     }, 2000);
 };
-
