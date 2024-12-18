@@ -121,10 +121,30 @@ async function setupSinglePlayer() {
     ambienceSound.play().catch(err => console.error('Ambience sound error:', err));
 
      // Ensure necessary elements exist
-    const requiredElements = [
-        rollButton, betButton, quitButton, bettingStatus, gameStatus, rentStatus,
-        inventoryDisplay, popup, itemList, gameOverContainer, bet25Button, bet50Button, bet100Button
+     const requiredElements = [
+        { id: 'rollButton', element: rollButton },
+        { id: 'betButton', element: betButton },
+        { id: 'quitButton', element: quitButton },
+        { id: 'betting-status', element: bettingStatus },
+        { id: 'gameStatus', element: gameStatus },
+        { id: 'rent-status', element: rentStatus },
+        { id: 'inventory-list', element: inventoryDisplay },
+        { id: 'buy-item-container', element: popup },
+        { id: 'item-list', element: itemList },
+        { id: 'gameOverContainer', element: gameOverContainer },
+        { id: 'bet25Button', element: bet25Button },
+        { id: 'bet50Button', element: bet50Button },
+        { id: 'bet100Button', element: bet100Button }
     ];
+    
+    for (const { id, element } of requiredElements) {
+        if (!element) {
+            console.error(`Missing required element: ${id}`);
+            alert(`Missing required element: ${id}. Please check the HTML.`);
+            return;
+        }
+    }
+    
 
     for (const { id, element } of requiredElements) {
         if (!element) {
