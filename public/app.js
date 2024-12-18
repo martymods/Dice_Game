@@ -126,12 +126,14 @@ async function setupSinglePlayer() {
         inventoryDisplay, popup, itemList, gameOverContainer, bet25Button, bet50Button, bet100Button
     ];
 
-    for (const element of requiredElements) {
+    for (const { id, element } of requiredElements) {
         if (!element) {
-            console.error('One or more required elements are missing in the DOM.');
+            console.error(`Missing required element: ${id}`);
+            alert(`Missing required element: ${id}. Please check the HTML.`);
             return;
         }
     }
+    
 
     const script = document.createElement('script');
     script.src = '/items.js';
