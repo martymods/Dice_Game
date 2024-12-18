@@ -294,4 +294,23 @@ h1 {
         box-shadow: 0 0 40px rgba(255, 215, 0, 1);
     }
 }
+/* Smaller Quit Button */
+#quitButton.small-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    z-index: 1000;
+}
+
+#quitButton.small-button:hover {
+    background-color: #666;
+}
 
