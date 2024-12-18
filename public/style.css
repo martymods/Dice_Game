@@ -97,8 +97,15 @@ h1 {
 
 /* Inventory Styling */
 #inventory {
-    margin-top: 20px;
-    text-align: left;
+    display: none; /* Initially hidden */
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    width: 80%;
+    background: white;
+    border: 1px solid black;
+    padding: 10px;
+    z-index: 10;
 }
 
 #inventory h3 {
