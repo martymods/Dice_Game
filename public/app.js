@@ -1,5 +1,11 @@
 // app.js
 
+// Fire Status
+let winStreak = 0; // Track the current winning streak
+let onFire = false; // Whether the dice are "on fire"
+let fireSound; // Sound for when "on fire" is active
+
+
 // Ensure the required items are accessible globally
 window.itemEffects = window.itemEffects || {}; // Remove if you are including it via another script
 
@@ -222,42 +228,76 @@ async function setupSinglePlayer() {
                 }
             });
     
+            let winnings = 0;
             if (sum === 7 || sum === 11) {
-                const winnings = currentBet * 2 + rollBonus; // Calculate winnings
-                balance += winnings; // Update balance
+                // Winning roll
+                winnings = currentBet * 2 + rollBonus;
+                if (onFire) winnings *= 2; // Apply 2x multiplier if "on fire"
+                balance += winnings;
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
     
-                // Play Winner sound
                 playSound("/sounds/Winner_0.ogg");
-    
-                // Trigger flashing screen effect
                 flashScreen('gold');
-    
-                // Show winning amount
                 showWinningAmount(winnings);
     
+                winStreak++;
+                if (winStreak >= 3 && !onFire) {
+                    activateOnFire(); // Activate "on fire" if streak is 3
+                }
             } else if (sum === 2 || sum === 3 || sum === 12) {
-                const loss = currentBet; // Loss amount
-                balance -= loss; // Deduct the bet
+                // Losing roll
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
-    
-                // Play Loser sound
                 playSound("/sounds/Loser_0.ogg");
-    
-                // Trigger flashing screen effect
                 flashScreen('red');
+                showLosingAmount(currentBet);
     
-                // Show losing amount
-                showLosingAmount(loss);
+                winStreak = 0; // Reset streak
+                if (onFire) deactivateOnFire(); // Deactivate "on fire" on loss
             } else {
-                balance += rollBonus; // Apply bonus
+                // Neutral roll
+                balance += rollBonus;
                 gameStatus.textContent = `Roll: ${sum}`;
             }
     
-            currentBet = 0; // Reset bet after roll
+            currentBet = 0;
             updateUIAfterRoll();
         });
     }
+    
+    function activateOnFire() {
+        onFire = true;
+        playSound("/sounds/FireIgnite0.ogg"); // Play ignite sound
+    
+        // Change dice to fire versions
+        document.getElementById('dice1').src = '/images/DiceFire1.gif';
+        document.getElementById('dice2').src = '/images/DiceFire2.gif';
+    
+        // Start fire sound loop
+        fireSound = new Audio('/sounds/FireBurn0.ogg');
+        fireSound.loop = true;
+        fireSound.play().catch(err => console.error('Error playing fire burn sound:', err));
+    
+        gameStatus.textContent = "🔥 You're on fire! All winnings are doubled! 🔥";
+    }
+    
+    function deactivateOnFire() {
+        onFire = false;
+        playSound("/sounds/FireEnd0.ogg"); // Play end sound
+    
+        // Revert dice to normal versions
+        document.getElementById('dice1').src = '/images/dice1.png';
+        document.getElementById('dice2').src = '/images/dice2.png';
+    
+        // Stop fire sound loop
+        if (fireSound) {
+            fireSound.pause();
+            fireSound = null;
+        }
+    
+        gameStatus.textContent = "🔥 Fire has ended. Good luck! 🔥";
+    }
+    
+    
 
     function handlePlaceBet() {
         playSound("/sounds/UI_Click1.ogg");
@@ -449,21 +489,22 @@ async function setupSinglePlayer() {
     function animateDice(dice1, dice2, callback) {
         const dice1Element = document.getElementById('dice1');
         const dice2Element = document.getElementById('dice2');
-
+    
         let counter = 0;
         const interval = setInterval(() => {
-            dice1Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
-            dice2Element.src = `/images/dice${Math.floor(Math.random() * 6) + 1}.png`;
+            dice1Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}.gif`;
+            dice2Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}.gif`;
             counter++;
-
+    
             if (counter >= 10) {
                 clearInterval(interval);
-                dice1Element.src = `/images/dice${dice1}.png`;
-                dice2Element.src = `/images/dice${dice2}.png`;
+                dice1Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice1}.gif`;
+                dice2Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice2}.gif`;
                 callback();
             }
         }, 100);
     }
+    
 
     function playSound(sounds, randomize = false) {
         const soundFile = Array.isArray(sounds) && randomize
