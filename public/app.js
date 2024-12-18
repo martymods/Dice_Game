@@ -204,18 +204,28 @@ async function setupSinglePlayer() {
             return;
         }
     
+        // Dim the background and highlight the dice during the roll
+        const gameContainer = document.getElementById('game-container');
+        const diceContainer = document.getElementById('dice-container');
+        gameContainer.classList.add('dimmed'); // Dim the background
+        diceContainer.classList.add('dimmed-dice'); // Brighten the dice
+    
+        // Play dice shake sound
         playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
     
+        // Generate dice rolls
         const dice1 = Math.floor(Math.random() * 6) + 1;
         const dice2 = Math.floor(Math.random() * 6) + 1;
         const sum = dice1 + dice2;
     
+        // Animate dice rolling
         animateDice(dice1, dice2, () => {
+            // Play dice roll sound
             playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"]);
     
             let rollBonus = 0;
     
-            // Check for passive effects
+            // Check for passive effects from items
             items.forEach(item => {
                 if (item.name === 'Forged Papers 📜') {
                     items = itemEffects.forgedPapersEffect(items);
@@ -261,8 +271,15 @@ async function setupSinglePlayer() {
     
             currentBet = 0;
             updateUIAfterRoll();
+    
+            // Restore background brightness after roll
+            setTimeout(() => {
+                gameContainer.classList.remove('dimmed');
+                diceContainer.classList.remove('dimmed-dice');
+            }, 1000); // Restore after 1 second
         });
     }
+    
     
     function activateOnFire() {
         onFire = true;
@@ -490,9 +507,11 @@ async function setupSinglePlayer() {
         const dice1Element = document.getElementById('dice1');
         const dice2Element = document.getElementById('dice2');
     
+        dice1Element.style.animation = 'rollDice 1s ease';
+        dice2Element.style.animation = 'rollDice 1s ease';
+    
         let counter = 0;
         const interval = setInterval(() => {
-            // Use .png for normal dice and .gif for fire dice
             const dice1Src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}${onFire ? '.gif' : '.png'}`;
             const dice2Src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}${onFire ? '.gif' : '.png'}`;
             dice1Element.src = dice1Src;
@@ -501,15 +520,16 @@ async function setupSinglePlayer() {
     
             if (counter >= 10) {
                 clearInterval(interval);
-                // Set final dice faces
-                const finalDice1Src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice1}${onFire ? '.gif' : '.png'}`;
-                const finalDice2Src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice2}${onFire ? '.gif' : '.png'}`;
-                dice1Element.src = finalDice1Src;
-                dice2Element.src = finalDice2Src;
+                dice1Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice1}${onFire ? '.gif' : '.png'}`;
+                dice2Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice2}${onFire ? '.gif' : '.png'}`;
+    
+                dice1Element.style.animation = ''; // Reset animation
+                dice2Element.style.animation = ''; // Reset animation
                 callback();
             }
         }, 100);
     }
+    
     
     
 
