@@ -282,5 +282,16 @@ h1 {
 }
 
 #dice-container.dimmed-dice {
-    filter: brightness(1.5); /* Highlight dice */
+    filter: brightness(2); /* Brighten the dice */
+    animation: glow 1s infinite alternate; /* Add a glowing effect */
 }
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+    to {
+        box-shadow: 0 0 40px rgba(255, 215, 0, 1);
+    }
+}
+
