@@ -646,5 +646,16 @@ function displayStats() {
     `;
 }
 window.startSinglePlayer = function () {
-    window.location.href = 'game.html?singlePlayer=true';
+    // Show the transition overlay
+    const overlay = document.getElementById('transition-overlay');
+    overlay.style.display = 'flex';
+
+    // Play the transition sound
+    const transitionSound = new Audio('/sounds/transitionSFX0.ogg');
+    transitionSound.play().catch(err => console.error('Error playing transition sound:', err));
+
+    // Wait for 2 seconds before navigating to the game
+    setTimeout(() => {
+        window.location.href = 'game.html?singlePlayer=true';
+    }, 2000);
 };
