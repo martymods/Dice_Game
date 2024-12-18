@@ -208,7 +208,7 @@ async function setupSinglePlayer() {
         const gameContainer = document.getElementById('game-container');
         const diceContainer = document.getElementById('dice-container');
         gameContainer.classList.add('dimmed'); // Dim the background
-        diceContainer.classList.add('dimmed-dice'); // Brighten the dice
+        diceContainer.classList.add('dimmed-dice'); // Brighten the dice and add glow
     
         // Play dice shake sound
         playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
@@ -749,3 +749,4 @@ window.startSinglePlayer = function () {
         window.location.href = 'game.html?singlePlayer=true';
     }, 2000);
 };
+
