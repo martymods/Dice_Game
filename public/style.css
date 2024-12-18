@@ -224,3 +224,19 @@ h1 {
     max-width: 100%;
     max-height: 100%;
 }
+
+.button-image {
+    cursor: pointer;
+    width: 120px; /* Adjust as needed */
+    height: auto;
+    margin: 10px; /* Space between buttons */
+    transition: transform 0.2s ease-in-out;
+}
+
+.button-image:hover {
+    transform: scale(1.1); /* Slight zoom effect on hover */
+}
+
+.button-image:active {
+    transform: scale(0.95); /* Slight shrink effect on click */
+}
