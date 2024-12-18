@@ -492,18 +492,25 @@ async function setupSinglePlayer() {
     
         let counter = 0;
         const interval = setInterval(() => {
-            dice1Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}.gif`;
-            dice2Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}.gif`;
+            // Use .png for normal dice and .gif for fire dice
+            const dice1Src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}${onFire ? '.gif' : '.png'}`;
+            const dice2Src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}${onFire ? '.gif' : '.png'}`;
+            dice1Element.src = dice1Src;
+            dice2Element.src = dice2Src;
             counter++;
     
             if (counter >= 10) {
                 clearInterval(interval);
-                dice1Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice1}.gif`;
-                dice2Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice2}.gif`;
+                // Set final dice faces
+                const finalDice1Src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice1}${onFire ? '.gif' : '.png'}`;
+                const finalDice2Src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice2}${onFire ? '.gif' : '.png'}`;
+                dice1Element.src = finalDice1Src;
+                dice2Element.src = finalDice2Src;
                 callback();
             }
         }, 100);
     }
+    
     
 
     function playSound(sounds, randomize = false) {
