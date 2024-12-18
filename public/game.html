@@ -9,23 +9,12 @@
 <body>
     <div id="game-container">
         <h1>The Other Half</h1>
+        <video id="landlordVideo" src="/video/LandLord_video.mp4" autoplay muted loop style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;" onerror="console.error('Video failed to load. Check the file path.')"></video>
 
-        <!-- Background Video -->
-        <video 
-            id="landlordVideo" 
-            src="/video/LandLord_video.mp4" 
-            autoplay muted loop 
-            style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;" 
-            onerror="console.error('Video failed to load. Check the file path.')">
-        </video>
-
-        <!-- Player Info -->
         <div id="player-info">
             <p id="betting-status">Balance: $0 | Bet: $0</p>
             <p id="rent-status">Rent Due: $0 in 0 rolls</p>
         </div>
-        
-        <!-- Game Controls -->
         <div id="controls">
             <button id="rollButton">Roll Dice</button>
             <input type="number" id="betAmount" placeholder="Enter Bet Amount" min="1">
@@ -35,41 +24,25 @@
             <button id="bet100Button">Bet 100%</button>
             <button id="quitButton">Quit Game</button>
         </div>
-
-        <!-- Dice Images -->
         <div id="dice-container">
             <img id="dice1" class="dice" src="/images/dice1.png" alt="Dice 1">
             <img id="dice2" class="dice" src="/images/dice2.png" alt="Dice 2">
         </div>
-
-        <!-- Game Status -->
         <p id="gameStatus"></p>
-
-        <!-- Buy Item Modal -->
         <div id="buy-item-container" style="display: none;">
             <h2>Buy an Item</h2>
             <div id="item-list"></div>
             <button id="saveMoneyButton">Save Money</button>
         </div>
-
-        <!-- Leaderboard Container -->
+        <div id="inventory">
+            <h3>Inventory</h3>
+            <ul id="inventory-list"></ul>
+        </div>
         <div id="leaderboardContainer" style="display: none;"></div>
-
-        <!-- Game Over Section -->
+        <!-- Game Over Button (hidden initially) -->
         <div id="gameOverContainer" style="display: none;">
             <h2>Game Over</h2>
             <button id="gameOverButton" onclick="window.location.href='/';">Return to Main Menu</button>
-        </div>
-    </div>
-
-    <!-- Inventory Section -->
-    <button id="inventoryButton">Inventory</button>
-
-    <div id="inventoryModal" class="hidden">
-        <div id="inventoryContent">
-            <h2>Your Inventory</h2>
-            <ul id="inventoryItems"></ul>
-            <button id="closeInventoryButton">Close</button>
         </div>
     </div>
 
