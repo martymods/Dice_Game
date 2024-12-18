@@ -648,4 +648,3 @@ function displayStats() {
 window.startSinglePlayer = function () {
     window.location.href = 'game.html?singlePlayer=true';
 };
-
