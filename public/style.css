@@ -202,7 +202,25 @@ h1 {
     #dice-container {
         display: flex;
         justify-content: center;
+        align-items: center;
+        gap: 20px; /* Add spacing between the dice */
+        margin-top: 50px;
+        position: relative;
     }
+    
+    .dice {
+        width: 150px; /* Increase size of dice */
+        height: 150px;
+        border-radius: 10px; /* Slightly round corners for a polished look */
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7), 0 0 30px rgba(255, 255, 255, 0.5); /* Glow effect */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .dice:hover {
+        transform: scale(1.1); /* Slight zoom-in effect when hovered */
+        box-shadow: 0 0 20px rgba(255, 255, 0, 0.9), 0 0 40px rgba(255, 215, 0, 0.7); /* Stronger glow when hovered */
+    }
+    
 
     #rollButton, #betButton, #quitButton, #bet25Button, #bet50Button, #bet100Button {
         width: 100%;
@@ -246,4 +264,23 @@ h1 {
 
 .button-image:active {
     transform: scale(0.95); /* Slight shrink effect on click */
+}
+@keyframes rollDice {
+    0% {
+        transform: rotate(0) scale(1);
+    }
+    50% {
+        transform: rotate(360deg) scale(1.2);
+    }
+    100% {
+        transform: rotate(720deg) scale(1);
+    }
+}
+#game-container.dimmed {
+    filter: brightness(0.5);
+    transition: filter 0.3s ease;
+}
+
+#dice-container.dimmed-dice {
+    filter: brightness(1.5); /* Highlight dice */
 }
