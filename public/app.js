@@ -557,6 +557,24 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Combination modal elements are missing in the DOM.');
     }
 });
+document.addEventListener('DOMContentLoaded', () => {
+    const introContainer = document.getElementById('intro-container');
+    const mainMenu = document.getElementById('main-menu');
+    const skipIntroButton = document.getElementById('skip-intro');
+
+    // Transition to main menu after 5 seconds
+    const timer = setTimeout(() => {
+        introContainer.style.display = 'none';
+        mainMenu.style.display = 'flex';
+    }, 15000);
+
+    // Skip intro immediately if button is clicked
+    skipIntroButton.addEventListener('click', () => {
+        clearTimeout(timer);
+        introContainer.style.display = 'none';
+        mainMenu.style.display = 'flex';
+    });
+});
 
 
     function getItemColor(rarity) {
