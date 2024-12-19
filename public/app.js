@@ -494,6 +494,28 @@ async function setupSinglePlayer() {
     function quitGame() {
         window.location.href = '/';
     }
+    // Handle Showing and Hiding the Combinations Modal
+    document.addEventListener('DOMContentLoaded', () => {
+    const showCombinationsButton = document.getElementById('showCombinationsButton');
+    const combinationsModal = document.getElementById('combinationsModal');
+    const closeCombinationsButton = document.getElementById('closeCombinationsButton');
+
+    showCombinationsButton.addEventListener('click', () => {
+        combinationsModal.style.display = 'flex';
+    });
+
+    closeCombinationsButton.addEventListener('click', () => {
+        combinationsModal.style.display = 'none';
+    });
+
+    // Close the modal when clicking outside of it
+    combinationsModal.addEventListener('click', (event) => {
+        if (event.target === combinationsModal) {
+            combinationsModal.style.display = 'none';
+        }
+    });
+});
+
 
     function getItemColor(rarity) {
         switch (rarity) {
