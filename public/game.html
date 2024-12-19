@@ -34,6 +34,7 @@
             <img id="bet50Button" src="/images/Button_Bet50.png" alt="Bet 50%" class="button-image">
             <img id="bet100Button" src="/images/Button_Bet100.png" alt="Bet 100%" class="button-image">
             <button id="quitButton" class="small-button">Quit Game</button>
+            <button id="showCombinationsButton" class="button-small">Show Combinations</button>
         </div>
 
         <!-- Dice Images -->
@@ -45,6 +46,25 @@
         <!-- Game Status -->
         <p id="gameStatus"></p>
 
+        <!-- Winning/Losing Combinations Modal -->
+        <div id="combinationsModal" class="hidden">
+            <div id="modalContent">
+                <h2>Winning and Losing Combinations</h2>
+                <h3>Winning Rolls</h3>
+                <div class="combinations-grid">
+                    <img src="/images/dice1.png" alt="Dice 1"> + <img src="/images/dice6.png" alt="Dice 6"> = 7
+                    <img src="/images/dice5.png" alt="Dice 5"> + <img src="/images/dice6.png" alt="Dice 6"> = 11
+                </div>
+                <h3>Losing Rolls</h3>
+                <div class="combinations-grid">
+                    <img src="/images/dice1.png" alt="Dice 1"> + <img src="/images/dice1.png" alt="Dice 1"> = 2
+                    <img src="/images/dice1.png" alt="Dice 1"> + <img src="/images/dice2.png" alt="Dice 2"> = 3
+                    <img src="/images/dice6.png" alt="Dice 6"> + <img src="/images/dice6.png" alt="Dice 6"> = 12
+                </div>
+                <button id="closeCombinationsButton">Close</button>
+            </div>
+        </div>
+
         <!-- Buy Item Modal -->
         <div id="buy-item-container" style="display: none;">
             <h2>Buy an Item</h2>
@@ -55,7 +75,7 @@
         <!-- Inventory Section -->
         <div id="inventory">
             <h3>Inventory</h3>
-            <ul id="inventory-list"></ul> <!-- Fix: Add this -->
+            <ul id="inventory-list"></ul>
         </div>
 
         <!-- Game Over Section -->
