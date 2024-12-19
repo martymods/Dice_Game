@@ -330,7 +330,7 @@ h1 {
 }
 /* Combinations Modal Styling */
 #combinationsModal {
-    display: none;
+    display: none; /* Initially hidden */
     position: fixed;
     top: 0;
     left: 0;
@@ -359,6 +359,11 @@ h1 {
     justify-items: center;
     align-items: center;
 }
+
+.hidden {
+    display: none;
+}
+
 
 .button-small {
     padding: 10px 15px;
