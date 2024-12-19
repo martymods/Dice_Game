@@ -568,35 +568,52 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 document.addEventListener('DOMContentLoaded', () => {
     const introContainer = document.getElementById('intro-container');
-    const introVideo = document.getElementById('intro-video');
     const mainMenu = document.getElementById('main-menu');
     const menuButtons = document.querySelectorAll('#menu-buttons button');
-    const introSound = new Audio('sounds/IntroVideoSFX_0.ogg');
+    const introSound = new Audio('/sounds/IntroVideoSFX_0.ogg');
     let introTimeout;
 
-    // Function to end the intro and show the main menu
-    const endIntro = () => {
-        clearTimeout(introTimeout);
-        introContainer.style.display = 'none'; // Hide intro
-        mainMenu.style.display = 'flex'; // Show main menu
+    if (!introContainer) {
+        console.error('Intro container not found.');
+        return;
+    }
+    if (!mainMenu) {
+        console.error('Main menu not found.');
+        return;
+    }
 
-        // Animate menu buttons with a staggered effect
+    // Function to end the intro and display the main menu
+    const endIntro = () => {
+        clearTimeout(introTimeout); // Clear the timeout
+        introContainer.style.display = 'none'; // Hide the intro
+        mainMenu.style.display = 'flex'; // Show the main menu
+
+        // Add a staggered animation for the menu buttons
         menuButtons.forEach((button, index) => {
             setTimeout(() => {
-                button.classList.add('animate');
-            }, index * 200); // 200ms delay between each button animation
+                button.classList.add('animate'); // Add animation class
+            }, index * 200); // Delay between button animations
         });
+        console.log('Intro finished and main menu displayed.');
     };
 
-    // Play intro sound when the intro starts
-    introSound.play().catch(err => console.error('Error playing intro sound:', err));
+    // Play the intro sound
+    introSound.play()
+        .then(() => console.log('Intro sound is playing.'))
+        .catch(err => console.error('Error playing intro sound:', err));
 
-    // Automatically transition to the main menu after 15 seconds
-    introTimeout = setTimeout(endIntro, 15000);
+    // Automatically end the intro after 15 seconds
+    introTimeout = setTimeout(() => {
+        console.log('Intro timed out. Ending intro...');
+        endIntro();
+    }, 15000);
 
     // Allow users to skip the intro by clicking anywhere on the screen
-    introContainer.addEventListener('click', endIntro);
-
+    introContainer.addEventListener('click', () => {
+        console.log('Intro clicked. Skipping...');
+        endIntro();
+    });
+    
     // Ensure the game mode logic still works
     const urlParams = new URLSearchParams(window.location.search);
     const isSinglePlayer = urlParams.has('singlePlayer');
@@ -859,4 +876,3 @@ window.startSinglePlayer = function () {
         window.location.href = 'game.html?singlePlayer=true';
     }, 2000);
 };
-
