@@ -61,6 +61,7 @@
 <!-- Intro Video Container -->
 <div id="intro-container">
     <img id="intro-video" src="images/IntroVideo_0.gif" alt="Intro Video">
+    <button id="skip-intro" style="position: absolute; top: 10px; right: 10px;">Skip Intro</button>
 </div>
 
 <!-- Main Menu Container -->
@@ -74,13 +75,33 @@
     </div>
 </div>
 
+<!-- Transition Overlay -->
+<div id="transition-overlay" style="display: none;">
+    <img src="/images/Transition_0.gif" alt="Transition" id="transition-image">
+</div>
 
-    <!-- Transition Overlay -->
-    <div id="transition-overlay" style="display: none;">
-        <img src="/images/Transition_0.gif" alt="Transition" id="transition-image">
-    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const introContainer = document.getElementById('intro-container');
+        const mainMenu = document.getElementById('main-menu');
+        const skipIntroButton = document.getElementById('skip-intro');
 
-    <script src="itemEffects.js"></script>
-    <script src="app.js"></script>
+        // Transition to main menu after 5 seconds
+        const timer = setTimeout(() => {
+            introContainer.style.display = 'none';
+            mainMenu.style.display = 'flex';
+        }, 5000);
+
+        // Skip intro immediately if button is clicked
+        skipIntroButton.addEventListener('click', () => {
+            clearTimeout(timer);
+            introContainer.style.display = 'none';
+            mainMenu.style.display = 'flex';
+        });
+    });
+</script>
+
+<script src="itemEffects.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
