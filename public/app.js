@@ -25,6 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
         setupSinglePlayer();
     } else {
         console.log('No specific game mode detected. Defaulting to Main Menu.');
+        console.log('showCombinationsButton:', showCombinationsButton);
+        console.log('combinationsModal:', combinationsModal);
+        console.log('closeCombinationsButton:', closeCombinationsButton);
+        
     }
 
     // "Show Combinations" functionality
