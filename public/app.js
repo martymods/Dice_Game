@@ -572,33 +572,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainMenu = document.getElementById('main-menu');
     const menuButtons = document.querySelectorAll('#menu-buttons button');
     const introSound = new Audio('sounds/IntroVideoSFX_0.ogg');
-
     let introTimeout;
 
-    // Play the intro sound
-    introSound.play();
-
-    // Hide the intro and show the main menu after 15 seconds or on skip
+    // Function to end the intro and show the main menu
     const endIntro = () => {
         clearTimeout(introTimeout);
-        introContainer.style.display = 'none';
-        mainMenu.style.display = 'flex';
+        introContainer.style.display = 'none'; // Hide intro
+        mainMenu.style.display = 'flex'; // Show main menu
 
-        // Animate the buttons
+        // Animate menu buttons with a staggered effect
         menuButtons.forEach((button, index) => {
             setTimeout(() => {
                 button.classList.add('animate');
-            }, index * 200); // Staggered animation
+            }, index * 200); // 200ms delay between each button animation
         });
     };
 
-    // Set a timeout to automatically transition to the main menu
+    // Play intro sound when the intro starts
+    introSound.play().catch(err => console.error('Error playing intro sound:', err));
+
+    // Automatically transition to the main menu after 15 seconds
     introTimeout = setTimeout(endIntro, 15000);
 
-    // Allow skipping the intro by clicking anywhere
+    // Allow users to skip the intro by clicking anywhere on the screen
     introContainer.addEventListener('click', endIntro);
-});
 
+    // Ensure the game mode logic still works
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSinglePlayer = urlParams.has('singlePlayer');
+
+    if (urlParams.has('stats')) {
+        displayStats();
+    } else if (isSinglePlayer) {
+        setupSinglePlayer();
+    } else {
+        console.log('No specific game mode detected. Defaulting to Main Menu.');
+    }
+});
 
     function getItemColor(rarity) {
         switch (rarity) {
@@ -849,3 +859,4 @@ window.startSinglePlayer = function () {
         window.location.href = 'game.html?singlePlayer=true';
     }, 2000);
 };
+
