@@ -86,17 +86,25 @@
         const mainMenu = document.getElementById('main-menu');
         const skipIntroButton = document.getElementById('skip-intro');
 
-        // Transition to main menu after 5 seconds
+        // Create an Audio object for the sound effect
+        const introSFX = new Audio('sounds/IntroVideoSFX_0.ogg');
+        introSFX.play().catch(err => console.error('Error playing intro sound:', err));
+
+        // Transition to main menu after 15 seconds
         const timer = setTimeout(() => {
             introContainer.style.display = 'none';
             mainMenu.style.display = 'flex';
-        }, 5000);
+        }, 15000);
 
         // Skip intro immediately if button is clicked
         skipIntroButton.addEventListener('click', () => {
             clearTimeout(timer);
             introContainer.style.display = 'none';
             mainMenu.style.display = 'flex';
+
+            // Stop the intro sound if it's still playing
+            introSFX.pause();
+            introSFX.currentTime = 0;
         });
     });
 </script>
