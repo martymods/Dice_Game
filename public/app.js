@@ -18,13 +18,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const isSinglePlayer = urlParams.has('singlePlayer');
 
+    // Initialize the game mode
     if (urlParams.has('stats')) {
         displayStats();
     } else if (isSinglePlayer) {
         setupSinglePlayer();
     } else {
-    console.log('No specific game mode detected. Defaulting to Main Menu.');
-}
+        console.log('No specific game mode detected. Defaulting to Main Menu.');
+    }
+
+    // "Show Combinations" functionality
+    const showCombinationsButton = document.getElementById('showCombinationsButton');
+    const combinationsModal = document.getElementById('combinationsModal');
+    const closeCombinationsButton = document.getElementById('closeCombinationsButton');
+
+    if (showCombinationsButton && combinationsModal && closeCombinationsButton) {
+        // Show the combinations modal when the button is clicked
+        showCombinationsButton.addEventListener('click', () => {
+            combinationsModal.style.display = 'flex'; // Show the modal
+        });
+
+        // Hide the combinations modal when the close button is clicked
+        closeCombinationsButton.addEventListener('click', () => {
+            combinationsModal.style.display = 'none'; // Hide the modal
+        });
+
+        // Optional: Close the modal when clicking outside the modal content
+        combinationsModal.addEventListener('click', (event) => {
+            if (event.target === combinationsModal) {
+                combinationsModal.style.display = 'none';
+            }
+        });
+    } else {
+        console.error('Combination modal elements are missing in the DOM.');
+    }
 });
 
 // Ensure playerStats and related functions are globally accessible
@@ -514,6 +541,32 @@ async function setupSinglePlayer() {
             combinationsModal.style.display = 'none';
         }
     });
+});
+document.addEventListener('DOMContentLoaded', () => {
+    const showCombinationsButton = document.getElementById('showCombinationsButton');
+    const combinationsModal = document.getElementById('combinationsModal');
+    const closeCombinationsButton = document.getElementById('closeCombinationsButton');
+
+    if (showCombinationsButton && combinationsModal && closeCombinationsButton) {
+        // Show the combinations modal when the button is clicked
+        showCombinationsButton.addEventListener('click', () => {
+            combinationsModal.style.display = 'flex'; // Show the modal
+        });
+
+        // Hide the combinations modal when the close button is clicked
+        closeCombinationsButton.addEventListener('click', () => {
+            combinationsModal.style.display = 'none'; // Hide the modal
+        });
+
+        // Optional: Close the modal when clicking outside the modal content
+        combinationsModal.addEventListener('click', (event) => {
+            if (event.target === combinationsModal) {
+                combinationsModal.style.display = 'none';
+            }
+        });
+    } else {
+        console.error('Combination modal elements are missing in the DOM.');
+    }
 });
 
 
