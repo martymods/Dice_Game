@@ -243,34 +243,21 @@ async function setupSinglePlayer() {
         const dice2 = Math.floor(Math.random() * 6) + 1;
         const sum = dice1 + dice2;
     
+        // Apply Hustler Effects
+        const { multiplier, cashBonus } = applyHustlerEffects(dice1, dice2);
+    
         // Animate dice rolling
         animateDice(dice1, dice2, () => {
             // Play dice roll sound
             playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"]);
     
-            let rollBonus = 0;
-    
-            // Check for passive effects from items
-            items.forEach(item => {
-                if (item.name === 'Forged Papers 📜') {
-                    items = itemEffects.forgedPapersEffect(items);
-                }
-                if (item.name === 'Loaded Dice 🎲') {
-                    rollBonus += itemEffects.loadedDiceEffect(sum, currentBet);
-                }
-                if (item.name === "Old Gang Leader’s Blade 🔪") {
-                    dreamCoins += itemEffects.gangLeaderBladeEffect(items);
-                }
-            });
-    
             let winnings = 0;
+    
             if (sum === 7 || sum === 11) {
                 // Winning roll
-                winnings = currentBet * 2 + rollBonus;
-                if (onFire) winnings *= 2; // Apply 2x multiplier if "on fire"
+                winnings = currentBet * 2 * multiplier + cashBonus;
                 balance += winnings;
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
-    
                 playSound("/sounds/Winner_0.ogg");
                 flashScreen('gold');
                 showWinningAmount(winnings);
@@ -291,8 +278,8 @@ async function setupSinglePlayer() {
                 if (onFire) deactivateOnFire(); // Deactivate "on fire" on loss
             } else {
                 // Neutral roll
-                balance += rollBonus;
-                gameStatus.textContent = `Roll: ${sum}`;
+                balance += cashBonus;
+                gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplier}x. Bonus: $${cashBonus}`;
             }
     
             currentBet = 0;
@@ -497,13 +484,17 @@ async function setupSinglePlayer() {
 
     function updateUI() {
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
-        if (dreamCoins > 0) {
-            rentStatus.innerHTML = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
-            rentStatus.innerHTML += ` <img src="/images/DW_Logo.png" alt="DreamCoin" style="width: 20px; height: 20px;"> ${dreamCoins}`;
+        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
+    
+        const hustlerEffects = hustlerInventory.map(hustler => hustler.description).join(', ');
+        const hustlerEffectElement = document.getElementById('hustler-effects');
+        if (hustlerEffectElement) {
+            hustlerEffectElement.textContent = `Active Hustler Effects: ${hustlerEffects}`;
         }
-
+    
         updateBackgroundImage();
     }
+    
 
     function updateBackgroundImage() {
         const rollsRemaining = maxTurns - turns;
@@ -566,66 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Combination modal elements are missing in the DOM.');
     }
 });
-document.addEventListener('DOMContentLoaded', () => {
-    const introContainer = document.getElementById('intro-container');
-    const mainMenu = document.getElementById('main-menu');
-    const menuButtons = document.querySelectorAll('#menu-buttons button');
-    const introSound = new Audio('/sounds/IntroVideoSFX_0.ogg');
-    let introTimeout;
 
-    if (!introContainer) {
-        console.error('Intro container not found.');
-        return;
-    }
-    if (!mainMenu) {
-        console.error('Main menu not found.');
-        return;
-    }
-
-    // Function to end the intro and display the main menu
-    const endIntro = () => {
-        clearTimeout(introTimeout); // Clear the timeout
-        introContainer.style.display = 'none'; // Hide the intro
-        mainMenu.style.display = 'flex'; // Show the main menu
-
-        // Add a staggered animation for the menu buttons
-        menuButtons.forEach((button, index) => {
-            setTimeout(() => {
-                button.classList.add('animate'); // Add animation class
-            }, index * 200); // Delay between button animations
-        });
-        console.log('Intro finished and main menu displayed.');
-    };
-
-    // Play the intro sound
-    introSound.play()
-        .then(() => console.log('Intro sound is playing.'))
-        .catch(err => console.error('Error playing intro sound:', err));
-
-    // Automatically end the intro after 15 seconds
-    introTimeout = setTimeout(() => {
-        console.log('Intro timed out. Ending intro...');
-        endIntro();
-    }, 15000);
-
-    // Allow users to skip the intro by clicking anywhere on the screen
-    introContainer.addEventListener('click', () => {
-        console.log('Intro clicked. Skipping...');
-        endIntro();
-    });
-    
-    // Ensure the game mode logic still works
-    const urlParams = new URLSearchParams(window.location.search);
-    const isSinglePlayer = urlParams.has('singlePlayer');
-
-    if (urlParams.has('stats')) {
-        displayStats();
-    } else if (isSinglePlayer) {
-        setupSinglePlayer();
-    } else {
-        console.log('No specific game mode detected. Defaulting to Main Menu.');
-    }
-});
 
     function getItemColor(rarity) {
         switch (rarity) {
@@ -840,7 +772,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2000);
     }
     
-    
+    let hustlerInventory = []; // Player's hustlers
+
+function addHustlerToInventory(hustler) {
+    if (hustlerInventory.length >= 5) {
+        alert('You can only hold 5 Hustlers at a time. Discard one to make space.');
+        return;
+    }
+    hustlerInventory.push(hustler);
+    updateHustlerInventoryUI();
+}
+
+function applyHustlerEffects(roll1, roll2) {
+    let multiplier = 1;
+    let cashBonus = 0;
+
+    hustlerInventory.forEach(hustler => {
+        if (hustler.name === 'Joker') multiplier += 2;
+        if (hustler.name === 'Greedy Joker' && roll1 + roll2 > 6) cashBonus += 5;
+        if (hustler.name === 'Wrathful Joker' && roll1 + roll2 < 4) multiplier += 3;
+        if (hustler.name === 'Even Steven' && (roll1 % 2 === 0 && roll2 % 2 === 0)) multiplier += 3;
+        if (hustler.name === 'Odd Todd' && (roll1 % 2 !== 0 && roll2 % 2 !== 0)) multiplier += 3;
+    });
+
+    return { multiplier, cashBonus };
+}
+
+
+function updateHustlerInventoryUI() {
+    const hustlerList = document.getElementById('hustler-list');
+    hustlerList.innerHTML = '';
+    hustlerInventory.forEach((hustler, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            ${hustler.name} (${hustler.description}) 
+            <button onclick="discardHustler(${index})">Discard</button>
+        `;
+        hustlerList.appendChild(li);
+    });
+}
+
+function discardHustler(index) {
+    hustlerInventory.splice(index, 1);
+    updateHustlerInventoryUI();
+}
+
         
 }// Stats Display Logic
 function displayStats() {
