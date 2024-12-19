@@ -566,6 +566,38 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Combination modal elements are missing in the DOM.');
     }
 });
+document.addEventListener('DOMContentLoaded', () => {
+    const introContainer = document.getElementById('intro-container');
+    const introVideo = document.getElementById('intro-video');
+    const mainMenu = document.getElementById('main-menu');
+    const menuButtons = document.querySelectorAll('#menu-buttons button');
+    const introSound = new Audio('sounds/IntroVideoSFX_0.ogg');
+
+    let introTimeout;
+
+    // Play the intro sound
+    introSound.play();
+
+    // Hide the intro and show the main menu after 15 seconds or on skip
+    const endIntro = () => {
+        clearTimeout(introTimeout);
+        introContainer.style.display = 'none';
+        mainMenu.style.display = 'flex';
+
+        // Animate the buttons
+        menuButtons.forEach((button, index) => {
+            setTimeout(() => {
+                button.classList.add('animate');
+            }, index * 200); // Staggered animation
+        });
+    };
+
+    // Set a timeout to automatically transition to the main menu
+    introTimeout = setTimeout(endIntro, 15000);
+
+    // Allow skipping the intro by clicking anywhere
+    introContainer.addEventListener('click', endIntro);
+});
 
 
     function getItemColor(rarity) {
