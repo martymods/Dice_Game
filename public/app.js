@@ -25,32 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
         setupSinglePlayer();
     } else {
         console.log('No specific game mode detected. Defaulting to Main Menu.');
-        console.log('showCombinationsButton:', showCombinationsButton);
-        console.log('combinationsModal:', combinationsModal);
-        console.log('closeCombinationsButton:', closeCombinationsButton);
-        
     }
 
-    // "Show Combinations" functionality
+    // Ensure the "Show Combinations" functionality is scoped correctly
     const showCombinationsButton = document.getElementById('showCombinationsButton');
     const combinationsModal = document.getElementById('combinationsModal');
     const closeCombinationsButton = document.getElementById('closeCombinationsButton');
 
+    // Add event listeners for "Show Combinations" modal if the elements are present
     if (showCombinationsButton && combinationsModal && closeCombinationsButton) {
-        // Show the combinations modal when the button is clicked
         showCombinationsButton.addEventListener('click', () => {
             combinationsModal.style.display = 'flex'; // Show the modal
         });
 
-        // Hide the combinations modal when the close button is clicked
         closeCombinationsButton.addEventListener('click', () => {
             combinationsModal.style.display = 'none'; // Hide the modal
         });
 
-        // Optional: Close the modal when clicking outside the modal content
         combinationsModal.addEventListener('click', (event) => {
             if (event.target === combinationsModal) {
-                combinationsModal.style.display = 'none';
+                combinationsModal.style.display = 'none'; // Close the modal when clicking outside the content
             }
         });
     } else {
