@@ -1,5 +1,25 @@
 // app.js
 
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
+    import { getDatabase, ref, push, query, orderByChild, get } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
+  
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBTwAt7CEmsYmpLSocNzMfAeHntsSXOuLc",
+      authDomain: "the-other-half-e82ca.firebaseapp.com",
+      databaseURL: "https://the-other-half-e82ca.firebaseio.com",
+      projectId: "the-other-half-e82ca",
+      storageBucket: "the-other-half-e82ca.appspot.com",
+      messagingSenderId: "605185434703",
+      appId: "1:605185434703:web:5938ea2ad2004bf1c2f63a",
+      measurementId: "G-5ZLB71YR8M"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
 // Fire Status
 let winStreak = 0; // Track the current winning streak
 let onFire = false; // Whether the dice are "on fire"
@@ -545,6 +565,7 @@ if (playerName && playerScore > 0) {
             gameOverContainer.style.display = 'block';
         });
     }
+    
 
     async function submitLeaderboardEntry(name, score) {
         try {
@@ -796,12 +817,23 @@ document.addEventListener('DOMContentLoaded', () => {
         playerStats.currentWinStreak = 0;
         saveStats();
     
-        // Trigger red flash for game over
+        // Check the player's final balance
+        const playerScore = balance; // Replace with your actual score logic
+        if (playerScore > 0) {
+            const playerName = prompt("Game Over! Enter your name for the leaderboard:");
+            if (playerName) {
+                submitToLeaderboard(playerName, playerScore); // Submit to leaderboard
+            }
+        }
+    
+        // Show the leaderboard
+        fetchLeaderboard();
+    
+        // Existing game over logic
         flashScreen('red');
     
         const deathSound = new Audio('/sounds/Death0.ogg');
         deathSound.play().catch(err => console.error('Death sound error:', err));
-    
         gameOverContainer.style.display = 'block';
     }
     
