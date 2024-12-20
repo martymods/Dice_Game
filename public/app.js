@@ -1,5 +1,16 @@
 // app.js
 
+import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
+import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
+import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
+import { updateUI, showItemPopup } from './modules/ui.js';
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadStats();
+    // Initialize game mode, attach listeners, and more...
+});
+
     // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
     import { getDatabase, ref, push, query, orderByChild, get } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
