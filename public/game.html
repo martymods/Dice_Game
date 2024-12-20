@@ -4,38 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dice Game - Single Player</title>
-    <link rel="stylesheet" href="style.css">
     <style>
-        /* Style for the game layout */
+        /* Ensure proper sizing */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Main container */
         #game-container {
             display: grid;
             grid-template-columns: 25% 75%;
-            grid-gap: 10px;
             height: 100vh;
             width: 100vw;
         }
 
+        /* Left-side layout (25%) */
         #left-side {
-            background-color: #f4f4f4; /* Light background for contrast */
+            background-color: #f4f4f4; /* Light gray background */
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
             padding: 10px;
-            box-shadow: 3px 0 5px rgba(0, 0, 0, 0.2);
-        }
-
-        #right-side {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #fff;
-            padding: 20px;
-        }
-
-        #hustler-info, #inventory, #buy-item-section {
-            width: 90%;
-            margin-bottom: 20px;
         }
 
         #store-image {
@@ -43,53 +36,30 @@
             margin-bottom: 10px;
         }
 
-        #buy-item-container {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 10px;
-            background-color: #fff;
-            text-align: center;
-        }
-
-        #player-info {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        #controls {
+        /* Right-side layout (75%) */
+        #right-side {
+            background-color: #fff; /* White background */
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            gap: 10px;
         }
 
-        #dice-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
+        #dice-container img {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
         }
 
-        #gameOverContainer {
-            text-align: center;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 1200px) {
-            #game-container {
-                grid-template-columns: 30% 70%;
-            }
-        }
-
+        /* Responsive Design */
         @media (max-width: 768px) {
             #game-container {
-                grid-template-columns: 1fr; /* Stacks left and right sections */
+                grid-template-columns: 1fr;
                 grid-template-rows: 50% 50%;
             }
 
             #left-side, #right-side {
                 width: 100%;
-                height: auto;
             }
         }
     </style>
@@ -98,62 +68,26 @@
     <div id="game-container">
         <!-- Left Side -->
         <div id="left-side">
-            <!-- Hustler Info -->
-            <div id="hustler-info">
-                <p id="hustler-count">Max Hustlers: 0/5</p>
-                <p id="hustler-effects">Active Hustler Effects: None</p>
-            </div>
-
-            <!-- Buy Item -->
-            <div id="buy-item-section">
-                <img id="store-image" src="/images/StoreSign_Closed0.gif" alt="Store Closed" />
-                <div id="buy-item-container" style="display: none;">
-                    <h2>Buy an Item</h2>
-                    <div id="item-list"></div>
-                    <button id="saveMoneyButton">Done Shopping</button>
-                </div>
-            </div>
-
-            <!-- Inventory -->
-            <div id="inventory">
-                <h3>Inventory</h3>
-                <ul id="inventory-list"></ul>
-            </div>
+            <img id="store-image" src="/images/StoreSign_Closed0.gif" alt="Store Closed" />
+            <h3>Inventory</h3>
+            <ul>
+                <li>Item 1</li>
+                <li>Item 2</li>
+            </ul>
         </div>
 
         <!-- Right Side -->
         <div id="right-side">
+            <h1>Dice Game</h1>
             <div id="player-info">
-                <p id="betting-status">Balance: $0 | Bet: $0</p>
-                <p id="rent-status">Rent Due: $0 in 0 rolls</p>
+                <p>Balance: $300</p>
+                <p>Rent Due: $400</p>
             </div>
-
-            <div id="controls">
-                <img id="rollButton" src="/images/Button_RollDice.png" alt="Roll Dice" class="button-image">
-                <input type="number" id="betAmount" placeholder="Enter Bet Amount" min="1">
-                <img id="betButton" src="/images/Button_PlaceBet.png" alt="Place Bet" class="button-image">
-                <img id="bet25Button" src="/images/Button_Bet25.png" alt="Bet 25%" class="button-image">
-                <img id="bet50Button" src="/images/Button_Bet50.png" alt="Bet 50%" class="button-image">
-                <img id="bet100Button" src="/images/Button_Bet100.png" alt="Bet 100%" class="button-image">
-                <button id="quitButton" class="small-button">Quit Game</button>
-            </div>
-
             <div id="dice-container">
-                <img id="dice1" class="dice" src="/images/dice1.png" alt="Dice 1">
-                <img id="dice2" class="dice" src="/images/dice2.png" alt="Dice 2">
-            </div>
-            
-            <p id="gameStatus"></p>
-
-            <!-- Game Over Section -->
-            <div id="gameOverContainer" style="display: none;">
-                <h2>Game Over</h2>
-                <p>Better luck next time!</p>
-                <button onclick="window.location.href='/';">Return to Main Menu</button>
+                <img src="/images/dice1.png" alt="Dice 1">
+                <img src="/images/dice2.png" alt="Dice 2">
             </div>
         </div>
     </div>
-
-    <script src="app.js" type="module"></script>
 </body>
 </html>
