@@ -452,3 +452,75 @@ h1 {
     transform: scale(1.2); /* Slight zoom effect */
     box-shadow: 0 0 25px rgba(255, 215, 0, 1), 0 0 50px rgba(255, 69, 0, 1); /* Stronger glow */
 }
+/* Game Container Layout */
+#game-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Left Side (Store, Hustler Info, Inventory) */
+#left-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #222;
+    padding: 10px;
+    color: white;
+    overflow-y: auto;
+}
+
+#store-image {
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+#buy-item-section {
+    text-align: center;
+}
+
+#hustler-info {
+    margin-bottom: 20px;
+}
+
+#inventory {
+    margin-top: 20px;
+}
+
+/* Right Side (Gameplay) */
+#right-side {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #111;
+    color: white;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+#dice-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.button-image {
+    cursor: pointer;
+    margin: 10px;
+    width: 120px;
+}
+
+#controls {
+    margin-top: 20px;
+}
+
+#gameStatus {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #f5f5f5;
+    text-align: center;
+}
