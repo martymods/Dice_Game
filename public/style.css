@@ -440,3 +440,15 @@ h1 {
     border-radius: 5px;
     cursor: pointer;
 }
+.dice-fire {
+    width: 150px; /* Larger size for fire dice */
+    height: 150px;
+    border-radius: 10px; /* Slightly rounded corners */
+    box-shadow: 0 0 20px rgba(255, 165, 0, 0.8), 0 0 30px rgba(255, 69, 0, 0.8); /* Fire glow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dice-fire:hover {
+    transform: scale(1.2); /* Slight zoom effect */
+    box-shadow: 0 0 25px rgba(255, 215, 0, 1), 0 0 50px rgba(255, 69, 0, 1); /* Stronger glow */
+}
