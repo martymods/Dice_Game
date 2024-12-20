@@ -130,6 +130,9 @@ if (!window.playerStats) {
         window.location.href = 'game.html?singlePlayer=true';
     };
 }
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
+import { getDatabase, ref, push, query, orderByChild, get } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
+
 
 
 async function setupSinglePlayer() {
