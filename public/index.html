@@ -71,7 +71,7 @@
         <button onclick="showCreateGame()">Host Game</button>
         <button onclick="showJoinGame()">Join Game</button>
         <button onclick="window.location.href='stats.html'" style="background-color: purple; color: white; font-size: 16px;">View Stats</button>
-        <button onclick="viewLeaderboard()">Leaderboard</button>
+        <button onclick="fetchLeaderboard()">Leaderboard</button>
     </div>
 </div>
 
@@ -79,6 +79,9 @@
 <div id="transition-overlay" style="display: none;">
     <img src="/images/Transition_0.gif" alt="Transition" id="transition-image">
 </div>
+
+<div id="leaderboard-container"></div>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -108,6 +111,25 @@
         });
     });
 </script>
+
+<script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBTwAt7CEmsYmpLSocNzMfAeHntsSXOuLc",
+  authDomain: "the-other-half-e82ca.firebaseapp.com",
+  projectId: "the-other-half-e82ca",
+  storageBucket: "the-other-half-e82ca.firebasestorage.app",
+  messagingSenderId: "605185434703",
+  appId: "1:605185434703:web:5938ea2ad2004bf1c2f63a",
+  measurementId: "G-5ZLB71YR8M"
+};
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database(app);
+</script>
+
 
 <script src="itemEffects.js"></script>
 <script src="app.js"></script>
