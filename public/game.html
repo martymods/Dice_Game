@@ -8,105 +8,59 @@
 </head>
 <body>
     <div id="game-container">
-        <h1>The Other Half</h1>
+        <!-- Left Side -->
+        <div id="left-side">
+            <!-- Hustler Info -->
+            <div id="hustler-info">
+                <p id="hustler-count">Max Hustlers: 0/5</p>
+                <p id="hustler-effects">Active Hustler Effects: None</p>
+            </div>
 
-        <!-- Background Video -->
-        <video 
-            id="landlordVideo" 
-            src="/video/LandLord_video.mp4" 
-            autoplay muted loop 
-            style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;" 
-            onerror="console.error('Video failed to load. Check the file path.')">
-        </video>
-
-        <!-- Player Info -->
-        <div id="player-info">
-            <p id="betting-status">Balance: $0 | Bet: $0</p>
-            <p id="rent-status">Rent Due: $0 in 0 rolls</p>
-        </div>
-        
-        <!-- Game Controls -->
-        <div id="controls">
-            <img id="rollButton" src="/images/Button_RollDice.png" alt="Roll Dice" class="button-image">
-            <input type="number" id="betAmount" placeholder="Enter Bet Amount" min="1">
-            <img id="betButton" src="/images/Button_PlaceBet.png" alt="Place Bet" class="button-image">
-            <img id="bet25Button" src="/images/Button_Bet25.png" alt="Bet 25%" class="button-image">
-            <img id="bet50Button" src="/images/Button_Bet50.png" alt="Bet 50%" class="button-image">
-            <img id="bet100Button" src="/images/Button_Bet100.png" alt="Bet 100%" class="button-image">
-            <button id="quitButton" class="small-button">Quit Game</button>
-            <button id="showCombinationsButton" class="button-small">Show Combinations</button>
-        </div>
-
-        <!-- Dice Images -->
-        <div id="dice-container">
-            <img id="dice1" class="dice" src="/images/dice1.png" alt="Dice 1">
-            <img id="dice2" class="dice" src="/images/dice2.png" alt="Dice 2">
-        </div>
-        
-        <!-- Game Status -->
-        <p id="gameStatus"></p>
-
-        <!-- Winning/Losing Combinations Modal -->
-        <div id="combinationsModal" class="hidden">
-            <div id="modalContent">
-                <h2>Winning and Losing Combinations</h2>
-                <h3>Winning Rolls</h3>
-                <div class="combinations-grid">
-                    <img src="/images/dice1.png" alt="Dice 1"> + <img src="/images/dice6.png" alt="Dice 6"> = 7
-                    <img src="/images/dice5.png" alt="Dice 5"> + <img src="/images/dice6.png" alt="Dice 6"> = 11
+            <!-- Buy Item -->
+            <div id="buy-item-section">
+                <img id="store-image" src="/images/StoreSign_Closed0.gif" alt="Store Closed" />
+                <div id="buy-item-container" style="display: none;">
+                    <h2>Buy an Item</h2>
+                    <div id="item-list"></div>
+                    <button id="saveMoneyButton">Done Shopping</button>
                 </div>
-                <h3>Losing Rolls</h3>
-                <div class="combinations-grid">
-                    <img src="/images/dice1.png" alt="Dice 1"> + <img src="/images/dice1.png" alt="Dice 1"> = 2
-                    <img src="/images/dice1.png" alt="Dice 1"> + <img src="/images/dice2.png" alt="Dice 2"> = 3
-                    <img src="/images/dice6.png" alt="Dice 6"> + <img src="/images/dice6.png" alt="Dice 6"> = 12
-                </div>
-                <button id="closeCombinationsButton">Close</button>
+            </div>
+
+            <!-- Inventory -->
+            <div id="inventory">
+                <h3>Inventory</h3>
+                <ul id="inventory-list"></ul>
             </div>
         </div>
 
-        <!-- Buy Item Modal -->
-        <div id="buy-item-container" style="display: none;">
-            <h2>Buy an Item</h2>
-            <div id="item-list"></div>
-            <button id="saveMoneyButton">Save Money</button>
-        </div>
+        <!-- Right Side -->
+        <div id="right-side">
+            <h1 style="display: none;">The Other Half</h1> <!-- Hidden Title -->
+            <div id="player-info">
+                <p id="betting-status">Balance: $0 | Bet: $0</p>
+                <p id="rent-status">Rent Due: $0 in 0 rolls</p>
+            </div>
 
-        <!-- Inventory Section -->
-        <div id="inventory">
-            <h3>Inventory</h3>
-            <ul id="inventory-list"></ul>
-        </div>
+            <div id="controls">
+                <img id="rollButton" src="/images/Button_RollDice.png" alt="Roll Dice" class="button-image">
+                <input type="number" id="betAmount" placeholder="Enter Bet Amount" min="1">
+                <img id="betButton" src="/images/Button_PlaceBet.png" alt="Place Bet" class="button-image">
+                <img id="bet25Button" src="/images/Button_Bet25.png" alt="Bet 25%" class="button-image">
+                <img id="bet50Button" src="/images/Button_Bet50.png" alt="Bet 50%" class="button-image">
+                <img id="bet100Button" src="/images/Button_Bet100.png" alt="Bet 100%" class="button-image">
+                <button id="quitButton" class="small-button">Quit Game</button>
+            </div>
 
-        <!-- Game Over Section -->
-        <div id="gameOverContainer" style="display: none;">
-            <h2>Game Over</h2>
-            <button id="gameOverButton" onclick="window.location.href='/';">Return to Main Menu</button>
+            <div id="dice-container">
+                <img id="dice1" class="dice" src="/images/dice1.png" alt="Dice 1">
+                <img id="dice2" class="dice" src="/images/dice2.png" alt="Dice 2">
+            </div>
+            
+            <p id="gameStatus"></p>
         </div>
     </div>
-<!-- Hustlers -->
-<div id="hustler-info">
-    <p id="hustler-count">Max Hustlers: 0/5</p>
-    <p id="hustler-effects">Active Hustler Effects: None</p>
-</div>
-
-<div id="hustler-inventory">
-    <h3>Your Hustlers</h3>
-    <ul id="hustler-list">
-        <!-- Hustlers will be dynamically displayed here -->
-    </ul>
-</div>
-
-        <!-- Hustlers Shop -->
-        <div id="hustler-shop">
-            <h3>Hustler Shop</h3>
-            <ul id="available-hustlers">
-                <!-- Hustlers will be dynamically displayed here -->
-            </ul>
-        </div>
-        <p id="hustler-effects">Active Hustler Effects: None</p>
-
 
     <script src="app.js" type="module"></script>
 </body>
+
 </html>
