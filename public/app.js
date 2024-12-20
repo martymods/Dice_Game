@@ -5,32 +5,6 @@ import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } fr
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
 import { updateUI, showItemPopup } from './modules/ui.js';
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadStats();
-    // Initialize game mode, attach listeners, and more...
-});
-
-    // Import Firebase modules
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
-    import { getDatabase, ref, push, query, orderByChild, get } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
-  
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyBTwAt7CEmsYmpLSocNzMfAeHntsSXOuLc",
-      authDomain: "the-other-half-e82ca.firebaseapp.com",
-      databaseURL: "https://the-other-half-e82ca.firebaseio.com",
-      projectId: "the-other-half-e82ca",
-      storageBucket: "the-other-half-e82ca.appspot.com",
-      messagingSenderId: "605185434703",
-      appId: "1:605185434703:web:5938ea2ad2004bf1c2f63a",
-      measurementId: "G-5ZLB71YR8M"
-    };
-  
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
 // Fire Status
 let winStreak = 0; // Track the current winning streak
 let onFire = false; // Whether the dice are "on fire"
@@ -141,9 +115,6 @@ if (!window.playerStats) {
         window.location.href = 'game.html?singlePlayer=true';
     };
 }
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
-import { getDatabase, ref, push, query, orderByChild, get } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
-
 
 
 async function setupSinglePlayer() {
@@ -327,65 +298,7 @@ async function setupSinglePlayer() {
         });
     }
     
-    async function viewLeaderboard() {
-        const leaderboardContainer = document.createElement('div');
-        leaderboardContainer.style.position = 'fixed';
-        leaderboardContainer.style.top = '10%';
-        leaderboardContainer.style.left = '10%';
-        leaderboardContainer.style.width = '80%';
-        leaderboardContainer.style.height = '80%';
-        leaderboardContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-        leaderboardContainer.style.color = 'white';
-        leaderboardContainer.style.padding = '20px';
-        leaderboardContainer.style.overflowY = 'scroll';
-        leaderboardContainer.style.zIndex = '1000';
     
-        const closeButton = document.createElement('button');
-        closeButton.textContent = 'Close';
-        closeButton.style.marginBottom = '10px';
-        closeButton.style.backgroundColor = '#444';
-        closeButton.style.color = 'white';
-        closeButton.style.padding = '10px';
-        closeButton.style.border = 'none';
-        closeButton.style.cursor = 'pointer';
-    
-        closeButton.addEventListener('click', () => {
-            document.body.removeChild(leaderboardContainer);
-        });
-    
-        leaderboardContainer.appendChild(closeButton);
-    
-        const leaderboardTitle = document.createElement('h2');
-        leaderboardTitle.textContent = 'Global Leaderboard';
-        leaderboardContainer.appendChild(leaderboardTitle);
-    
-        try {
-            const snapshot = await firebase.database().ref('leaderboard').orderByChild('score').limitToLast(20).get();
-            const leaderboardData = [];
-    
-            snapshot.forEach((childSnapshot) => {
-                leaderboardData.push(childSnapshot.val());
-            });
-    
-            leaderboardData.reverse(); // Show highest scores first
-    
-            const leaderboardList = document.createElement('ul');
-            leaderboardData.forEach((entry, index) => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `${index + 1}. ${entry.name} - $${entry.score}`;
-                leaderboardList.appendChild(listItem);
-            });
-    
-            leaderboardContainer.appendChild(leaderboardList);
-        } catch (error) {
-            console.error('Error fetching leaderboard data:', error);
-            const errorMessage = document.createElement('p');
-            errorMessage.textContent = 'Unable to load leaderboard. Please try again later.';
-            leaderboardContainer.appendChild(errorMessage);
-        }
-    
-        document.body.appendChild(leaderboardContainer);
-    }
     
     function activateOnFire() {
         onFire = true;
@@ -542,12 +455,6 @@ async function setupSinglePlayer() {
     function handleGameOver() {
         const deathSound = new Audio('/sounds/Death0.ogg');
         deathSound.play().catch(err => console.error('Death sound error:', err));
-        const playerName = prompt("Enter your name for the leaderboard:");
-const playerScore = 1000; // Replace with the actual player's score
-if (playerName && playerScore > 0) {
-    submitToLeaderboard(playerName, playerScore);
-}
-
 
         // Hide UI elements
         rollButton.style.display = 'none';
@@ -579,45 +486,7 @@ if (playerName && playerScore > 0) {
             gameOverContainer.style.display = 'block';
         });
     }
-    
 
-    async function submitLeaderboardEntry(name, score) {
-        try {
-            const entryRef = firebase.database().ref('leaderboard').push();
-            await entryRef.set({
-                name: name,
-                score: score
-            });
-            alert('Score submitted to leaderboard!');
-        } catch (error) {
-            console.error('Error submitting leaderboard entry:', error);
-            alert('Failed to submit score. Please try again.');
-        }
-    }
-    
-    function handleGameOver() {
-        const gameEndTime = Date.now();
-        const timePlayed = Math.floor((gameEndTime - gameStartTime) / 1000);
-        playerStats.totalTimePlayed += timePlayed;
-        playerStats.evictions++;
-        playerStats.currentWinStreak = 0;
-        saveStats();
-    
-        // Prompt for leaderboard submission
-        if (balance > 0) {
-            const playerName = prompt('Game Over! Enter your name for the leaderboard:');
-            if (playerName) {
-                submitLeaderboardEntry(playerName, balance);
-            }
-        }
-    
-        // Existing game over logic
-        flashScreen('red');
-        const deathSound = new Audio('/sounds/Death0.ogg');
-        deathSound.play().catch(err => console.error('Death sound error:', err));
-        gameOverContainer.style.display = 'block';
-    }
-    
     function updateUI() {
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
         rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
@@ -831,23 +700,12 @@ document.addEventListener('DOMContentLoaded', () => {
         playerStats.currentWinStreak = 0;
         saveStats();
     
-        // Check the player's final balance
-        const playerScore = balance; // Replace with your actual score logic
-        if (playerScore > 0) {
-            const playerName = prompt("Game Over! Enter your name for the leaderboard:");
-            if (playerName) {
-                submitToLeaderboard(playerName, playerScore); // Submit to leaderboard
-            }
-        }
-    
-        // Show the leaderboard
-        fetchLeaderboard();
-    
-        // Existing game over logic
+        // Trigger red flash for game over
         flashScreen('red');
     
         const deathSound = new Audio('/sounds/Death0.ogg');
         deathSound.play().catch(err => console.error('Death sound error:', err));
+    
         gameOverContainer.style.display = 'block';
     }
     
@@ -980,54 +838,6 @@ function updateHustlerInventoryUI() {
 function discardHustler(index) {
     hustlerInventory.splice(index, 1);
     updateHustlerInventoryUI();
-}
-
-// submit leaderboard data
-function submitToLeaderboard(name, score) {
-    const leaderboardRef = ref(database, 'leaderboard');
-    push(leaderboardRef, {
-        name: name,
-        score: score
-    })
-    .then(() => {
-        alert("Score submitted successfully!");
-    })
-    .catch((error) => {
-        console.error("Error submitting score:", error);
-    });
-}
-function fetchLeaderboard() {
-    const leaderboardRef = ref(database, 'leaderboard');
-    const leaderboardQuery = query(leaderboardRef, orderByChild('score'));
-
-    get(leaderboardQuery)
-    .then((snapshot) => {
-        if (snapshot.exists()) {
-            const data = [];
-            snapshot.forEach((childSnapshot) => {
-                data.push(childSnapshot.val());
-            });
-
-            // Sort in descending order of scores
-            data.sort((a, b) => b.score - a.score);
-
-            // Display top 20
-            displayLeaderboard(data.slice(0, 20));
-        } else {
-            console.log("No leaderboard data available.");
-        }
-    })
-    .catch((error) => {
-        console.error("Error fetching leaderboard:", error);
-    });
-}
-
-function displayLeaderboard(data) {
-    const leaderboardContainer = document.getElementById("leaderboard-container");
-    leaderboardContainer.innerHTML = "<h2>Leaderboard</h2>";
-    data.forEach((entry, index) => {
-        leaderboardContainer.innerHTML += `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`;
-    });
 }
 
         
