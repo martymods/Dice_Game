@@ -293,7 +293,65 @@ async function setupSinglePlayer() {
         });
     }
     
+    async function viewLeaderboard() {
+        const leaderboardContainer = document.createElement('div');
+        leaderboardContainer.style.position = 'fixed';
+        leaderboardContainer.style.top = '10%';
+        leaderboardContainer.style.left = '10%';
+        leaderboardContainer.style.width = '80%';
+        leaderboardContainer.style.height = '80%';
+        leaderboardContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+        leaderboardContainer.style.color = 'white';
+        leaderboardContainer.style.padding = '20px';
+        leaderboardContainer.style.overflowY = 'scroll';
+        leaderboardContainer.style.zIndex = '1000';
     
+        const closeButton = document.createElement('button');
+        closeButton.textContent = 'Close';
+        closeButton.style.marginBottom = '10px';
+        closeButton.style.backgroundColor = '#444';
+        closeButton.style.color = 'white';
+        closeButton.style.padding = '10px';
+        closeButton.style.border = 'none';
+        closeButton.style.cursor = 'pointer';
+    
+        closeButton.addEventListener('click', () => {
+            document.body.removeChild(leaderboardContainer);
+        });
+    
+        leaderboardContainer.appendChild(closeButton);
+    
+        const leaderboardTitle = document.createElement('h2');
+        leaderboardTitle.textContent = 'Global Leaderboard';
+        leaderboardContainer.appendChild(leaderboardTitle);
+    
+        try {
+            const snapshot = await firebase.database().ref('leaderboard').orderByChild('score').limitToLast(20).get();
+            const leaderboardData = [];
+    
+            snapshot.forEach((childSnapshot) => {
+                leaderboardData.push(childSnapshot.val());
+            });
+    
+            leaderboardData.reverse(); // Show highest scores first
+    
+            const leaderboardList = document.createElement('ul');
+            leaderboardData.forEach((entry, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${index + 1}. ${entry.name} - $${entry.score}`;
+                leaderboardList.appendChild(listItem);
+            });
+    
+            leaderboardContainer.appendChild(leaderboardList);
+        } catch (error) {
+            console.error('Error fetching leaderboard data:', error);
+            const errorMessage = document.createElement('p');
+            errorMessage.textContent = 'Unable to load leaderboard. Please try again later.';
+            leaderboardContainer.appendChild(errorMessage);
+        }
+    
+        document.body.appendChild(leaderboardContainer);
+    }
     
     function activateOnFire() {
         onFire = true;
@@ -450,6 +508,12 @@ async function setupSinglePlayer() {
     function handleGameOver() {
         const deathSound = new Audio('/sounds/Death0.ogg');
         deathSound.play().catch(err => console.error('Death sound error:', err));
+        const playerName = prompt("Enter your name for the leaderboard:");
+const playerScore = 1000; // Replace with the actual player's score
+if (playerName && playerScore > 0) {
+    submitToLeaderboard(playerName, playerScore);
+}
+
 
         // Hide UI elements
         rollButton.style.display = 'none';
@@ -482,6 +546,43 @@ async function setupSinglePlayer() {
         });
     }
 
+    async function submitLeaderboardEntry(name, score) {
+        try {
+            const entryRef = firebase.database().ref('leaderboard').push();
+            await entryRef.set({
+                name: name,
+                score: score
+            });
+            alert('Score submitted to leaderboard!');
+        } catch (error) {
+            console.error('Error submitting leaderboard entry:', error);
+            alert('Failed to submit score. Please try again.');
+        }
+    }
+    
+    function handleGameOver() {
+        const gameEndTime = Date.now();
+        const timePlayed = Math.floor((gameEndTime - gameStartTime) / 1000);
+        playerStats.totalTimePlayed += timePlayed;
+        playerStats.evictions++;
+        playerStats.currentWinStreak = 0;
+        saveStats();
+    
+        // Prompt for leaderboard submission
+        if (balance > 0) {
+            const playerName = prompt('Game Over! Enter your name for the leaderboard:');
+            if (playerName) {
+                submitLeaderboardEntry(playerName, balance);
+            }
+        }
+    
+        // Existing game over logic
+        flashScreen('red');
+        const deathSound = new Audio('/sounds/Death0.ogg');
+        deathSound.play().catch(err => console.error('Death sound error:', err));
+        gameOverContainer.style.display = 'block';
+    }
+    
     function updateUI() {
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
         rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
@@ -833,6 +934,54 @@ function updateHustlerInventoryUI() {
 function discardHustler(index) {
     hustlerInventory.splice(index, 1);
     updateHustlerInventoryUI();
+}
+
+// submit leaderboard data
+function submitToLeaderboard(name, score) {
+    const leaderboardRef = ref(database, 'leaderboard');
+    push(leaderboardRef, {
+        name: name,
+        score: score
+    })
+    .then(() => {
+        alert("Score submitted successfully!");
+    })
+    .catch((error) => {
+        console.error("Error submitting score:", error);
+    });
+}
+function fetchLeaderboard() {
+    const leaderboardRef = ref(database, 'leaderboard');
+    const leaderboardQuery = query(leaderboardRef, orderByChild('score'));
+
+    get(leaderboardQuery)
+    .then((snapshot) => {
+        if (snapshot.exists()) {
+            const data = [];
+            snapshot.forEach((childSnapshot) => {
+                data.push(childSnapshot.val());
+            });
+
+            // Sort in descending order of scores
+            data.sort((a, b) => b.score - a.score);
+
+            // Display top 20
+            displayLeaderboard(data.slice(0, 20));
+        } else {
+            console.log("No leaderboard data available.");
+        }
+    })
+    .catch((error) => {
+        console.error("Error fetching leaderboard:", error);
+    });
+}
+
+function displayLeaderboard(data) {
+    const leaderboardContainer = document.getElementById("leaderboard-container");
+    leaderboardContainer.innerHTML = "<h2>Leaderboard</h2>";
+    data.forEach((entry, index) => {
+        leaderboardContainer.innerHTML += `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`;
+    });
 }
 
         
