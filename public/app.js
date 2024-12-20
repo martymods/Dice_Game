@@ -396,10 +396,15 @@ async function setupSinglePlayer() {
     function handleItemPurchase(item) {
         if (balance >= item.cost) {
             balance -= item.cost; // Deduct item cost
-            items.push(item);
-            if (item.name === 'Forged Papers 📜') {
-                items = itemEffects.forgedPapersEffect(items);
+    
+            if (item.type === 'hustler') {
+                addHustlerToInventory(item); // Add to hustler inventory
+                updateHustlerInventoryUI(); // Refresh the UI
+            } else {
+                items.push(item); // Add to general items
             }
+            
+    
             playSound("/sounds/UI_Buy1.ogg");
             alert(`You purchased ${item.name}!`);
             popup.style.display = 'none';
@@ -409,7 +414,7 @@ async function setupSinglePlayer() {
             alert('Not enough money to buy this item.');
         }
     }
-
+    
     function displayInventory() {
         inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
     }
@@ -839,10 +844,14 @@ function applyHustlerEffects(roll1, roll2) {
     return { multiplier, cashBonus };
 }
 
-
 function updateHustlerInventoryUI() {
     const hustlerList = document.getElementById('hustler-list');
-    hustlerList.innerHTML = '';
+    const hustlerEffectElement = document.getElementById('hustler-effects');
+    const hustlerCountElement = document.getElementById('hustler-count');
+    const maxHustlers = 5; // Maximum number of hustlers allowed
+
+    // Update hustler list
+    hustlerList.innerHTML = ''; // Clear current list
     hustlerInventory.forEach((hustler, index) => {
         const li = document.createElement('li');
         li.innerHTML = `
@@ -851,11 +860,20 @@ function updateHustlerInventoryUI() {
         `;
         hustlerList.appendChild(li);
     });
+
+    // Update active effects
+    const activeEffects = hustlerInventory.map(hustler => hustler.effect).join(', ');
+    hustlerEffectElement.textContent = activeEffects
+        ? `Active Hustler Effects: ${activeEffects}`
+        : 'Active Hustler Effects: None';
+
+    // Update inventory count
+    hustlerCountElement.textContent = `Max Hustlers: ${hustlerInventory.length}/${maxHustlers}`;
 }
 
 function discardHustler(index) {
-    hustlerInventory.splice(index, 1);
-    updateHustlerInventoryUI();
+    hustlerInventory.splice(index, 1); // Remove the hustler
+    updateHustlerInventoryUI(); // Refresh UI
 }
 
         
