@@ -20,42 +20,83 @@ if (typeof window === "undefined") {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const isSinglePlayer = urlParams.has('singlePlayer');
+    const rollButton = document.getElementById('rollButton');
+    const betButton = document.getElementById('betButton');
+    const quitButton = document.getElementById('quitButton');
+    const storeImage = document.getElementById('store-image');
+    const buyItemContainer = document.getElementById('buy-item-container');
+    const itemList = document.getElementById('item-list');
+    const saveMoneyButton = document.getElementById('saveMoneyButton');
+    const inventoryList = document.getElementById('inventory-list');
+    const hustlerCount = document.getElementById('hustler-count');
+    const hustlerEffects = document.getElementById('hustler-effects');
 
-    // Initialize the game mode
-    if (urlParams.has('stats')) {
-        displayStats();
-    } else if (isSinglePlayer) {
-        setupSinglePlayer();
-    } else {
-        console.log('No specific game mode detected. Defaulting to Main Menu.');
+    let balance = 300;
+    let currentBet = 0;
+    let rent = 400;
+    let items = [];
+    let hustlerInventory = [];
+
+    function updateUI() {
+        document.getElementById('betting-status').textContent = `Balance: $${balance} | Bet: $${currentBet}`;
+        document.getElementById('rent-status').textContent = `Rent Due: $${rent}`;
+        hustlerCount.textContent = `Max Hustlers: ${hustlerInventory.length}/5`;
+        inventoryList.innerHTML = items.map(item => `<li>${item.name}</li>`).join('');
+        hustlerEffects.textContent = hustlerInventory.length > 0
+            ? `Active Hustler Effects: ${hustlerInventory.map(h => h.effect).join(', ')}`
+            : 'Active Hustler Effects: None';
     }
 
-    // Ensure the "Show Combinations" functionality is scoped correctly
-    const showCombinationsButton = document.getElementById('showCombinationsButton');
-    const combinationsModal = document.getElementById('combinationsModal');
-    const closeCombinationsButton = document.getElementById('closeCombinationsButton');
-
-    // Add event listeners for "Show Combinations" modal if the elements are present
-    if (showCombinationsButton && combinationsModal && closeCombinationsButton) {
-        showCombinationsButton.addEventListener('click', () => {
-            combinationsModal.style.display = 'flex'; // Show the modal
-        });
-
-        closeCombinationsButton.addEventListener('click', () => {
-            combinationsModal.style.display = 'none'; // Hide the modal
-        });
-
-        combinationsModal.addEventListener('click', (event) => {
-            if (event.target === combinationsModal) {
-                combinationsModal.style.display = 'none'; // Close the modal when clicking outside the content
-            }
-        });
-    } else {
-        console.error('Combination modal elements are missing in the DOM.');
+    function toggleStore(open) {
+        if (open) {
+            storeImage.src = '/images/Store0.gif';
+            setTimeout(() => buyItemContainer.style.display = 'block', 1000);
+        } else {
+            buyItemContainer.style.display = 'none';
+            storeImage.src = '/images/StoreSign_Closed0.gif';
+        }
     }
+
+    saveMoneyButton.addEventListener('click', () => {
+        toggleStore(false);
+    });
+
+    rollButton.addEventListener('click', () => {
+        if (currentBet <= 0) {
+            alert('Place a bet first!');
+            return;
+        }
+        const dice1 = Math.floor(Math.random() * 6) + 1;
+        const dice2 = Math.floor(Math.random() * 6) + 1;
+        const sum = dice1 + dice2;
+
+        if (sum === 7 || sum === 11) {
+            balance += currentBet * 2;
+        } else if (sum === 2 || sum === 3 || sum === 12) {
+            balance -= currentBet;
+        }
+        currentBet = 0;
+        updateUI();
+    });
+
+    betButton.addEventListener('click', () => {
+        const betAmount = parseInt(document.getElementById('betAmount').value);
+        if (isNaN(betAmount) || betAmount <= 0 || betAmount > balance) {
+            alert('Invalid bet amount.');
+            return;
+        }
+        currentBet = betAmount;
+        updateUI();
+    });
+
+    quitButton.addEventListener('click', () => {
+        window.location.href = '/';
+    });
+
+    toggleStore(false); // Ensure store starts closed
+    updateUI(); // Initial UI update
 });
+
 
 // Ensure playerStats and related functions are globally accessible
 if (!window.playerStats) {
@@ -138,15 +179,13 @@ async function setupSinglePlayer() {
     const rollButton = document.getElementById('rollButton');
     const betButton = document.getElementById('betButton');
     const quitButton = document.getElementById('quitButton');
-    const bettingStatus = document.getElementById('betting-status');
-    const gameStatus = document.getElementById('gameStatus');
-    const rentStatus = document.getElementById('rent-status');
-    const inventoryDisplay = document.getElementById('inventory-list');
-    const popup = document.getElementById('buy-item-container');
+    const storeImage = document.getElementById('store-image');
+    const buyItemContainer = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
-    const gameOverContainer = document.getElementById('gameOverContainer');
-    const landlordVideo = document.getElementById('landlordVideo');
-    const gameTitle = document.querySelector('h1');
+    const saveMoneyButton = document.getElementById('saveMoneyButton');
+    const inventoryList = document.getElementById('inventory-list');
+    const hustlerCount = document.getElementById('hustler-count');
+    const hustlerEffects = document.getElementById('hustler-effects');
 
     const bet25Button = document.getElementById('bet25Button');
     const bet50Button = document.getElementById('bet50Button');
