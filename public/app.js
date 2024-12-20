@@ -366,7 +366,7 @@ async function setupSinglePlayer() {
     }
 
     function showItemPopup() {
-        popup.style.display = 'block';
+        toggleStore(true);
         itemList.innerHTML = '';
     
         const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
@@ -875,6 +875,29 @@ function discardHustler(index) {
     hustlerInventory.splice(index, 1); // Remove the hustler
     updateHustlerInventoryUI(); // Refresh UI
 }
+// Manage Store Open/Close Animation
+function toggleStore(open) {
+    const storeImage = document.getElementById('store-image');
+    const buyItemContainer = document.getElementById('buy-item-container');
+
+    if (open) {
+        // Show the "Store Open" animation
+        storeImage.src = '/images/Store0.gif';
+        setTimeout(() => {
+            buyItemContainer.style.display = 'block'; // Show the buy item section
+        }, 1000); // Wait for 1 second
+    } else {
+        // Close the store
+        buyItemContainer.style.display = 'none'; // Hide the buy item section
+        storeImage.src = '/images/StoreSign_Closed0.gif';
+    }
+}
+
+// Add event listener for the "Save Money" button
+document.getElementById('saveMoneyButton').addEventListener('click', () => {
+    toggleStore(false);
+});
+
 
         
 }// Stats Display Logic
