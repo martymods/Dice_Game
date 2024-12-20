@@ -23,12 +23,13 @@
 
         /* Left-side layout (25%) */
         #left-side {
-            background-color: #f4f4f4; /* Light gray background */
+            background-color: #f4f4f4;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             padding: 10px;
+            border-right: 2px solid #ddd;
         }
 
         #store-image {
@@ -36,13 +37,32 @@
             margin-bottom: 10px;
         }
 
+        #buy-item-container {
+            display: none;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            width: 90%;
+            text-align: center;
+        }
+
+        #inventory ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #inventory li {
+            margin-bottom: 5px;
+        }
+
         /* Right-side layout (75%) */
         #right-side {
-            background-color: #fff; /* White background */
+            background-color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
 
         #dice-container img {
@@ -69,25 +89,43 @@
         <!-- Left Side -->
         <div id="left-side">
             <img id="store-image" src="/images/StoreSign_Closed0.gif" alt="Store Closed" />
+            <div id="buy-item-container">
+                <h2>Buy an Item</h2>
+                <div id="item-list"></div>
+                <button id="saveMoneyButton">Done Shopping</button>
+            </div>
             <h3>Inventory</h3>
-            <ul>
-                <li>Item 1</li>
-                <li>Item 2</li>
-            </ul>
+            <ul id="inventory-list"></ul>
+            <p id="hustler-count">Max Hustlers: 0/5</p>
+            <p id="hustler-effects">Active Hustler Effects: None</p>
         </div>
 
         <!-- Right Side -->
         <div id="right-side">
-            <h1>Dice Game</h1>
             <div id="player-info">
-                <p>Balance: $300</p>
-                <p>Rent Due: $400</p>
+                <p id="betting-status">Balance: $0 | Bet: $0</p>
+                <p id="rent-status">Rent Due: $0 in 0 rolls</p>
             </div>
+
+            <div id="controls">
+                <img id="rollButton" src="/images/Button_RollDice.png" alt="Roll Dice" class="button-image">
+                <input type="number" id="betAmount" placeholder="Enter Bet Amount" min="1">
+                <img id="betButton" src="/images/Button_PlaceBet.png" alt="Place Bet" class="button-image">
+                <img id="bet25Button" src="/images/Button_Bet25.png" alt="Bet 25%" class="button-image">
+                <img id="bet50Button" src="/images/Button_Bet50.png" alt="Bet 50%" class="button-image">
+                <img id="bet100Button" src="/images/Button_Bet100.png" alt="Bet 100%" class="button-image">
+                <button id="quitButton" class="small-button">Quit Game</button>
+            </div>
+
             <div id="dice-container">
-                <img src="/images/dice1.png" alt="Dice 1">
-                <img src="/images/dice2.png" alt="Dice 2">
+                <img id="dice1" class="dice" src="/images/dice1.png" alt="Dice 1">
+                <img id="dice2" class="dice" src="/images/dice2.png" alt="Dice 2">
             </div>
+
+            <p id="gameStatus"></p>
         </div>
     </div>
+
+    <script src="app.js" type="module"></script>
 </body>
 </html>
