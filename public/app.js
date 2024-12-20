@@ -875,3 +875,4 @@ window.startSinglePlayer = function () {
         window.location.href = 'game.html?singlePlayer=true';
     }, 2000);
 };
+window.startSinglePlayer = startSinglePlayer;
