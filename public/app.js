@@ -311,8 +311,14 @@ async function setupSinglePlayer() {
         playSound("/sounds/FireIgnite0.ogg"); // Play ignite sound
     
         // Change dice to fire versions
-        document.getElementById('dice1').src = '/images/DiceFire1.gif';
-        document.getElementById('dice2').src = '/images/DiceFire2.gif';
+        const dice1Element = document.getElementById('dice1');
+        const dice2Element = document.getElementById('dice2');
+        dice1Element.src = '/images/DiceFire1.gif';
+        dice2Element.src = '/images/DiceFire2.gif';
+    
+        // Add fire effect class
+        dice1Element.classList.add('dice-fire');
+        dice2Element.classList.add('dice-fire');
     
         // Start fire sound loop
         fireSound = new Audio('/sounds/FireBurn0.ogg');
@@ -327,8 +333,14 @@ async function setupSinglePlayer() {
         playSound("/sounds/FireEnd0.ogg"); // Play end sound
     
         // Revert dice to normal versions
-        document.getElementById('dice1').src = '/images/dice1.png';
-        document.getElementById('dice2').src = '/images/dice2.png';
+        const dice1Element = document.getElementById('dice1');
+        const dice2Element = document.getElementById('dice2');
+        dice1Element.src = '/images/dice1.png';
+        dice2Element.src = '/images/dice2.png';
+    
+        // Remove fire effect class
+        dice1Element.classList.remove('dice-fire');
+        dice2Element.classList.remove('dice-fire');
     
         // Stop fire sound loop
         if (fireSound) {
