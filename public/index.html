@@ -114,21 +114,51 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyBTwAt7CEmsYmpLSocNzMfAeHntsSXOuLc",
-  authDomain: "the-other-half-e82ca.firebaseapp.com",
-  projectId: "the-other-half-e82ca",
-  storageBucket: "the-other-half-e82ca.firebasestorage.app",
-  messagingSenderId: "605185434703",
-  appId: "1:605185434703:web:5938ea2ad2004bf1c2f63a",
-  measurementId: "G-5ZLB71YR8M"
-};
+<script type="module">
 
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database(app);
-</script>
+  
+    // Leaderboard submission function
+    window.submitToLeaderboard = async (name, score) => {
+      try {
+        const leaderboardRef = ref(db, 'leaderboard');
+        await push(leaderboardRef, { name, score });
+        alert("Score submitted successfully!");
+      } catch (error) {
+        console.error("Error submitting score:", error);
+      }
+    };
+  
+    // Leaderboard fetch function
+    window.fetchLeaderboard = async () => {
+      try {
+        const leaderboardRef = ref(db, 'leaderboard');
+        const leaderboardQuery = query(leaderboardRef, orderByChild('score'));
+        const snapshot = await get(leaderboardQuery);
+  
+        if (snapshot.exists()) {
+          const data = [];
+          snapshot.forEach(childSnapshot => {
+            data.push(childSnapshot.val());
+          });
+  
+          // Sort in descending order
+          data.sort((a, b) => b.score - a.score);
+  
+          // Display top 20
+          const leaderboardContainer = document.getElementById('leaderboard-container');
+          leaderboardContainer.innerHTML = "<h2>Leaderboard</h2>";
+          data.slice(0, 20).forEach((entry, index) => {
+            leaderboardContainer.innerHTML += `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`;
+          });
+        } else {
+          console.log("No leaderboard data available.");
+        }
+      } catch (error) {
+        console.error("Error fetching leaderboard:", error);
+      }
+    };
+  </script>
+  
 
 
 <script src="itemEffects.js"></script>
