@@ -267,6 +267,10 @@ async function setupSinglePlayer() {
                 flashScreen('gold');
                 showWinningAmount(winnings);
     
+                // Update total money won
+                playerStats.totalMoneyWon += winnings;
+                saveStats();
+    
                 winStreak++;
                 if (winStreak >= 3 && !onFire) {
                     activateOnFire(); // Activate "on fire" if streak is 3
@@ -278,6 +282,10 @@ async function setupSinglePlayer() {
                 playSound("/sounds/Loser_0.ogg");
                 flashScreen('red');
                 showLosingAmount(currentBet);
+    
+                // Update total money lost
+                playerStats.totalMoneyLost += currentBet;
+                saveStats();
     
                 winStreak = 0; // Reset streak
                 if (onFire) deactivateOnFire(); // Deactivate "on fire" on loss
@@ -297,9 +305,7 @@ async function setupSinglePlayer() {
             }, 1000); // Restore after 1 second
         });
     }
-    
-    
-    
+      
     function activateOnFire() {
         onFire = true;
         playSound("/sounds/FireIgnite0.ogg"); // Play ignite sound
