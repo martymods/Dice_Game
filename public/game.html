@@ -1,111 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dice Game - Single Player</title>
-        <link rel="stylesheet" href="style.css">
-        <!-- Add the favicon link here -->
-        <link rel="icon" href="images/DW_Logo.png" type="image/png">
-    <style>
-        /* Ensure proper sizing */
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Game - Single Player</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.ethers.io/lib/ethers-5.6.umd.min.js"></script>
 
-        /* Main container */
-        #game-container {
-            display: grid;
-            grid-template-columns: 25% 75%;
-            height: 100vh;
-            width: 100vw;
-        }
-
-        /* Left-side layout (25%) */
-        #left-side {
-            background-color: #f4f4f4;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 10px;
-            border-right: 2px solid #ddd;
-        }
-
-        #store-image {
-            max-width: 100%;
-            margin-bottom: 10px;
-        }
-
-        #buy-item-container {
-            display: none;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            padding: 10px;
-            width: 90%;
-            text-align: center;
-        }
-
-        #inventory ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        #inventory li {
-            margin-bottom: 5px;
-        }
-
-        /* Right-side layout (75%) */
-        #right-side {
-            background-color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        #dice-container img {
-            width: 100px;
-            height: 100px;
-            margin: 10px;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            #game-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: 50% 50%;
-            }
-
-            #left-side, #right-side {
-                width: 100%;
-            }
-        }
-    </style>
 </head>
 <body>
     <div id="game-container">
         <!-- Left Side -->
         <div id="left-side">
-            <img id="store-image" src="/images/StoreSign_Closed0.gif" alt="Store Closed" />
-            <div id="buy-item-container">
-                <h2>Buy an Item</h2>
-                <div id="item-list"></div>
-                <button id="saveMoneyButton">Done Shopping</button>
+            <!-- Hustler Info -->
+            <div id="hustler-info">
+                <p id="hustler-count">Max Hustlers: 0/5</p>
+                <p id="hustler-effects">Active Hustler Effects: None</p>
             </div>
-            <h3>Inventory</h3>
-            <ul id="inventory-list"></ul>
-            <p id="hustler-count">Max Hustlers: 0/5</p>
-            <p id="hustler-effects">Active Hustler Effects: None</p>
+
+            <!-- Buy Item -->
+            <div id="buy-item-section">
+                <img id="store-image" src="/images/StoreSign_Closed0.gif" alt="Store Closed" />
+                <div id="buy-item-container" style="display: none;">
+                    <h2>Buy an Item</h2>
+                    <div id="item-list"></div>
+                    <button id="saveMoneyButton">Done Shopping</button>
+                </div>
+            </div>
+
+            <!-- Inventory -->
+            <div id="inventory">
+                <h3>Inventory</h3>
+                <ul id="inventory-list"></ul>
+            </div>
         </div>
 
         <!-- Right Side -->
         <div id="right-side">
+            <h1 style="display: none;">The Other Half</h1> <!-- Hidden Title -->
             <div id="player-info">
                 <p id="betting-status">Balance: $0 | Bet: $0</p>
                 <p id="rent-status">Rent Due: $0 in 0 rolls</p>
@@ -125,10 +57,25 @@
                 <img id="dice1" class="dice" src="/images/dice1.png" alt="Dice 1">
                 <img id="dice2" class="dice" src="/images/dice2.png" alt="Dice 2">
             </div>
-
+            
             <p id="gameStatus"></p>
+
+            <!-- Game Over Section -->
+            <div id="gameOverContainer" style="display: none;">
+                <h2>Game Over</h2>
+                <p>Better luck next time!</p>
+                <button onclick="window.location.href='/';">Return to Main Menu</button>
+            </div>
         </div>
     </div>
+    
+    <div id="crypto-section">
+        <button onclick="connectMetaMask()">Connect MetaMask</button>
+        <input type="number" id="betAmountETH" placeholder="Enter Bet in ETH">
+        <button onclick="placeBet(document.getElementById('betAmountETH').value)">Place Bet</button>
+    </div>
+    
+    
 
     <script src="app.js" type="module"></script>
 </body>
