@@ -20,83 +20,42 @@ if (typeof window === "undefined") {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const rollButton = document.getElementById('rollButton');
-    const betButton = document.getElementById('betButton');
-    const quitButton = document.getElementById('quitButton');
-    const storeImage = document.getElementById('store-image');
-    const buyItemContainer = document.getElementById('buy-item-container');
-    const itemList = document.getElementById('item-list');
-    const saveMoneyButton = document.getElementById('saveMoneyButton');
-    const inventoryList = document.getElementById('inventory-list');
-    const hustlerCount = document.getElementById('hustler-count');
-    const hustlerEffects = document.getElementById('hustler-effects');
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSinglePlayer = urlParams.has('singlePlayer');
 
-    let balance = 300;
-    let currentBet = 0;
-    let rent = 400;
-    let items = [];
-    let hustlerInventory = [];
-
-    function updateUI() {
-        document.getElementById('betting-status').textContent = `Balance: $${balance} | Bet: $${currentBet}`;
-        document.getElementById('rent-status').textContent = `Rent Due: $${rent}`;
-        hustlerCount.textContent = `Max Hustlers: ${hustlerInventory.length}/5`;
-        inventoryList.innerHTML = items.map(item => `<li>${item.name}</li>`).join('');
-        hustlerEffects.textContent = hustlerInventory.length > 0
-            ? `Active Hustler Effects: ${hustlerInventory.map(h => h.effect).join(', ')}`
-            : 'Active Hustler Effects: None';
+    // Initialize the game mode
+    if (urlParams.has('stats')) {
+        displayStats();
+    } else if (isSinglePlayer) {
+        setupSinglePlayer();
+    } else {
+        console.log('No specific game mode detected. Defaulting to Main Menu.');
     }
 
-    function toggleStore(open) {
-        if (open) {
-            storeImage.src = '/images/Store0.gif';
-            setTimeout(() => buyItemContainer.style.display = 'block', 1000);
-        } else {
-            buyItemContainer.style.display = 'none';
-            storeImage.src = '/images/StoreSign_Closed0.gif';
-        }
+    // Ensure the "Show Combinations" functionality is scoped correctly
+    const showCombinationsButton = document.getElementById('showCombinationsButton');
+    const combinationsModal = document.getElementById('combinationsModal');
+    const closeCombinationsButton = document.getElementById('closeCombinationsButton');
+
+    // Add event listeners for "Show Combinations" modal if the elements are present
+    if (showCombinationsButton && combinationsModal && closeCombinationsButton) {
+        showCombinationsButton.addEventListener('click', () => {
+            combinationsModal.style.display = 'flex'; // Show the modal
+        });
+
+        closeCombinationsButton.addEventListener('click', () => {
+            combinationsModal.style.display = 'none'; // Hide the modal
+        });
+
+        combinationsModal.addEventListener('click', (event) => {
+            if (event.target === combinationsModal) {
+                combinationsModal.style.display = 'none'; // Close the modal when clicking outside the content
+            }
+        });
+    } else {
+        console.error('Combination modal elements are missing in the DOM.');
     }
-
-    saveMoneyButton.addEventListener('click', () => {
-        toggleStore(false);
-    });
-
-    rollButton.addEventListener('click', () => {
-        if (currentBet <= 0) {
-            alert('Place a bet first!');
-            return;
-        }
-        const dice1 = Math.floor(Math.random() * 6) + 1;
-        const dice2 = Math.floor(Math.random() * 6) + 1;
-        const sum = dice1 + dice2;
-
-        if (sum === 7 || sum === 11) {
-            balance += currentBet * 2;
-        } else if (sum === 2 || sum === 3 || sum === 12) {
-            balance -= currentBet;
-        }
-        currentBet = 0;
-        updateUI();
-    });
-
-    betButton.addEventListener('click', () => {
-        const betAmount = parseInt(document.getElementById('betAmount').value);
-        if (isNaN(betAmount) || betAmount <= 0 || betAmount > balance) {
-            alert('Invalid bet amount.');
-            return;
-        }
-        currentBet = betAmount;
-        updateUI();
-    });
-
-    quitButton.addEventListener('click', () => {
-        window.location.href = '/';
-    });
-
-    toggleStore(false); // Ensure store starts closed
-    updateUI(); // Initial UI update
 });
-
 
 // Ensure playerStats and related functions are globally accessible
 if (!window.playerStats) {
@@ -179,13 +138,15 @@ async function setupSinglePlayer() {
     const rollButton = document.getElementById('rollButton');
     const betButton = document.getElementById('betButton');
     const quitButton = document.getElementById('quitButton');
-    const storeImage = document.getElementById('store-image');
-    const buyItemContainer = document.getElementById('buy-item-container');
+    const bettingStatus = document.getElementById('betting-status');
+    const gameStatus = document.getElementById('gameStatus');
+    const rentStatus = document.getElementById('rent-status');
+    const inventoryDisplay = document.getElementById('inventory-list');
+    const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
-    const saveMoneyButton = document.getElementById('saveMoneyButton');
-    const inventoryList = document.getElementById('inventory-list');
-    const hustlerCount = document.getElementById('hustler-count');
-    const hustlerEffects = document.getElementById('hustler-effects');
+    const gameOverContainer = document.getElementById('gameOverContainer');
+    const landlordVideo = document.getElementById('landlordVideo');
+    const gameTitle = document.querySelector('h1');
 
     const bet25Button = document.getElementById('bet25Button');
     const bet50Button = document.getElementById('bet50Button');
@@ -959,6 +920,84 @@ function displayStats() {
         </ul>
     `;
 }
+
+import { ethers } from "https://cdn.ethers.io/lib/ethers-5.6.umd.min.js";
+
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+let signer; // To store the connected wallet's signer
+
+// Wallet Addresses
+const playerWallet = ""; // Player's address (will be set dynamically)
+const gameWallet = "YOUR_WALLET_ADDRESS"; // Your MetaMask wallet
+
+// MetaMask Connection
+async function connectMetaMask() {
+    if (typeof window.ethereum !== "undefined") {
+        try {
+            await provider.send("eth_requestAccounts", []); // Request access
+            signer = provider.getSigner();
+            const address = await signer.getAddress();
+            playerWallet = address; // Set player wallet
+            console.log("Connected wallet:", address);
+            alert(`Connected wallet: ${address}`);
+        } catch (error) {
+            console.error("MetaMask connection failed:", error);
+        }
+    } else {
+        alert("MetaMask is not installed. Please install it to use ETH betting.");
+    }
+}
+
+// Place Bet (Transfer ETH from player to your wallet)
+async function placeBet(betAmountETH) {
+    try {
+        if (!signer) {
+            alert("Please connect your MetaMask wallet first.");
+            return;
+        }
+
+        const transaction = await signer.sendTransaction({
+            to: gameWallet, // Your wallet address
+            value: ethers.utils.parseEther(betAmountETH.toString()), // Convert ETH amount
+        });
+
+        console.log("Transaction successful:", transaction);
+        alert("Bet placed successfully!");
+    } catch (error) {
+        console.error("Error placing bet:", error);
+        alert("Bet placement failed. Please try again.");
+    }
+}
+
+// Payout Winnings (Transfer ETH from your wallet to player's wallet)
+async function payoutWinnings(playerAddress, winningsETH) {
+    try {
+        const wallet = new ethers.Wallet("YOUR_PRIVATE_KEY", provider); // Replace with your private key
+        const transaction = await wallet.sendTransaction({
+            to: playerAddress,
+            value: ethers.utils.parseEther(winningsETH.toString()), // Convert ETH amount
+        });
+
+        console.log("Payout successful:", transaction);
+        alert("Payout sent successfully!");
+    } catch (error) {
+        console.error("Error sending payout:", error);
+        alert("Payout failed. Please check your wallet.");
+    }
+}
+
+// Example: Call this function when the player wins
+async function handleWin(betAmount) {
+    const winnings = betAmount * 2; // Example multiplier
+    await payoutWinnings(playerWallet, winnings);
+}
+
+// Example: Call this function when the player loses
+async function handleLoss() {
+    alert("You lost the bet! Better luck next time.");
+}
+
+
 window.startSinglePlayer = function () {
     // Show the transition overlay
     const overlay = document.getElementById('transition-overlay');
@@ -974,3 +1013,4 @@ window.startSinglePlayer = function () {
     }, 2000);
 };
 window.startSinglePlayer = startSinglePlayer;
+
