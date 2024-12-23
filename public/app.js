@@ -1,14 +1,5 @@
 // app.
 
-require('dotenv').config();
-const ethers = require('ethers');
-
-const privateKey = process.env.PRIVATE_KEY;
-const wallet = new ethers.Wallet(privateKey);
-
-console.log("Wallet Address:", wallet.address);
-
-
 import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
