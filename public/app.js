@@ -923,33 +923,6 @@ function displayStats() {
 
 const ethers = window.ethers;
 
-
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-let signer; // To store the connected wallet's signer
-
-// Wallet Addresses
-let playerWallet = ""; // Player's address (will be set dynamically)
-const gameWallet = "YOUR_WALLET_ADDRESS"; // Your MetaMask wallet
-
-// MetaMask Connection
-async function connectMetaMask() {
-    if (typeof window.ethereum !== "undefined") {
-        try {
-            await provider.send("eth_requestAccounts", []); // Request access
-            signer = provider.getSigner();
-            const address = await signer.getAddress();
-            playerWallet = address; // Set player wallet
-            console.log("Connected wallet:", address);
-            alert(`Connected wallet: ${address}`);
-        } catch (error) {
-            console.error("MetaMask connection failed:", error);
-        }
-    } else {
-        alert("MetaMask is not installed. Please install it to use ETH betting.");
-    }
-}
-
-// Place Bet (Transfer ETH from player to your wallet)
 async function placeBet(betAmountETH) {
     try {
         if (!signer) {
@@ -1014,7 +987,7 @@ function startSinglePlayer() {
         window.location.href = 'game.html?singlePlayer=true';
     }, 2000);
 }
-window.startSinglePlayer = startSinglePlayer;
+
 // MetaMask Connection
 async function connectMetaMask() {
     if (typeof window.ethereum !== "undefined") {
@@ -1054,10 +1027,6 @@ async function placeBet(betAmountETH) {
     }
 }
 
-// Make functions globally accessible
-window.connectMetaMask = connectMetaMask;
-window.placeBet = placeBet;
-
 document.getElementById('crypto-section').addEventListener('click', (event) => {
     if (event.target.tagName === 'BUTTON') {
         const action = event.target.textContent.trim();
@@ -1070,3 +1039,7 @@ document.getElementById('crypto-section').addEventListener('click', (event) => {
     }
 });
 
+// Ensure these functions are accessible globally
+window.startSinglePlayer = startSinglePlayer;
+window.connectMetaMask = connectMetaMask;
+window.placeBet = placeBet;
