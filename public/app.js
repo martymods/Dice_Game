@@ -595,13 +595,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (action === "Connect MetaMask") {
                     connectMetaMask();
                 } else if (action === "Place Bet") {
-                    const betAmountETH = document.getElementById('betAmountETH').value;
-                    placeBet(betAmountETH);
+                    const betAmountETH = document.getElementById('betAmountETH')?.value;
+                    if (betAmountETH) {
+                        placeBet(betAmountETH);
+                    } else {
+                        alert("Please enter a valid bet amount.");
+                    }
                 }
             }
         });
+    } else {
+        console.error("Crypto section element is missing.");
     }
 });
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -988,20 +995,19 @@ function startSinglePlayer() {
 }
 
 // MetaMask Connection
+let provider;
+let signer;
+
 async function connectMetaMask() {
     if (typeof window.ethereum !== "undefined") {
-        try {
-            await provider.send("eth_requestAccounts", []); // Request access
-            signer = provider.getSigner();
-            const address = await signer.getAddress();
-            playerWallet = address; // Set player wallet
-            console.log("Connected wallet:", address);
-            alert(`Connected wallet: ${address}`);
-        } catch (error) {
-            console.error("MetaMask connection failed:", error);
-        }
+        provider = new ethers.providers.Web3Provider(window.ethereum); // Connect to MetaMask
+        await provider.send("eth_requestAccounts", []); // Request permission
+        signer = provider.getSigner(); // Get signer
+        const address = await signer.getAddress(); // Wallet address
+        console.log("Connected wallet:", address);
+        alert(`Connected wallet: ${address}`);
     } else {
-        alert("MetaMask is not installed. Please install it to use ETH betting.");
+        alert("MetaMask is not installed. Please install it to use this feature.");
     }
 }
 
