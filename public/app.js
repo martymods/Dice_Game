@@ -1,4 +1,13 @@
-// app.js
+// app.
+
+require('dotenv').config();
+const ethers = require('ethers');
+
+const privateKey = process.env.PRIVATE_KEY;
+const wallet = new ethers.Wallet(privateKey);
+
+console.log("Wallet Address:", wallet.address);
+
 
 import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
@@ -921,13 +930,14 @@ function displayStats() {
     `;
 }
 
-import { ethers } from "https://cdn.ethers.io/lib/ethers-5.6.umd.min.js";
+const ethers = window.ethers;
+
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 let signer; // To store the connected wallet's signer
 
 // Wallet Addresses
-const playerWallet = ""; // Player's address (will be set dynamically)
+let playerWallet = ""; // Player's address (will be set dynamically)
 const gameWallet = "YOUR_WALLET_ADDRESS"; // Your MetaMask wallet
 
 // MetaMask Connection
@@ -998,7 +1008,8 @@ async function handleLoss() {
 }
 
 
-window.startSinglePlayer = function () {
+
+function startSinglePlayer() {
     // Show the transition overlay
     const overlay = document.getElementById('transition-overlay');
     overlay.style.display = 'flex';
@@ -1011,6 +1022,5 @@ window.startSinglePlayer = function () {
     setTimeout(() => {
         window.location.href = 'game.html?singlePlayer=true';
     }, 2000);
-};
+}
 window.startSinglePlayer = startSinglePlayer;
-
