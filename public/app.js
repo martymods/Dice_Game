@@ -1015,3 +1015,58 @@ function startSinglePlayer() {
     }, 2000);
 }
 window.startSinglePlayer = startSinglePlayer;
+// MetaMask Connection
+async function connectMetaMask() {
+    if (typeof window.ethereum !== "undefined") {
+        try {
+            await provider.send("eth_requestAccounts", []); // Request access
+            signer = provider.getSigner();
+            const address = await signer.getAddress();
+            playerWallet = address; // Set player wallet
+            console.log("Connected wallet:", address);
+            alert(`Connected wallet: ${address}`);
+        } catch (error) {
+            console.error("MetaMask connection failed:", error);
+        }
+    } else {
+        alert("MetaMask is not installed. Please install it to use ETH betting.");
+    }
+}
+
+// Place Bet (Transfer ETH from player to your wallet)
+async function placeBet(betAmountETH) {
+    try {
+        if (!signer) {
+            alert("Please connect your MetaMask wallet first.");
+            return;
+        }
+
+        const transaction = await signer.sendTransaction({
+            to: gameWallet, // Your wallet address
+            value: ethers.utils.parseEther(betAmountETH.toString()), // Convert ETH amount
+        });
+
+        console.log("Transaction successful:", transaction);
+        alert("Bet placed successfully!");
+    } catch (error) {
+        console.error("Error placing bet:", error);
+        alert("Bet placement failed. Please try again.");
+    }
+}
+
+// Make functions globally accessible
+window.connectMetaMask = connectMetaMask;
+window.placeBet = placeBet;
+
+document.getElementById('crypto-section').addEventListener('click', (event) => {
+    if (event.target.tagName === 'BUTTON') {
+        const action = event.target.textContent.trim();
+        if (action === "Connect MetaMask") {
+            connectMetaMask();
+        } else if (action === "Place Bet") {
+            const betAmountETH = document.getElementById('betAmountETH').value;
+            placeBet(betAmountETH);
+        }
+    }
+});
+
