@@ -585,6 +585,25 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Combination modal elements are missing in the DOM.');
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const cryptoSection = document.getElementById('crypto-section');
+    if (cryptoSection) {
+        cryptoSection.addEventListener('click', (event) => {
+            if (event.target.tagName === 'BUTTON') {
+                const action = event.target.textContent.trim();
+                if (action === "Connect MetaMask") {
+                    connectMetaMask();
+                } else if (action === "Place Bet") {
+                    const betAmountETH = document.getElementById('betAmountETH').value;
+                    placeBet(betAmountETH);
+                }
+            }
+        });
+    }
+});
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const introContainer = document.getElementById('intro-container');
     const mainMenu = document.getElementById('main-menu');
@@ -922,26 +941,6 @@ function displayStats() {
 }
 
 const ethers = window.ethers;
-
-async function placeBet(betAmountETH) {
-    try {
-        if (!signer) {
-            alert("Please connect your MetaMask wallet first.");
-            return;
-        }
-
-        const transaction = await signer.sendTransaction({
-            to: gameWallet, // Your wallet address
-            value: ethers.utils.parseEther(betAmountETH.toString()), // Convert ETH amount
-        });
-
-        console.log("Transaction successful:", transaction);
-        alert("Bet placed successfully!");
-    } catch (error) {
-        console.error("Error placing bet:", error);
-        alert("Bet placement failed. Please try again.");
-    }
-}
 
 // Payout Winnings (Transfer ETH from your wallet to player's wallet)
 async function payoutWinnings(playerAddress, winningsETH) {
