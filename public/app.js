@@ -978,13 +978,36 @@ async function payoutWinnings(playerAddress, winningsETH) {
 
 // Example: Call this function when the player wins
 async function handleWin(betAmount) {
-    const winnings = betAmount * 2; // Example multiplier
-    await payoutWinnings(playerWallet, winnings);
+    const winnings = betAmount * 2; // x1 bonus = double the bet
+    const ethToUsdRate = 3500; // Example conversion rate: 1 ETH = $3500
+    const winningsUSD = (winnings * ethToUsdRate).toFixed(2);
+
+    const transaction = await signer.sendTransaction({
+        to: await signer.getAddress(), // Player's wallet address
+        value: ethers.utils.parseEther(winnings.toString()),
+    });
+
+    console.log("Payout successful:", transaction);
+    alert(`Congratulations! You won ${winnings} ETH ($${winningsUSD}).`);
+
+    const gameStatus = document.getElementById('gameStatus');
+    gameStatus.innerHTML = `
+        <span style="color: #7fbcf7;">+${winnings} ETH</span>
+        <span>($${winningsUSD})</span>
+    `;
 }
 
 // Example: Call this function when the player loses
-async function handleLoss() {
-    alert("You lost the bet! Better luck next time.");
+function handleLoss(betAmount) {
+    const ethToUsdRate = 3500; // Example conversion rate
+    const lossUSD = (betAmount * ethToUsdRate).toFixed(2);
+
+    const gameStatus = document.getElementById('gameStatus');
+    gameStatus.innerHTML = `
+        <span style="color: red;">-${betAmount} ETH</span>
+        <span>($${lossUSD})</span>
+    `;
+    alert(`You lost ${betAmount} ETH ($${lossUSD}). Better luck next time!`);
 }
 
 
@@ -1064,25 +1087,47 @@ export async function placeBet(betAmountETH) {
             return;
         }
 
-        // Ensure bet amount is valid
+        // Validate and parse bet amount
         const betAmount = parseFloat(betAmountETH);
         if (isNaN(betAmount) || betAmount <= 0) {
             alert("Invalid bet amount.");
             return;
         }
 
+        // Get current ETH to USD conversion rate (hardcoded for now or fetched via API)
+        const ethToUsdRate = 1800; // Example conversion rate: 1 ETH = $1800
+        const betAmountUSD = (betAmount * ethToUsdRate).toFixed(2);
+
+        // Transaction: send ETH to your wallet
         const transaction = await signer.sendTransaction({
-            to: "0x5638c9f84361a7430b29a63216f0af0914399eA2", // Replace with your receiving wallet address
-            value: ethers.utils.parseEther(betAmount.toString()), // Convert ETH amount
+            to: "0xYourEthereumAddressHere", // Replace with your wallet address
+            value: ethers.utils.parseEther(betAmount.toString()),
         });
 
         console.log("Transaction successful:", transaction);
+
+        // Display bet amount in ETH and USD
+        const bettingStatus = document.getElementById('betting-status');
+        bettingStatus.innerHTML = `
+            <img src="/images/ETH_Logo.png" alt="ETH" style="width: 24px; vertical-align: middle;">
+            <span style="color: #7fbcf7;">${betAmount} ETH</span>
+            <span>($${betAmountUSD})</span>
+        `;
         alert("Bet placed successfully!");
+
+        // Simulate game outcome (for example purposes)
+        const playerWon = Math.random() < 0.5; // 50% chance of winning
+        if (playerWon) {
+            await handleWin(betAmount);
+        } else {
+            handleLoss(betAmount);
+        }
     } catch (error) {
         console.error("Error placing bet:", error);
         alert("Bet placement failed. Please try again.");
     }
 }
+
 
 window.placeBet = placeBet;
 
