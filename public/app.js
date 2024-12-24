@@ -372,51 +372,42 @@ async function setupSinglePlayer() {
     }
     
     function renderShop() {
-        const shopContainer = document.getElementById('shop-container');
-        const hustlerListElement = document.getElementById('hustler-list');
-        const itemListElement = document.getElementById('item-list');
+        const shopArea = document.getElementById("shop-area");
+        const shopItems = document.getElementById("shop-items");
+        shopItems.innerHTML = ""; // Clear shop items
     
-        // Helper function to get random items or hustlers
-        function getRandomItems(list, count) {
-            return list.sort(() => 0.5 - Math.random()).slice(0, count);
-        }
-    
-        // Filter and get random hustlers and items
         const randomHustlers = getRandomItems(
-            window.itemsList.filter(item => item.description && item.description.includes('Hustler')),
+            window.itemsList.filter(item => item.description.includes("Hustler")),
             3
         );
     
         const randomItems = getRandomItems(
-            window.itemsList.filter(item => !item.description || !item.description.includes('Hustler')),
+            window.itemsList.filter(item => !item.description.includes("Hustler")),
             3
         );
     
-        // Clear existing shop elements
-        hustlerListElement.innerHTML = '';
-        itemListElement.innerHTML = '';
-    
-        // Populate Hustlers
-        randomHustlers.forEach(hustler => {
-            const hustlerButton = document.createElement('button');
-            hustlerButton.textContent = `${hustler.name} - $${hustler.cost}`;
-            hustlerButton.onclick = () => handlePurchase(hustler);
-            hustlerListElement.appendChild(hustlerButton);
+        [...randomHustlers, ...randomItems].forEach(item => {
+            const itemElement = document.createElement("div");
+            itemElement.classList.add("shop-item");
+            itemElement.textContent = `${item.name} - $${item.cost}`;
+            itemElement.onclick = () => handlePurchase(item);
+            shopItems.appendChild(itemElement);
         });
     
-        // Populate Items
-        randomItems.forEach(item => {
-            const itemButton = document.createElement('button');
-            itemButton.textContent = `${item.name} - $${item.cost}`;
-            itemButton.onclick = () => handlePurchase(item);
-            itemListElement.appendChild(itemButton);
-        });
-    
-        // Display shop
-        shopContainer.style.display = 'block';
+        shopArea.style.display = "block";
     }
-    
-    
+
+    function updateScoreRentUI() {
+        document.getElementById("rent-status").textContent = `Rent: $${rent} in ${maxTurns - turns} rolls`;
+        document.getElementById("score-status").textContent = `Score: ${playerStats.totalMoneyWon}`;
+    }
+
+    function toggleShop(open) {
+        const shopArea = document.getElementById("shop-area");
+        shopArea.classList.toggle("active", open);
+    }
+         
+
     function handlePurchase(item) {
         if (playerHasPurchased) {
             alert('You can only purchase one item or hustler per shop visit!');
@@ -961,6 +952,22 @@ function updateHustlerInventoryUI() {
     // Update inventory count
     hustlerCountElement.textContent = `Max Hustlers: ${hustlerInventory.length}/${maxHustlers}`;
 }
+
+function updateHustlerPanel() {
+    const hustlersDisplay = document.getElementById("hustlers-display");
+    hustlersDisplay.innerHTML = ""; // Clear existing
+
+    hustlerInventory.forEach(hustler => {
+        const hustlerElement = document.createElement("div");
+        hustlerElement.classList.add("hustler");
+        hustlerElement.textContent = hustler.name[0]; // Use the first letter or an emoji
+        hustlerElement.setAttribute("data-description", hustler.description); // Tooltip
+        hustlersDisplay.appendChild(hustlerElement);
+    });
+}
+
+updateHustlerPanel();
+
 
 function discardHustler(index) {
     hustlerInventory.splice(index, 1); // Remove the hustler
