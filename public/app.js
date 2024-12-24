@@ -7,6 +7,7 @@ import { updateUI, showItemPopup } from './modules/ui.js';
 
 // Fire Status
 let winStreak = 0; // Track the current winning streak
+let playerHasPurchased = false; // Track if the player has purchased an item/hustler in the shop
 let onFire = false; // Whether the dice are "on fire"
 let fireSound; // Sound for when "on fire" is active
 
