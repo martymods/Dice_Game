@@ -561,3 +561,97 @@ h1 {
 #shop-container button:hover {
     background: #0056b3;
 }
+#hustler-panel {
+    position: absolute;
+    top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 1rem;
+}
+
+#hustlers-display {
+    display: flex;
+    gap: 10px;
+}
+
+.hustler {
+    width: 50px;
+    height: 50px;
+    background: #333;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: relative;
+}
+
+.hustler:hover::after {
+    content: attr(data-description);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px;
+    background: #222;
+    color: white;
+    border-radius: 5px;
+    white-space: nowrap;
+    font-size: 0.8rem;
+}
+#shop-area {
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    width: 80%;
+    background: rgba(50, 50, 50, 0.9);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#shop-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.shop-item {
+    padding: 10px;
+    background: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.shop-item:hover {
+    background: #555;
+}
+#score-rent-panel {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    font-size: 1rem;
+}
+#shop-area {
+    transition: opacity 0.5s, transform 0.5s;
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+#shop-area.active {
+    opacity: 1;
+    transform: scale(1);
+}
