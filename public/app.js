@@ -397,6 +397,18 @@ async function setupSinglePlayer() {
         shopArea.style.display = "block";
     }
 
+    /**
+ * Helper function to get random items from a list
+ * @param {Array} list - Array of items to pick from
+ * @param {number} count - Number of random items to select
+ * @returns {Array} - Randomly selected items
+ */
+function getRandomItems(list, count) {
+    // Shuffle the list and select the first 'count' items
+    return list.sort(() => Math.random() - 0.5).slice(0, count);
+}
+
+
     function updateScoreRentUI() {
         document.getElementById("rent-status").textContent = `Rent: $${rent} in ${maxTurns - turns} rolls`;
         document.getElementById("score-status").textContent = `Score: ${playerStats.totalMoneyWon}`;
