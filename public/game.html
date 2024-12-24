@@ -78,6 +78,14 @@
         <button onclick="placeBet(document.getElementById('betAmountETH').value)">Place Bet</button>
     </div>
     
+    <div id="shop-container" style="display: none;">
+        <h3>Shop</h3>
+        <div id="hustler-list"></div>
+        <div id="item-list"></div>
+    </div>
+    
+
+    
     <button id="connect-wallet">Connect to MetaMask</button>
     <script type="module">
         import { connectMetaMask } from './app.js';
@@ -87,7 +95,7 @@
     
     <p id="betting-status"></p>
     <p id="gameStatus"></p>
-    
+
 
     <script src="app.js" type="module"></script>
 </body>
