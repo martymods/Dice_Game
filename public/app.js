@@ -365,33 +365,82 @@ async function setupSinglePlayer() {
         }
     }
 
-    function showItemPopup() {
-        toggleStore(true);
-        itemList.innerHTML = '';
-
-        const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
-        shuffledItems.forEach(item => {
-            const itemButton = document.createElement('button');
-            itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
-            itemButton.style.backgroundColor = getItemColor(item.rarity);
-            itemButton.onclick = () => {
-                handleItemPurchase(item);
-
-                // Play random Lord voice clip
-                const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
-                playSound(voiceClips, true);
-            };
-            itemList.appendChild(itemButton);
+    function openShop() {
+        playerHasPurchased = false; // Reset purchase limit for next visit
+        renderShop();
+    }
+    
+    function renderShop() {
+        const shopContainer = document.getElementById('shop-container');
+        const itemListElement = document.getElementById('item-list');
+        const hustlerListElement = document.getElementById('hustler-list');
+    
+        // Helper function to get random items or hustlers
+        function getRandomItems(list, count) {
+            return list.sort(() => 0.5 - Math.random()).slice(0, count);
+        }
+    
+        const randomHustlers = getRandomItems(
+            window.itemsList.filter(item => item.description.includes('Hustler')),
+            3
+        );
+    
+        const randomItems = getRandomItems(
+            window.itemsList.filter(item => !item.description.includes('Hustler')),
+            3
+        );
+    
+        // Clear existing shop elements
+        hustlerListElement.innerHTML = '';
+        itemListElement.innerHTML = '';
+    
+        // Populate Hustlers
+        randomHustlers.forEach(hustler => {
+            const hustlerButton = document.createElement('button');
+            hustlerButton.textContent = `${hustler.name} - $${hustler.cost}`;
+            hustlerButton.onclick = () => handlePurchase(hustler);
+            hustlerListElement.appendChild(hustlerButton);
         });
-
-        const skipButton = document.createElement('button');
-        skipButton.textContent = 'Save Money';
-        skipButton.onclick = () => {
-            playSound("/sounds/UI_Click1.ogg");
-            popup.style.display = 'none';
-        };
-        itemList.appendChild(skipButton);
-    } 
+    
+        // Populate Items
+        randomItems.forEach(item => {
+            const itemButton = document.createElement('button');
+            itemButton.textContent = `${item.name} - $${item.cost}`;
+            itemButton.onclick = () => handlePurchase(item);
+            itemListElement.appendChild(itemButton);
+        });
+    
+        // Display shop
+        shopContainer.style.display = 'block';
+    }
+    
+    function handlePurchase(item) {
+        if (playerHasPurchased) {
+            alert('You can only purchase one item or hustler per shop visit!');
+            return;
+        }
+    
+        if (balance >= item.cost) {
+            balance -= item.cost;
+            alert(`You purchased ${item.name}!`);
+            addItemToInventory(item);
+            playerHasPurchased = true;
+            const shopContainer = document.getElementById('shop-container');
+            shopContainer.style.display = 'none'; // Close shop
+            updateUI(); // Update UI after purchase
+        } else {
+            alert('Not enough money to make this purchase.');
+        }
+    }
+    
+    function addItemToInventory(item) {
+        if (item.description.includes('Hustler')) {
+            hustlerInventory.push(item); // Add to hustler inventory
+        } else {
+            items.push(item); // Add to general items
+        }
+    }
+    
 
     function handleItemPurchase(item) {
         if (balance >= item.cost) {
@@ -464,7 +513,7 @@ async function setupSinglePlayer() {
                 const randomStatement = rentPaidStatements[Math.floor(Math.random() * rentPaidStatements.length)];
                 alert(randomStatement);
 
-                showItemPopup();
+                openShop(); // Trigger the new shop logic
             } else {
                 handleGameOver();
             }
@@ -739,7 +788,7 @@ if (skipIntroButton) {
                 alert(randomStatement);
 
                 // Show item popup
-                showItemPopup();
+                openShop(); // Trigger the new shop logic
             } else {
                 handleGameOver();
             }
