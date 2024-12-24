@@ -1008,18 +1008,20 @@ function startSinglePlayer() {
 let provider;
 let signer;
 
-export async function connectMetaMask() {
+async function connectMetaMask() {
     if (typeof window.ethereum !== "undefined") {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        const accounts = await provider.send("eth_requestAccounts", []); // Request accounts if not already connected
+        signer = provider.getSigner();
         const address = await signer.getAddress();
         console.log("Connected wallet:", address);
         alert(`Connected wallet: ${address}`);
     } else {
-        alert("MetaMask is not installed.");
+        alert("MetaMask is not installed. Please install it to use this feature.");
     }
 }
+window.connectMetaMask = connectMetaMask;
+
 
 
 // Place Bet (Transfer ETH from player to your wallet)
@@ -1042,6 +1044,8 @@ async function placeBet(betAmountETH) {
         alert("Bet placement failed. Please try again.");
     }
 }
+window.placeBet = placeBet;
+
 
 document.getElementById('crypto-section').addEventListener('click', (event) => {
     if (event.target.tagName === 'BUTTON') {
@@ -1054,6 +1058,29 @@ document.getElementById('crypto-section').addEventListener('click', (event) => {
         }
     }
 });
+// Save Connection State
+async function connectMetaMask() {
+    if (typeof window.ethereum !== "undefined") {
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        const accounts = await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        const address = await signer.getAddress();
+        console.log("Connected wallet:", address);
+        localStorage.setItem("connectedWallet", address); // Save wallet address
+        alert(`Connected wallet: ${address}`);
+    } else {
+        alert("MetaMask is not installed. Please install it to use this feature.");
+    }
+}
+// Restore Connection on Page Reload
+document.addEventListener('DOMContentLoaded', () => {
+    const savedWallet = localStorage.getItem("connectedWallet");
+    if (savedWallet) {
+        console.log(`Restoring connection to wallet: ${savedWallet}`);
+        connectMetaMask(); // Reinitialize connection
+    }
+});
+
 
 // Ensure these functions are accessible globally
 window.startSinglePlayer = startSinglePlayer;
