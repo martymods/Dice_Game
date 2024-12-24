@@ -251,14 +251,16 @@ async function setupSinglePlayer() {
         const sum = dice1 + dice2;
     
         // Determine win/loss probabilities
-        let loseChanceMultiplier = 1; // Base multiplier for regular bets
+        let loseChanceMultiplier = 1; // No difficulty multiplier by default
     
         if (ethBetPlaced > 0) {
-            // Increase difficulty only when ETH is bet
+            // Apply difficulty multiplier only for ETH bets
             loseChanceMultiplier = 2 + Math.min(lossStreak * 0.5, 1); // Gradually scale up to 3x
         }
     
-        const isWin = Math.random() < (1 / (4 * loseChanceMultiplier)); // Adjusted win/loss probability
+        const isWin = ethBetPlaced > 0 
+            ? Math.random() < (1 / (4 * loseChanceMultiplier)) // Adjusted probability for ETH bets
+            : Math.random() < 0.25; // Standard 25% win chance for non-ETH bets
     
         // Apply Hustler Effects
         const { multiplier, cashBonus } = applyHustlerEffects(dice1, dice2);
