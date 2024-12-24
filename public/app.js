@@ -1009,11 +1009,11 @@ let provider;
 let signer;
 
 // MetaMask Connection
-async function connectMetaMask() {
+export async function connectMetaMask() {
     if (typeof window.ethereum !== "undefined") {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        const accounts = await provider.send("eth_requestAccounts", []); // Request accounts if not already connected
-        signer = provider.getSigner();
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const accounts = await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
         const address = await signer.getAddress();
         console.log("Connected wallet:", address);
         localStorage.setItem("connectedWallet", address); // Save wallet address
@@ -1022,6 +1022,7 @@ async function connectMetaMask() {
         alert("MetaMask is not installed. Please install it to use this feature.");
     }
 }
+
 
 // Restore Wallet Connection on Page Reload
 document.addEventListener('DOMContentLoaded', () => {
