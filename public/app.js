@@ -228,6 +228,8 @@ async function setupSinglePlayer() {
         updateUI();
     }
 
+    let lossStreak = 0; // Tracks consecutive losses for ETH bets
+
     function handleRollDice() {
         if (currentBet <= 0 && ethBetPlaced <= 0) {
             alert('Place a bet first!');
@@ -250,8 +252,13 @@ async function setupSinglePlayer() {
     
         // Determine win/loss probabilities
         const isETHBetActive = ethBetPlaced > 0;
-        const loseChanceMultiplier = isETHBetActive ? 3 : 1;
-        const isWin = Math.random() < (1 / (4 * loseChanceMultiplier)); // Higher loss probability
+        let loseChanceMultiplier = 1; // Base multiplier
+    
+        if (isETHBetActive) {
+            loseChanceMultiplier = 2 + Math.min(lossStreak * 0.5, 1); // Gradually scale up to 3x
+        }
+    
+        const isWin = Math.random() < (1 / (4 * loseChanceMultiplier)); // Adjusted win/loss probability
     
         // Apply Hustler Effects
         const { multiplier, cashBonus } = applyHustlerEffects(dice1, dice2);
@@ -278,7 +285,8 @@ async function setupSinglePlayer() {
                 playSound("/sounds/Winner_0.ogg");
                 flashScreen('gold');
     
-                // Update stats
+                // Reset loss streak and stats
+                lossStreak = 0; // Reset streak on win
                 playerStats.totalMoneyWon += winnings;
                 saveStats();
                 winStreak++;
@@ -298,7 +306,8 @@ async function setupSinglePlayer() {
                 playSound("/sounds/Loser_0.ogg");
                 flashScreen('red');
     
-                // Update stats
+                // Update stats and loss streak
+                lossStreak += 1; // Increment loss streak
                 playerStats.totalMoneyLost += currentBet;
                 saveStats();
                 winStreak = 0; // Reset streak
