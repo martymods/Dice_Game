@@ -1072,7 +1072,7 @@ export async function placeBet(betAmountETH) {
         }
 
         const transaction = await signer.sendTransaction({
-            to: "YOUR_WALLET_ADDRESS", // Replace with your receiving wallet address
+            to: "0x5638c9f84361a7430b29a63216f0af0914399eA2", // Replace with your receiving wallet address
             value: ethers.utils.parseEther(betAmount.toString()), // Convert ETH amount
         });
 
