@@ -6,7 +6,7 @@
     <title>Dice Game - Single Player</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    
 
 
 
@@ -79,9 +79,11 @@
     </div>
     
     <button id="connect-wallet">Connect to MetaMask</button>
-    <script>
+    <script type="module">
+        import { connectMetaMask } from './app.js';
         document.getElementById('connect-wallet').addEventListener('click', connectMetaMask);
     </script>
+    
         
     
 
