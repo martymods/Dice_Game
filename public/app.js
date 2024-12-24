@@ -367,35 +367,56 @@ async function setupSinglePlayer() {
     }
 
     function openShop() {
-        playerHasPurchased = false; // Reset purchase limit for next visit
-        renderShop();
+        const shopContainer = document.getElementById('shop-container');
+        if (!shopContainer) {
+            console.error("Shop container not found!");
+            return;
+        }
+        playerHasPurchased = false; // Reset purchase flag
+        renderShop(); // Populate the shop
+        shopContainer.style.display = 'block'; // Ensure visibility
     }
     
+  
     function renderShop() {
-        const shopArea = document.getElementById("shop-area");
-        const shopItems = document.getElementById("shop-items");
-        shopItems.innerHTML = ""; // Clear shop items
+        const shopContainer = document.getElementById('shop-container');
+        const hustlerList = document.getElementById('hustler-list');
+        const itemList = document.getElementById('item-list');
     
+        if (!hustlerList || !itemList) {
+            console.error("Hustler or Item list is missing in the DOM.");
+            return;
+        }
+    
+        // Clear existing content
+        hustlerList.innerHTML = '';
+        itemList.innerHTML = '';
+    
+        // Generate random items and hustlers
         const randomHustlers = getRandomItems(
-            window.itemsList.filter(item => item.description.includes("Hustler")),
-            3
+            window.itemsList.filter(item => item.type === 'hustler'), 3
         );
-    
         const randomItems = getRandomItems(
-            window.itemsList.filter(item => !item.description.includes("Hustler")),
-            3
+            window.itemsList.filter(item => item.type === 'item'), 3
         );
     
-        [...randomHustlers, ...randomItems].forEach(item => {
-            const itemElement = document.createElement("div");
-            itemElement.classList.add("shop-item");
-            itemElement.textContent = `${item.name} - $${item.cost}`;
-            itemElement.onclick = () => handlePurchase(item);
-            shopItems.appendChild(itemElement);
+        // Populate hustler list
+        randomHustlers.forEach(hustler => {
+            const button = document.createElement('button');
+            button.textContent = `${hustler.name} - $${hustler.cost}`;
+            button.onclick = () => handlePurchase(hustler);
+            hustlerList.appendChild(button);
         });
     
-        shopArea.style.display = "block";
+        // Populate item list
+        randomItems.forEach(item => {
+            const button = document.createElement('button');
+            button.textContent = `${item.name} - $${item.cost}`;
+            button.onclick = () => handlePurchase(item);
+            itemList.appendChild(button);
+        });
     }
+    
 
     /**
  * Helper function to get random items from a list
@@ -422,7 +443,7 @@ function getRandomItems(list, count) {
 
     function handlePurchase(item) {
         if (playerHasPurchased) {
-            alert('You can only purchase one item or hustler per shop visit!');
+            alert("You can only purchase one item or hustler per shop visit!");
             return;
         }
     
@@ -432,14 +453,14 @@ function getRandomItems(list, count) {
             addItemToInventory(item);
             playerHasPurchased = true;
     
-            // Close shop
-            const shopContainer = document.getElementById('shop-container');
-            shopContainer.style.display = 'none';
-            updateUI(); // Update UI after purchase
+            // Close the shop
+            document.getElementById('shop-container').style.display = 'none';
+            updateUI();
         } else {
-            alert('Not enough money to make this purchase.');
+            alert("Not enough money to make this purchase.");
         }
     }
+    
     
     
     function addItemToInventory(item) {
