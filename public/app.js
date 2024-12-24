@@ -251,10 +251,10 @@ async function setupSinglePlayer() {
         const sum = dice1 + dice2;
     
         // Determine win/loss probabilities
-        const isETHBetActive = ethBetPlaced > 0;
-        let loseChanceMultiplier = 1; // Base multiplier
+        let loseChanceMultiplier = 1; // Base multiplier for regular bets
     
-        if (isETHBetActive) {
+        if (ethBetPlaced > 0) {
+            // Increase difficulty only when ETH is bet
             loseChanceMultiplier = 2 + Math.min(lossStreak * 0.5, 1); // Gradually scale up to 3x
         }
     
@@ -298,6 +298,7 @@ async function setupSinglePlayer() {
                 if (ethBetPlaced > 0) {
                     handleLoss(ethBetPlaced); // Display ETH loss
                     ethBetPlaced = 0; // Reset ETH bet
+                    lossStreak += 1; // Increment loss streak only for ETH bets
                 } else {
                     balance -= currentBet; // Deduct the game currency bet
                     showLosingAmount(currentBet);
@@ -306,8 +307,7 @@ async function setupSinglePlayer() {
                 playSound("/sounds/Loser_0.ogg");
                 flashScreen('red');
     
-                // Update stats and loss streak
-                lossStreak += 1; // Increment loss streak
+                // Update stats
                 playerStats.totalMoneyLost += currentBet;
                 saveStats();
                 winStreak = 0; // Reset streak
