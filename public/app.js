@@ -229,7 +229,7 @@ async function setupSinglePlayer() {
     }
 
     function handleRollDice() {
-        if (currentBet <= 0) {
+        if (currentBet <= 0 && ethBetPlaced <= 0) {
             alert('Place a bet first!');
             return;
         }
@@ -248,51 +248,61 @@ async function setupSinglePlayer() {
         const dice2 = Math.floor(Math.random() * 6) + 1;
         const sum = dice1 + dice2;
     
+        // Determine win/loss probabilities
+        const isETHBetActive = ethBetPlaced > 0;
+        const loseChanceMultiplier = isETHBetActive ? 3 : 1;
+        const isWin = Math.random() < (1 / (4 * loseChanceMultiplier)); // Higher loss probability
+    
         // Apply Hustler Effects
         const { multiplier, cashBonus } = applyHustlerEffects(dice1, dice2);
     
         // Animate dice rolling
-        animateDice(dice1, dice2, () => {
+        animateDice(dice1, dice2, async () => {
             // Play dice roll sound
             playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"]);
     
             let winnings = 0;
     
-            if (sum === 7 || sum === 11) {
+            if (isWin) {
                 // Winning roll
-                winnings = currentBet * 2 * multiplier + cashBonus;
-                balance += winnings;
+                if (ethBetPlaced > 0) {
+                    winnings = ethBetPlaced * 2; // Double the ETH bet as winnings
+                    await handleWin(ethBetPlaced); // Send ETH winnings
+                    ethBetPlaced = 0; // Reset ETH bet
+                } else {
+                    winnings = currentBet * 2 * multiplier + cashBonus;
+                    balance += winnings;
+                    showWinningAmount(winnings);
+                }
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
                 playSound("/sounds/Winner_0.ogg");
                 flashScreen('gold');
-                showWinningAmount(winnings);
     
-                // Update total money won
+                // Update stats
                 playerStats.totalMoneyWon += winnings;
                 saveStats();
-    
                 winStreak++;
                 if (winStreak >= 3 && !onFire) {
                     activateOnFire(); // Activate "on fire" if streak is 3
                 }
-            } else if (sum === 2 || sum === 3 || sum === 12) {
+            } else {
                 // Losing roll
-                balance -= currentBet; // Deduct the bet on loss
+                if (ethBetPlaced > 0) {
+                    handleLoss(ethBetPlaced); // Display ETH loss
+                    ethBetPlaced = 0; // Reset ETH bet
+                } else {
+                    balance -= currentBet; // Deduct the game currency bet
+                    showLosingAmount(currentBet);
+                }
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
                 playSound("/sounds/Loser_0.ogg");
                 flashScreen('red');
-                showLosingAmount(currentBet);
     
-                // Update total money lost
+                // Update stats
                 playerStats.totalMoneyLost += currentBet;
                 saveStats();
-    
                 winStreak = 0; // Reset streak
                 if (onFire) deactivateOnFire(); // Deactivate "on fire" on loss
-            } else {
-                // Neutral roll
-                balance += cashBonus;
-                gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplier}x. Bonus: $${cashBonus}`;
             }
     
             currentBet = 0;
@@ -305,6 +315,7 @@ async function setupSinglePlayer() {
             }, 1000); // Restore after 1 second
         });
     }
+    
       
     function activateOnFire() {
         onFire = true;
@@ -1080,7 +1091,9 @@ window.connectMetaMask = connectMetaMask;
 
 
 // Place Bet (Transfer ETH from player to your wallet)
-export async function placeBet(betAmountETH) {
+let ethBetPlaced = 0; // Tracks the ETH bet amount
+
+async function placeBet(betAmountETH) {
     try {
         if (!signer) {
             alert("Please connect your MetaMask wallet first.");
@@ -1094,19 +1107,22 @@ export async function placeBet(betAmountETH) {
             return;
         }
 
-        // Get current ETH to USD conversion rate (hardcoded for now or fetched via API)
-        const ethToUsdRate = 1800; // Example conversion rate: 1 ETH = $1800
+        // Get current ETH to USD conversion rate (hardcoded or fetched via API)
+        const ethToUsdRate = 1800; // Example rate: 1 ETH = $1800
         const betAmountUSD = (betAmount * ethToUsdRate).toFixed(2);
 
         // Transaction: send ETH to your wallet
         const transaction = await signer.sendTransaction({
-            to: "0x5638c9f84361a7430b29a63216f0af0914399eA2", // Replace with your wallet address
+            to: "0xYourEthereumAddressHere", // Replace with your wallet address
             value: ethers.utils.parseEther(betAmount.toString()),
         });
 
         console.log("Transaction successful:", transaction);
 
-        // Display bet amount in ETH and USD
+        // Record the ETH bet for the next dice roll
+        ethBetPlaced = betAmount;
+
+        // Update betting status
         const bettingStatus = document.getElementById('betting-status');
         bettingStatus.innerHTML = `
             <img src="/images/ETH_Logo.png" alt="ETH" style="width: 24px; vertical-align: middle;">
@@ -1115,18 +1131,12 @@ export async function placeBet(betAmountETH) {
         `;
         alert("Bet placed successfully!");
 
-        // Simulate game outcome (for example purposes)
-        const playerWon = Math.random() < 0.5; // 50% chance of winning
-        if (playerWon) {
-            await handleWin(betAmount);
-        } else {
-            handleLoss(betAmount);
-        }
     } catch (error) {
         console.error("Error placing bet:", error);
         alert("Bet placement failed. Please try again.");
     }
 }
+
 
 
 window.placeBet = placeBet;
