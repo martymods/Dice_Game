@@ -373,21 +373,22 @@ async function setupSinglePlayer() {
     
     function renderShop() {
         const shopContainer = document.getElementById('shop-container');
-        const itemListElement = document.getElementById('item-list');
         const hustlerListElement = document.getElementById('hustler-list');
+        const itemListElement = document.getElementById('item-list');
     
         // Helper function to get random items or hustlers
         function getRandomItems(list, count) {
             return list.sort(() => 0.5 - Math.random()).slice(0, count);
         }
     
+        // Filter and get random hustlers and items
         const randomHustlers = getRandomItems(
-            window.itemsList.filter(item => item.description.includes('Hustler')),
+            window.itemsList.filter(item => item.description && item.description.includes('Hustler')),
             3
         );
     
         const randomItems = getRandomItems(
-            window.itemsList.filter(item => !item.description.includes('Hustler')),
+            window.itemsList.filter(item => !item.description || !item.description.includes('Hustler')),
             3
         );
     
@@ -415,6 +416,7 @@ async function setupSinglePlayer() {
         shopContainer.style.display = 'block';
     }
     
+    
     function handlePurchase(item) {
         if (playerHasPurchased) {
             alert('You can only purchase one item or hustler per shop visit!');
@@ -426,13 +428,16 @@ async function setupSinglePlayer() {
             alert(`You purchased ${item.name}!`);
             addItemToInventory(item);
             playerHasPurchased = true;
+    
+            // Close shop
             const shopContainer = document.getElementById('shop-container');
-            shopContainer.style.display = 'none'; // Close shop
+            shopContainer.style.display = 'none';
             updateUI(); // Update UI after purchase
         } else {
             alert('Not enough money to make this purchase.');
         }
     }
+    
     
     function addItemToInventory(item) {
         if (item.description.includes('Hustler')) {
