@@ -615,6 +615,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const introContainer = document.getElementById('intro-container');
     const mainMenu = document.getElementById('main-menu');
     const skipIntroButton = document.getElementById('skip-intro');
+if (skipIntroButton) {
+    skipIntroButton.addEventListener('click', () => {
+        clearTimeout(timer);
+        introContainer.style.display = 'none';
+        mainMenu.style.display = 'flex';
+    });
+} else {
+    console.error("skipIntroButton not found.");
+}
+
 
     // Transition to main menu after 5 seconds
     const timer = setTimeout(() => {
@@ -998,18 +1008,19 @@ function startSinglePlayer() {
 let provider;
 let signer;
 
-async function connectMetaMask() {
+export async function connectMetaMask() {
     if (typeof window.ethereum !== "undefined") {
-        provider = new ethers.providers.Web3Provider(window.ethereum); // Connect to MetaMask
-        await provider.send("eth_requestAccounts", []); // Request permission
-        signer = provider.getSigner(); // Get signer
-        const address = await signer.getAddress(); // Wallet address
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
         console.log("Connected wallet:", address);
         alert(`Connected wallet: ${address}`);
     } else {
-        alert("MetaMask is not installed. Please install it to use this feature.");
+        alert("MetaMask is not installed.");
     }
 }
+
 
 // Place Bet (Transfer ETH from player to your wallet)
 async function placeBet(betAmountETH) {
