@@ -110,6 +110,32 @@
     <p id="score-status">Score: 0</p>
 </div>
 
+<div id="game-container">
+    <!-- Play Area -->
+    <div id="play-area">
+        <img id="background-image" src="/images/LandLord0.png" alt="Background" style="width: 100%; height: 100%; object-fit: cover; position: absolute; z-index: -1;" />
+        <!-- Add dice rolling area or game elements here -->
+    </div>
+
+    <!-- Info Panel -->
+    <div id="info-panel">
+        <div id="balance-display">
+            <div id="balance-number">
+                <!-- Dynamically render GIFs here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop Popup -->
+    <div id="shop-popup">
+        <h3>Shop</h3>
+        <div id="shop-items">
+            <!-- Dynamically populated shop items -->
+        </div>
+        <button onclick="closeShop()">Close</button>
+    </div>
+</div>
+
     
     
     <button id="connect-wallet">Connect to MetaMask</button>
