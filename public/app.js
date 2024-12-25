@@ -603,16 +603,28 @@ function getRandomItems(list, count) {
     }
 
 
-    function updateBackgroundImage() {
-        const rollsRemaining = maxTurns - turns;
-        if (rollsRemaining === maxTurns) {
-            document.body.style.backgroundImage = "url('/images/LandLord0.png')";
-        } else if (rollsRemaining <= maxTurns / 2 && rollsRemaining > 2) {
-            document.body.style.backgroundImage = "url('/images/LandLord1.png')";
-        } else if (rollsRemaining <= 2) {
-            document.body.style.backgroundImage = "url('/images/LandLord2.png')";
+    function updateBackgroundImage(rollsLeft, maxRolls) {
+        const backgroundImage = document.getElementById('background-image');
+        if (rollsLeft === maxRolls) {
+            backgroundImage.src = '/images/LandLord0.png';
+        } else if (rollsLeft <= maxRolls / 2 && rollsLeft > 2) {
+            backgroundImage.src = '/images/LandLord1.png';
+        } else if (rollsLeft <= 2) {
+            backgroundImage.src = '/images/LandLord2.png';
         }
     }
+
+    function openShop() {
+        const shopPopup = document.getElementById('shop-popup');
+        shopPopup.classList.add('active');
+    }
+    
+    function closeShop() {
+        const shopPopup = document.getElementById('shop-popup');
+        shopPopup.classList.remove('active');
+    }
+    
+    
 
     function quitGame() {
         window.location.href = '/';
@@ -1028,6 +1040,42 @@ function toggleStore(open) {
 document.getElementById('saveMoneyButton').addEventListener('click', () => {
     toggleStore(false);
 });
+
+
+// Balance update logic
+function updateBalanceDisplay(newBalance, isWin) {
+    const balanceContainer = document.getElementById('balance-number');
+    balanceContainer.innerHTML = '';
+
+    const balanceString = newBalance.toLocaleString(); // Convert to string with commas
+    const symbols = { '$': 'Font_Number_$.gif', ',': 'Font_Number_,.gif' };
+
+    // Add scrolling effect
+    const scrollEffect = isWin ? 'ToH_Numbers_Scroll_Win.gif' : 'ToH_Numbers_Scroll_Loss.gif';
+    const tempImages = [];
+
+    // Temporarily show scrolling effect
+    balanceString.split('').forEach((char) => {
+        const img = document.createElement('img');
+        img.src = char in symbols ? `/images/${symbols[char]}` : `/images/${scrollEffect}`;
+        balanceContainer.appendChild(img);
+        tempImages.push(img);
+    });
+
+    // Restore balance display after 1 second
+    setTimeout(() => {
+        balanceContainer.innerHTML = ''; // Clear scrolling images
+        balanceString.split('').forEach((char) => {
+            const img = document.createElement('img');
+            img.src = char in symbols ? `/images/${symbols[char]}` : `/images/Font_Number_${char}.gif`;
+            balanceContainer.appendChild(img);
+        });
+    }, 1000);
+}
+
+// Example Usage
+updateBalanceDisplay(12345, true); // For balance increase
+updateBalanceDisplay(6789, false); // For balance decrease
 
 
 
