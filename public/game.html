@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Other Half</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>The Other Half</h1>
+    </header>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Rent Information</h2>
+            <p id="rent-status">Rent: $400 in 6 rolls</p>
+            <h2>Hustler Effects</h2>
+            <ul id="hustler-effects"></ul>
+        </aside>
+        <main class="main">
+            <h2>Game Status</h2>
+            <div id="gameStatus">Awaiting player action...</div>
+            <div id="dice-display">
+                <img id="dice1" src="images/dice1.png" alt="Dice 1">
+                <img id="dice2" src="images/dice2.png" alt="Dice 2">
+            </div>
+            <button id="rollButton">Roll Dice</button>
+        </main>
+    </div>
+    <footer>
+        <button id="connect-wallet">Connect MetaMask</button>
+        <input id="betAmountETH" type="number" placeholder="Enter Bet (ETH)">
+        <button id="place-bet">Place Bet</button>
+    </footer>
+    <script src="app.js" type="module"></script>
+</body>
+</html>
