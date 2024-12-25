@@ -30,7 +30,10 @@
                 <img id="dice1" src="images/dice1.png" alt="Dice 1">
                 <img id="dice2" src="images/dice2.png" alt="Dice 2">
             </div>
-            <button id="roll-dice-btn">Roll Dice</button>
+            <button id="rollButton">Roll Dice</button>
+            <button id="betButton">Place Bet</button>
+            <button id="quitButton">Quit</button>
+
         </div>
         <div id="shop-area" style="display: none;">
             <h2>Shop</h2>
@@ -63,6 +66,12 @@
     <div id="transition-overlay" style="display: none;">
         <img src="images/Transition_0.gif" alt="Transition" id="transition-image">
     </div>
+
+<div id="gameOverContainer" style="display: none;">Game Over</div>
+<div id="buy-item-container" style="display: none;">
+    <ul id="item-list"></ul>
+</div>
+
 
     <!-- Scripts -->
     <script src="itemEffects.js"></script>
