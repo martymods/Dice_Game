@@ -85,3 +85,14 @@ button:hover {
     padding: 20px;
     border-radius: 10px;
 }
+
+#gameStatus {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.2em;
+}
+
