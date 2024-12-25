@@ -1,88 +1,128 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Other Half</title>
+    <title>Dice Game - Single Player</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    
+
+
+
 </head>
 <body>
-    
-    <!-- Intro Container -->
-    <div id="intro-container">
-        <img id="intro-video" src="images/IntroVideo_0.gif" alt="Intro Video">
-        <button id="skip-intro" style="position: absolute; top: 10px; right: 10px;">Skip Intro</button>
-    </div>
-
-    <!-- Left Sidebar -->
-    <div id="left-sidebar" class="sidebar">
-        <h2>Rent</h2>
-        <p id="rent-info">Rent: $400 in 6 rolls</p>
-        <h2>Active Hustler Effects</h2>
-        <ul id="hustler-effects"></ul>
-    </div>
-
-    <!-- Center Area -->
-    <div id="center-area">
-        <div id="gameStatus">Waiting for player actions...</div>
-        <div id="dice-area">
-            <h2>Roll Dice</h2>
-            <div id="dice-display">
-                <img id="dice1" src="images/dice1.png" alt="Dice 1">
-                <img id="dice2" src="images/dice2.png" alt="Dice 2">
+    <div id="game-container">
+        <!-- Left Side -->
+        <div id="left-side">
+            <!-- Hustler Info -->
+            <div id="hustler-info">
+                <p id="hustler-count">Max Hustlers: 0/5</p>
+                <p id="hustler-effects">Active Hustler Effects: None</p>
             </div>
-            <button id="rollButton">Roll Dice</button>
-            <button id="betButton">Place Bet</button>
-            <button id="quitButton">Quit</button>
 
+            <!-- Buy Item -->
+            <div id="buy-item-section">
+                <img id="store-image" src="/images/StoreSign_Closed0.gif" alt="Store Closed" />
+                <div id="buy-item-container" style="display: none;">
+                    <h2>Buy an Item</h2>
+                    <div id="item-list"></div>
+                    <button id="saveMoneyButton">Done Shopping</button>
+                </div>
+            </div>
+
+            <!-- Inventory -->
+            <div id="inventory">
+                <h3>Inventory</h3>
+                <ul id="inventory-list"></ul>
+            </div>
         </div>
-        <div id="shop-area" style="display: none;">
-            <h2>Shop</h2>
-            <div id="shop-items"></div>
-            <button id="close-shop">Close Shop</button>
+
+        <!-- Right Side -->
+        <div id="right-side">
+            <h1 style="display: none;">The Other Half</h1> <!-- Hidden Title -->
+            <div id="player-info">
+                <p id="betting-status">Balance: $0 | Bet: $0</p>
+                <p id="rent-status">Rent Due: $0 in 0 rolls</p>
+            </div>
+
+            <div id="controls">
+                <img id="rollButton" src="/images/Button_RollDice.png" alt="Roll Dice" class="button-image">
+                <input type="number" id="betAmount" placeholder="Enter Bet Amount" min="1">
+                <img id="betButton" src="/images/Button_PlaceBet.png" alt="Place Bet" class="button-image">
+                <img id="bet25Button" src="/images/Button_Bet25.png" alt="Bet 25%" class="button-image">
+                <img id="bet50Button" src="/images/Button_Bet50.png" alt="Bet 50%" class="button-image">
+                <img id="bet100Button" src="/images/Button_Bet100.png" alt="Bet 100%" class="button-image">
+                <button id="quitButton" class="small-button">Quit Game</button>
+            </div>
+
+            <div id="dice-container">
+                <img id="dice1" class="dice" src="/images/dice1.png" alt="Dice 1">
+                <img id="dice2" class="dice" src="/images/dice2.png" alt="Dice 2">
+            </div>
+            
+            <p id="gameStatus"></p>
+
+            <!-- Game Over Section -->
+            <div id="gameOverContainer" style="display: none;">
+                <h2>Game Over</h2>
+                <p>Better luck next time!</p>
+                <button onclick="window.location.href='/';">Return to Main Menu</button>
+            </div>
         </div>
     </div>
 
-    <!-- Right Sidebar -->
-    <div id="right-sidebar" class="sidebar">
-        <h2>Balance</h2>
-        <p id="balance-info">Balance: $300</p>
-        <h2>Bets</h2>
-        <p id="bet-info">Bet: $0</p>
-        <div id="bet-options">
-        <div id="betting-status">Balance: $0 | Bet: $0</div>
-            <button id="bet25Button">Bet 25%</button>
-            <button id="bet50Button">Bet 50%</button>
-            <button id="bet100Button">Bet 100%</button>
+    <div id="crypto-section">
+        <button onclick="connectMetaMask()">Connect MetaMask</button>
+        <input type="number" id="betAmountETH" placeholder="Enter Bet in ETH">
+        <button onclick="placeBet(document.getElementById('betAmountETH').value)">Place Bet</button>
+    </div>
+    
+    <div id="shop-container">
+        <h3>Shop</h3>
+        <div id="hustler-list">
+            <!-- Hustlers will be dynamically added here -->
         </div>
+        <div id="item-list">
+            <!-- Items will be dynamically added here -->
+        </div>
+        <button id="saveMoneyButton">Done Shopping</button>
     </div>
-
-    <!-- Bottom Controls -->
-    <div id="bottom-controls">
-        <button id="connect-wallet">Connect MetaMask</button>
-        <input id="bet-amount" type="number" placeholder="Enter Bet Amount">
-        <button id="place-bet">Place Bet</button>
+    
+    <!-- Hustler Panel -->
+<div id="hustler-panel">
+    <h3>Hustlers</h3>
+    <div id="hustlers-display">
+        <!-- Dynamically add hustlers with JS -->
     </div>
-
-    <!-- Transition Overlay -->
-    <div id="transition-overlay" style="display: none;">
-        <img src="images/Transition_0.gif" alt="Transition" id="transition-image">
-    </div>
-
-<div id="gameOverContainer" style="display: none;">Game Over</div>
-<div id="buy-item-container" style="display: none;">
-    <ul id="item-list"></ul>
 </div>
 
-<div id="crypto-section">
-    <button id="connect-wallet-btn">Connect MetaMask</button>
-    <input id="betAmountETH" type="text" placeholder="Enter Bet Amount (ETH)">
-    <button id="place-bet-btn">Place Bet</button>
+<div id="shop-area" style="display: none;">
+    <h2>Shop</h2>
+    <div id="shop-items">
+        <!-- Items rendered here -->
+    </div>
+    <button id="reroll-button">Reroll ($5)</button>
 </div>
 
-    <!-- Scripts -->
-    <script src="itemEffects.js"></script>
+<div id="score-rent-panel">
+    <p id="rent-status">Rent: $400 in 6 rolls</p>
+    <p id="score-status">Score: 0</p>
+</div>
+
+    
+    
+    <button id="connect-wallet">Connect to MetaMask</button>
+    <script type="module">
+        import { connectMetaMask } from './app.js';
+    
+        document.getElementById('connect-wallet').addEventListener('click', connectMetaMask);
+    </script>
+    
+    <p id="betting-status"></p>
+    <p id="gameStatus"></p>
+
+
     <script src="app.js" type="module"></script>
 </body>
 </html>
