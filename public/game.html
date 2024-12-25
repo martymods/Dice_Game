@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Other Half</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Intro Container -->
+    <div id="intro-container">
+        <img id="intro-video" src="images/IntroVideo_0.gif" alt="Intro Video">
+        <button id="skip-intro" style="position: absolute; top: 10px; right: 10px;">Skip Intro</button>
+    </div>
+
+    <!-- Left Sidebar -->
+    <div id="left-sidebar" class="sidebar">
+        <h2>Rent</h2>
+        <p id="rent-info">Rent: $400 in 6 rolls</p>
+        <h2>Active Hustler Effects</h2>
+        <ul id="hustler-effects"></ul>
+    </div>
+
+    <!-- Center Area -->
+    <div id="center-area">
+        <div id="dice-area">
+            <h2>Roll Dice</h2>
+            <div id="dice-display">
+                <img id="dice1" src="images/dice1.png" alt="Dice 1">
+                <img id="dice2" src="images/dice2.png" alt="Dice 2">
+            </div>
+            <button id="roll-dice-btn">Roll Dice</button>
+        </div>
+        <div id="shop-area" style="display: none;">
+            <h2>Shop</h2>
+            <div id="shop-items"></div>
+            <button id="close-shop">Close Shop</button>
+        </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div id="right-sidebar" class="sidebar">
+        <h2>Balance</h2>
+        <p id="balance-info">Balance: $300</p>
+        <h2>Bets</h2>
+        <p id="bet-info">Bet: $0</p>
+        <div id="bet-options">
+            <button id="bet25Button">Bet 25%</button>
+            <button id="bet50Button">Bet 50%</button>
+            <button id="bet100Button">Bet 100%</button>
+        </div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div id="bottom-controls">
+        <button id="connect-wallet">Connect MetaMask</button>
+        <input id="bet-amount" type="number" placeholder="Enter Bet Amount">
+        <button id="place-bet">Place Bet</button>
+    </div>
+
+    <!-- Transition Overlay -->
+    <div id="transition-overlay" style="display: none;">
+        <img src="images/Transition_0.gif" alt="Transition" id="transition-image">
+    </div>
+
+    <!-- Scripts -->
+    <script src="itemEffects.js"></script>
+    <script src="app.js" type="module"></script>
+</body>
+</html>
