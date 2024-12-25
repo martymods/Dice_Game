@@ -206,5 +206,362 @@ const itemsList = [
 
 ];
 
+// Certificates 
+const certificates = [
+    { 
+        name: 'Shady Hustlers Endorsement 📜', 
+        rarity: 'Rare', 
+        cost: 100, 
+        description: '+1 item slot in the shop (to 4 slots).', 
+        upgrade: 'Kingpins Approval 🛡️' 
+    },
+    { 
+        name: 'Kingpins Approval 🛡️', 
+        rarity: 'Very Rare', 
+        cost: 1000, 
+        description: '+1 item slot in the shop (to 5 slots). Instantly restocks empty slots when purchased.', 
+        requirement: 'Spend a total of $2500 at the shop.' 
+    },
+    { 
+        name: 'Underworld Deal 🕵️‍♂️', 
+        rarity: 'Rare', 
+        cost: 100, 
+        description: 'All items in the shop are 25% cheaper.', 
+        upgrade: 'Black Market Bonanza 💰' 
+    },
+    { 
+        name: 'Black Market Bonanza 💰', 
+        rarity: 'Very Rare', 
+        cost: 1000, 
+        description: 'All items in the shop are 50% cheaper. Reduces the resale value of hustlers.', 
+        requirement: 'Redeem at least 10 Certificates in one run.' 
+    },
+    { 
+        name: 'Loaded Pouch 💼', 
+        rarity: 'Rare', 
+        cost: 100, 
+        description: '+1 slot for consumables.', 
+        upgrade: 'Hidden Vault 🏚️' 
+    },
+    { 
+        name: 'Hidden Vault 🏚️', 
+        rarity: 'Very Rare', 
+        cost: 1000, 
+        description: 'Allows rare, high-value items to appear in the shop.', 
+        requirement: 'Use 25 rare items in one run.' 
+    },
+    { 
+        name: 'Street Smart Diploma 🎓', 
+        rarity: 'Rare', 
+        cost: 100, 
+        description: 'Gain +1 additional roll per turn.', 
+        upgrade: 'Mastermind Badge 🧠' 
+    },
+    { 
+        name: 'Mastermind Badge 🧠', 
+        rarity: 'Very Rare', 
+        cost: 1000, 
+        description: 'Gain +2 extra roll per turn.', 
+        requirement: 'Win a total of 30 rolls in one run.' 
+    },
+    { 
+        name: 'Dice Whisperers Permit 🎲', 
+        rarity: 'Rare', 
+        cost: 100, 
+        description: 'Dice rolls above 7 grant 1.5x payouts.', 
+        upgrade: 'Dice Masters Seal 🏆' 
+    },
+    { 
+        name: 'Dice Masters Seal 🏆', 
+        rarity: 'Very Rare', 
+        cost: 1000, 
+        description: 'Dice rolls above 5 grant double payouts.', 
+        requirement: 'Roll above 7 at least 20 times in one run.' 
+    },
+    { 
+        name: 'Shady Bankers Promise 💳', 
+        rarity: 'Rare', 
+        cost: 100, 
+        description: 'Earn interest on unspent money, capped at $150 per turn.', 
+        upgrade: 'Loan Sharks Favors 🦈' 
+    },
+    { 
+        name: 'Loan Sharks Favors 🦈', 
+        rarity: 'Very Rare', 
+        cost: 1000, 
+        description: 'Earn interest on unspent money, capped at $300 per turn.', 
+        requirement: 'Reach the interest cap for 5 consecutive turns.' 
+    },
+    { 
+        name: 'Tricksters Pact 🎩', 
+        rarity: 'Rare', 
+        cost: 100, 
+        description: 'Allows you to reroll a losing dice once per turn.', 
+        upgrade: 'Illusionists Gambit 🃏' 
+    },
+    { 
+        name: 'Illusionists Gambit 🃏', 
+        rarity: 'Very Rare', 
+        cost: 1000, 
+        description: 'Allows rerolls for all dice in a losing roll.', 
+        requirement: 'Reroll dice successfully 10 times in one run.' 
+    },
+    { 
+        name: 'Blank Certificate 🗒️', 
+        rarity: 'Common', 
+        cost: 100, 
+        description: 'A placeholder with no immediate effects.', 
+        upgrade: 'Antimatter Permit 💠' 
+    },
+    { 
+        name: 'Antimatter Permit 💠', 
+        rarity: 'Very Rare', 
+        cost: 1000, 
+        description: 'Grants an additional dice slot for rolling.', 
+        requirement: 'Collect 10 Blank Certificates in one run.' 
+    },
+    {
+        name: 'Fixers Permit 🔧',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Repairs one broken item after each rent phase.',
+        upgrade: 'Underworld Mechanic 🔩'
+    },
+    {
+        name: 'Underworld Mechanic 🔩',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Repairs all broken items after each rent phase.',
+        requirement: 'Break 5 items in one run.'
+    },
+    {
+        name: 'Lucky Charm 🍀',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Grants a +5% chance to roll doubles.',
+        upgrade: 'Gambler’s Talisman 🎰'
+    },
+    {
+        name: 'Gambler’s Talisman 🎰',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Grants a +10% chance to roll doubles. Rolling doubles doubles payouts.',
+        requirement: 'Roll doubles 10 times in one run.'
+    },
+    {
+        name: 'Blackout Certificate 🌌',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Negates penalties from one failed roll per rent phase.',
+        upgrade: 'Eclipse License 🌓'
+    },
+    {
+        name: 'Eclipse License 🌓',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Negates penalties from all failed rolls in one rent phase.',
+        requirement: 'Survive 3 rent phases without failing a roll.'
+    },
+    {
+        name: 'Shakedown Approval 🥋',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Earns $10 for every opponent penalty.',
+        upgrade: 'Mob Boss Favor 🕴️'
+    },
+    {
+        name: 'Mob Boss Favor 🕴️',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Earns $50 for every opponent penalty.',
+        requirement: 'Cause opponents to fail 5 rolls in one run.'
+    },
+    {
+        name: 'Street Deal Voucher 💵',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Increases payouts from destroyed items by 50%.',
+        upgrade: 'Black Market Pass 🛒'
+    },
+    {
+        name: 'Black Market Pass 🛒',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Doubles payouts from destroyed items.',
+        requirement: 'Destroy 10 items in one run.'
+    },
+    {
+        name: 'Underground Agreement 🛠️',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Gain $10 for every common item purchased.',
+        upgrade: 'Smugglers Certification 🚤'
+    },
+    {
+        name: 'Smugglers Certification 🚤',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Gain $50 for every item purchased.',
+        requirement: 'Purchase 15 items in one run.'
+    },
+    {
+        name: 'Fences Pass 🧱',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Reduces cost of items by 10%.',
+        upgrade: 'Con Artists Credential 🎭'
+    },
+    {
+        name: 'Con Artists Credential 🎭',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Reduces cost of items by 25%.',
+        requirement: 'Spend $2000 in one run.'
+    },
+    {
+        name: 'Hot Streak Token 🔥',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Increases payouts by 10% after 3 consecutive wins.',
+        upgrade: 'Blazing Streak Emblem 🌟'
+    },
+    {
+        name: 'Blazing Streak Emblem 🌟',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Increases payouts by 20% after 3 consecutive wins.',
+        requirement: 'Win 5 consecutive rolls in one run.'
+    },
+    {
+        name: 'Landlords Loophole 🏚️',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Reduces rent increases by 10% for the next 3 phases.',
+        upgrade: 'Tenant Alliance Charter 🏠'
+    },
+    {
+        name: 'Tenant Alliance Charter 🏠',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Reduces rent increases by 25% for the entire run.',
+        requirement: 'Pay rent without missing for 3 consecutive phases.'
+    },
+    {
+        name: 'Dice Hoarders Permit 🎲',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Gain +1 extra dice slot.',
+        upgrade: 'Dice Moguls License 🃏'
+    },
+    {
+        name: 'Dice Moguls License 🃏',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Gain +2 extra dice slots.',
+        requirement: 'Own at least 5 dice items in one run.'
+    },
+    {
+        name: 'Streetwise Scroll 📜',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Increase all payouts by 5%.',
+        upgrade: 'Master Hustlers Codex 📘'
+    },
+    {
+        name: 'Master Hustlers Codex 📘',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Increase all payouts by 15%.',
+        requirement: 'Earn $3000 in payouts in one run.'
+    },
+    {
+        name: 'Shady Landlord Pass 🏢',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Gain $500 each time rent is paid.',
+        upgrade: 'Corrupt Landlords Seal 💼'
+    },
+    {
+        name: 'Corrupt Landlords Seal 💼',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Gain $1150 each time rent is paid.',
+        requirement: 'Pay rent 5 times in one run.'
+    },
+    {
+        name: 'Loaded Connections 🔗',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Gain $200 for every item sold.',
+        upgrade: 'Underground Syndicate Chain 🛠️'
+    },
+    {
+        name: 'Underground Syndicate Chain 🛠️',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Gain $500 for every item sold.',
+        requirement: 'Sell at least 10 items in one run.'
+    },
+    {
+        name: 'Double Down Permit 🎲',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Doubles payouts on dice rolls of 10 or higher.',
+        upgrade: 'High Rollers Emblem 💎'
+    },
+    {
+        name: 'High Rollers Emblem 💎',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Triples payouts on dice rolls of 10 or higher.',
+        requirement: 'Roll 10 or higher at least 15 times in one run.'
+    },
+    {
+        name: 'Quick Cash Token 💵',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Grants $5 for every odd-numbered roll.',
+        upgrade: 'Fast Fortune License 🌟'
+    },
+    {
+        name: 'Fast Fortune License 🌟',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Grants $150 for every odd-numbered roll.',
+        requirement: 'Roll odd numbers 20 times in one run.'
+    },
+    {
+        name: 'Neighborhood Hustlers Pass 🏙️',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Boosts payouts for animal-themed items by $100.',
+        upgrade: 'Urban Jungle Seal 🌆'
+    },
+    {
+        name: 'Urban Jungle Seal 🌆',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Boosts payouts for animal-themed items by $300.',
+        requirement: 'Own at least 3 animal-themed items.'
+    },
+    {
+        name: 'Hustlers Reroll Certificate 🔄',
+        rarity: 'Rare',
+        cost: 100,
+        description: 'Grants one free reroll per phase.',
+        upgrade: 'Dice Manipulators Badge ⚙️'
+    },
+    {
+        name: 'Dice Manipulators Badge ⚙️',
+        rarity: 'Very Rare',
+        cost: 1000,
+        description: 'Grants two free rerolls per phase.',
+        requirement: 'Use 10 rerolls in one run.'
+    }
+];
+
+// Append Certificates to itemsList
+itemsList.push(...certificates);
+
 // Ensure the script exposes the `itemsList` globally
 window.itemsList = itemsList;
