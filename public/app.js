@@ -366,31 +366,23 @@ async function setupSinglePlayer() {
         }
     }
 
-    function handlePurchase(item) {
-        if (playerHasPurchased) {
-            alert("You can only purchase one item or hustler per shop visit!");
+    function openShop() {
+        const shopContainer = document.getElementById('shop-container');
+        if (!shopContainer) {
+            console.error("Shop container not found!");
             return;
         }
-    
-        if (balance >= item.cost) {
-            balance -= item.cost;
-            alert(`You purchased ${item.name}!`);
-            addItemToInventory(item);
-            playerHasPurchased = true;
-    
-            closeShop(); // Automatically close the shop after purchase
-            updateUI(); // Refresh the UI with updated balance and inventory
-        } else {
-            alert("Not enough money to make this purchase.");
-        }
+        playerHasPurchased = false; // Reset purchase flag
+        renderShop(); // Populate the shop
+        shopContainer.style.display = 'block'; // Ensure visibility
     }
     
-
+  
     function renderShop() {
+        const shopContainer = document.getElementById('shop-container');
         const hustlerList = document.getElementById('hustler-list');
         const itemList = document.getElementById('item-list');
     
-        // Fallback for missing elements
         if (!hustlerList || !itemList) {
             console.error("Hustler or Item list is missing in the DOM.");
             return;
@@ -400,51 +392,29 @@ async function setupSinglePlayer() {
         hustlerList.innerHTML = '';
         itemList.innerHTML = '';
     
-        // Ensure itemsList is loaded
-        if (!window.itemsList || !Array.isArray(window.itemsList)) {
-            console.error("Items list not loaded or invalid.");
-            return;
-        }
+        // Generate random items and hustlers
+        const randomHustlers = getRandomItems(
+            window.itemsList.filter(item => item.type === 'hustler'), 3
+        );
+        const randomItems = getRandomItems(
+            window.itemsList.filter(item => item.type === 'item'), 3
+        );
     
-        // Separate hustlers and items
-        const hustlers = window.itemsList.filter(item => item.type === 'hustler');
-        const items = window.itemsList.filter(item => item.type === 'item');
-    
-        // Populate hustlers
-        hustlers.forEach(hustler => {
+        // Populate hustler list
+        randomHustlers.forEach(hustler => {
             const button = document.createElement('button');
             button.textContent = `${hustler.name} - $${hustler.cost}`;
             button.onclick = () => handlePurchase(hustler);
             hustlerList.appendChild(button);
         });
     
-        // Populate items
-        items.forEach(item => {
+        // Populate item list
+        randomItems.forEach(item => {
             const button = document.createElement('button');
             button.textContent = `${item.name} - $${item.cost}`;
             button.onclick = () => handlePurchase(item);
             itemList.appendChild(button);
         });
-    }
-    
-
-    function openShop() {
-        const shopContainer = document.getElementById('shop-container');
-        if (!shopContainer) {
-            console.error("Shop container not found!");
-            return;
-        }
-    
-        playerHasPurchased = false; // Reset purchase flag
-        renderShop(); // Populate shop content
-        shopContainer.style.display = 'block'; // Make the shop visible
-    }
-    
-    function closeShop() {
-        const shopContainer = document.getElementById('shop-container');
-        if (shopContainer) {
-            shopContainer.style.display = 'none'; // Hide the shop
-        }
     }
     
 
@@ -465,6 +435,11 @@ function getRandomItems(list, count) {
         document.getElementById("score-status").textContent = `Score: ${playerStats.totalMoneyWon}`;
     }
 
+    function toggleShop(open) {
+        const shopArea = document.getElementById("shop-area");
+        shopArea.classList.toggle("active", open);
+    }
+         
 
     function handlePurchase(item) {
         if (playerHasPurchased) {
@@ -628,25 +603,16 @@ function getRandomItems(list, count) {
     }
 
 
-    function updateBackgroundImage(rollsLeft, maxRolls) {
-        const backgroundImage = document.getElementById('background-image');
-        if (rollsLeft === maxRolls) {
-            backgroundImage.src = '/images/LandLord0.png';
-        } else if (rollsLeft <= maxRolls / 2 && rollsLeft > 2) {
-            backgroundImage.src = '/images/LandLord1.png';
-        } else if (rollsLeft <= 2) {
-            backgroundImage.src = '/images/LandLord2.png';
+    function updateBackgroundImage() {
+        const rollsRemaining = maxTurns - turns;
+        if (rollsRemaining === maxTurns) {
+            document.body.style.backgroundImage = "url('/images/LandLord0.png')";
+        } else if (rollsRemaining <= maxTurns / 2 && rollsRemaining > 2) {
+            document.body.style.backgroundImage = "url('/images/LandLord1.png')";
+        } else if (rollsRemaining <= 2) {
+            document.body.style.backgroundImage = "url('/images/LandLord2.png')";
         }
     }
-
-
-    
-    function closeShop() {
-        const shopPopup = document.getElementById('shop-popup');
-        shopPopup.classList.remove('active');
-    }
-    
-    
 
     function quitGame() {
         window.location.href = '/';
@@ -1062,42 +1028,6 @@ function toggleStore(open) {
 document.getElementById('saveMoneyButton').addEventListener('click', () => {
     toggleStore(false);
 });
-
-
-// Balance update logic
-function updateBalanceDisplay(newBalance, isWin) {
-    const balanceContainer = document.getElementById('balance-number');
-    balanceContainer.innerHTML = '';
-
-    const balanceString = newBalance.toLocaleString(); // Convert to string with commas
-    const symbols = { '$': 'Font_Number_$.gif', ',': 'Font_Number_,.gif' };
-
-    // Add scrolling effect
-    const scrollEffect = isWin ? 'ToH_Numbers_Scroll_Win.gif' : 'ToH_Numbers_Scroll_Loss.gif';
-    const tempImages = [];
-
-    // Temporarily show scrolling effect
-    balanceString.split('').forEach((char) => {
-        const img = document.createElement('img');
-        img.src = char in symbols ? `/images/${symbols[char]}` : `/images/${scrollEffect}`;
-        balanceContainer.appendChild(img);
-        tempImages.push(img);
-    });
-
-    // Restore balance display after 1 second
-    setTimeout(() => {
-        balanceContainer.innerHTML = ''; // Clear scrolling images
-        balanceString.split('').forEach((char) => {
-            const img = document.createElement('img');
-            img.src = char in symbols ? `/images/${symbols[char]}` : `/images/Font_Number_${char}.gif`;
-            balanceContainer.appendChild(img);
-        });
-    }, 1000);
-}
-
-// Example Usage
-updateBalanceDisplay(12345, true); // For balance increase
-updateBalanceDisplay(6789, false); // For balance decrease
 
 
 
