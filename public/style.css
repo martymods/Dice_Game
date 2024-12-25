@@ -1,58 +1,89 @@
-
+/* General Dark Theme Styling */
 body {
+    font-family: Arial, sans-serif;
+    background-color: black; /* Night mode theme */
+    color: white; /* Default text color for dark theme */
     margin: 0;
     padding: 0;
-    display: grid;
-    grid-template-areas: 
-        "left center right"
-        "bottom bottom bottom";
-    grid-template-columns: 1fr 2fr 1fr;
-    grid-template-rows: auto 100px;
-    height: 100vh;
-    background-color: #111;
-    color: white;
-    font-family: Arial, sans-serif;
-}
-
-.sidebar {
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.8);
-}
-
-#left-sidebar {
-    grid-area: left;
-}
-
-#center-area {
-    grid-area: center;
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-}
-
-#right-sidebar {
-    grid-area: right;
-}
-
-#bottom-controls {
-    grid-area: bottom;
-    display: flex;
-    justify-content: space-around;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.9);
-    padding: 10px;
+    height: 100vh;
+    flex-direction: column;
+    background-size: cover;
+    background-position: center;
 }
 
-#dice-display img {
-    width: 100px;
-    height: 100px;
-    margin: 10px;
+/* Game Container Styling */
+#game-container {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.2);
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    text-align: center;
+    color: white;
 }
 
+/* Button Styles */
 button {
-    padding: 10px 20px;
     background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #666;
+}
+
+/* Heading Styles */
+h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #FFD700; /* Gold color for headings */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+/* Dice and Status Section */
+#dice-container {
+    margin: 20px 0;
+}
+
+.dice {
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+}
+
+/* Item Popup Styling */
+#itemPopup {
+    display: none;
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #FFD700;
+    border-radius: 8px;
+    padding: 20px;
+    z-index: 100;
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.2);
+    text-align: center;
+    color: white;
+}
+
+#itemList button {
+    width: 100%;
+    background-color: #28a745;
+    margin: 10px 0;
+    font-size: 16px;
     border: none;
     border-radius: 5px;
     color: white;
@@ -60,39 +91,567 @@ button {
     transition: background-color 0.3s ease;
 }
 
-button:hover {
+#itemList button:hover {
+    background-color: #218838;
+}
+
+/* Inventory Styling */
+#inventory {
+    display: none; /* Initially hidden */
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    width: 80%;
+    background: white;
+    border: 1px solid black;
+    padding: 10px;
+    z-index: 10;
+}
+
+#inventory h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #FFD700;
+}
+
+#inventory p {
+    font-size: 14px;
+    color: white;
+}
+
+/* Rarity-Specific Styles */
+.common {
+    background-color: gray;
+    color: white;
+}
+
+.uncommon {
+    background-color: blue;
+    color: white;
+}
+
+.rare {
+    background-color: purple;
+    color: white;
+}
+
+.very-rare {
+    background-color: gold;
+    color: black;
+}
+
+/* Stats Page Styling */
+#stats-container {
+    margin: auto;
+    text-align: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    max-width: 600px;
+    color: white;
+}
+
+#stats-container h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    color: #FFD700; /* Gold text for the title */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+#stats-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#stats-list li {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+/* Back Button */
+.back-button {
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
     background-color: #666;
 }
-#gameOverContainer {
+
+/* Mobile Optimization */
+@media screen and (max-width: 600px) {
+    button {
+        width: 100%;
+        font-size: 18px;
+        padding: 12px;
+    }
+
+    #game-container {
+        padding: 10px;
+    }
+
+    #dice-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px; /* Add spacing between the dice */
+        margin-top: 50px;
+        position: relative;
+    }
+    
+    .dice {
+        width: 150px; /* Increase size of dice */
+        height: 150px;
+        border-radius: 10px; /* Slightly round corners for a polished look */
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7), 0 0 30px rgba(255, 255, 255, 0.5); /* Glow effect */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .dice:hover {
+        transform: scale(1.1); /* Slight zoom-in effect when hovered */
+        box-shadow: 0 0 20px rgba(255, 255, 0, 0.9), 0 0 40px rgba(255, 215, 0, 0.7); /* Stronger glow when hovered */
+    }
+    
+
+    #rollButton, #betButton, #quitButton, #bet25Button, #bet50Button, #bet100Button {
+        width: 100%;
+    }
+
+    #inventory, #itemPopup, #itemList {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+#transition-overlay {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.8);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensure it is on top of all elements */
+}
+
+#transition-image {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.button-image {
+    cursor: pointer;
+    width: 120px; /* Adjust as needed */
+    height: auto;
+    margin: 10px; /* Space between buttons */
+    transition: transform 0.2s ease-in-out;
+}
+
+.button-image:hover {
+    transform: scale(1.1); /* Slight zoom effect on hover */
+}
+
+.button-image:active {
+    transform: scale(0.95); /* Slight shrink effect on click */
+}
+@keyframes rollDice {
+    0% {
+        transform: rotate(0) scale(1);
+    }
+    50% {
+        transform: rotate(360deg) scale(1.2);
+    }
+    100% {
+        transform: rotate(720deg) scale(1);
+    }
+}
+#game-container.dimmed {
+    filter: brightness(0.5);
+    transition: filter 0.3s ease;
+}
+
+#dice-container.dimmed-dice {
+    filter: brightness(2); /* Brighten the dice */
+    animation: glow 1s infinite alternate; /* Add a glowing effect */
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+    to {
+        box-shadow: 0 0 40px rgba(255, 215, 0, 1);
+    }
+}
+/* Smaller Quit Button */
+#quitButton.small-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #444;
     color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    z-index: 1000;
+}
+
+#quitButton.small-button:hover {
+    background-color: #666;
+}
+#main-menu {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+/* Combinations Modal Styling */
+#combinationsModal {
+    display: none; /* Initially hidden */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#modalContent {
+    background-color: white;
     padding: 20px;
     border-radius: 10px;
     text-align: center;
+    width: 80%;
+    max-width: 600px;
+    color: black;
 }
 
-#buy-item-container {
-    position: fixed;
-    bottom: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.9);
+.combinations-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    justify-items: center;
+    align-items: center;
+}
+
+.hidden {
+    display: none;
+}
+
+
+.button-small {
+    padding: 10px 15px;
+    font-size: 14px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #444;
     color: white;
-    padding: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.button-small:hover {
+    background-color: #666;
+}
+#hustler-inventory {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid #FFD700;
     border-radius: 10px;
+    padding: 10px;
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#hustler-list {
+    list-style: none;
+    padding: 0;
+}
+
+#hustler-list li {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#hustler-list li button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+/* for Huster Shop */
+#hustler-shop {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid #FFD700;
+    border-radius: 10px;
+    padding: 10px;
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#available-hustlers {
+    list-style: none;
+    padding: 0;
+}
+
+#available-hustlers li {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#available-hustlers li button {
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.dice-fire {
+    width: 150px; /* Larger size for fire dice */
+    height: 150px;
+    border-radius: 10px; /* Slightly rounded corners */
+    box-shadow: 0 0 20px rgba(255, 165, 0, 0.8), 0 0 30px rgba(255, 69, 0, 0.8); /* Fire glow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dice-fire:hover {
+    transform: scale(1.2); /* Slight zoom effect */
+    box-shadow: 0 0 25px rgba(255, 215, 0, 1), 0 0 50px rgba(255, 69, 0, 1); /* Stronger glow */
+}
+/* Game Container Layout */
+#game-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Left Side (Store, Hustler Info, Inventory) */
+#left-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #222;
+    padding: 10px;
+    color: white;
+    overflow-y: auto;
+}
+
+#store-image {
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+#buy-item-section {
+    text-align: center;
+}
+
+#hustler-info {
+    margin-bottom: 20px;
+}
+
+#inventory {
+    margin-top: 20px;
+}
+
+/* Right Side (Gameplay) */
+#right-side {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #111;
+    color: white;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+#dice-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.button-image {
+    cursor: pointer;
+    margin: 10px;
+    width: 120px;
+}
+
+#controls {
+    margin-top: 20px;
 }
 
 #gameStatus {
-    margin: 20px 0;
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    border-radius: 5px;
-    text-align: center;
+    margin-top: 20px;
     font-size: 1.2em;
+    color: #f5f5f5;
+    text-align: center;
+}
+#shop-container {
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    transform: translateY(-50%);
+    width: 25%;
+    background: #f8f9fa;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 16px;
+    z-index: 1000;
+    display: none; /* Hidden by default */
 }
 
+#shop-container h3 {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+#hustler-list, #item-list {
+    margin-bottom: 16px;
+}
+
+#shop-container button {
+    display: block;
+    margin: 8px auto;
+    padding: 8px 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#shop-container button:hover {
+    background: #0056b3;
+}
+#hustler-panel {
+    position: absolute;
+    top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 1rem;
+}
+
+#hustlers-display {
+    display: flex;
+    gap: 10px;
+}
+
+.hustler {
+    width: 50px;
+    height: 50px;
+    background: #333;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: relative;
+}
+
+.hustler:hover::after {
+    content: attr(data-description);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px;
+    background: #222;
+    color: white;
+    border-radius: 5px;
+    white-space: nowrap;
+    font-size: 0.8rem;
+}
+#shop-area {
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    width: 80%;
+    background: rgba(50, 50, 50, 0.9);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#shop-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.shop-item {
+    padding: 10px;
+    background: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.shop-item:hover {
+    background: #555;
+}
+#score-rent-panel {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    font-size: 1rem;
+}
+#shop-area {
+    transition: opacity 0.5s, transform 0.5s;
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+#shop-area.active {
+    opacity: 1;
+    transform: scale(1);
+}
