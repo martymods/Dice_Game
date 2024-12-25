@@ -66,6 +66,22 @@ function setupSinglePlayer() {
     updateUI();
 }
 
+function startSinglePlayer() {
+    const overlay = document.getElementById('transition-overlay');
+    overlay.style.display = 'flex';
+
+    const transitionSound = new Audio('/sounds/transitionSFX0.ogg');
+    transitionSound.play().catch(err => console.error('Error playing transition sound:', err));
+
+    setTimeout(() => {
+        window.location.href = 'game.html?singlePlayer=true';
+    }, 2000);
+}
+
+// Make globally accessible
+window.startSinglePlayer = startSinglePlayer;
+
+
 // Add event listeners
 function setupEventListeners() {
     document.getElementById('rollButton').addEventListener('click', handleRollDice);
@@ -192,9 +208,20 @@ function flashScreen(color) {
 }
 
 function updateUI() {
-    document.getElementById('betting-status').textContent = `Balance: $${balance} | Bet: $${currentBet}`;
-    document.getElementById('rent-status').textContent = `Rent Due: $${rent} in ${maxTurns - turns} rolls`;
+    document.getElementById('betting-status').textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+    document.getElementById('rent-status').textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
+
+    const hustlerEffects = hustlerInventory.map(hustler => hustler.effect).join(', ');
+    const hustlerEffectElement = document.getElementById('hustler-effects');
+    if (hustlerEffectElement) {
+        hustlerEffectElement.textContent = hustlerEffects
+            ? `Active Hustler Effects: ${hustlerEffects}`
+            : 'Active Hustler Effects: None';
+    }
+
+    updateBackgroundImage();
 }
+
 
 function setBet(amount) {
     currentBet = Math.min(amount, balance);
