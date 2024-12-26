@@ -99,7 +99,7 @@ const itemsList = [
     { name: 'Glass Ball 🔮', rarity: 'Very Rare', cost: 1800, description: 'Gains +0.5x multiplier for every rare item destroyed during the rent phase.' },
     { name: 'Collector’s Charm 🧿', rarity: 'Very Rare', cost: 2000, description: 'Doubles the payout of all rare and very rare hustlers and items.' },
     { name: 'Onyx Agate ⚫', rarity: 'Very Rare', cost: 2200, description: 'Each roll grants +1x multiplier if any die shows a prime number (2, 3, 5).' },
-    { name: 'Back Alley Bookie 📖', rarity: 'Common', cost: 500, description: 'Increases winnings by $30 for every bet placed in a rent cycle.' },
+    { name: 'Back Alley Bookie 📖', rarity: 'Common', cost: 500, description: 'Increases winnings by $300 for every bet placed in a rent cycle.' },
     { name: 'Street Magician 🪄', rarity: 'Common', cost: 450, description: 'Grants $15 every time your dice show consecutive numbers (e.g., 1-2, 2-3).' },
     { name: 'Pawn Broker 🏦', rarity: 'Common', cost: 400, description: 'Sell any item for +20% more than its value.' },
     { name: 'Black Market Dealer 🛒', rarity: 'Uncommon', cost: 750, description: 'Reduces the cost of rare and very rare items by 15%.' },
@@ -560,8 +560,220 @@ const certificates = [
     }
 ];
 
-// Append Certificates to itemsList
-itemsList.push(...certificates);
+// Dice Splicers List
+const diceSplicers = [
+    {
+        name: 'Splicers Fool 🎭',
+        rarity: 'Rare',
+        cost: 200,
+        description: 'Creates a copy of the last Splicer used during this run (excluding Splicers Fool).'
+    },
+    {
+        name: 'Magicians Splice 🪄',
+        rarity: 'Rare',
+        cost: 300,
+        description: 'Enhances 2 selected dice faces to Lucky Faces, increasing payouts for matching rolls.'
+    },
+    {
+        name: 'High Splicer 🌌',
+        rarity: 'Rare',
+        cost: 250,
+        description: 'Adds up to 2 random bonus dice faces (if room available).'
+    },
+    {
+        name: 'Empresss Edge 👑',
+        rarity: 'Rare',
+        cost: 300,
+        description: 'Enhances 2 selected dice faces to Multiplier Faces, boosting hand multipliers.'
+    },
+    {
+        name: 'Emperors Crown 🛡️',
+        rarity: 'Rare',
+        cost: 350,
+        description: 'Adds up to 2 random Splicer dice (if room available).'
+    },
+    {
+        name: 'Hierophants Blessing ✨',
+        rarity: 'Rare',
+        cost: 300,
+        description: 'Enhances 2 selected dice faces to Bonus Faces, granting extra cash.'
+    },
+    {
+        name: 'Lovers Connection 💞',
+        rarity: 'Rare',
+        cost: 400,
+        description: 'Enhances 1 selected dice face into a Wild Face, matching all rolls.'
+    },
+    {
+        name: 'Chariots Charge 🚀',
+        rarity: 'Rare',
+        cost: 400,
+        description: 'Enhances 1 selected dice face into a Steel Face, resistant to destruction.'
+    },
+    {
+        name: 'Justices Balance ⚖️',
+        rarity: 'Rare',
+        cost: 400,
+        description: 'Enhances 1 selected dice face into a Glass Face, with doubled payouts but breakable.'
+    },
+    {
+        name: 'Hermits Treasure 🪙',
+        rarity: 'Uncommon',
+        cost: 150,
+        description: 'Doubles money earned from the next roll (Max $5000).'
+    },
+    {
+        name: 'Wheel of Splice 🎡',
+        rarity: 'Rare',
+        cost: 300,
+        description: '1 in 4 chance to add Holographic or Polychrome effects to a random dice face.'
+    },
+    {
+        name: 'Splicers Strength 💪',
+        rarity: 'Rare',
+        cost: 250,
+        description: 'Increases the value of up to 2 selected dice faces by 1 rank (e.g., 4 to 5).'
+    },
+    {
+        name: 'Hanged Splice 🔗',
+        rarity: 'Rare',
+        cost: 200,
+        description: 'Removes up to 2 selected dice faces from the set.'
+    },
+    {
+        name: 'Splicers Rebirth 🌀',
+        rarity: 'Rare',
+        cost: 350,
+        description: 'Select 2 dice faces, converting one into the other.'
+    },
+    {
+        name: 'Temperances Touch ⚜️',
+        rarity: 'Rare',
+        cost: 200,
+        description: 'Gives cash equal to the sell value of all current Hustlers (Max $5000).'
+    },
+    {
+        name: 'Devils Gambit 🔥',
+        rarity: 'Rare',
+        cost: 450,
+        description: 'Enhances 1 selected dice face into a Gold Face, granting premium payouts.'
+    },
+    {
+        name: 'Towers Might 🏰',
+        rarity: 'Rare',
+        cost: 400,
+        description: 'Enhances 1 selected dice face into a Stone Face, unbreakable but static.'
+    },
+    {
+        name: 'Splicers Star 🌟',
+        rarity: 'Rare',
+        cost: 350,
+        description: 'Converts up to 3 selected dice faces into Diamond Faces, multiplying payouts for matching rolls.'
+    },
+    {
+        name: 'Moonlit Splice 🌙',
+        rarity: 'Rare',
+        cost: 350,
+        description: 'Converts up to 3 selected dice faces into Club Faces, enhancing consistency.'
+    },
+    {
+        name: 'Sunlit Splice 🌞',
+        rarity: 'Rare',
+        cost: 350,
+        description: 'Converts up to 3 selected dice faces into Heart Faces, boosting payouts.'
+    },
+    {
+        name: 'Judgements Gift 🎁',
+        rarity: 'Rare',
+        cost: 400,
+        description: 'Creates a random bonus dice face (if room available).'
+    },
+    {
+        name: 'Splicers World 🌍',
+        rarity: 'Rare',
+        cost: 450,
+        description: 'Converts up to 3 selected dice faces into Spade Faces, boosting flexibility and rewards.'
+    }
+];
+
+// HackDie Implants List
+const hackDieImplants = [
+    {
+        name: 'Shooters Edge 🎲',
+        rarity: 'Uncommon',
+        cost: 200,
+        description: 'Boosts Come-Out Rolls: Adds $500 for rolling a 7 or 11. Base bonus: +$50 per roll.'
+    },
+    {
+        name: 'Back Alley Boost 🔥',
+        rarity: 'Uncommon',
+        cost: 250,
+        description: 'Improves Point Rolls: Adds $150 for hitting the point number. Base bonus: +$100 per roll.'
+    },
+    {
+        name: 'Underground Double 💰',
+        rarity: 'Uncommon',
+        cost: 300,
+        description: 'Enhances repeated hits on point numbers: Adds $200 for each match. Base bonus: +$200 per roll.'
+    },
+    {
+        name: 'Triple Roll Hustle 🎯',
+        rarity: 'Rare',
+        cost: 350,
+        description: 'Boosts streaks of 3 successful rolls: Adds $200 per roll with +2 Mult. Base streak bonus: +$300.'
+    },
+    {
+        name: 'Street Shooters Streak 🌟',
+        rarity: 'Rare',
+        cost: 400,
+        description: 'Increases payouts for rolling consecutive high values (e.g., 4, 5, 6): Adds $300 and +3 Mult.'
+    },
+    {
+        name: 'Flush Hustlers Cut 💎',
+        rarity: 'Rare',
+        cost: 450,
+        description: 'Boosts payouts for consecutive matching dice faces: Adds $150 and +2 Mult.'
+    },
+    {
+        name: 'Point Protector 🃏',
+        rarity: 'Rare',
+        cost: 500,
+        description: 'Improves outcomes for protecting the point: Adds $250 per successful roll with +2 Mult.'
+    },
+    {
+        name: 'Corner Shot Hustler 🔥',
+        rarity: 'Very Rare',
+        cost: 600,
+        description: 'Maximizes payouts for repeating critical rolls: Adds $300 with +3 Mult for hitting high values.'
+    },
+    {
+        name: 'Royal Shooter 🌊',
+        rarity: 'Very Rare',
+        cost: 700,
+        description: 'Adds $400 with +4 Mult for rolling high-value combinations over multiple rolls.'
+    },
+    {
+        name: 'Hustlers Dream ❌',
+        rarity: 'Legendary',
+        cost: 750,
+        description: 'Boosts rare winning streaks: Adds $350 and +3 Mult for 5 consecutive successful rolls.'
+    },
+    {
+        name: 'Jackpot Roller 🌟',
+        rarity: 'Legendary',
+        cost: 800,
+        description: 'Maximizes payouts during streaks of high-value rolls: Adds $400 with +4 Mult.'
+    },
+    {
+        name: 'Dice Masters Hustle 🔮',
+        rarity: 'Legendary',
+        cost: 850,
+        description: 'Enhances high-value critical rolls: Adds $500 and +3 Mult for rolling exceptional values.'
+    }
+];
+
+// Append HackDie Implants to itemsList
+itemsList.push(...hackDieImplants);
 
 // Ensure the script exposes the `itemsList` globally
 window.itemsList = itemsList;
