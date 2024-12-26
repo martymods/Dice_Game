@@ -72,19 +72,6 @@ function addHustlerToInventory(hustler) {
     updateHustlerInventoryUI();
 }
 
-// Apply effects of active hustlers
-function applyHustlerEffects(roll1, roll2) {
-    let multiplier = 1;
-    let cashBonus = 0;
-
-    hustlerInventory.forEach(hustler => {
-        if (hustler.name === 'Joker') multiplier += 2;
-        if (hustler.name === 'Greedy Joker' && roll1 + roll2 > 6) cashBonus += 5;
-        if (hustler.name === 'Wrathful Joker' && roll1 + roll2 < 4) multiplier += 3;
-    });
-
-    return { multiplier, cashBonus };
-}
 
 // Update hustler inventory UI
 function updateHustlerInventoryUI() {
