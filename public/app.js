@@ -575,61 +575,6 @@ function getRandomItems(list, count) {
         inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
     }
 
-    function updateUIAfterRoll() {
-        updateUI();
-        turns++;
-
-        const rentPaidStatements = [
-            "Well done! You paid the rent. But success has its price—the rent just went up!",
-            "Congratulations on keeping up! I knew you could handle more, so I raised the rent!",
-            "Impressive! You’ve survived another month. Let’s see if you can handle next month’s new rent.",
-            "Good job paying the rent! But comfort is costly—your rent just increased.",
-            "You did it! The rent’s paid. Now let’s see how you handle my latest adjustment.",
-            "You’re doing so well! I couldn’t resist rewarding you with higher rent.",
-            "Bravo! You’ve proven your worth… and now you’ll prove you can pay even more.",
-            "Rent paid! Your reward? A bigger challenge. I’ve raised the stakes—and the rent!",
-            "Fantastic work! To celebrate, I’ve made the rent a little more interesting for next time.",
-            "You made it through! But the better you perform, the more I expect—rent’s going up!"
-        ];
-
-        const voiceClips = [
-            "/sounds/Lord_voice_0.ogg",
-            "/sounds/Lord_voice_1.ogg",
-            "/sounds/Lord_voice_2.ogg"
-        ];
-
-        const rollsRemaining = maxTurns - turns;
-        if (rollsRemaining > 0) {
-            rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
-        } else {
-            if (balance >= rent) {
-                balance -= rent;
-                rent *= progression <= 9 ? 4 : 5;
-                maxTurns++;
-                progression++;
-                turns = 0;
-
-                playerStats.totalDaysPassed += 30;
-                playerStats.monthsUnlocked = Math.max(playerStats.monthsUnlocked, progression);
-                saveStats();
-
-                // Play random Lord voice clip and show congratulation popup
-                const randomClip = voiceClips[Math.floor(Math.random() * voiceClips.length)];
-                playSound(randomClip);
-
-                const randomStatement = rentPaidStatements[Math.floor(Math.random() * rentPaidStatements.length)];
-                alert(randomStatement);
-
-                openShop(); // Trigger the new shop logic
-            } else {
-                handleGameOver();
-            }
-        }
-
-        if (balance <= 0) {
-            handleGameOver();
-        }
-    }
 
     function handleGameOver() {
         const deathSound = new Audio('/sounds/Death0.ogg');
@@ -667,19 +612,23 @@ function getRandomItems(list, count) {
     }
 
     function updateUI() {
+        // Update betting and rent status
+        const bettingStatus = document.getElementById('betting-status');
+        const rentStatus = document.getElementById('rent-status');
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
         rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
-
+    
+        // Update Hustler Effects UI
         const hustlerEffects = hustlerInventory.map(hustler => hustler.description).join(', ');
         const hustlerEffectElement = document.getElementById('hustler-effects');
         if (hustlerEffectElement) {
-            hustlerEffectElement.textContent = `Active Hustler Effects: ${hustlerEffects}`;
+            hustlerEffectElement.textContent = `Active Hustler Effects: ${hustlerEffects || 'None'}`;
         }
-
+    
+        // Update the background image based on rolls remaining
         updateBackgroundImage();
     }
-
-
+    
     function updateBackgroundImage() {
         const rollsRemaining = maxTurns - turns;
         if (rollsRemaining === maxTurns) {
@@ -690,7 +639,7 @@ function getRandomItems(list, count) {
             document.body.style.backgroundImage = "url('/images/LandLord2.png')";
         }
     }
-
+    
     function quitGame() {
         window.location.href = '/';
     }
