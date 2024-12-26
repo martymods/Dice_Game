@@ -366,56 +366,148 @@ async function setupSinglePlayer() {
         }
     }
 
+// Cleaned-up app.js for Dice Game
+document.addEventListener("DOMContentLoaded", () => {
+    const shopContainer = document.getElementById("shop-area");
+    const shopItems = document.getElementById("shop-items");
+    const saveMoneyButton = document.getElementById("saveMoneyButton");
+
+    let balance = 300;
+    let playerHasPurchased = false;
+
+    // Items and hustlers available in the shop
+    const itemsList = [
+        { name: "Lucky Dice", cost: 50, description: "Increases win chance by 10%" },
+        { name: "Loaded Dice", cost: 100, description: "Guarantees one winning roll" },
+        { name: "Hustler: Joker", cost: 200, description: "Doubles winnings on a 7 roll" },
+        { name: "Hustler: Even Steven", cost: 150, description: "Bonus on even rolls" }
+    ];
+
+// Cleaned-up app.js for Dice Game
+document.addEventListener("DOMContentLoaded", () => {
+    const shopContainer = document.getElementById("shop-area");
+    const shopItems = document.getElementById("shop-items");
+    const saveMoneyButton = document.getElementById("saveMoneyButton");
+
+    let balance = 300;
+    let playerHasPurchased = false;
+
+    // Items and hustlers available in the shop
+    const itemsList = [
+        { name: "Lucky Dice", cost: 50, description: "Increases win chance by 10%" },
+        { name: "Loaded Dice", cost: 100, description: "Guarantees one winning roll" },
+        { name: "Hustler: Joker", cost: 200, description: "Doubles winnings on a 7 roll" },
+        { name: "Hustler: Even Steven", cost: 150, description: "Bonus on even rolls" }
+    ];
+
+    // Function to open the shop
     function openShop() {
-        const shopContainer = document.getElementById('shop-container');
         if (!shopContainer) {
-            console.error("Shop container not found!");
+            console.error("Shop container not found in the DOM.");
             return;
         }
-        playerHasPurchased = false; // Reset purchase flag
-        renderShop(); // Populate the shop
-        shopContainer.style.display = 'block'; // Ensure visibility
+
+        // Clear previous shop items
+        shopItems.innerHTML = "";
+
+        // Populate shop with items
+        itemsList.forEach((item) => {
+            const itemElement = document.createElement("div");
+            itemElement.classList.add("shop-item");
+            itemElement.textContent = `${item.name} - $${item.cost}`;
+            itemElement.onclick = () => handlePurchase(item);
+            shopItems.appendChild(itemElement);
+        });
+
+        // Show the shop
+        shopContainer.style.display = "block";
+        playerHasPurchased = false; // Reset purchase state
     }
-    
-  
-    function renderShop() {
-        const shopContainer = document.getElementById('shop-container');
-        const hustlerList = document.getElementById('hustler-list');
-        const itemList = document.getElementById('item-list');
-    
-        if (!hustlerList || !itemList) {
-            console.error("Hustler or Item list is missing in the DOM.");
+
+    // Function to close the shop
+    function closeShop() {
+        if (!shopContainer) {
+            console.error("Shop container not found in the DOM.");
             return;
         }
-    
-        // Clear existing content
-        hustlerList.innerHTML = '';
-        itemList.innerHTML = '';
-    
-        // Generate random items and hustlers
-        const randomHustlers = getRandomItems(
-            window.itemsList.filter(item => item.type === 'hustler'), 3
-        );
-        const randomItems = getRandomItems(
-            window.itemsList.filter(item => item.type === 'item'), 3
-        );
-    
-        // Populate hustler list
-        randomHustlers.forEach(hustler => {
-            const button = document.createElement('button');
-            button.textContent = `${hustler.name} - $${hustler.cost}`;
-            button.onclick = () => handlePurchase(hustler);
-            hustlerList.appendChild(button);
-        });
-    
-        // Populate item list
-        randomItems.forEach(item => {
-            const button = document.createElement('button');
-            button.textContent = `${item.name} - $${item.cost}`;
-            button.onclick = () => handlePurchase(item);
-            itemList.appendChild(button);
-        });
+        shopContainer.style.display = "none";
     }
+
+    // Function to handle purchasing an item
+    function handlePurchase(item) {
+        if (playerHasPurchased) {
+            alert("You can only purchase one item per shop visit!");
+            return;
+        }
+
+        if (balance >= item.cost) {
+            balance -= item.cost;
+            alert(`You purchased ${item.name}!`);
+            addItemToInventory(item);
+            playerHasPurchased = true;
+        } else {
+            alert("Not enough money to make this purchase.");
+        }
+    }
+
+    // Function to add an item to the inventory
+    function addItemToInventory(item) {
+        const inventoryList = document.getElementById("inventory-list");
+        if (!inventoryList) {
+            console.error("Inventory list not found in the DOM.");
+            return;
+        }
+
+        const listItem = document.createElement("li");
+        listItem.textContent = `${item.name} (${item.description})`;
+        inventoryList.appendChild(listItem);
+    }
+
+    // Event listener for "Done Shopping" button
+    saveMoneyButton.addEventListener("click", closeShop);
+
+    // Open shop for testing (can be triggered after specific game events)
+    openShop();
+});
+
+
+    // Function to handle purchasing an item
+    function handlePurchase(item) {
+        if (playerHasPurchased) {
+            alert("You can only purchase one item per shop visit!");
+            return;
+        }
+
+        if (balance >= item.cost) {
+            balance -= item.cost;
+            alert(`You purchased ${item.name}!`);
+            addItemToInventory(item);
+            playerHasPurchased = true;
+        } else {
+            alert("Not enough money to make this purchase.");
+        }
+    }
+
+    // Function to add an item to the inventory
+    function addItemToInventory(item) {
+        const inventoryList = document.getElementById("inventory-list");
+        if (!inventoryList) {
+            console.error("Inventory list not found in the DOM.");
+            return;
+        }
+
+        const listItem = document.createElement("li");
+        listItem.textContent = `${item.name} (${item.description})`;
+        inventoryList.appendChild(listItem);
+    }
+
+    // Event listener for "Done Shopping" button
+    saveMoneyButton.addEventListener("click", closeShop);
+
+    // Open shop for testing (can be triggered after specific game events)
+    openShop();
+});
+
     
 
     /**
