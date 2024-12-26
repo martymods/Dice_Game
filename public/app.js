@@ -490,7 +490,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Open shop for testing (can be triggered after specific game events)
     openShop();
-});
+}
 
 
     
