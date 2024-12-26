@@ -383,25 +383,9 @@ document.addEventListener("DOMContentLoaded", () => {
         { name: "Hustler: Even Steven", cost: 150, description: "Bonus on even rolls" }
     ];
 
-// Cleaned-up app.js for Dice Game
-document.addEventListener("DOMContentLoaded", () => {
-    const shopContainer = document.getElementById("shop-area");
-    const shopItems = document.getElementById("shop-items");
-    const saveMoneyButton = document.getElementById("saveMoneyButton");
-
-    let balance = 300;
-    let playerHasPurchased = false;
-
-    // Items and hustlers available in the shop
-    const itemsList = [
-        { name: "Lucky Dice", cost: 50, description: "Increases win chance by 10%" },
-        { name: "Loaded Dice", cost: 100, description: "Guarantees one winning roll" },
-        { name: "Hustler: Joker", cost: 200, description: "Doubles winnings on a 7 roll" },
-        { name: "Hustler: Even Steven", cost: 150, description: "Bonus on even rolls" }
-    ];
-
     // Function to open the shop
     function openShop() {
+        
         if (!shopContainer) {
             console.error("Shop container not found in the DOM.");
             return;
@@ -507,6 +491,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Open shop for testing (can be triggered after specific game events)
     openShop();
 });
+
 
     
 
@@ -1123,7 +1108,7 @@ document.getElementById('saveMoneyButton').addEventListener('click', () => {
 
 
 
-}// Stats Display Logic
+// Stats Display Logic
 function displayStats() {
     loadStats(); // Ensure stats are loaded from localStorage
     const statsList = document.getElementById('stats-list');
