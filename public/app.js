@@ -4,6 +4,8 @@ import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
 import { updateUI, showItemPopup, getItemColor } from './modules/ui.js';
+import { itemsList } from './items.js';
+
 
 // Fire Status
 let winStreak = 0; // Track the current winning streak
