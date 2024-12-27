@@ -239,7 +239,7 @@ export function handleItemPurchase(item, balance, items) {
         alert(`You purchased ${item.name}!`);
 
         document.getElementById('buy-item-container').style.display = 'none'; // Close the popup
-        displayInventory(items); // Update inventory display
+        updatePurchasedItemsDisplay(items); // Update purchased items display
         updateUI(balance); // Update balance in the UI
     } else {
         alert('Not enough money to buy this item.');
@@ -267,4 +267,26 @@ export function getItemColor(rarity) {
         default: return 'white';
     }
 }
+
+// Update to display purchased items with emojis and hover descriptions
+export function updatePurchasedItemsDisplay(items) {
+    const purchasedItemsDisplay = document.getElementById('purchased-items-display');
+    purchasedItemsDisplay.innerHTML = ''; // Clear previous items
+
+    items.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.classList.add('purchased-item');
+        itemElement.textContent = item.emoji; // Display the emoji
+        itemElement.setAttribute('data-description', item.description); // Set description for hover
+
+        // Add hover effect to show description
+        itemElement.addEventListener('mouseenter', () => {
+            showItemDescription(item.description);
+        });
+        itemElement.addEventListener('mouseleave', hideItemDescription);
+
+        purchasedItemsDisplay.appendChild(itemElement);
+    });
+}
+
 const itemsList = window.itemsList; // Use the globally exposed variable
