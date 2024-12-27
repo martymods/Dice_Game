@@ -150,17 +150,20 @@ export function updateHustlerPanel(hustlerInventory) {
 export function showItemPopup() {
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
-    const itemButton = document.createElement('button');
-
-    itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
-
-    itemButton.style.backgroundColor = getItemColor(item.rarity);
-
 
     popup.style.display = 'block';
-    itemList.innerHTML = '';
+    itemList.innerHTML = ''; // Clear previous items
 
+    // Ensure itemsList exists and has items
+    if (!window.itemsList || window.itemsList.length === 0) {
+        console.error("Items list is empty or not loaded.");
+        alert("No items available to purchase. Please try again later.");
+        return;
+    }
+
+    // Randomly select items from the itemsList
     const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
+
     shuffledItems.forEach(item => {
         const itemButton = document.createElement('button');
         itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
@@ -175,6 +178,7 @@ export function showItemPopup() {
         itemList.appendChild(itemButton);
     });
 
+    // Add "Save Money" button
     const skipButton = document.createElement('button');
     skipButton.textContent = 'Save Money';
     skipButton.onclick = () => {
@@ -183,6 +187,7 @@ export function showItemPopup() {
     };
     itemList.appendChild(skipButton);
 }
+
 // Shop Restore
 export function handleItemPurchase(item) {
     if (balance >= item.cost) {
