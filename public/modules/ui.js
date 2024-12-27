@@ -147,37 +147,55 @@ export function updateHustlerPanel(hustlerInventory) {
 /**
  * Shows the item popup with a list of available items.
  */
-export function showItemPopup(items) {
+export function showItemPopup() {
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
 
     popup.style.display = 'block';
     itemList.innerHTML = '';
 
-    items.forEach(item => {
+    const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
+    shuffledItems.forEach(item => {
         const itemButton = document.createElement('button');
         itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
+        itemButton.style.backgroundColor = getItemColor(item.rarity);
         itemButton.onclick = () => {
-            alert(`You purchased ${item.name}!`);
+            handleItemPurchase(item);
+
+            // Play random Lord voice clip
+            const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
+            playSound(voiceClips, true);
         };
         itemList.appendChild(itemButton);
     });
+
+    const skipButton = document.createElement('button');
+    skipButton.textContent = 'Save Money';
+    skipButton.onclick = () => {
+        playSound("/sounds/UI_Click1.ogg");
+        popup.style.display = 'none';
+    };
+    itemList.appendChild(skipButton);
 }
-
-/**
- * Toggles the visibility of the store UI.
- */
-export function toggleStore(open) {
-    const storeImage = document.getElementById('store-image');
-    const buyItemContainer = document.getElementById('buy-item-container');
-
-    if (open) {
-        storeImage.src = '/images/Store0.gif';
-        setTimeout(() => {
-            buyItemContainer.style.display = 'block';
-        }, 1000);
+// Shop Restore
+export function handleItemPurchase(item) {
+    if (balance >= item.cost) {
+        balance -= item.cost; // Deduct item cost
+        items.push(item);
+        if (item.name === 'Forged Papers 📜') {
+            items = itemEffects.forgedPapersEffect(items);
+        }
+        playSound("/sounds/UI_Buy1.ogg");
+        alert(`You purchased ${item.name}!`);
+        document.getElementById('buy-item-container').style.display = 'none';
+        displayInventory();
+        updateUI(); // Update UI after purchase
     } else {
-        buyItemContainer.style.display = 'none';
-        storeImage.src = '/images/StoreSign_Closed0.gif';
+        alert('Not enough money to buy this item.');
     }
+}
+// Shop Restore
+export function displayInventory() {
+    const inventoryDisplay = document.getElementById('inventory-list');
+    inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
 }
