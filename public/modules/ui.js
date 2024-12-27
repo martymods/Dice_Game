@@ -250,7 +250,7 @@ export function handleItemPurchase(item, balance, items) {
 }
 
 
-// Shop Restore
+// Shop Inventory
 export function displayInventory(items) {
     const inventoryDisplay = document.getElementById('inventory-list');
     inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
@@ -271,6 +271,10 @@ export function getItemColor(rarity) {
 // Update to display purchased items with emojis and hover descriptions
 export function updatePurchasedItemsDisplay(items) {
     const purchasedItemsDisplay = document.getElementById('purchased-items-display');
+    if (!purchasedItemsDisplay) {
+        console.error('Purchased Items Display section not found in DOM.');
+        return;
+    }
     purchasedItemsDisplay.innerHTML = ''; // Clear previous items
 
     items.forEach(item => {
