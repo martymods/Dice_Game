@@ -1117,59 +1117,6 @@ function disconnectWallet() {
     signer = null;
     alert("Wallet disconnected.");
 }
-// Shop Restore
-function showItemPopup() {
-    const popup = document.getElementById('buy-item-container');
-    const itemList = document.getElementById('item-list');
-
-    popup.style.display = 'block';
-    itemList.innerHTML = '';
-
-    const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
-    shuffledItems.forEach(item => {
-        const itemButton = document.createElement('button');
-        itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
-        itemButton.style.backgroundColor = getItemColor(item.rarity);
-        itemButton.onclick = () => {
-            handleItemPurchase(item);
-
-            // Play random Lord voice clip
-            const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
-            playSound(voiceClips, true);
-        };
-        itemList.appendChild(itemButton);
-    });
-
-    const skipButton = document.createElement('button');
-    skipButton.textContent = 'Save Money';
-    skipButton.onclick = () => {
-        playSound("/sounds/UI_Click1.ogg");
-        popup.style.display = 'none';
-    };
-    itemList.appendChild(skipButton);
-}
-// Shop Restore
-function handleItemPurchase(item) {
-    if (balance >= item.cost) {
-        balance -= item.cost; // Deduct item cost
-        items.push(item);
-        if (item.name === 'Forged Papers 📜') {
-            items = itemEffects.forgedPapersEffect(items);
-        }
-        playSound("/sounds/UI_Buy1.ogg");
-        alert(`You purchased ${item.name}!`);
-        document.getElementById('buy-item-container').style.display = 'none';
-        displayInventory();
-        updateUI(); // Update UI after purchase
-    } else {
-        alert('Not enough money to buy this item.');
-    }
-}
-// Shop Restore
-function displayInventory() {
-    const inventoryDisplay = document.getElementById('inventory-list');
-    inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
-}
 
 
 // Ensure these functions are accessible globally
