@@ -183,23 +183,13 @@ async function setupSinglePlayer() {
             return;
         }
     }
-
-
-    for (const { id, element } of requiredElements) {
-        if (!element) {
-            console.error(`Missing required element: ${id}`);
-            alert(`Missing required element: ${id}. Please check the HTML.`);
-            return;
-        }
+   
+    if (!itemsList || itemsList.length === 0) {
+        console.error('Items list is empty or not loaded from items.js.');
+        alert('Failed to load items. Please refresh the page.');
+        return;
     }
-
-    script.onload = () => {
-        if (typeof window.itemsList === 'undefined' || !window.itemsList || window.itemsList.length === 0) {
-            console.error('Items list is empty or not loaded from items.js.');
-            alert('Failed to load items. Please refresh the page.');
-            return;
-        }
-
+    
         updateUI();
 
         rollButton.addEventListener('click', handleRollDice);
@@ -218,7 +208,7 @@ async function setupSinglePlayer() {
             playSound('/sounds/UI_Click1.ogg');
             setBet(balance);
         });
-    };
+   
 
     function setBet(amount) {
         if (amount > balance) amount = balance;
@@ -1104,7 +1094,6 @@ function disconnectWallet() {
     signer = null;
     alert("Wallet disconnected.");
 }
-
 
 // Ensure these functions are accessible globally
 window.startSinglePlayer = startSinglePlayer;
