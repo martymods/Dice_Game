@@ -1,4 +1,4 @@
-export const itemsList = [
+const itemsList = [
     { name: 'Loaded Dice 🎲', rarity: 'Common', cost: 50, description: 'Boosts rolls of 2 and 3, giving you an edge against other players.' },
     { name: 'Forged Papers 📜', rarity: 'Common', cost: 100, description: 'Recruit 3 allies.' },
     { name: 'Old Gang Leader’s Blade 🔪', rarity: 'Very Rare', cost: 200, description: 'Yields +9 coins each roll. Loses 1 DreamCoin for each duplicate symbol.' },
@@ -771,6 +771,7 @@ const hackDieImplants = [
         description: 'Enhances high-value critical rolls: Adds $500 and +3 Mult for rolling exceptional values.'
     }
 ];
+
 
 // Append HackDie Implants to itemsList
 itemsList.push(...hackDieImplants);
