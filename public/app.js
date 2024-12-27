@@ -366,134 +366,6 @@ async function setupSinglePlayer() {
         }
     }
 
-    function openShop() {
-        const shopContainer = document.getElementById('shop-container');
-        if (!shopContainer) {
-            console.error("Shop container not found!");
-            return;
-        }
-        playerHasPurchased = false; // Reset purchase flag
-        renderShop(); // Populate the shop
-        shopContainer.style.display = 'block'; // Ensure visibility
-    }
-    
-  
-    function renderShop() {
-        const shopContainer = document.getElementById('shop-container');
-        const hustlerList = document.getElementById('hustler-list');
-        const itemList = document.getElementById('item-list');
-    
-        if (!hustlerList || !itemList) {
-            console.error("Hustler or Item list is missing in the DOM.");
-            return;
-        }
-    
-        // Clear existing content
-        hustlerList.innerHTML = '';
-        itemList.innerHTML = '';
-    
-        // Generate random items and hustlers
-        const randomHustlers = getRandomItems(
-            window.itemsList.filter(item => item.type === 'hustler'), 3
-        );
-        const randomItems = getRandomItems(
-            window.itemsList.filter(item => item.type === 'item'), 3
-        );
-    
-        // Populate hustler list
-        randomHustlers.forEach(hustler => {
-            const button = document.createElement('button');
-            button.textContent = `${hustler.name} - $${hustler.cost}`;
-            button.onclick = () => handlePurchase(hustler);
-            hustlerList.appendChild(button);
-        });
-    
-        // Populate item list
-        randomItems.forEach(item => {
-            const button = document.createElement('button');
-            button.textContent = `${item.name} - $${item.cost}`;
-            button.onclick = () => handlePurchase(item);
-            itemList.appendChild(button);
-        });
-    }
-    
-
-    /**
- * Helper function to get random items from a list
- * @param {Array} list - Array of items to pick from
- * @param {number} count - Number of random items to select
- * @returns {Array} - Randomly selected items
- */
-function getRandomItems(list, count) {
-    // Shuffle the list and select the first 'count' items
-    return list.sort(() => Math.random() - 0.5).slice(0, count);
-}
-
-
-    function updateScoreRentUI() {
-        document.getElementById("rent-status").textContent = `Rent: $${rent} in ${maxTurns - turns} rolls`;
-        document.getElementById("score-status").textContent = `Score: ${playerStats.totalMoneyWon}`;
-    }
-
-    function toggleShop(open) {
-        const shopArea = document.getElementById("shop-area");
-        shopArea.classList.toggle("active", open);
-    }
-         
-
-    function handlePurchase(item) {
-        if (playerHasPurchased) {
-            alert("You can only purchase one item or hustler per shop visit!");
-            return;
-        }
-    
-        if (balance >= item.cost) {
-            balance -= item.cost;
-            alert(`You purchased ${item.name}!`);
-            addItemToInventory(item);
-            playerHasPurchased = true;
-    
-            // Close the shop
-            document.getElementById('shop-container').style.display = 'none';
-            updateUI();
-        } else {
-            alert("Not enough money to make this purchase.");
-        }
-    }
-    
-    
-    
-    function addItemToInventory(item) {
-        if (item.description.includes('Hustler')) {
-            hustlerInventory.push(item); // Add to hustler inventory
-        } else {
-            items.push(item); // Add to general items
-        }
-    }
-    
-
-    function handleItemPurchase(item) {
-        if (balance >= item.cost) {
-            balance -= item.cost; // Deduct item cost
-
-            if (item.type === 'hustler') {
-                addHustlerToInventory(item); // Add to hustler inventory
-                updateHustlerInventoryUI(); // Refresh the UI
-            } else {
-                items.push(item); // Add to general items
-            }
-
-
-            playSound("/sounds/UI_Buy1.ogg");
-            alert(`You purchased ${item.name}!`);
-            popup.style.display = 'none';
-            displayInventory();
-            updateUI(); // Update UI after purchase
-        } else {
-            alert('Not enough money to buy this item.');
-        }
-    }
-
     function displayInventory() {
         inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
     }
@@ -543,7 +415,7 @@ function getRandomItems(list, count) {
                 const randomStatement = rentPaidStatements[Math.floor(Math.random() * rentPaidStatements.length)];
                 alert(randomStatement);
 
-                openShop(); // Trigger the new shop logic
+                showItemPopup(); // Trigger the new shop logic
             } else {
                 handleGameOver();
             }
@@ -818,7 +690,7 @@ if (skipIntroButton) {
                 alert(randomStatement);
 
                 // Show item popup
-                openShop(); // Trigger the new shop logic
+                showItemPopup(); // Trigger the new shop logic
             } else {
                 handleGameOver();
             }
@@ -1244,6 +1116,59 @@ function disconnectWallet() {
     localStorage.removeItem("connectedWallet");
     signer = null;
     alert("Wallet disconnected.");
+}
+// Shop Restore
+function showItemPopup() {
+    const popup = document.getElementById('buy-item-container');
+    const itemList = document.getElementById('item-list');
+
+    popup.style.display = 'block';
+    itemList.innerHTML = '';
+
+    const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
+    shuffledItems.forEach(item => {
+        const itemButton = document.createElement('button');
+        itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
+        itemButton.style.backgroundColor = getItemColor(item.rarity);
+        itemButton.onclick = () => {
+            handleItemPurchase(item);
+
+            // Play random Lord voice clip
+            const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
+            playSound(voiceClips, true);
+        };
+        itemList.appendChild(itemButton);
+    });
+
+    const skipButton = document.createElement('button');
+    skipButton.textContent = 'Save Money';
+    skipButton.onclick = () => {
+        playSound("/sounds/UI_Click1.ogg");
+        popup.style.display = 'none';
+    };
+    itemList.appendChild(skipButton);
+}
+// Shop Restore
+function handleItemPurchase(item) {
+    if (balance >= item.cost) {
+        balance -= item.cost; // Deduct item cost
+        items.push(item);
+        if (item.name === 'Forged Papers 📜') {
+            items = itemEffects.forgedPapersEffect(items);
+        }
+        playSound("/sounds/UI_Buy1.ogg");
+        alert(`You purchased ${item.name}!`);
+        document.getElementById('buy-item-container').style.display = 'none';
+        displayInventory();
+        updateUI(); // Update UI after purchase
+    } else {
+        alert('Not enough money to buy this item.');
+    }
+}
+// Shop Restore
+function displayInventory() {
+    const inventoryDisplay = document.getElementById('inventory-list');
+    inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
 }
 
 
