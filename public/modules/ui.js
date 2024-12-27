@@ -1,3 +1,5 @@
+import { playSound } from './audio.js';
+
 // ui.js
 
 /**
