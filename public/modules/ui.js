@@ -147,7 +147,7 @@ export function updateHustlerPanel(hustlerInventory) {
 /**
  * Shows the item popup with a list of available items.
  */
-export function showItemPopup() {
+export function showItemPopup(balance, items) {
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
 
@@ -169,7 +169,7 @@ export function showItemPopup() {
         itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
         itemButton.style.backgroundColor = getItemColor(item.rarity);
         itemButton.onclick = () => {
-            handleItemPurchase(item);
+            handleItemPurchase(item, balance, items);
 
             // Play random Lord voice clip
             const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
@@ -188,25 +188,32 @@ export function showItemPopup() {
     itemList.appendChild(skipButton);
 }
 
+
 // Shop Restore
-export function handleItemPurchase(item) {
+export function handleItemPurchase(item, balance, items) {
     if (balance >= item.cost) {
         balance -= item.cost; // Deduct item cost
-        items.push(item);
+        items.push(item); // Add item to the player's items list
+
         if (item.name === 'Forged Papers 📜') {
             items = itemEffects.forgedPapersEffect(items);
         }
+
         playSound("/sounds/UI_Buy1.ogg");
         alert(`You purchased ${item.name}!`);
+
         document.getElementById('buy-item-container').style.display = 'none';
-        displayInventory();
-        updateUI(); // Update UI after purchase
+        displayInventory(items);
+        updateUI(balance); // Update UI after purchase
     } else {
         alert('Not enough money to buy this item.');
     }
+
+    return { balance, items };
 }
+
 // Shop Restore
-export function displayInventory() {
+export function displayInventory(items) {
     const inventoryDisplay = document.getElementById('inventory-list');
     inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
 }
