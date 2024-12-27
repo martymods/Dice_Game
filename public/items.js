@@ -772,9 +772,5 @@ const hackDieImplants = [
     }
 ];
 
-
-// Append HackDie Implants to itemsList
-itemsList.push(...hackDieImplants);
-
 // Ensure the script exposes the `itemsList` globally
 window.itemsList = itemsList;
