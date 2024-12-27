@@ -219,4 +219,4 @@ export function getItemColor(rarity) {
 }
 window.itemsList = itemsList;
 
-import { itemsList } from './modules/items.js';
+import { itemsList } from './items.js';
