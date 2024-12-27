@@ -217,7 +217,4 @@ export function getItemColor(rarity) {
         default: return 'white';
     }
 }
-const itemsList = window.itemsList; // Access the globally exposed variable
-
-
-import  itemsList  from '/items.js';
+const itemsList = window.itemsList; // Use the globally exposed variable
