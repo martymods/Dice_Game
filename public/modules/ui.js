@@ -238,7 +238,7 @@ export function handleItemPurchase(item, balance, items) {
         playSound("/sounds/UI_Buy1.ogg"); // Play purchase sound
         alert(`You purchased ${item.name}!`);
 
-        document.getElementById('buy-item-container').style.display = 'none'; // Close the popup
+        document.getElementById('buy-item-container').classList.toggle('hidden'); // Close the popup
         updatePurchasedItemsDisplay(items); // Update purchased items display
         updateUI(balance); // Update balance in the UI
     } else {
@@ -271,26 +271,29 @@ export function getItemColor(rarity) {
 // Update to display purchased items with emojis and hover descriptions
 export function updatePurchasedItemsDisplay(items) {
     const purchasedItemsDisplay = document.getElementById('purchased-items-display');
-    if (!purchasedItemsDisplay) {
-        console.error('Purchased Items Display section not found in DOM.');
-        return;
-    }
     purchasedItemsDisplay.innerHTML = ''; // Clear previous items
 
     items.forEach(item => {
         const itemElement = document.createElement('div');
         itemElement.classList.add('purchased-item');
-        itemElement.textContent = item.emoji; // Display the emoji
-        itemElement.setAttribute('data-description', item.description); // Set description for hover
+        itemElement.textContent = item.emoji || '❓'; // Default emoji if missing
+        itemElement.setAttribute('data-description', item.description || 'No description available.');
 
         // Add hover effect to show description
         itemElement.addEventListener('mouseenter', () => {
-            showItemDescription(item.description);
+            const descriptionDiv = document.getElementById('item-description');
+            descriptionDiv.textContent = item.description || 'No description available.';
+            descriptionDiv.style.display = 'block';
         });
-        itemElement.addEventListener('mouseleave', hideItemDescription);
+
+        itemElement.addEventListener('mouseleave', () => {
+            const descriptionDiv = document.getElementById('item-description');
+            descriptionDiv.style.display = 'none';
+        });
 
         purchasedItemsDisplay.appendChild(itemElement);
     });
 }
+
 
 const itemsList = window.itemsList; // Use the globally exposed variable
