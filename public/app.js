@@ -1,6 +1,6 @@
 // app.
 
-import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
+import { rollDice, animateDice, playDiceSound, getItemColor } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
 import { updateUI, showItemPopup } from './modules/ui.js';
@@ -591,16 +591,6 @@ if (skipIntroButton) {
     });
 });
 
-
-    function getItemColor(rarity) {
-        switch (rarity) {
-            case 'Common': return 'gray';
-            case 'Uncommon': return 'blue';
-            case 'Rare': return 'purple';
-            case 'Very Rare': return 'gold';
-            default: return 'white';
-        }
-    }
 
     function animateDice(dice1, dice2, callback) {
         const dice1Element = document.getElementById('dice1');
