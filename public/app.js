@@ -193,11 +193,6 @@ async function setupSinglePlayer() {
         }
     }
 
-
-    const script = document.createElement('script');
-    script.src = '/items.js';
-    document.head.appendChild(script);
-
     script.onload = () => {
         if (typeof window.itemsList === 'undefined' || !window.itemsList || window.itemsList.length === 0) {
             console.error('Items list is empty or not loaded from items.js.');
