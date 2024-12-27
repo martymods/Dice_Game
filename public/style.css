@@ -698,3 +698,41 @@ h1 {
     margin: 5px 0;
     font-size: 16px;
 }
+#purchased-items-section {
+    margin-top: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid #FFD700;
+    border-radius: 10px;
+    padding: 10px;
+    color: white;
+    text-align: center;
+}
+
+#purchased-items-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.purchased-item {
+    font-size: 24px; /* Adjust emoji size */
+    cursor: pointer;
+    position: relative;
+}
+
+.purchased-item:hover::after {
+    content: attr(data-description);
+    position: absolute;
+    top: -40px; /* Position above the emoji */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px;
+    background: #222;
+    color: white;
+    border-radius: 5px;
+    white-space: nowrap;
+    font-size: 14px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
+}
