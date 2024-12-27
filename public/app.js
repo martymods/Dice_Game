@@ -13,6 +13,8 @@ let playerHasPurchased = false; // Track if the player has purchased an item/hus
 let onFire = false; // Whether the dice are "on fire"
 let fireSound; // Sound for when "on fire" is active
 
+let hustlerInventory = []; // Player's hustlers
+
 
 // Ensure the required items are accessible globally
 window.itemEffects = window.itemEffects || {}; // Remove if you are including it via another script
@@ -782,7 +784,7 @@ if (skipIntroButton) {
         }, 2000);
     }
 
-    let hustlerInventory = []; // Player's hustlers
+
 
 function addHustlerToInventory(hustler) {
     if (hustlerInventory.length >= 5) {
