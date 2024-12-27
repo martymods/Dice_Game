@@ -150,6 +150,12 @@ export function updateHustlerPanel(hustlerInventory) {
 export function showItemPopup() {
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
+    const itemButton = document.createElement('button');
+
+    itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
+
+    itemButton.style.backgroundColor = getItemColor(item.rarity);
+
 
     popup.style.display = 'block';
     itemList.innerHTML = '';
@@ -199,3 +205,18 @@ export function displayInventory() {
     const inventoryDisplay = document.getElementById('inventory-list');
     inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
 }
+
+// Get Item Color
+export function getItemColor(rarity) {
+    switch (rarity) {
+        case 'Common': return 'gray';
+        case 'Uncommon': return 'blue';
+        case 'Rare': return 'purple';
+        case 'Very Rare': return 'gold';
+        case 'Legendary': return 'red';
+        default: return 'white';
+    }
+}
+window.itemsList = itemsList;
+
+import { itemsList } from './items.js';
