@@ -177,16 +177,15 @@ export function showItemPopup(balance, items) {
         itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
         itemButton.style.backgroundColor = getItemColor(item.rarity);
         itemButton.classList.add('item-button'); // Add a class for styling
-        itemButton.onclick = () => {
-            handleItemPurchase(item, balance, items);
-            
-        // Add hover event to show description
-        itemButton.onmouseenter = () => {
-            showItemDescription(item.description);
-        };
+        
+        
+        // Attach event listeners for hover
+        itemButton.onmouseenter = () => showItemDescription(item.description);
         itemButton.onmouseleave = hideItemDescription;
 
-        itemList.appendChild(itemButton);
+        // Add click event for purchase
+        itemButton.onclick = () => {
+            handleItemPurchase(item, balance, items);
 
             // Play random Lord voice clip
             const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
