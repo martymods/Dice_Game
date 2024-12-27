@@ -176,8 +176,17 @@ export function showItemPopup(balance, items) {
         const itemButton = document.createElement('button');
         itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
         itemButton.style.backgroundColor = getItemColor(item.rarity);
+        itemButton.classList.add('item-button'); // Add a class for styling
         itemButton.onclick = () => {
             handleItemPurchase(item, balance, items);
+            
+        // Add hover event to show description
+        itemButton.onmouseenter = () => {
+            showItemDescription(item.description);
+        };
+        itemButton.onmouseleave = hideItemDescription;
+
+        itemList.appendChild(itemButton);
 
             // Play random Lord voice clip
             const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
@@ -185,6 +194,8 @@ export function showItemPopup(balance, items) {
         };
         itemList.appendChild(itemButton);
     });
+
+    
 
     // Add "Save Money" button
     const skipButton = document.createElement('button');
@@ -194,6 +205,23 @@ export function showItemPopup(balance, items) {
         popup.style.display = 'none';
     };
     itemList.appendChild(skipButton);
+}
+
+/**
+ * Displays the item description.
+ */
+function showItemDescription(description) {
+    const descriptionDiv = document.getElementById('item-description');
+    descriptionDiv.textContent = description;
+    descriptionDiv.style.display = 'block'; // Show the description
+}
+
+/**
+ * Hides the item description.
+ */
+function hideItemDescription() {
+    const descriptionDiv = document.getElementById('item-description');
+    descriptionDiv.style.display = 'none'; // Hide the description
 }
 
 
