@@ -3,13 +3,19 @@
 /**
  * Updates the UI elements for balance, rent, and turns remaining.
  */
-export function updateUI(balance, rent, turns, maxTurns, currentBet) {
+export function updateUI(balance, rent = 0, turns = 0, maxTurns = 0, currentBet = 0) {
     const bettingStatus = document.getElementById('betting-status');
     const rentStatus = document.getElementById('rent-status');
 
-    bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
-    rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
+    if (bettingStatus) {
+        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+    }
+
+    if (rentStatus) {
+        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
+    }
 }
+
 
 /**
  * Updates the background image based on the number of rolls remaining.
@@ -195,22 +201,25 @@ export function handleItemPurchase(item, balance, items) {
         balance -= item.cost; // Deduct item cost
         items.push(item); // Add item to the player's items list
 
+        // Special effect for specific items
         if (item.name === 'Forged Papers 📜') {
             items = itemEffects.forgedPapersEffect(items);
         }
 
-        playSound("/sounds/UI_Buy1.ogg");
+        playSound("/sounds/UI_Buy1.ogg"); // Play purchase sound
         alert(`You purchased ${item.name}!`);
 
-        document.getElementById('buy-item-container').style.display = 'none';
-        displayInventory(items);
-        updateUI(balance); // Update UI after purchase
+        document.getElementById('buy-item-container').style.display = 'none'; // Close the popup
+        displayInventory(items); // Update inventory display
+        updateUI(balance); // Update balance in the UI
     } else {
         alert('Not enough money to buy this item.');
+        playSound("/sounds/UI_Error.ogg"); // Play error sound
     }
 
     return { balance, items };
 }
+
 
 // Shop Restore
 export function displayInventory(items) {
