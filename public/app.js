@@ -360,7 +360,7 @@ async function setupSinglePlayer() {
     }
 
     function updateUIAfterRoll() {
-        updateUI();
+        updateUI(balance, rent, turns, maxTurns, currentBet);
         turns++;
 
         const rentPaidStatements = [
@@ -404,7 +404,7 @@ async function setupSinglePlayer() {
                 const randomStatement = rentPaidStatements[Math.floor(Math.random() * rentPaidStatements.length)];
                 alert(randomStatement);
 
-                showItemPopup(); // Trigger the new shop logic
+                showItemPopup(balance, items); // Trigger the new shop logic
             } else {
                 handleGameOver();
             }
@@ -620,7 +620,7 @@ if (skipIntroButton) {
     }
 
     function updateUIAfterRoll() {
-        updateUI();
+        updateUI(balance, rent, turns, maxTurns, currentBet);
         turns++;
 
         const rentPaidStatements = [
@@ -669,7 +669,7 @@ if (skipIntroButton) {
                 alert(randomStatement);
 
                 // Show item popup
-                showItemPopup(); // Trigger the new shop logic
+                showItemPopup(balance, items); // Trigger the new shop logic
             } else {
                 handleGameOver();
             }
