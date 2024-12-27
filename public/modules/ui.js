@@ -276,7 +276,12 @@ export function updatePurchasedItemsDisplay(items) {
     items.forEach(item => {
         const itemElement = document.createElement('div');
         itemElement.classList.add('purchased-item');
-        itemElement.textContent = item.emoji || '❓'; // Default emoji if missing
+
+        // Use item.emoji if it exists, otherwise use the default ❓ emoji
+        const itemEmoji = item.name.match(/[\p{Emoji}\uFE0F]/gu)?.[0] || '❓';
+        itemElement.textContent = itemEmoji;
+
+        // Set description for hover effect
         itemElement.setAttribute('data-description', item.description || 'No description available.');
 
         // Add hover effect to show description
