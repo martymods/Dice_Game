@@ -415,7 +415,7 @@ async function setupSinglePlayer() {
                 const randomStatement = rentPaidStatements[Math.floor(Math.random() * rentPaidStatements.length)];
                 alert(randomStatement);
 
-                openShop(); // Trigger the new shop logic
+                showItemPopup(); // Trigger the new shop logic
             } else {
                 handleGameOver();
             }
@@ -690,7 +690,7 @@ if (skipIntroButton) {
                 alert(randomStatement);
 
                 // Show item popup
-                openShop(); // Trigger the new shop logic
+                showItemPopup(); // Trigger the new shop logic
             } else {
                 handleGameOver();
             }
