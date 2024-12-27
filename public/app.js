@@ -193,7 +193,7 @@ async function setupSinglePlayer() {
 
 
     const script = document.createElement('script');
-    script.src = '/modules/items.js';
+    script.src = '/items.js';
     document.head.appendChild(script);
 
     script.onload = () => {
