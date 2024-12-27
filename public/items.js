@@ -772,5 +772,7 @@ const hackDieImplants = [
     }
 ];
 
-// Ensure the script exposes the `itemsList` globally
-window.itemsList = itemsList;
+// Ensure global access
+if (typeof window !== 'undefined') {
+    window.itemsList = itemsList;
+}
