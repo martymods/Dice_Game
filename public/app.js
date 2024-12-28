@@ -1105,37 +1105,56 @@ async function displayLeaderboardPrompt(score) {
     const playerNameInput = document.getElementById('player-name');
     const submitButton = document.getElementById('submit-leaderboard');
     const leaderboardDisplay = document.getElementById('leaderboard-entries');
+    const API_BASE_URL = 'https://dice-game-1-6iwc.onrender.com/';
 
     overlay.style.display = 'flex';
 
-    // Fetch current leaderboard
-    const leaderboardData = await fetch('/leaderboard').then(res => res.json());
+    try {
+        // Fetch current leaderboard
+        const response = await fetch(`${API_BASE_URL}/leaderboard`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const leaderboardData = await response.json();
 
-    // Display leaderboard
-    leaderboardDisplay.innerHTML = leaderboardData
-        .map((entry, index) => `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`)
-        .join('');
+        // Display leaderboard
+        leaderboardDisplay.innerHTML = leaderboardData
+            .map((entry, index) => `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`)
+            .join('');
+    } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+        leaderboardDisplay.innerHTML = '<p>Unable to load leaderboard.</p>';
+    }
 
     // Submit leaderboard entry
     submitButton.onclick = async () => {
         const playerName = playerNameInput.value.trim();
         if (playerName) {
-            await (`${API_BASE_URL}/leaderboard`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: playerName, score })
-            });
+            try {
+                const response = await fetch(`${API_BASE_URL}/leaderboard`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: playerName, score }),
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-            // Refresh leaderboard
-            const updatedLeaderboard = await fetch('/leaderboard').then(res => res.json());
-            leaderboardDisplay.innerHTML = updatedLeaderboard
-                .map((entry, index) => `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`)
-                .join('');
+                // Refresh leaderboard
+                const updatedLeaderboard = await fetch(`${API_BASE_URL}/leaderboard`).then(res => res.json());
+                leaderboardDisplay.innerHTML = updatedLeaderboard
+                    .map((entry, index) => `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`)
+                    .join('');
 
-            playerNameInput.value = ''; // Clear input
+                playerNameInput.value = ''; // Clear input
+            } catch (error) {
+                console.error('Error submitting leaderboard entry:', error);
+                alert('Unable to submit leaderboard entry. Please try again.');
+            }
         }
     };
 }
+
 
 // Ensure these functions are accessible globally
 window.startSinglePlayer = startSinglePlayer;
