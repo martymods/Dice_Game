@@ -1,8 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
-const ethers = require('ethers');
 require('dotenv').config();
+const ethers = require('ethers');
+const fs = require('fs');
+const path = require('path');
 
 // Initialize App
 const app = express();
@@ -11,6 +12,9 @@ const port = process.env.PORT || 3000;
 // Middleware
 app.use(cors()); // Enable CORS
 app.use(express.json()); // Parse JSON requests
+
+// Serve static files from the 'public' folder
+app.use(express.static('public'));
 
 // Leaderboard Storage
 const leaderboardFile = './leaderboard.json';
@@ -31,7 +35,7 @@ const saveLeaderboard = () => {
 };
 
 // Load leaderboard at startup
-leaderboard = loadLeaderboard();
+leaderboard.push(...loadLeaderboard());
 
 // Wallet Initialization
 const privateKey = process.env.PRIVATE_KEY;
@@ -73,11 +77,6 @@ app.post('/leaderboard', (req, res) => {
     res.status(201).json({ message: 'Entry added successfully!', leaderboard });
 });
 
-// Server Start
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-});
-
 // Wallet Functionality Example
 app.get('/wallet/balance', async (req, res) => {
     try {
@@ -87,4 +86,19 @@ app.get('/wallet/balance', async (req, res) => {
         console.error('Error fetching wallet balance:', error);
         res.status(500).json({ error: 'Failed to fetch wallet balance.' });
     }
+});
+
+// Serve index.html at the root
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Catch-all route for undefined endpoints
+app.use((req, res) => {
+    res.status(404).send('<h1>404 - Not Found</h1>');
+});
+
+// Server Start
+app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
 });
