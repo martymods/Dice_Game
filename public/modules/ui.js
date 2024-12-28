@@ -1,5 +1,6 @@
 import { playSound } from './audio.js';
 
+
 // ui.js
 
 /**
@@ -324,6 +325,35 @@ export function updatePurchasedItemsDisplay(items) {
         purchasedItemsDisplay.appendChild(itemElement);
     });
 }
+/**
+ * Handles the game-over animations and transitions.
+ */
+export function handleGameOverScreen() {
+    const gameOverContainer = document.getElementById('gameOverContainer');
+    gameOverContainer.innerHTML = ''; // Clear any existing content
+
+    // Create the GameOverEvicted.gif element
+    const evictedGif = document.createElement('img');
+    evictedGif.src = '/images/GameOverEvicted.gif';
+    evictedGif.alt = 'Game Over';
+    evictedGif.style.position = 'fixed';
+    evictedGif.style.top = '0';
+    evictedGif.style.left = '0';
+    evictedGif.style.width = '100%';
+    evictedGif.style.height = '100%';
+    evictedGif.style.objectFit = 'cover';
+    evictedGif.style.zIndex = '1000';
+
+    gameOverContainer.appendChild(evictedGif);
+    gameOverContainer.style.display = 'block';
+
+    // After 6 seconds, replace GameOverEvicted.gif with GameOverIdleScreen.png
+    setTimeout(() => {
+        evictedGif.src = '/images/GameOverIdleScreen.png';
+        evictedGif.alt = 'Game Over Idle Screen';
+    }, 6000);
+}
+
 
 
 const itemsList = window.itemsList; // Use the globally exposed variable
