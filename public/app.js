@@ -673,14 +673,11 @@ if (skipIntroButton) {
         playerStats.evictions++;
         playerStats.currentWinStreak = 0;
         saveStats();
-
-        // Trigger red flash for game over
+    
         flashScreen('red');
-
-        const deathSound = new Audio('/sounds/Death0.ogg');
-        deathSound.play().catch(err => console.error('Death sound error:', err));
-
-        gameOverContainer.style.display = 'block';
+        playSound('/sounds/Death0.ogg');
+    
+        handleGameOverScreen(); // Display game-over screens
     }
 
 
