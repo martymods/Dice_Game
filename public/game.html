@@ -38,9 +38,10 @@
 
                     <h2>Buy an Item</h2>
                     <div id="item-list"></div>
-                    <div id="item-description" style="display: none; background: #f9f9f9; padding: 10px; border: 1px solid #ddd; margin-top: 10px; font-size: 14px;"></div>
+                    <div id="item-description"></div>
                     <button id="saveMoneyButton">Done Shopping</button>
-                    <button id="restockButton"></button>
+                    <button id="restockButton" title="Restock items">Restock</button>
+
 
                 </div>
             </div>
@@ -54,7 +55,6 @@
 
         <!-- Right Side -->
         <div id="right-side">
-            <h1 style="display: none;">The Other Half</h1> <!-- Hidden Title -->
             <div id="player-info">
                 <p id="betting-status">Balance: $0 | Bet: $0</p>
                 <p id="rent-status">Rent Due: $0 in 0 rolls</p>
@@ -78,7 +78,7 @@
             <p id="gameStatus"></p>
 
             <!-- Game Over Section -->
-            <div id="gameOverContainer" style="display: none;">
+            <div id="gameOverContainer" ></div>
                 <h2>Game Over</h2>
                 <p>Better luck next time!</p>
                 <button onclick="window.location.href='/';">Return to Main Menu</button>
@@ -111,7 +111,7 @@
     </div>
 </div>
 
-<div id="shop-area" style="display: none;">
+<div id="shop-area"></div>
     <h2>Shop</h2>
     <div id="shop-items">
         <!-- Items rendered here -->
@@ -124,7 +124,7 @@
     <p id="score-status">Score: 0</p>
 </div>
 
-<div id="leaderboard-overlay" style="display: none;">
+<div id="leaderboard-overlay"></div>
     <div id="leaderboard-prompt">
         <h2>Enter Your Name for the Leaderboard</h2>
         <input type="text" id="player-name" placeholder="Your Name" maxlength="20" />
