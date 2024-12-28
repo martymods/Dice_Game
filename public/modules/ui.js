@@ -158,9 +158,20 @@ export function updateHustlerPanel(hustlerInventory) {
 export function showItemPopup(balance, items) {
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
+    const restockButton = document.getElementById('restockButton'); // Ensure button exists in the DOM
+
 
     popup.style.display = 'block';
     itemList.innerHTML = ''; // Clear previous items
+
+        // Calculate restock fee
+        const restockFee = Math.ceil(balance * 0.08);
+
+        // Update the "Restock" button text with the fee
+        if (restockButton) {
+            restockButton.textContent = `Restock ($${restockFee.toLocaleString()})`;
+            restockButton.onclick = () => handleRestock(balance, restockFee, items);
+        }
 
     // Ensure itemsList exists and has items
     if (!window.itemsList || window.itemsList.length === 0) {
@@ -194,16 +205,30 @@ export function showItemPopup(balance, items) {
         itemList.appendChild(itemButton);
     });
 
-    
+}
 
-    // Add "Save Money" button
-    const skipButton = document.createElement('button');
-    skipButton.textContent = 'Save Money';
-    skipButton.onclick = () => {
-        playSound("/sounds/UI_Click1.ogg");
-        popup.style.display = 'none';
-    };
-    itemList.appendChild(skipButton);
+/**
+ * Handles restocking items.
+ */
+function handleRestock(balance, restockFee, items) {
+    if (balance >= restockFee) {
+        // Deduct the restock fee
+        balance -= restockFee;
+
+        // Regenerate the items in the popup
+        showItemPopup(balance, items);
+
+        // Update the UI to reflect the new balance
+        updateUI(balance);
+
+        // Play sound effect for restocking
+        playSound("/sounds/UI_Restock.ogg");
+
+        alert(`You restocked items for $${restockFee.toLocaleString()}!`);
+    } else {
+        alert("You don't have enough money to restock!");
+        playSound("/sounds/UI_Error.ogg");
+    }
 }
 
 /**
