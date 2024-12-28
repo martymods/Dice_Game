@@ -666,7 +666,7 @@ if (skipIntroButton) {
     }
 
 
-    function handleGameOver() {
+   async function handleGameOver() {
         const gameEndTime = Date.now();
         const timePlayed = Math.floor((gameEndTime - gameStartTime) / 1000);
         playerStats.totalTimePlayed += timePlayed;
@@ -677,9 +677,11 @@ if (skipIntroButton) {
         flashScreen('red');
         playSound('/sounds/Death0.ogg');
     
-        handleGameOverScreen(); // Display game-over screens
+        // Leaderboard prompt for scores > 1
+        if (balance > 1) {
+        displayLeaderboardPrompt(balance);
+        }
     }
-
 
     function handleGameWin() {
         playerStats.gamesWon++;
@@ -1096,6 +1098,43 @@ function handleGameOver() {
 
     // Display the game-over screen with animations
     handleGameOverScreen();
+}
+
+async function displayLeaderboardPrompt(score) {
+    const overlay = document.getElementById('leaderboard-overlay');
+    const playerNameInput = document.getElementById('player-name');
+    const submitButton = document.getElementById('submit-leaderboard');
+    const leaderboardDisplay = document.getElementById('leaderboard-entries');
+
+    overlay.style.display = 'flex';
+
+    // Fetch current leaderboard
+    const leaderboardData = await fetch('/leaderboard').then(res => res.json());
+
+    // Display leaderboard
+    leaderboardDisplay.innerHTML = leaderboardData
+        .map((entry, index) => `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`)
+        .join('');
+
+    // Submit leaderboard entry
+    submitButton.onclick = async () => {
+        const playerName = playerNameInput.value.trim();
+        if (playerName) {
+            await (`${API_BASE_URL}/leaderboard`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: playerName, score })
+            });
+
+            // Refresh leaderboard
+            const updatedLeaderboard = await fetch('/leaderboard').then(res => res.json());
+            leaderboardDisplay.innerHTML = updatedLeaderboard
+                .map((entry, index) => `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`)
+                .join('');
+
+            playerNameInput.value = ''; // Clear input
+        }
+    };
 }
 
 // Ensure these functions are accessible globally
