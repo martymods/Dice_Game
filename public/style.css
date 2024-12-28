@@ -59,7 +59,7 @@ h1 {
 .dice {
     width: 75px;
     height: 75px;
-    margin: 5px;
+    margin: 10px;
 }
 
 /* Item Popup Styling */
@@ -460,7 +460,7 @@ h1 {
 
 /* Left Side (Store, Hustler Info, Inventory) */
 #left-side {
-    flex: 1;
+    flex: .8;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -472,7 +472,7 @@ h1 {
 }
 
 #store-image {
-    max-width: 100%;
+    max-width: 80%;
     margin-bottom: 20px;
 }
 
@@ -502,7 +502,7 @@ h1 {
 }
 
 #dice-container {
-    margin-top: -300px;
+    margin-top: -400px;
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -515,7 +515,7 @@ h1 {
 }
 
 #controls {
-    margin-top: 20px;
+    margin-top: 400px;
 }
 
 #gameStatus {
