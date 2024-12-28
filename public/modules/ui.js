@@ -330,12 +330,12 @@ export function updatePurchasedItemsDisplay(items) {
  */
 export function handleGameOverScreen() {
     const gameOverContainer = document.getElementById('gameOverContainer');
-    gameOverContainer.innerHTML = ''; // Clear any existing content
+    gameOverContainer.innerHTML = ''; // Clear previous content
 
-    // Create the GameOverEvicted.gif element
+    // Show GameOverEvicted.gif
     const evictedGif = document.createElement('img');
-    evictedGif.src = '/images/GameOverEvicted.gif';
-    evictedGif.alt = 'Game Over';
+    evictedGif.src = '/images/GameOverEvicted.gif?v=1.0.1'; // Cache-busted URL
+    evictedGif.alt = 'Game Over Evicted';
     evictedGif.style.position = 'fixed';
     evictedGif.style.top = '0';
     evictedGif.style.left = '0';
@@ -347,12 +347,13 @@ export function handleGameOverScreen() {
     gameOverContainer.appendChild(evictedGif);
     gameOverContainer.style.display = 'block';
 
-    // After 6 seconds, replace GameOverEvicted.gif with GameOverIdleScreen.png
+    // Replace with GameOverIdleScreen.png after 6 seconds
     setTimeout(() => {
-        evictedGif.src = '/images/GameOverIdleScreen.png';
+        evictedGif.src = '/images/GameOverIdleScreen.png?v=1.0.1'; // Cache-busted URL
         evictedGif.alt = 'Game Over Idle Screen';
     }, 6000);
 }
+
 
 
 
