@@ -342,7 +342,7 @@ export function handleGameOverScreen() {
     evictedGif.style.width = '100%';
     evictedGif.style.height = '100%';
     evictedGif.style.objectFit = 'cover';
-    evictedGif.style.zIndex = '1000';
+    evictedGif.style.zIndex = '9998';
 
     gameOverContainer.appendChild(evictedGif);
     gameOverContainer.style.display = 'block';
