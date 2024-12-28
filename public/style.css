@@ -20,7 +20,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(255, 255, 255, 0.2);
     width: 93%;
-    max-width: 500px;
+    max-width: 5000px;
     padding: 10px;
     text-align: center;
     color: white;
@@ -495,14 +495,14 @@ h1 {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    background-color: #111;
+    background-color: #11111100;
     color: white;
-    padding: 10px;
+    padding: 15px;
     overflow-y: auto;
 }
 
 #dice-container {
-    margin-top: 20px;
+    margin-top: -300px;
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -510,7 +510,7 @@ h1 {
 
 .button-image {
     cursor: pointer;
-    margin: 10px;
+    margin: 5px;
     width: 120px;
 }
 
