@@ -17,6 +17,8 @@ let fireSound; // Sound for when "on fire" is active
 
 let hustlerInventory = []; // Player's hustlers
 
+// Global API Base URL
+const API_BASE_URL = 'https://dice-game-1-6iwc.onrender.com'; // Adjust as needed
 
 // Ensure the required items are accessible globally
 window.itemEffects = window.itemEffects || {}; // Remove if you are including it via another script
@@ -1098,26 +1100,34 @@ function handleGameOver() {
 
     // Display the game-over screen with animations
     handleGameOverScreen();
-}
+    
+    // Trigger leaderboard prompt if score is greater than 1
+        if (balance > 1) {
+            displayLeaderboardPrompt(balance);
+        } else {
+            alert('Game Over! Better luck next time.');
+        }
+    }
 
+
+// Leaderboard Prompt Function
 async function displayLeaderboardPrompt(score) {
     const overlay = document.getElementById('leaderboard-overlay');
     const playerNameInput = document.getElementById('player-name');
     const submitButton = document.getElementById('submit-leaderboard');
     const leaderboardDisplay = document.getElementById('leaderboard-entries');
-    const API_BASE_URL = 'https://dice-game-1-6iwc.onrender.com/';
 
     overlay.style.display = 'flex';
 
     try {
-        // Fetch current leaderboard
+        // Fetch leaderboard data
         const response = await fetch(`${API_BASE_URL}/leaderboard`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const leaderboardData = await response.json();
 
-        // Display leaderboard
+        // Populate leaderboard display
         leaderboardDisplay.innerHTML = leaderboardData
             .map((entry, index) => `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`)
             .join('');
@@ -1140,13 +1150,15 @@ async function displayLeaderboardPrompt(score) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                // Refresh leaderboard
+                // Refresh leaderboard after submission
                 const updatedLeaderboard = await fetch(`${API_BASE_URL}/leaderboard`).then(res => res.json());
                 leaderboardDisplay.innerHTML = updatedLeaderboard
                     .map((entry, index) => `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`)
                     .join('');
 
-                playerNameInput.value = ''; // Clear input
+                // Clear input and display success message
+                playerNameInput.value = '';
+                alert('Leaderboard entry submitted successfully!');
             } catch (error) {
                 console.error('Error submitting leaderboard entry:', error);
                 alert('Unable to submit leaderboard entry. Please try again.');
@@ -1156,6 +1168,8 @@ async function displayLeaderboardPrompt(score) {
 }
 
 
+
 // Ensure these functions are accessible globally
 window.startSinglePlayer = startSinglePlayer;
 window.placeBet = placeBet;
+window.displayLeaderboardPrompt = displayLeaderboardPrompt;
