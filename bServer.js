@@ -1,6 +1,11 @@
 
 const leaderboard = []; // In-memory leaderboard storage
 
+const cors = require('cors');
+
+// Enable CORS
+app.use(cors());
+
 
 require('dotenv').config();
 const express = require('express');
