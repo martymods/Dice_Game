@@ -336,7 +336,7 @@ export function handleGameOverScreen() {
     const evictedGif = document.createElement('img');
     evictedGif.src = '/images/GameOverEvicted.gif?v=1.0.1'; // Cache-busted URL
     evictedGif.alt = 'Game Over Evicted';
-    evictedGif.style.position = 'absolute';
+    evictedGif.style.position = 'fixed';
     evictedGif.style.top = '0';
     evictedGif.style.left = '0';
     evictedGif.style.width = '100%';
@@ -345,7 +345,7 @@ export function handleGameOverScreen() {
     evictedGif.style.zIndex = '9998';
 
     gameOverContainer.appendChild(evictedGif);
-    gameOverContainer.style.display = 'flex';
+    gameOverContainer.style.display = 'block';
 
     // Replace with GameOverIdleScreen.png after 6 seconds
     setTimeout(() => {
@@ -353,14 +353,6 @@ export function handleGameOverScreen() {
         evictedGif.alt = 'Game Over Idle Screen';
     }, 6000);
 }
-
-    // Trigger leaderboard overlay on top of everything
-    setTimeout(() => {
-        const leaderboardOverlay = document.getElementById('leaderboard-overlay');
-        if (leaderboardOverlay) {
-            leaderboardOverlay.style.display = 'flex';
-        }
-    }, 6000); // Show leaderboard shortly after game-over
 
 
 
