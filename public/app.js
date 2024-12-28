@@ -3,7 +3,7 @@
 import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
-import { updateUI, showItemPopup, getItemColor } from './modules/ui.js';
+import { updateUI, showItemPopup, getItemColor, handleGameOverScreen } from './modules/ui.js';
 import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
 
@@ -1080,6 +1080,25 @@ function disconnectWallet() {
     localStorage.removeItem("connectedWallet");
     signer = null;
     alert("Wallet disconnected.");
+}
+
+function handleGameOver() {
+    const gameEndTime = Date.now();
+    const timePlayed = Math.floor((gameEndTime - gameStartTime) / 1000);
+    playerStats.totalTimePlayed += timePlayed;
+    playerStats.evictions++;
+    playerStats.currentWinStreak = 0;
+    saveStats();
+
+    // Trigger red flash for game over
+    flashScreen('red');
+
+    // Play game over sound
+    const deathSound = new Audio('/sounds/Death0.ogg');
+    deathSound.play().catch(err => console.error('Death sound error:', err));
+
+    // Display the game-over screen with animations
+    handleGameOverScreen();
 }
 
 // Ensure these functions are accessible globally
