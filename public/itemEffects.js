@@ -1,5 +1,29 @@
 // itemEffects.js
 
+// itemEffects.js
+export function applyPurchasedItemEffects(purchasedItems) {
+    if (!Array.isArray(purchasedItems)) {
+        console.error('purchasedItems is not an array.');
+        return;
+    }
+
+    purchasedItems.forEach(item => {
+        const effect = window.itemEffects[item.name];
+        if (typeof effect === 'function') {
+            try {
+                effect(); // Call the effect function
+                console.log(`Effect applied for item: ${item.name}`);
+            } catch (err) {
+                console.error(`Error applying effect for item: ${item.name}`, err);
+            }
+        } else {
+            console.warn(`No effect defined for item: ${item.name}`);
+        }
+    });
+}
+
+
+
 // Make all functions globally accessible
 window.itemEffects = {
     // Effect for Loaded Dice
@@ -1452,4 +1476,3 @@ window.itemEffects.jackpotRollerEffect = (streak) => {
 window.itemEffects.diceMastersHustleEffect = (criticalRolls) => {
     return criticalRolls * 500 + (criticalRolls * 3); // Adds $500 with +3 Mult for rolling exceptional values
 };
-
