@@ -5,6 +5,8 @@ import { itemsList } from '/items.js'; // Ensure the correct relative path
 // Global state for multipliers and effects
 let activeEffects = [];
 let currentMultiplier = 1;
+let purchasedItems = []; // Declare globally at the top of ui.js
+
 
 /**
  * Applies the effects of all purchased items.
@@ -203,58 +205,35 @@ export function updateHustlerPanel(hustlerInventory) {
 /**
  * Shows the item popup with a list of available items.
  */
-export function showItemPopup(balance, items) {
+export function showItemPopup(balance, items, purchasedItems) {
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
-    const restockButton = document.getElementById('restockButton'); // Ensure button exists in the DOM
-
+    const restockButton = document.getElementById('restockButton');
 
     popup.style.display = 'block';
-    itemList.innerHTML = ''; // Clear previous items
+    itemList.innerHTML = '';
 
-        // Calculate restock fee
-        const restockFee = Math.ceil(balance * 0.08);
-
-        // Update the "Restock" button text with the fee
-        if (restockButton) {
-            restockButton.textContent = `Restock ($${restockFee.toLocaleString()})`;
-            restockButton.onclick = () => handleRestock(balance, restockFee, items);
-        }
-
-    // Ensure itemsList exists and has items
-    if (!window.itemsList || window.itemsList.length === 0) {
-        console.error("Items list is empty or not loaded.");
-        alert("No items available to purchase. Please try again later.");
-        return;
-    }
-
-    // Randomly select items from the itemsList
     const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
 
     shuffledItems.forEach(item => {
         const itemButton = document.createElement('button');
         itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
         itemButton.style.backgroundColor = getItemColor(item.rarity);
-        itemButton.classList.add('item-button'); // Add a class for styling
-        
-        
-        // Attach event listeners for hover
+        itemButton.classList.add('item-button');
+
         itemButton.onmouseenter = () => showItemDescription(item.description);
         itemButton.onmouseleave = hideItemDescription;
 
-        // Add click event for purchase
         itemButton.onclick = () => {
-            handleItemPurchase(item, balance, items);
-            applyPurchasedItemEffects(purchasedItems); // Apply effects after purchase
-            
+            handleItemPurchase(item, balance, purchasedItems); // Ensure it's passed here
+            applyPurchasedItemEffects(purchasedItems); // Ensure it's passed here
 
-            // Play random Lord voice clip
             const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
             playSound(voiceClips, true);
         };
+
         itemList.appendChild(itemButton);
     });
-
 }
 
 /**
@@ -301,35 +280,19 @@ function hideItemDescription() {
 // Shop Restore
 export function handleItemPurchase(item, balance, purchasedItems) {
     if (balance >= item.cost) {
-        // Deduct the item cost
         balance -= item.cost;
-
-        // Add item to purchased items and trigger its effects
         addItemToPurchasedItems(item, purchasedItems);
-
-        // Play purchase sound
         playSound("/sounds/UI_Buy1.ogg");
-
-        // Notify the player
         alert(`You purchased ${item.name}!`);
-
-        // Close the shop popup
-        document.getElementById('buy-item-container').classList.toggle('hidden');
-
-        // Update the UI elements
         updatePurchasedItemsDisplay(purchasedItems);
         updateUI(balance);
-
-        // Return the updated balance and purchased items
         return { balance, purchasedItems };
     } else {
-        // Not enough balance to buy the item
         alert('Not enough money to buy this item.');
         playSound("/sounds/UI_Error.ogg");
         return { balance, purchasedItems };
     }
 }
-
 
 // Shop Inventory
 export function displayInventory(items) {
