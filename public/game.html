@@ -22,6 +22,7 @@
             <div id="hustler-info">
                 <p id="hustler-count">Max Hustlers: 0/5</p>
                 <p id="hustler-effects">Active Hustler Effects: None</p>
+                <p id="multiplier-display">Multiplier: 1x</p> <!-- New Multiplier Display -->
             </div>
 
             <!-- Inventory -->
@@ -143,12 +144,13 @@
     
         document.getElementById('connect-wallet').addEventListener('click', connectMetaMask);
     </script>
+
+    <script type="module" src="/items.js"></script>
+    <script type="module" src="/itemEffects.js"></script>
+    <script type="module" src="/modules/ui.js"></script>
     
     <p id="betting-status"></p>
     <p id="gameStatus"></p>
-
-
-    
      
 </body>
 </html>
