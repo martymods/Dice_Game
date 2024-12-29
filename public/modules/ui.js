@@ -49,8 +49,6 @@ function updateMultiplierUI(multiplier) {
     }
 }
 
-
-
 /**
  * Updates the UI elements for balance, rent, and turns remaining.
  */
@@ -66,7 +64,6 @@ export function updateUI(balance, rent = 0, turns = 0, maxTurns = 0, currentBet 
         rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
     }
 }
-
 
 /**
  * Updates the background image based on the number of rolls remaining.
@@ -277,7 +274,9 @@ function hideItemDescription() {
     descriptionDiv.style.display = 'none'; // Hide the description
 }
 
-// Shop Restore
+/**
+ * Handles item purchase logic, deducting balance and adding the item to inventory.
+ */
 export function handleItemPurchase(item, balance, purchasedItems) {
     if (balance >= item.cost) {
         balance -= item.cost;
@@ -316,12 +315,18 @@ export function getItemColor(rarity) {
  * Handles adding a new item to the purchased items and applies its effects.
  */
 export function addItemToPurchasedItems(item, purchasedItems) {
+    if (!purchasedItems) {
+        console.error('purchasedItems array is not initialized.');
+        purchasedItems = []; // Initialize if undefined
+    }
     purchasedItems.push(item);
     applyPurchasedItemEffects(purchasedItems);
     updatePurchasedItemsDisplay(purchasedItems);
 }
 
-// Update to display purchased items with emojis and hover descriptions
+/**
+ * Updates the display for purchased items with emojis and hover descriptions.
+ */
 export function updatePurchasedItemsDisplay(items) {
     const purchasedItemsDisplay = document.getElementById('purchased-items-display');
     purchasedItemsDisplay.innerHTML = ''; // Clear previous items
