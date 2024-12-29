@@ -1,5 +1,5 @@
 import { playSound } from './audio.js';
-import { itemsList } from './items.js';
+import  itemsList  from '/items.js';
 
 // Global state for multipliers and effects
 let activeEffects = [];
