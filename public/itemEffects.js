@@ -1,5 +1,8 @@
 // itemEffects.js
 
+import { itemsList } from './items.js';
+
+
 // itemEffects.js
 export function applyPurchasedItemEffects(purchasedItems) {
     if (!Array.isArray(purchasedItems)) {
@@ -607,8 +610,10 @@ window.itemEffects.conArtistEffect = (inventory, opponentInventory) => {
 
 // Effect for Street Preacher
 window.itemEffects.streetPreacherEffect = (roll) => {
-    return roll === 6 ? 10 : 0; // Grants $10 for each 6 rolled during the rent phase
+    console.log('Effect applied for Street Preacher');
+    return roll === 6 ? 10 : 0; // Example: Grants $10 for rolling a 6
 };
+
 
 // Effect for Pigeon Trainer
 window.itemEffects.pigeonTrainerEffect = (pigeons) => {
@@ -1476,3 +1481,13 @@ window.itemEffects.jackpotRollerEffect = (streak) => {
 window.itemEffects.diceMastersHustleEffect = (criticalRolls) => {
     return criticalRolls * 500 + (criticalRolls * 3); // Adds $500 with +3 Mult for rolling exceptional values
 };
+
+
+itemsList.forEach(item => {
+    const itemNameWithoutEmoji = item.name.split(' ')[0].toLowerCase();
+    const effectFunctionName = `${itemNameWithoutEmoji}Effect`;
+
+    if (!window.itemEffects[effectFunctionName]) {
+        console.warn(`Missing effect function for item: ${item.name}`);
+    }
+});
