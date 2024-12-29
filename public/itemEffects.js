@@ -93,3 +93,9 @@ itemsList.forEach(item => {
         console.warn(`Missing effect function for item: ${item.name}`);
     }
 });
+window.itemEffects = window.itemEffects || {};
+
+window.itemEffects.grifterEffect = (item) => {
+    console.log(`Grifter effect triggered for item: ${item.name}`);
+    return { multiplier: 1 }; // Placeholder effect
+};
