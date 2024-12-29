@@ -126,30 +126,6 @@ if (!window.playerStats) {
     };
 }
 
-//Apply purchse effect - Early just in case item was bought before game.
-function applyPurchasedItemEffects(purchasedItems) {
-    if (!Array.isArray(purchasedItems)) {
-        console.error('purchasedItems is not an array.');
-        return;
-    }
-
-    purchasedItems.forEach(item => {
-        const effect = window.itemEffects[item.name];
-        if (typeof effect === 'function') {
-            try {
-                effect(); // Call the effect function
-                console.log(`Effect applied for item: ${item.name}`);
-            } catch (err) {
-                console.error(`Error applying effect for item: ${item.name}`, err);
-            }
-        } else {
-            console.warn(`No effect defined for item: ${item.name}`);
-        }
-    });
-}
-
-
-
 async function setupSinglePlayer() {
     loadStats();
     const purchasedItems = []; // Initialize or fetch purchased items here
