@@ -5,7 +5,7 @@ import { itemsList } from '/items.js'; // Ensure the correct relative path
 // Global state for multipliers and effects
 let activeEffects = [];
 let currentMultiplier = 1;
-let purchasedItems = purchasedItems || []; // Ensure global initialization
+let purchasedItems = []; // Proper initialization as an empty array
 
 
 /**
