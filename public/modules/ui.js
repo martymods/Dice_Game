@@ -1,7 +1,51 @@
 import { playSound } from './audio.js';
+import { itemsList } from './items.js';
+
+// Global state for multipliers and effects
+let activeEffects = [];
+let currentMultiplier = 1;
+
+/**
+ * Applies the effects of all purchased items.
+ * Updates the multiplier and other game effects dynamically.
+ */
+export function applyPurchasedItemEffects(purchasedItems) {
+    // Reset active effects and multiplier
+    activeEffects = [];
+    currentMultiplier = 1;
+
+    purchasedItems.forEach(item => {
+        if (window.itemEffects && typeof window.itemEffects[item.name + 'Effect'] === 'function') {
+            const effectFunction = window.itemEffects[item.name + 'Effect'];
+            const effect = effectFunction(item);
+
+            // Apply effect to multiplier or add to active effects
+            if (effect.multiplier) {
+                currentMultiplier *= effect.multiplier;
+            }
+
+            activeEffects.push({
+                name: item.name,
+                effect,
+            });
+        }
+    });
+
+    // Update UI to reflect changes
+    updateMultiplierUI(currentMultiplier);
+}
+
+/**
+ * Updates the multiplier display in the UI.
+ */
+function updateMultiplierUI(multiplier) {
+    const multiplierElement = document.getElementById('multiplier-display');
+    if (multiplierElement) {
+        multiplierElement.textContent = `Multiplier: ${multiplier.toFixed(2)}x`;
+    }
+}
 
 
-// ui.js
 
 /**
  * Updates the UI elements for balance, rent, and turns remaining.
@@ -32,6 +76,7 @@ export function updateBackgroundImage(rollsRemaining, maxTurns) {
         document.body.style.backgroundImage = "url('/images/LandLord2.png')";
     }
 }
+
 
 /**
  * Adds a flash effect to the screen with a given color.
@@ -249,30 +294,36 @@ function hideItemDescription() {
     descriptionDiv.style.display = 'none'; // Hide the description
 }
 
-
 // Shop Restore
-export function handleItemPurchase(item, balance, items) {
+export function handleItemPurchase(item, balance, purchasedItems) {
     if (balance >= item.cost) {
-        balance -= item.cost; // Deduct item cost
-        items.push(item); // Add item to the player's items list
+        // Deduct the item cost
+        balance -= item.cost;
 
-        // Special effect for specific items
-        if (item.name === 'Forged Papers 📜') {
-            items = itemEffects.forgedPapersEffect(items);
-        }
+        // Add item to purchased items and trigger its effects
+        addItemToPurchasedItems(item, purchasedItems);
 
-        playSound("/sounds/UI_Buy1.ogg"); // Play purchase sound
+        // Play purchase sound
+        playSound("/sounds/UI_Buy1.ogg");
+
+        // Notify the player
         alert(`You purchased ${item.name}!`);
 
-        document.getElementById('buy-item-container').classList.toggle('hidden'); // Close the popup
-        updatePurchasedItemsDisplay(items); // Update purchased items display
-        updateUI(balance); // Update balance in the UI
-    } else {
-        alert('Not enough money to buy this item.');
-        playSound("/sounds/UI_Error.ogg"); // Play error sound
-    }
+        // Close the shop popup
+        document.getElementById('buy-item-container').classList.toggle('hidden');
 
-    return { balance, items };
+        // Update the UI elements
+        updatePurchasedItemsDisplay(purchasedItems);
+        updateUI(balance);
+
+        // Return the updated balance and purchased items
+        return { balance, purchasedItems };
+    } else {
+        // Not enough balance to buy the item
+        alert('Not enough money to buy this item.');
+        playSound("/sounds/UI_Error.ogg");
+        return { balance, purchasedItems };
+    }
 }
 
 
@@ -292,6 +343,15 @@ export function getItemColor(rarity) {
         case 'Legendary': return 'red';
         default: return 'white';
     }
+}
+
+/**
+ * Handles adding a new item to the purchased items and applies its effects.
+ */
+export function addItemToPurchasedItems(item, purchasedItems) {
+    purchasedItems.push(item);
+    applyPurchasedItemEffects(purchasedItems);
+    updatePurchasedItemsDisplay(purchasedItems);
 }
 
 // Update to display purchased items with emojis and hover descriptions
@@ -325,6 +385,30 @@ export function updatePurchasedItemsDisplay(items) {
         purchasedItemsDisplay.appendChild(itemElement);
     });
 }
+
+/**
+ * Displays a bonus earned from purchased item effects.
+ */
+export function displayBonusFromItems(bonus) {
+    const bonusElement = document.createElement('div');
+    bonusElement.textContent = `Bonus: $${bonus.toLocaleString()}`;
+    bonusElement.style.position = 'absolute';
+    bonusElement.style.top = '50%';
+    bonusElement.style.left = '50%';
+    bonusElement.style.transform = 'translate(-50%, -50%)';
+    bonusElement.style.fontSize = '32px';
+    bonusElement.style.color = 'gold';
+    bonusElement.style.textShadow = '0 0 10px gold, 0 0 20px orange';
+    bonusElement.style.zIndex = '9999';
+
+    document.body.appendChild(bonusElement);
+
+    setTimeout(() => {
+        document.body.removeChild(bonusElement);
+    }, 2000);
+}
+
+
 /**
  * Handles the game-over animations and transitions.
  */
