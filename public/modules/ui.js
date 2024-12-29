@@ -5,7 +5,7 @@ import { itemsList } from '/items.js'; // Ensure the correct relative path
 // Global state for multipliers and effects
 let activeEffects = [];
 let currentMultiplier = 1;
-let purchasedItems = []; // Declare globally at the top of ui.js
+let purchasedItems = purchasedItems || []; // Ensure global initialization
 
 
 /**
@@ -277,7 +277,7 @@ function hideItemDescription() {
 /**
  * Handles item purchase logic, deducting balance and adding the item to inventory.
  */
-export function handleItemPurchase(item, balance, purchasedItems) {
+export function handleItemPurchase(item, balance, purchasedItems = []) {
     if (balance >= item.cost) {
         balance -= item.cost;
         addItemToPurchasedItems(item, purchasedItems);
@@ -314,10 +314,10 @@ export function getItemColor(rarity) {
 /**
  * Handles adding a new item to the purchased items and applies its effects.
  */
-export function addItemToPurchasedItems(item, purchasedItems) {
-    if (!purchasedItems) {
-        console.error('purchasedItems array is not initialized.');
-        purchasedItems = []; // Initialize if undefined
+export function addItemToPurchasedItems(item, purchasedItems = []) {
+    if (!Array.isArray(purchasedItems)) {
+        console.error('purchasedItems array is not initialized. Initializing now.');
+        purchasedItems = [];
     }
     purchasedItems.push(item);
     applyPurchasedItemEffects(purchasedItems);
@@ -327,9 +327,14 @@ export function addItemToPurchasedItems(item, purchasedItems) {
 /**
  * Updates the display for purchased items with emojis and hover descriptions.
  */
-export function updatePurchasedItemsDisplay(items) {
+export function updatePurchasedItemsDisplay(items = []) {
     const purchasedItemsDisplay = document.getElementById('purchased-items-display');
     purchasedItemsDisplay.innerHTML = ''; // Clear previous items
+
+    if (!Array.isArray(items)) {
+        console.error('updatePurchasedItemsDisplay received an invalid items array.');
+        return;
+    }
 
     items.forEach(item => {
         const itemElement = document.createElement('div');
