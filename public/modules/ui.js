@@ -10,30 +10,26 @@ let currentMultiplier = 1;
  * Updates the multiplier and other game effects dynamically.
  */
 export function applyPurchasedItemEffects(purchasedItems) {
-    // Reset active effects and multiplier
     activeEffects = [];
-    currentMultiplier = 1;
+    currentMultiplier = 1; // Reset multiplier
 
     purchasedItems.forEach(item => {
-        if (window.itemEffects && typeof window.itemEffects[item.name + 'Effect'] === 'function') {
-            const effectFunction = window.itemEffects[item.name + 'Effect'];
+        const effectFunction = window.itemEffects?.[item.name + 'Effect'];
+        if (typeof effectFunction === 'function') {
             const effect = effectFunction(item);
 
-            // Apply effect to multiplier or add to active effects
+            // Update multiplier if effect contains multiplier
             if (effect.multiplier) {
                 currentMultiplier *= effect.multiplier;
             }
 
-            activeEffects.push({
-                name: item.name,
-                effect,
-            });
+            activeEffects.push({ name: item.name, effect });
         }
     });
 
-    // Update UI to reflect changes
-    updateMultiplierUI(currentMultiplier);
+    updateMultiplierUI(currentMultiplier); // Reflect the updated multiplier
 }
+
 
 /**
  * Updates the multiplier display in the UI.
@@ -437,8 +433,3 @@ export function handleGameOverScreen() {
         evictedGif.alt = 'Game Over Idle Screen';
     }, 6000);
 }
-
-
-
-
-const itemsList = window.itemsList; // Use the globally exposed variable
