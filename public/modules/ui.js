@@ -15,7 +15,11 @@ export function applyPurchasedItemEffects(purchasedItems) {
     currentMultiplier = 1; // Reset multiplier
 
     purchasedItems.forEach(item => {
-        const effectFunction = window.itemEffects?.[item.name + 'Effect'];
+        // Remove emoji from item name if present
+        const itemName = item.name.split(' ')[0];
+        const effectFunctionName = `${itemName.toLowerCase()}Effect`;
+
+        const effectFunction = window.itemEffects?.[effectFunctionName];
         if (typeof effectFunction === 'function') {
             const effect = effectFunction(item);
 
@@ -25,12 +29,13 @@ export function applyPurchasedItemEffects(purchasedItems) {
             }
 
             activeEffects.push({ name: item.name, effect });
+        } else {
+            console.error(`Missing effect function for item: ${item.name}`);
         }
     });
 
     updateMultiplierUI(currentMultiplier); // Reflect the updated multiplier
 }
-
 
 /**
  * Updates the multiplier display in the UI.
@@ -240,6 +245,8 @@ export function showItemPopup(balance, items) {
         // Add click event for purchase
         itemButton.onclick = () => {
             handleItemPurchase(item, balance, items);
+            applyPurchasedItemEffects(purchasedItems); // Apply effects after purchase
+            
 
             // Play random Lord voice clip
             const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
