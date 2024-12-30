@@ -236,7 +236,7 @@ export function showItemPopup(balance, items, purchasedItems) {
 /**
  * Handles restocking items.
  */
-function handleRestock(balance, restockFee, items) {
+export function handleRestock(balance, restockFee, items) {
     if (balance >= restockFee) {
         // Deduct the restock fee
         balance -= restockFee;
