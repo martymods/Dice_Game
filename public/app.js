@@ -128,8 +128,9 @@ if (!window.playerStats) {
 
 async function setupSinglePlayer() {
     loadStats();
-    const purchasedItems = []; // Initialize or fetch purchased items here
-    applyPurchasedItemEffects(purchasedItems); // Apply pre-purchased effects
+    const purchasedItems = window.purchasedItems || []; // Use the global purchasedItems array
+    applyPurchasedItemEffects(purchasedItems); // Call the function to initialize effects
+    
     console.log('Single Player mode active.');
 
     let balance = 300;
