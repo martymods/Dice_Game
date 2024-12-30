@@ -16,11 +16,15 @@ const purchasedItems = window.purchasedItems;
  * Updates the multiplier and other game effects dynamically.
  */
 export function applyPurchasedItemEffects(purchasedItems) {
-    activeEffects = [];
-    currentMultiplier = 1; // Reset multiplier
+    if (!Array.isArray(purchasedItems)) {
+        console.error('applyPurchasedItemEffects: Invalid purchasedItems array.');
+        return;
+    }
+
+    activeEffects.length = 0; // Clear the array
+    let currentMultiplier = 1; // Reset multiplier
 
     purchasedItems.forEach(item => {
-        // Remove emoji from item name if present
         const itemName = item.name.split(' ')[0];
         const effectFunctionName = `${itemName.toLowerCase()}Effect`;
 
@@ -28,18 +32,17 @@ export function applyPurchasedItemEffects(purchasedItems) {
         if (typeof effectFunction === 'function') {
             const effect = effectFunction(item);
 
-            // Update multiplier if effect contains multiplier
-            if (effect.multiplier) {
+            if (effect?.multiplier) {
                 currentMultiplier *= effect.multiplier;
             }
 
             activeEffects.push({ name: item.name, effect });
         } else {
-            console.error(`Missing effect function for item: ${item.name}`);
+            console.warn(`Missing effect function for item: ${item.name}`);
         }
     });
 
-    updateMultiplierUI(currentMultiplier); // Reflect the updated multiplier
+    updateMultiplierUI(currentMultiplier);
 }
 
 /**
