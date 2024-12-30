@@ -1,31 +1,23 @@
 import { playSound } from './audio.js';
 import { itemsList } from '/items.js'; // Ensure the correct relative path
-import { activeEffects } from '../utils/state.js';
 
 
 // Global state for multipliers and effects
+let activeEffects = [];
 let currentMultiplier = 1;
+let purchasedItems = []; // Proper initialization as an empty array
 
-// Ensure purchasedItems is initialized once and globally accessible
-if (!window.purchasedItems) {
-    window.purchasedItems = [];
-}
-const purchasedItems = window.purchasedItems;
 
 /**
  * Applies the effects of all purchased items.
  * Updates the multiplier and other game effects dynamically.
  */
 export function applyPurchasedItemEffects(purchasedItems) {
-    if (!Array.isArray(purchasedItems)) {
-        console.error('applyPurchasedItemEffects: Invalid purchasedItems array.');
-        return;
-    }
-
-    activeEffects.length = 0; // Clear the array
-    let currentMultiplier = 1; // Reset multiplier
+    activeEffects = [];
+    currentMultiplier = 1; // Reset multiplier
 
     purchasedItems.forEach(item => {
+        // Remove emoji from item name if present
         const itemName = item.name.split(' ')[0];
         const effectFunctionName = `${itemName.toLowerCase()}Effect`;
 
@@ -33,17 +25,18 @@ export function applyPurchasedItemEffects(purchasedItems) {
         if (typeof effectFunction === 'function') {
             const effect = effectFunction(item);
 
-            if (effect?.multiplier) {
+            // Update multiplier if effect contains multiplier
+            if (effect.multiplier) {
                 currentMultiplier *= effect.multiplier;
             }
 
             activeEffects.push({ name: item.name, effect });
         } else {
-            console.warn(`Missing effect function for item: ${item.name}`);
+            console.error(`Missing effect function for item: ${item.name}`);
         }
     });
 
-    updateMultiplierUI(currentMultiplier);
+    updateMultiplierUI(currentMultiplier); // Reflect the updated multiplier
 }
 
 /**
@@ -284,17 +277,18 @@ function hideItemDescription() {
 /**
  * Handles item purchase logic, deducting balance and adding the item to inventory.
  */
-export function handleItemPurchase(item, balance, purchasedItems = window.purchasedItems) {
+export function handleItemPurchase(item, balance, purchasedItems = []) {
     if (balance >= item.cost) {
         balance -= item.cost;
-
         console.log('Item Purchased:', item); // Debugging: Log the purchased item
+        console.log('Balance Before Purchase:', balance);
 
-        // Add the item to the purchased items and update the display
+        // Add the item and update the display
         addItemToPurchasedItems(item, purchasedItems);
 
         playSound("/sounds/UI_Buy1.ogg");
         alert(`You purchased ${item.name}!`);
+        updatePurchasedItemsDisplay(purchasedItems);
         updateUI(balance);
 
         console.log('Updated Purchased Items:', purchasedItems); // Debugging
@@ -305,6 +299,7 @@ export function handleItemPurchase(item, balance, purchasedItems = window.purcha
         return { balance, purchasedItems };
     }
 }
+
 
 // Shop Inventory
 export function displayInventory(items) {
@@ -327,7 +322,7 @@ export function getItemColor(rarity) {
 /**
  * Handles adding a new item to the purchased items and applies its effects.
  */
-export function addItemToPurchasedItems(item, purchasedItems = window.purchasedItems) {
+export function addItemToPurchasedItems(item, purchasedItems = []) {
     if (!Array.isArray(purchasedItems)) {
         console.error('purchasedItems array is not initialized. Initializing now.');
         purchasedItems = [];
@@ -342,6 +337,7 @@ export function addItemToPurchasedItems(item, purchasedItems = window.purchasedI
     updatePurchasedItemsDisplay(purchasedItems);
 }
 
+
 /**
  * Updates the display for purchased items with emojis and hover descriptions.
  */
@@ -354,15 +350,15 @@ export function updatePurchasedItemsDisplay(items = []) {
         return;
     }
 
+    // Iterate through all items in the array
     items.forEach(item => {
         const itemElement = document.createElement('div');
         itemElement.classList.add('purchased-item');
 
-        // Use item.emoji if it exists, otherwise use the default ❓ emoji
-        const itemEmoji = item.emoji || '❓';
-        itemElement.textContent = itemEmoji;
+        // Display the item's emoji
+        itemElement.textContent = item.emoji || '❓';
 
-        // Set description for hover effect
+        // Set hover description
         itemElement.setAttribute('data-description', item.description || 'No description available.');
 
         // Add hover effect to show description
@@ -380,8 +376,9 @@ export function updatePurchasedItemsDisplay(items = []) {
         purchasedItemsDisplay.appendChild(itemElement);
     });
 
-    console.log('Purchased Items Display Updated:', items); // Debugging
+    console.log('Purchased Items Display Updated:', items); // Debugging: Verify the display contents
 }
+
 
 /**
  * Displays a bonus earned from purchased item effects.
