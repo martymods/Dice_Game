@@ -128,9 +128,8 @@ if (!window.playerStats) {
 
 async function setupSinglePlayer() {
     loadStats();
-    const purchasedItems = window.purchasedItems || []; // Use the global purchasedItems array
-    applyPurchasedItemEffects(purchasedItems); // Call the function to initialize effects
-    
+    const purchasedItems = []; // Initialize or fetch purchased items here
+    applyPurchasedItemEffects(purchasedItems); // Apply pre-purchased effects
     console.log('Single Player mode active.');
 
     let balance = 300;
@@ -533,7 +532,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Event Listener for crypto-section
 document.addEventListener('DOMContentLoaded', () => {
     const cryptoSection = document.getElementById('crypto-section');
     if (cryptoSection) {
@@ -553,7 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     } else {
-        console.warn("No crypto-section element found on this page.");
+        console.error("Crypto section element is missing.");
     }
 });
 
@@ -948,7 +946,7 @@ function handleLoss(betAmount) {
 
 
 
-export function startSinglePlayer() {
+function startSinglePlayer() {
     // Show the transition overlay
     const overlay = document.getElementById('transition-overlay');
     overlay.style.display = 'flex';
@@ -963,7 +961,6 @@ export function startSinglePlayer() {
     }, 2000);
 }
 
-
 // MetaMask Connection
 let provider;
 let signer;
@@ -971,26 +968,22 @@ let signer;
 // MetaMask Connection
 export async function connectMetaMask() {
     if (typeof window.ethereum !== "undefined") {
-        try {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const accounts = await provider.send("eth_requestAccounts", []);
-            signer = provider.getSigner();
-            const address = await signer.getAddress();
-            console.log("Connected wallet:", address);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const accounts = await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        const address = await signer.getAddress();
+        console.log("Connected wallet:", address);
 
-            // Persist wallet address in localStorage
-            localStorage.setItem("connectedWallet", address);
+        // Persist wallet address in localStorage
+        localStorage.setItem("connectedWallet", address);
 
-            alert(`Connected wallet: ${address}`);
-        } catch (error) {
-            console.error("Error connecting to MetaMask:", error);
-            alert("Failed to connect to MetaMask. Please try again.");
-        }
+        alert(`Connected wallet: ${address}`);
     } else {
-        alert("MetaMask is not installed or enabled. Please install and configure it.");
-        console.error("MetaMask is not available in this browser.");
+        alert("MetaMask is not installed. Please install it to use this feature.");
     }
 }
+
+
 
 // Restore Wallet Connection on Page Reload
 document.addEventListener('DOMContentLoaded', async () => {
