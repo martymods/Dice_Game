@@ -648,23 +648,23 @@ h1 {
 #buy-item-container {
     display: none;
     position: absolute; /* Use absolute to position it under the store sign */
-    top: calc(21% + 10px); /* Position it 10px below the store image */
+    top: calc(25% + 10px); /* Position it 10px below the store image */
     left: 10;
-    width: 22%; /* Set the desired width */
+    width: 25.5%; /* Set the desired width */
     height: auto; /* Adjust height based on content */
     background: url('/images/Border_BuyAnItem.gif') center center no-repeat; /* Add background image */
     background-size: 100% 100%; /* Stretch image to fully fill the container */
-    border: 2px solid #FFD700;
-    border-radius: 8px;
+    border: 1px solid #FFD700;
+    border-radius: 12px;
     z-index: 100; /* Ensure it's on top of other elements */
-    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 6px rgba(255, 255, 255, 0.2);
     text-align: center;
     color: white;
 }
 
 /* Item List Buttons */
 #item-list button {
-    width: 100%;
+    width: 80%;
     background-color: #28a745;
     margin: 12px 0;
     font-size: 16px;
