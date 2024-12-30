@@ -648,12 +648,12 @@ h1 {
 #buy-item-container {
     display: none;
     position: absolute; /* Use absolute to position it under the store sign */
-    top: calc(100% + 10px); /* Position it 10px below the store image */
-    left: 0;
-    width: 100%; /* Make it as wide as the parent container */
+    top: calc(21% + 10px); /* Position it 10px below the store image */
+    left: 10;
+    width: 22%; /* Set the desired width */
+    height: auto; /* Adjust height based on content */
     background: url('/images/Border_BuyAnItem.gif') center center no-repeat; /* Add background image */
-    background-size: contain; /* Ensure the image is not cut off */
-    padding: 20px;
+    background-size: 100% 100%; /* Stretch image to fully fill the container */
     border: 2px solid #FFD700;
     border-radius: 8px;
     z-index: 100; /* Ensure it's on top of other elements */
