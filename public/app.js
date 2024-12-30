@@ -553,10 +553,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     } else {
-        console.error("crypto-section element is missing.");
+        console.error("Element with ID 'crypto-section' is missing from the DOM.");
     }
 });
-
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -971,21 +970,26 @@ let signer;
 // MetaMask Connection
 export async function connectMetaMask() {
     if (typeof window.ethereum !== "undefined") {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const accounts = await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        const address = await signer.getAddress();
-        console.log("Connected wallet:", address);
+        try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const accounts = await provider.send("eth_requestAccounts", []);
+            signer = provider.getSigner();
+            const address = await signer.getAddress();
+            console.log("Connected wallet:", address);
 
-        // Persist wallet address in localStorage
-        localStorage.setItem("connectedWallet", address);
+            // Persist wallet address in localStorage
+            localStorage.setItem("connectedWallet", address);
 
-        alert(`Connected wallet: ${address}`);
+            alert(`Connected wallet: ${address}`);
+        } catch (error) {
+            console.error("Error connecting to MetaMask:", error);
+            alert("Failed to connect to MetaMask. Please try again.");
+        }
     } else {
-        alert("MetaMask is not installed. Please install it to use this feature.");
+        alert("MetaMask is not installed or enabled. Please install and configure it.");
+        console.error("MetaMask is not available in this browser.");
     }
 }
-
 
 
 // Restore Wallet Connection on Page Reload
