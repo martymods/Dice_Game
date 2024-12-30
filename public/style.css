@@ -757,40 +757,52 @@ h1 {
     overflow-y: auto;
     text-align: center;
 }
-/* Style the restock button */
+/* Container for Done Shopping and Restock buttons */
+#button-container {
+    display: flex; /* Use flexbox for horizontal alignment */
+    justify-content: space-between; /* Space buttons evenly */
+    align-items: center; /* Center items vertically */
+    margin-top: 20px; /* Add space above */
+}
+
+/* Restock Button Styling */
 #restockButton {
-    background-color: #444; /* Dark background */
-    color: white; /* White text */
-    border: 2px solid #888; /* Border color */
-    border-radius: 8px; /* Rounded corners */
-    padding: 10px 20px; /* Spacing inside button */
-    font-size: 16px; /* Font size */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Animation */
+    background-color: #444;
+    color: white;
+    border: 2px solid #888;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; /* Allow icon and text alignment */
+    align-items: center; /* Vertically align icon and text */
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* Add hover effect */
+/* Hover and Active States */
 #restockButton:hover {
-    background-color: #666; /* Lighter background on hover */
-    border-color: #aaa; /* Change border color */
-    transform: scale(1.05); /* Slightly enlarge */
+    background-color: #666;
+    border-color: #aaa;
+    transform: scale(1.05);
 }
 
-/* Add active effect */
 #restockButton:active {
-    transform: scale(0.95); /* Shrink slightly on click */
-    background-color: #333; /* Darker background */
-    border-color: #555; /* Darker border */
+    transform: scale(0.95);
+    background-color: #333;
+    border-color: #555;
 }
+
+/* Icon Inside the Restock Button */
 #restockButton img {
-    width: 24px; /* Adjust icon size */
+    width: 24px;
     height: 24px;
-    vertical-align: middle; /* Align icon vertically */
     margin-right: 8px; /* Space between icon and text */
 }
-#restockButton {
-    position: absolute; /* Use absolute positioning */
-    top: 10px; /* Adjust distance from the top */
-    right: 20px; /* Adjust distance from the right */
-}
 
+/* Fee Styling */
+#restockFee {
+    margin-left: 10px; /* Space between button and fee */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
