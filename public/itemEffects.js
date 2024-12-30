@@ -1,7 +1,7 @@
 // itemEffects.js
 
 import { itemsList } from './items.js';
-import { activeEffects } from './utils/state.js';
+import { activeEffects } from '../utils/state.js';
 
 
 // Apply purchased item effects
