@@ -99,3 +99,13 @@ window.itemEffects.grifterEffect = (item) => {
     console.log(`Grifter effect triggered for item: ${item.name}`);
     return { multiplier: 1 }; // Placeholder effect
 };
+
+window.itemEffects.junkyardJackpotEffect = () => {
+    console.log('Effect applied for Junkyard Jackpot');
+    // Add actual effect logic here
+};
+
+window.itemEffects.goldPlatedDiceEffect = (roll) => {
+    console.log('Effect applied for Gold-Plated Dice');
+    return roll > 6 ? roll + 3 : roll; // Example effect: Adds 3 to rolls over 6
+};
