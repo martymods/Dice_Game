@@ -1,3 +1,6 @@
+
+import { handleRestock } from './modules/ui.js';
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,10 +44,10 @@
                     <div id="item-list"></div>
                     <div id="item-description" style="display: none; background: #f9f9f9; padding: 10px; border: 1px solid #ddd; margin-top: 10px; font-size: 14px;"></div>
                     <button id="saveMoneyButton">Done Shopping</button>
-                    <button id="restockButton" onclick="handleRestock(balance, 10, items)">
-                        <img src="/images/restock-icon.gif" alt="Restock icon">
+                    <button id="restockButton">
+                        <img src="/images/restock-icon.gif" alt="Restock Icon">
                         Restock
-                    </button>
+                    </button>                    
                 </div>
             </div>
 
