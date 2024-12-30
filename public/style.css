@@ -644,24 +644,25 @@ h1 {
     opacity: 1;
     transform: scale(1);
 }
-
-buy-item-container {
+/* Buy Item Container Styling */
+#buy-item-container {
     display: none;
-    position: fixed;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 1) url('/images/Border_BuyAnItem.gif') center center no-repeat;
-    background-size: contain; /* Ensure the image covers the entire container */
+    position: absolute; /* Use absolute to position it under the store sign */
+    top: calc(100% + 10px); /* Position it 10px below the store image */
+    left: 0;
+    width: 100%; /* Make it as wide as the parent container */
+    background: url('/images/Border_BuyAnItem.gif') center center no-repeat; /* Add background image */
+    background-size: contain; /* Ensure the image is not cut off */
+    padding: 20px;
     border: 2px solid #FFD700;
     border-radius: 8px;
-    padding: 150px;
-    z-index: 100;
+    z-index: 100; /* Ensure it's on top of other elements */
     box-shadow: 0 4px 6px rgba(255, 255, 255, 0.2);
     text-align: center;
     color: white;
 }
 
+/* Item List Buttons */
 #item-list button {
     width: 100%;
     background-color: #28a745;
@@ -673,15 +674,25 @@ buy-item-container {
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
+
 #item-list button:hover {
     background-color: #218838;
 }
+
+/* Item Description Styling */
 #item-description {
+    display: none; /* Initially hidden */
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 10px;
+    border: 1px solid #FFD700;
     border-radius: 5px;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
-    font-family: Arial, sans-serif;
-    color: #333;
+    margin-top: 10px;
+    font-size: 14px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.2);
 }
+
 
 .item-button {
     position: relative;
@@ -761,11 +772,11 @@ buy-item-container {
     text-align: center;
 }
 
-/* Flex container for Done Shopping and Restock buttons */
+/* Flex container for the Done Shopping and Restock buttons */
 #button-container {
     display: flex;
-    justify-content: space-between; /* Space buttons evenly */
-    align-items: center; /* Center items vertically */
+    justify-content: space-between;
+    align-items: center;
     margin-top: 20px;
 }
 
@@ -784,7 +795,6 @@ buy-item-container {
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* Hover and Active States */
 #restockButton:hover {
     background-color: #666;
     border-color: #aaa;
@@ -799,13 +809,13 @@ buy-item-container {
 
 /* Restock Icon Styling */
 #restockButton img {
-    width: 24px; /* Adjust size of the icon */
+    width: 24px;
     height: 24px;
 }
 
 /* Restock Fee */
 #restockFee {
-    margin-left: 10px; /* Space between button and fee */
+    margin-left: 10px;
     font-size: 14px;
     font-weight: bold;
     color: #FFD700; /* Gold color for visibility */
