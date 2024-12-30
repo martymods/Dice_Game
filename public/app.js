@@ -533,6 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Event Listener for crypto-section
 document.addEventListener('DOMContentLoaded', () => {
     const cryptoSection = document.getElementById('crypto-section');
     if (cryptoSection) {
@@ -552,7 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     } else {
-        console.error("Crypto section element is missing.");
+        console.error("crypto-section element is missing.");
     }
 });
 
