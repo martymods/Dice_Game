@@ -946,7 +946,7 @@ function handleLoss(betAmount) {
 
 
 
-function startSinglePlayer() {
+export function startSinglePlayer() {
     // Show the transition overlay
     const overlay = document.getElementById('transition-overlay');
     overlay.style.display = 'flex';
