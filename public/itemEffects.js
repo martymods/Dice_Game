@@ -1,38 +1,27 @@
 // itemEffects.js
 
 import { itemsList } from './items.js';
-import { activeEffects } from '../utils/state.js';
-
 
 // Apply purchased item effects
 export function applyPurchasedItemEffects(purchasedItems) {
     if (!Array.isArray(purchasedItems)) {
-        console.error('applyPurchasedItemEffects: Invalid purchasedItems array.');
+        console.error('purchasedItems is not an array.');
         return;
     }
 
-    activeEffects.length = 0; // Clear the array
-    let currentMultiplier = 1; // Reset multiplier
-
     purchasedItems.forEach(item => {
-        const itemName = item.name.split(' ')[0];
-        const effectFunctionName = `${itemName.toLowerCase()}Effect`;
-
-        const effectFunction = window.itemEffects?.[effectFunctionName];
-        if (typeof effectFunction === 'function') {
-            const effect = effectFunction(item);
-
-            if (effect?.multiplier) {
-                currentMultiplier *= effect.multiplier;
+        const effect = window.itemEffects[item.name];
+        if (typeof effect === 'function') {
+            try {
+                effect(); // Call the effect function
+                console.log(`Effect applied for item: ${item.name}`);
+            } catch (err) {
+                console.error(`Error applying effect for item: ${item.name}`, err);
             }
-
-            activeEffects.push({ name: item.name, effect });
         } else {
-            console.warn(`Missing effect function for item: ${item.name}`);
+            console.warn(`No effect defined for item: ${item.name}`);
         }
     });
-
-    updateMultiplierUI(currentMultiplier); // Ensure this function is defined or imported
 }
 
 // Make all functions globally accessible
