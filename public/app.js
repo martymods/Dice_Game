@@ -553,9 +553,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     } else {
-        console.error("Element with ID 'crypto-section' is missing from the DOM.");
+        console.warn("No crypto-section element found on this page.");
     }
 });
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -990,7 +991,6 @@ export async function connectMetaMask() {
         console.error("MetaMask is not available in this browser.");
     }
 }
-
 
 // Restore Wallet Connection on Page Reload
 document.addEventListener('DOMContentLoaded', async () => {
