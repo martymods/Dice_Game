@@ -1,13 +1,8 @@
 // itemEffects.js
 
-// Define and initialize activeEffects if it's not already defined
-if (!window.activeEffects) {
-    window.activeEffects = [];
-}
-const activeEffects = window.activeEffects;
-
-
 import { itemsList } from './items.js';
+import { activeEffects } from './utils/state.js';
+
 
 // Apply purchased item effects
 export function applyPurchasedItemEffects(purchasedItems) {
@@ -16,8 +11,8 @@ export function applyPurchasedItemEffects(purchasedItems) {
         return;
     }
 
-    activeEffects = [];
-    currentMultiplier = 1; // Reset multiplier
+    activeEffects.length = 0; // Clear the array
+    let currentMultiplier = 1; // Reset multiplier
 
     purchasedItems.forEach(item => {
         const itemName = item.name.split(' ')[0];
@@ -37,7 +32,7 @@ export function applyPurchasedItemEffects(purchasedItems) {
         }
     });
 
-    updateMultiplierUI(currentMultiplier);
+    updateMultiplierUI(currentMultiplier); // Ensure this function is defined or imported
 }
 
 // Make all functions globally accessible
