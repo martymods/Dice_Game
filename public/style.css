@@ -757,12 +757,13 @@ h1 {
     overflow-y: auto;
     text-align: center;
 }
-/* Container for Done Shopping and Restock buttons */
+
+/* Flex container for Done Shopping and Restock buttons */
 #button-container {
-    display: flex; /* Use flexbox for horizontal alignment */
+    display: flex;
     justify-content: space-between; /* Space buttons evenly */
     align-items: center; /* Center items vertically */
-    margin-top: 20px; /* Add space above */
+    margin-top: 20px;
 }
 
 /* Restock Button Styling */
@@ -776,6 +777,7 @@ h1 {
     cursor: pointer;
     display: flex; /* Allow icon and text alignment */
     align-items: center; /* Vertically align icon and text */
+    gap: 8px; /* Space between icon and text */
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -792,17 +794,16 @@ h1 {
     border-color: #555;
 }
 
-/* Icon Inside the Restock Button */
+/* Restock Icon Styling */
 #restockButton img {
-    width: 24px;
+    width: 24px; /* Adjust size of the icon */
     height: 24px;
-    margin-right: 8px; /* Space between icon and text */
 }
 
-/* Fee Styling */
+/* Restock Fee */
 #restockFee {
     margin-left: 10px; /* Space between button and fee */
-    color: white;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
+    color: #FFD700; /* Gold color for visibility */
 }
