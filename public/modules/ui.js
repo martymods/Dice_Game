@@ -1,5 +1,7 @@
 import { playSound } from './audio.js';
 import { itemsList } from '/items.js'; // Ensure the correct relative path
+import { activeEffects } from './utils/state.js';
+
 
 // Global state for multipliers and effects
 let activeEffects = [];
