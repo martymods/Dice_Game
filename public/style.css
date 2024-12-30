@@ -745,7 +745,9 @@ h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    height: auto; /* Adjust height based on content */
+    background: url('/images/GameOverEvicted.gif') center center no-repeat; /* Add background image */
+    background-size: 100% 100%; /* Stretch image to fully fill the container */;
     display: flex;
     flex-direction: column;
     align-items: center;
