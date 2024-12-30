@@ -644,14 +644,15 @@ h1 {
     opacity: 1;
     transform: scale(1);
 }
-#buy-item-container {
+
+buy-item-container {
     display: none;
     position: fixed;
     top: 10%;
     left: 50%;
     transform: translateX(-50%);
-    background: url('/images/Border_BuyAnItem.gif') center center no-repeat; /* Set the background image */
-    background-size: cover; /* Ensure the image covers the entire container */
+    background: rgba(0, 0, 0, 1) url('/images/Border_BuyAnItem.gif') center center no-repeat;
+    background-size: contain; /* Ensure the image covers the entire container */
     border: 2px solid #FFD700;
     border-radius: 8px;
     padding: 150px;
