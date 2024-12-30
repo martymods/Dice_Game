@@ -280,11 +280,18 @@ function hideItemDescription() {
 export function handleItemPurchase(item, balance, purchasedItems = []) {
     if (balance >= item.cost) {
         balance -= item.cost;
+        console.log('Item Purchased:', item); // Debugging: Log the purchased item
+        console.log('Balance Before Purchase:', balance);
+
+        // Add the item and update the display
         addItemToPurchasedItems(item, purchasedItems);
+
         playSound("/sounds/UI_Buy1.ogg");
         alert(`You purchased ${item.name}!`);
         updatePurchasedItemsDisplay(purchasedItems);
         updateUI(balance);
+
+        console.log('Updated Purchased Items:', purchasedItems); // Debugging
         return { balance, purchasedItems };
     } else {
         alert('Not enough money to buy this item.');
@@ -292,6 +299,7 @@ export function handleItemPurchase(item, balance, purchasedItems = []) {
         return { balance, purchasedItems };
     }
 }
+
 
 // Shop Inventory
 export function displayInventory(items) {
@@ -319,10 +327,16 @@ export function addItemToPurchasedItems(item, purchasedItems = []) {
         console.error('purchasedItems array is not initialized. Initializing now.');
         purchasedItems = [];
     }
+
+    // Add the item to the array
     purchasedItems.push(item);
+    console.log('Purchased Items:', purchasedItems); // Debugging: Verify the array contents
+
+    // Apply effects and update the UI
     applyPurchasedItemEffects(purchasedItems);
     updatePurchasedItemsDisplay(purchasedItems);
 }
+
 
 /**
  * Updates the display for purchased items with emojis and hover descriptions.
@@ -336,14 +350,15 @@ export function updatePurchasedItemsDisplay(items = []) {
         return;
     }
 
+    // Iterate through all items in the array
     items.forEach(item => {
         const itemElement = document.createElement('div');
         itemElement.classList.add('purchased-item');
 
-        // Use item.emoji if it exists, otherwise use the default ❓ emoji
+        // Display the item's emoji
         itemElement.textContent = item.emoji || '❓';
 
-        // Set description for hover effect
+        // Set hover description
         itemElement.setAttribute('data-description', item.description || 'No description available.');
 
         // Add hover effect to show description
@@ -360,7 +375,10 @@ export function updatePurchasedItemsDisplay(items = []) {
 
         purchasedItemsDisplay.appendChild(itemElement);
     });
+
+    console.log('Purchased Items Display Updated:', items); // Debugging: Verify the display contents
 }
+
 
 /**
  * Displays a bonus earned from purchased item effects.
