@@ -4,7 +4,6 @@ import { activeEffects } from './utils/state.js';
 
 
 // Global state for multipliers and effects
-let activeEffects = [];
 let currentMultiplier = 1;
 
 // Ensure purchasedItems is initialized once and globally accessible
