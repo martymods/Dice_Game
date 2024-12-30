@@ -214,7 +214,7 @@ export function showItemPopup(balance, items, purchasedItems) {
 
     shuffledItems.forEach(item => {
         const itemButton = document.createElement('button');
-        itemButton.textContent = `${item.emoji || '❓'} ${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
+        itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
         itemButton.style.backgroundColor = getItemColor(item.rarity);
         itemButton.classList.add('item-button');
 
@@ -341,6 +341,7 @@ export function updatePurchasedItemsDisplay(items = []) {
         itemElement.classList.add('purchased-item');
 
         // Use item.emoji if it exists, otherwise use the default ❓ emoji
+        const itemEmoji = item.name.match(/[\p{Emoji}\uFE0F]/gu)?.[0] || '❓';
         itemElement.textContent = item.emoji || '❓';
 
         // Set description for hover effect
