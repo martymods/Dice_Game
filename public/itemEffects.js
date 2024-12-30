@@ -1,5 +1,12 @@
 // itemEffects.js
 
+// Define and initialize activeEffects if it's not already defined
+if (!window.activeEffects) {
+    window.activeEffects = [];
+}
+const activeEffects = window.activeEffects;
+
+
 import { itemsList } from './items.js';
 
 // Apply purchased item effects
