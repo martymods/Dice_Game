@@ -650,7 +650,8 @@ h1 {
     top: 10%;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.9);
+    background: url('/images/Border_BuyAnItem.gif') center center no-repeat; /* Set the background image */
+    background-size: cover; /* Ensure the image covers the entire container */
     border: 2px solid #FFD700;
     border-radius: 8px;
     padding: 150px;
@@ -659,6 +660,7 @@ h1 {
     text-align: center;
     color: white;
 }
+
 #item-list button {
     width: 100%;
     background-color: #28a745;
