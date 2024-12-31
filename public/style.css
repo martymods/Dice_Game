@@ -3,17 +3,11 @@ body {
     cursor: url('/images/MouseCursor_0.png'), auto; /* Default custom cursor */
 }
 
-/* Cursor for buttons on hover */
+/* Basic button hover styling */
 button:hover {
-    cursor: url('/images/MouseCursor_1.gif'), pointer; /* Custom cursor for hover */
+    cursor: url('/images/MouseCursor_1.png'), pointer; /* Initial custom cursor for hover */
 }
 
-/* Optional: Ensure the cursor changes for interactive elements like links */
-a:hover {
-    cursor: url('/images/MouseCursor_1.gif'), pointer; /* Custom cursor for links on hover */
-}
-
-/* General Dark Theme Styling */
 body {
     font-family: Arial, sans-serif;
     background-color: black; /* Night mode theme */
