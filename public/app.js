@@ -1253,24 +1253,6 @@ function openFortuneCookie() {
     fortuneDisplayElement.style.display = "block";
 }
 
-// Update fortune collection display
-function updateCollectionDisplay() {
-    cookieCountElement.textContent = collectedFortunes.size;
-
-    // Clear existing list
-    collectedCookiesElement.innerHTML = "";
-
-    // Create icons for each collected fortune
-    let index = 1;
-    collectedFortunes.forEach((fortune) => {
-        const icon = document.createElement("div");
-        icon.className = "cookie-icon";
-        icon.textContent = index; // Display the number
-        icon.setAttribute("data-fortune", fortune); // Add the fortune message as hover content
-        collectedCookiesElement.appendChild(icon);
-        index++;
-    });
-}
 
 // Close fortune display
 document.getElementById("close-fortune").addEventListener("click", () => {
