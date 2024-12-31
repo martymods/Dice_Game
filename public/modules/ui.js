@@ -431,3 +431,16 @@ export function handleGameOverScreen() {
         evictedGif.alt = 'Game Over Idle Screen';
     }, 6000);
 }
+
+export function updateBalanceImages(balance) {
+    const balanceContainer = document.getElementById('balance-images');
+    balanceContainer.innerHTML = ''; // Clear existing images
+
+    const balanceString = balance.toString(); // Convert balance to string
+    for (let digit of balanceString) {
+        const digitElement = document.createElement('div');
+        digitElement.classList.add('balance-digit');
+        digitElement.style.backgroundImage = `url('/images/Font_Number_${digit}.gif')`;
+        balanceContainer.appendChild(digitElement);
+    }
+}
