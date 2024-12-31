@@ -7,28 +7,20 @@ let activeEffects = [];
 let currentMultiplier = 1;
 let purchasedItems = []; // Proper initialization as an empty array
 
-document.querySelectorAll('button').forEach((button) => {
-    let cursorImages = [
-        '/images/MouseCursor_1.png',
-        '/images/MouseCursor_2.png',
-        '/images/MouseCursor_3.png',
-    ];
+// Function to set default cursor
+export function setDefaultCursor() {
+    document.body.style.cursor = "url('/images/MouseCursor_0.png'), auto";
+}
 
-    let currentIndex = 0;
-    let intervalId;
-
-    // On mouse enter, start cycling through the cursor images
-    button.addEventListener('mouseenter', () => {
-        intervalId = setInterval(() => {
-            button.style.cursor = `url(${cursorImages[currentIndex]}), pointer`;
-            currentIndex = (currentIndex + 1) % cursorImages.length; // Cycle through the images
-        }, 300); // Change cursor every 0.3 seconds
+// Add hover event to buttons for animated cursor effect
+const buttons = document.querySelectorAll('button');
+buttons.forEach((button) => {
+    button.addEventListener('mouseover', () => {
+        button.style.cursor = "url('/images/MouseCursor_1.png'), pointer";
     });
 
-    // On mouse leave, stop the animation and reset the cursor
-    button.addEventListener('mouseleave', () => {
-        clearInterval(intervalId); // Stop the cycling
-        button.style.cursor = `url('/images/MouseCursor_1.png'), pointer`; // Reset to the initial hover cursor
+    button.addEventListener('mouseout', () => {
+        setDefaultCursor(); // Revert to default cursor
     });
 });
 
