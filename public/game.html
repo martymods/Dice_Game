@@ -12,26 +12,38 @@
     <script type="module" src="/modules/ui.js"></script>
     <script type="module" src="itemEffects.js"></script>
     <style>
-        /* Transition Overlay Styles */
+        /* Full-Screen Transition Overlay */
         #transition-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background-color: rgba(0, 0, 0, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
+            visibility: visible; /* Default to visible */
         }
 
         #transition-image {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensure image fills the screen without distortion */
+        }
+
+        /* Hide the overlay after transition */
+        #transition-overlay.hidden {
+            visibility: hidden; /* Avoid reflow issues */
+        }
+
+        /* Ensure game container is properly styled */
+        #game-container {
+            display: none; /* Hidden by default */
+            margin: 0 auto;
         }
     </style>
-
 </head>
 <body>
         <!-- Transition Overlay -->
@@ -115,21 +127,23 @@
         </div>
     </div>
 
+    <!-- JavaScript for Transition -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const overlay = document.getElementById('transition-overlay');
             const gameContainer = document.getElementById('game-container');
             const transitionSound = new Audio('/sounds/transitionSFX0.ogg');
 
-            // Play transition sound and show overlay
+            // Play transition sound
             transitionSound.play().catch(err => console.error('Error playing transition sound:', err));
 
+            // Show game content after 2 seconds
             setTimeout(() => {
-                overlay.style.display = 'none'; // Hide the overlay
-                gameContainer.style.display = 'block'; // Show the game content
-                transitionSound.pause(); // Stop the sound
-                transitionSound.currentTime = 0; // Reset the sound
-            }, 2000); // Wait for 2 seconds
+                overlay.classList.add('hidden'); // Hide overlay
+                gameContainer.style.display = 'block'; // Display game container
+                transitionSound.pause(); // Stop sound
+                transitionSound.currentTime = 0; // Reset sound
+            }, 2000);
         });
     </script>
 
