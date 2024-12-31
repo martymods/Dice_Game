@@ -924,3 +924,71 @@ h1 {
     background-repeat: no-repeat; /* Prevent tiling */
     display: inline-block;
 }
+/* Fortune Cookie Section Styling */
+#fortune-cookie-section {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    text-align: center;
+}
+
+#fortune-cookie-section img {
+    width: 50px;
+    cursor: pointer;
+}
+
+#fortune-cookie-section button {
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+#fortune-cookie-section button:hover {
+    background-color: #666;
+}
+
+#fortune-display {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+}
+
+#fortune-display img {
+    width: 100px;
+}
+
+#fortune-collection {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+#fortune-collection ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#fortune-collection li {
+    margin: 5px 0;
+}
