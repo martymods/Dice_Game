@@ -11,11 +11,34 @@
     <script type="module" src="items.js"></script>
     <script type="module" src="/modules/ui.js"></script>
     <script type="module" src="itemEffects.js"></script>
+    <style>
+        /* Transition Overlay Styles */
+        #transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
 
-
+        #transition-image {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
 
 </head>
 <body>
+        <!-- Transition Overlay -->
+        <div id="transition-overlay">
+            <img src="/images/Transition_0.gif" alt="Transition" id="transition-image">
+        </div>
+
     <div id="game-container">
         <!-- Left Side -->
         <div id="left-side">
@@ -91,6 +114,24 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('transition-overlay');
+            const gameContainer = document.getElementById('game-container');
+            const transitionSound = new Audio('/sounds/transitionSFX0.ogg');
+
+            // Play transition sound and show overlay
+            transitionSound.play().catch(err => console.error('Error playing transition sound:', err));
+
+            setTimeout(() => {
+                overlay.style.display = 'none'; // Hide the overlay
+                gameContainer.style.display = 'block'; // Show the game content
+                transitionSound.pause(); // Stop the sound
+                transitionSound.currentTime = 0; // Reset the sound
+            }, 2000); // Wait for 2 seconds
+        });
+    </script>
 
     <div id="crypto-section">
         <button onclick="connectMetaMask()">Connect MetaMask</button>
