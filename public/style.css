@@ -3,34 +3,24 @@ body {
     cursor: url('/images/MouseCursor_0.png'), auto; /* Default custom cursor */
 }
 
-/* General Button Styling */
-button {
-    cursor: url('/images/MouseCursor_0.png'), pointer; /* Ensure buttons use custom cursor */
-}
-
 /* Button hover styling to cycle through cursors */
 button:hover {
     animation: cursorAnimation 0.9s infinite;
 }
 
-/* Image buttons should inherit the cursor */
-button img {
-    pointer-events: none; /* Prevent image from interfering with the cursor */
-}
-
-/* Hover animation for buttons */
+/* Keyframes for cursor animation on buttons */
 @keyframes cursorAnimation {
     0% {
-        cursor: url('/images/MouseCursor_1.png'), pointer;
+        cursor: url('/images/MouseCursor_1.png'), pointer; /* First image */
     }
     33% {
-        cursor: url('/images/MouseCursor_2.png'), pointer;
+        cursor: url('/images/MouseCursor_2.png'), pointer; /* Second image */
     }
     66% {
-        cursor: url('/images/MouseCursor_3.png'), pointer;
+        cursor: url('/images/MouseCursor_3.png'), pointer; /* Third image */
     }
     100% {
-        cursor: url('/images/MouseCursor_1.png'), pointer;
+        cursor: url('/images/MouseCursor_1.png'), pointer; /* Loop back to first */
     }
 }
 
