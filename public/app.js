@@ -1201,14 +1201,14 @@ const fortunes = [
     "An old friend will reappear.",
     "Unexpected kindness is coming.",
     "Stay hopeful...",
-    "Fortune is on your side.",
+    "Fortune is on your side.", // Special: Gold Cookie
     "A financial reward is near.",
-    "Big dreams start with small crumbs of hope.",
+    "Big dreams start with small crumbs of hope.", // Special: Blue Cookie
     "Success is around the corner. Keep circling.",
     "Even a broken clock is right twice a day.",
     "Good things come to those who wait.",
     "Keep believing.",
-    "If at first you don’t succeed, try again.",
+    "If at first you don’t succeed, try again.", // Special: Red Cookie
     "Your time to shine is coming.",
     "The universe has a plan.",
     "A dream will come true.",
@@ -1309,13 +1309,80 @@ function purchaseFortuneCookie() {
     // Prevent duplicate fortunes
     if (!collectedFortunes.has(randomFortune)) {
         collectedFortunes.add(randomFortune);
-        updateCollectionDisplay();
-        saveFortuneData(); // Save the updated data
+        saveFortuneData(); // Save updated fortunes
+
+        // Check for special cookies
+        let specialImage = "cookie_Open.png"; // Default image
+        if (randomFortune === "Fortune is on your side.") {
+            specialImage = "cookie_Gold.png";
+            updateDiceAppearance("GOLD");
+        } else if (randomFortune === "Big dreams start with small crumbs of hope.") {
+            specialImage = "cookie_Blue.png";
+            updateDiceAppearance("BLUE");
+        } else if (randomFortune === "If at first you don’t succeed, try again.") {
+            specialImage = "cookie_Red.png";
+            updateDiceAppearance("RED");
+        }
+
+        // Update the UI for the purchased fortune
+        displayPurchasedCookie(randomFortune, specialImage);
         alert(`You've received a new fortune: "${randomFortune}"`);
     } else {
         alert("You already own this fortune! Try buying another.");
     }
 }
+
+function updateDiceAppearance(color) {
+    const diceContainer = document.getElementById("dice-container");
+    const diceImages = diceContainer.querySelectorAll(".dice");
+
+    diceImages.forEach((dice, index) => {
+        const diceNumber = index + 1;
+        dice.src = `/images/dice${color}${diceNumber}.png`; // Change dice image based on color
+    });
+}
+
+function displayPurchasedCookie(fortune, imagePath) {
+    const myFortunesSection = document.getElementById("my-fortunes"); // Section to display collected cookies
+
+    // Create a new cookie icon
+    const cookieIcon = document.createElement("div");
+    cookieIcon.classList.add("fortune-cookie-icon");
+    cookieIcon.style.backgroundImage = `url(${imagePath})`; // Use special image
+    cookieIcon.title = fortune; // Display fortune message on hover
+
+    // Add the cookie to the player's collection
+    myFortunesSection.appendChild(cookieIcon);
+    updateCollectionDisplay(); // Refresh collection UI
+}
+
+function updateCollectionDisplay() {
+    const myFortunesSection = document.getElementById("my-fortunes");
+    myFortunesSection.innerHTML = ""; // Clear existing display
+
+    collectedFortunes.forEach((fortune) => {
+        let imagePath = "/images/cookie_Open.png"; // Default cookie image
+
+        // Handle special fortune cookies
+        if (fortune === "Fortune is on your side.") {
+            imagePath = "/images/cookie_Gold.png";
+        } else if (fortune === "Big dreams start with small crumbs of hope.") {
+            imagePath = "/images/cookie_Blue.png";
+        } else if (fortune === "If at first you don’t succeed, try again.") {
+            imagePath = "/images/cookie_Red.png";
+        }
+
+        // Create and append cookie display
+        const cookieIcon = document.createElement("div");
+        cookieIcon.classList.add("fortune-cookie-icon");
+        cookieIcon.style.backgroundImage = `url(${imagePath})`;
+        cookieIcon.title = fortune; // Display fortune message on hover
+
+        myFortunesSection.appendChild(cookieIcon);
+    });
+}
+
+
 
 // Clear saved fortunes
 function resetFortunes() {
