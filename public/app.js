@@ -1259,12 +1259,19 @@ function updateCollectionDisplay() {
 
     // Clear existing list
     collectedCookiesElement.innerHTML = "";
+
+    // Create icons for each collected fortune
+    let index = 1;
     collectedFortunes.forEach((fortune) => {
-        const li = document.createElement("li");
-        li.textContent = fortune;
-        collectedCookiesElement.appendChild(li);
+        const icon = document.createElement("div");
+        icon.className = "cookie-icon";
+        icon.textContent = index; // Display the number
+        icon.setAttribute("data-fortune", fortune); // Add the fortune message as hover content
+        collectedCookiesElement.appendChild(icon);
+        index++;
     });
 }
+
 
 // Close fortune display
 document.getElementById("close-fortune").addEventListener("click", () => {
