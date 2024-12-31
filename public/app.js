@@ -1188,6 +1188,89 @@ async function displayLeaderboardPrompt(score) {
     };
 }
 
+// List of fortunes
+const fortunes = [
+    "You will achieve greatness.",
+    "Good news is on its way.",
+    "An exciting opportunity awaits.",
+    "Trust your instincts.",
+    "A new adventure begins soon.",
+    "Your dream will come to life later today.",
+    "Your hard work will pay off.",
+    "Cherish the moments that matter.",
+    "An old friend will reappear.",
+    "Unexpected kindness is coming.",
+    "Embrace change with courage.",
+    "Your creativity will shine.",
+    "A financial reward is near.",
+    "Trust the journey ahead.",
+    "Success is just around the corner.",
+    "Love will find its way to you.",
+    "Patience will bring success.",
+    "A surprise will bring joy.",
+    "Someone appreciates you deeply.",
+    "Be ready for a bold move.",
+    "Your talents are recognized.",
+    "A dream will come true.",
+    "A problem will resolve itself.",
+    "You are stronger than you think.",
+    "New beginnings bring fresh energy.",
+];
+
+let collectedFortunes = new Set();
+
+const cookieCountElement = document.getElementById("cookie-count");
+const collectedCookiesElement = document.getElementById("collected-cookies");
+const fortuneTextElement = document.getElementById("fortune-text");
+const fortuneDisplayElement = document.getElementById("fortune-display");
+
+// Purchase Fortune Cookie
+document.getElementById("buy-cookie-button").addEventListener("click", async () => {
+    // Use existing ETH system to charge player $1
+    const ethAmount = 0.00042; // Replace with correct ETH equivalent
+    try {
+        await placeBet(ethAmount); // Assuming placeBet() handles ETH transfers
+        openFortuneCookie();
+    } catch (error) {
+        console.error("Transaction failed", error);
+    }
+});
+
+// Open Fortune Cookie and show random fortune
+function openFortuneCookie() {
+    if (collectedFortunes.size >= 25) {
+        alert("You've collected all fortunes!");
+        return;
+    }
+
+    const newFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+    if (!collectedFortunes.has(newFortune)) {
+        collectedFortunes.add(newFortune);
+        updateCollectionDisplay();
+    }
+
+    fortuneTextElement.textContent = newFortune;
+    fortuneDisplayElement.style.display = "block";
+}
+
+// Update fortune collection display
+function updateCollectionDisplay() {
+    cookieCountElement.textContent = collectedFortunes.size;
+
+    // Clear existing list
+    collectedCookiesElement.innerHTML = "";
+    collectedFortunes.forEach((fortune) => {
+        const li = document.createElement("li");
+        li.textContent = fortune;
+        collectedCookiesElement.appendChild(li);
+    });
+}
+
+// Close fortune display
+document.getElementById("close-fortune").addEventListener("click", () => {
+    fortuneDisplayElement.style.display = "none";
+});
+
 
 
 // Ensure these functions are accessible globally
