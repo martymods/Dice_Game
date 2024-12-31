@@ -5,12 +5,12 @@ body {
 
 /* Cursor for buttons on hover */
 button:hover {
-    cursor: url('/images/MouseCursor_1.png'), pointer; /* Custom cursor for hover */
+    cursor: url('/images/MouseCursor_1.gif'), pointer; /* Custom cursor for hover */
 }
 
 /* Optional: Ensure the cursor changes for interactive elements like links */
 a:hover {
-    cursor: url('/images/MouseCursor_1.png'), pointer; /* Custom cursor for links on hover */
+    cursor: url('/images/MouseCursor_1.gif'), pointer; /* Custom cursor for links on hover */
 }
 
 /* General Dark Theme Styling */
