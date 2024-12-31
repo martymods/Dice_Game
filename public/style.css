@@ -1,3 +1,7 @@
+body {
+    cursor: url('/images/MouseCursor_0.png'), auto; /* Fallback to auto if the image fails to load */
+}
+
 /* General Dark Theme Styling */
 body {
     font-family: Arial, sans-serif;
