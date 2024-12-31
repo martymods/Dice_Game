@@ -7,6 +7,30 @@ let activeEffects = [];
 let currentMultiplier = 1;
 let purchasedItems = []; // Proper initialization as an empty array
 
+document.querySelectorAll('button').forEach((button) => {
+    let cursorImages = [
+        '/images/MouseCursor_1.png',
+        '/images/MouseCursor_2.png',
+        '/images/MouseCursor_3.png',
+    ];
+
+    let currentIndex = 0;
+    let intervalId;
+
+    // On mouse enter, start cycling through the cursor images
+    button.addEventListener('mouseenter', () => {
+        intervalId = setInterval(() => {
+            button.style.cursor = `url(${cursorImages[currentIndex]}), pointer`;
+            currentIndex = (currentIndex + 1) % cursorImages.length; // Cycle through the images
+        }, 300); // Change cursor every 0.3 seconds
+    });
+
+    // On mouse leave, stop the animation and reset the cursor
+    button.addEventListener('mouseleave', () => {
+        clearInterval(intervalId); // Stop the cycling
+        button.style.cursor = `url('/images/MouseCursor_1.png'), pointer`; // Reset to the initial hover cursor
+    });
+});
 
 /**
  * Applies the effects of all purchased items.
