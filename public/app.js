@@ -1190,30 +1190,30 @@ async function displayLeaderboardPrompt(score) {
 
 // List of fortunes
 const fortunes = [
-    "You will achieve greatness.",
-    "Good news is on its way.",
-    "An exciting opportunity awaits.",
-    "Trust your instincts.",
-    "A new adventure begins soon.",
+    "Believe in yourself.",
+    "You’re doing great!",
+    "Success is near...",
+    "You’re closer than you think.",
+    "Keep climbing! The ceiling’s not that far.",
     "Your dream will come to life later today.",
     "Your hard work will pay off.",
-    "Cherish the moments that matter.",
+    "You’ve got this...",
     "An old friend will reappear.",
     "Unexpected kindness is coming.",
-    "Embrace change with courage.",
-    "Your creativity will shine.",
+    "Stay hopeful...",
+    "Fortune is on your side.",
     "A financial reward is near.",
-    "Trust the journey ahead.",
-    "Success is just around the corner.",
-    "Love will find its way to you.",
-    "Patience will bring success.",
-    "A surprise will bring joy.",
-    "Someone appreciates you deeply.",
-    "Be ready for a bold move.",
-    "Your talents are recognized.",
+    "Big dreams start with small crumbs of hope.",
+    "Success is around the corner. Keep circling.",
+    "Even a broken clock is right twice a day.",
+    "Good things come to those who wait.",
+    "Keep believing.",
+    "If at first you don’t succeed, try again.",
+    "Your time to shine is coming.",
+    "The universe has a plan.",
     "A dream will come true.",
     "A problem will resolve itself.",
-    "You are stronger than you think.",
+    "One day, you’ll look back and laugh.",
     "New beginnings bring fresh energy.",
 ];
 
@@ -1272,11 +1272,60 @@ function updateCollectionDisplay() {
     });
 }
 
-
 // Close fortune display
 document.getElementById("close-fortune").addEventListener("click", () => {
     fortuneDisplayElement.style.display = "none";
 });
+
+
+// Function to save fortunes in local storage
+function saveFortuneData() {
+    const fortunesArray = Array.from(collectedFortunes); // Convert Set to array
+    localStorage.setItem("playerFortunes", JSON.stringify(fortunesArray));
+}
+
+// Function to load fortunes from local storage
+function loadFortuneData() {
+    const storedFortunes = JSON.parse(localStorage.getItem("playerFortunes") || "[]");
+    collectedFortunes = new Set(storedFortunes); // Convert array back to Set
+    updateCollectionDisplay();
+}
+
+// Call loadFortuneData on page load to restore saved fortunes
+document.addEventListener("DOMContentLoaded", () => {
+    loadFortuneData();
+});
+
+// When the player successfully buys a fortune cookie
+function purchaseFortuneCookie() {
+    if (collectedFortunes.size >= 25) {
+        alert("You've already collected all 25 fortunes!");
+        return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * fortunes.length);
+    const randomFortune = fortunes[randomIndex];
+
+    // Prevent duplicate fortunes
+    if (!collectedFortunes.has(randomFortune)) {
+        collectedFortunes.add(randomFortune);
+        updateCollectionDisplay();
+        saveFortuneData(); // Save the updated data
+        alert(`You've received a new fortune: "${randomFortune}"`);
+    } else {
+        alert("You already own this fortune! Try buying another.");
+    }
+}
+
+// Clear saved fortunes
+function resetFortunes() {
+    localStorage.removeItem("playerFortunes");
+    collectedFortunes.clear();
+    updateCollectionDisplay();
+}
+
+// Example button (add this to your HTML for debugging or player options):
+// <button onclick="resetFortunes()">Reset My Fortunes</button>
 
 
 
