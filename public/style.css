@@ -3,9 +3,30 @@ body {
     cursor: url('/images/MouseCursor_0.png'), auto; /* Default custom cursor */
 }
 
-/* Basic button hover styling */
+/* Button hover styling to cycle through cursors */
 button:hover {
-    cursor: url('/images/MouseCursor_1.png'), pointer; /* Initial custom cursor for hover */
+    animation: cursorAnimation 0.9s infinite;
+}
+
+/* Keyframes for cursor animation on buttons */
+@keyframes cursorAnimation {
+    0% {
+        cursor: url('/images/MouseCursor_1.png'), pointer; /* First image */
+    }
+    33% {
+        cursor: url('/images/MouseCursor_2.png'), pointer; /* Second image */
+    }
+    66% {
+        cursor: url('/images/MouseCursor_3.png'), pointer; /* Third image */
+    }
+    100% {
+        cursor: url('/images/MouseCursor_1.png'), pointer; /* Loop back to first */
+    }
+}
+
+/* Optional: Ensure consistent behavior for links */
+a:hover {
+    animation: cursorAnimation 0.9s infinite;
 }
 
 body {
