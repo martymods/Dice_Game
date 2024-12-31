@@ -1338,7 +1338,7 @@ function displayPurchasedCookie(fortune, imagePath) {
     updateCollectionDisplay(); // Refresh collection UI
 }
 
-function updateCollectionDisplay() {
+export function updateCollectionDisplay() {
     const myFortunesSection = document.getElementById("my-fortunes");
     myFortunesSection.innerHTML = ""; // Clear existing display
 
