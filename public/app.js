@@ -303,18 +303,24 @@ async function setupSinglePlayer() {
     }
 
     
- function updateBalanceImages(balance) {
-    const balanceContainer = document.getElementById('balance-images');
-    balanceContainer.innerHTML = ''; // Clear existing images
-
-    const balanceString = balance.toString(); // Convert balance to string
-    for (let digit of balanceString) {
-        const digitElement = document.createElement('div');
-        digitElement.classList.add('balance-digit');
-        digitElement.style.backgroundImage = `url('/images/Font_Number_${digit}.gif')`;
-        balanceContainer.appendChild(digitElement);
+    function updateBalanceImages(balance) {
+        console.log(`Updating balance to: ${balance}`); // Debugging log
+        const balanceContainer = document.getElementById('balance-images');
+        if (!balanceContainer) {
+            console.error('Balance container not found');
+            return;
+        }
+        balanceContainer.innerHTML = ''; // Clear existing images
+    
+        const balanceString = balance.toString(); // Convert balance to string
+        for (let digit of balanceString) {
+            const digitElement = document.createElement('div');
+            digitElement.classList.add('balance-digit');
+            digitElement.style.backgroundImage = `url('/images/Font_Number_${digit}.gif')`;
+            balanceContainer.appendChild(digitElement);
+        }
     }
-}
+    
 
     function activateOnFire() {
         onFire = true;
