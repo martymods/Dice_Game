@@ -1,5 +1,16 @@
+/* Default cursor for the entire page */
 body {
-    cursor: url('/images/MouseCursor_0.png'), auto; /* Fallback to auto if the image fails to load */
+    cursor: url('/images/MouseCursor_0.png'), auto; /* Default custom cursor */
+}
+
+/* Cursor for buttons on hover */
+button:hover {
+    cursor: url('/images/MouseCursor_1.png'), pointer; /* Custom cursor for hover */
+}
+
+/* Optional: Ensure the cursor changes for interactive elements like links */
+a:hover {
+    cursor: url('/images/MouseCursor_1.png'), pointer; /* Custom cursor for links on hover */
 }
 
 /* General Dark Theme Styling */
