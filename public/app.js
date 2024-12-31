@@ -944,28 +944,20 @@ function handleLoss(betAmount) {
     alert(`You lost ${betAmount} ETH ($${lossUSD}). Better luck next time!`);
 }
 
-
-
 export function startSinglePlayer() {
+    // Show the transition overlay
     const overlay = document.getElementById('transition-overlay');
-    console.log("Transition overlay:", overlay); // Check if element is found
+    overlay.style.display = 'flex';
 
-    if (overlay) {
-        overlay.style.display = 'flex'; // Make it visible
-        console.log("Overlay display set to flex.");
-    } else {
-        console.error("Transition overlay not found in the DOM.");
-    }
-
+    // Play the transition sound
     const transitionSound = new Audio('/sounds/transitionSFX0.ogg');
-    transitionSound.play().catch(err => console.error('Error playing transition sound:", err'));
+    transitionSound.play().catch(err => console.error('Error playing transition sound:', err));
 
+    // Wait for 2 seconds before navigating to the game
     setTimeout(() => {
-        console.log("Navigating to single player game.");
         window.location.href = 'game.html?singlePlayer=true';
-    }, 2000);
+    }, 5000);
 }
-
 
 // MetaMask Connection
 let provider;
