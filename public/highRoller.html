@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Roller</title>
+    <link rel="icon" type="image/png" href="/images/DW_Logo.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script type="module" src="highRoller.js"></script>
+</head>
+<body>
+    <div id="high-roller-container">
+        <h1>High Roller Mode</h1>
+        <div id="player-info">
+            <p id="eth-balance">Your ETH Balance: <span id="balance-display">0.00 ETH</span></p>
+            <p id="high-roller-status"></p>
+        </div>
+        <div id="betting-controls">
+            <input type="number" id="betAmount" placeholder="Enter Bet in ETH" min="0.001" step="0.001">
+            <input type="number" id="predicted-roll" placeholder="Predict the Roll (e.g., 7)">
+            <button id="placeBetButton">Place Bet</button>
+        </div>
+        <div id="dice-container">
+            <img id="dice1" src="/images/dice1.png" alt="Dice 1">
+            <img id="dice2" src="/images/dice2.png" alt="Dice 2">
+        </div>
+        <p id="gameStatus"></p>
+        <button onclick="returnToMainMenu()">Return to Main Menu</button>
+    </div>
+</body>
+</html>
