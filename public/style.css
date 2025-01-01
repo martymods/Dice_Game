@@ -1076,3 +1076,10 @@ h1 {
     white-space: nowrap;
     z-index: 10;
 }
+
+/* ETH Button Images */
+button img {
+    width: 20px; /* Adjust size as needed */
+    vertical-align: middle; /* Aligns the image with the text */
+    margin-right: 8px; /* Adds spacing between the image and text */
+}
