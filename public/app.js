@@ -1376,6 +1376,12 @@ function resetFortunes() {
 // Example button (add this to your HTML for debugging or player options):
 // <button onclick="resetFortunes()">Reset My Fortunes</button>
 
+function startHighRoller() {
+    window.location.href = 'highRoller.html'; // Navigate to High Roller mode
+}
+
+window.startHighRoller = startHighRoller; // Make the function globally accessible
+
 
 
 // Ensure these functions are accessible globally
