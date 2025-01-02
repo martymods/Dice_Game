@@ -249,8 +249,11 @@ async function setupSinglePlayer() {
 
         // Animate dice rolling
         animateDice(dice1, dice2, () => {
-            // Play dice roll sound
-            playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"]);
+            // Play dice roll sound after animation stops
+            const diceRollSounds = ["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"];
+            const randomSound = diceRollSounds[Math.floor(Math.random() * diceRollSounds.length)];
+            playSound(randomSound);
+
 
             let winnings = 0;
 
