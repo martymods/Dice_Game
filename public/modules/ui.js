@@ -1,7 +1,5 @@
 import { playSound } from './audio.js';
 import { itemsList } from '/items.js'; // Ensure the correct relative path
-import { updateCollectionDisplay } from '/app.js';
-
 
 
 // Global state for multipliers and effects
@@ -25,6 +23,26 @@ buttons.forEach((button) => {
         setDefaultCursor(); // Revert to default cursor
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('button, .button-image');
+
+    buttons.forEach(button => {
+        button.addEventListener('mouseenter', () => {
+            playHoverSound();
+        });
+    });
+});
+
+/**
+ * Plays the default hover sound for buttons.
+ */
+function playHoverSound() {
+    const hoverSound = new Audio('/sounds/Click_001.ogg');
+    hoverSound.play().catch(err => console.error('Hover sound error:', err));
+}
+
+
 
 /**
  * Applies the effects of all purchased items.
@@ -449,3 +467,4 @@ export function handleGameOverScreen() {
         evictedGif.alt = 'Game Over Idle Screen';
     }, 6000);
 }
+
