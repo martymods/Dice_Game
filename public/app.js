@@ -1996,6 +1996,53 @@ window.addEventListener("gamepadconnected", (event) => {
     pollGamepadShake(); // Start motion tracking
 });
 
+const socket = io();
+
+// Chat functionality
+document.getElementById('toggle-chat').addEventListener('click', () => {
+    const chatContainer = document.getElementById('chat-container');
+    chatContainer.classList.toggle('chat-expanded');
+});
+
+document.getElementById('send-message').addEventListener('click', () => {
+    const messageInput = document.getElementById('message-input');
+    const message = messageInput.value.trim();
+    if (message) {
+        socket.emit('sendMessage', message);
+        messageInput.value = '';
+    }
+});
+
+document.getElementById('change-name').addEventListener('click', () => {
+    const nameInput = document.getElementById('name-input');
+    const newName = nameInput.value.trim();
+    if (newName) {
+        socket.emit('changeName', newName);
+        nameInput.value = '';
+    }
+});
+
+// Update player list
+socket.on('playerUpdate', ({ players }) => {
+    const playerNames = document.getElementById('player-names');
+    playerNames.innerHTML = '';
+    Object.values(players).forEach((name) => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        playerNames.appendChild(li);
+    });
+});
+
+// Update message list
+socket.on('newMessage', ({ name, message }) => {
+    const messageList = document.getElementById('message-list');
+    const div = document.createElement('div');
+    div.textContent = `${name}: ${message}`;
+    messageList.appendChild(div);
+    messageList.scrollTop = messageList.scrollHeight; // Scroll to the latest message
+});
+
+
 // Make it accessible globally
 window.startHighRoller = startHighRoller;
 
