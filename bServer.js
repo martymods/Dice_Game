@@ -1,4 +1,6 @@
 const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
 const cors = require('cors');
 require('dotenv').config();
 const ethers = require('ethers');
@@ -7,14 +9,14 @@ const path = require('path');
 
 // Initialize App
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
 const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors()); // Enable CORS
 app.use(express.json()); // Parse JSON requests
-
-// Serve static files from the 'public' folder
-app.use(express.static('public'));
+app.use(express.static('public')); // Serve static files from the 'public' folder
 
 // Leaderboard Storage
 const leaderboardFile = path.resolve(__dirname, 'leaderboard.json');
@@ -50,7 +52,76 @@ const privateKey = process.env.PRIVATE_KEY;
 const provider = new ethers.providers.JsonRpcProvider(process.env.ALCHEMY_API_URL);
 const wallet = new ethers.Wallet(privateKey, provider);
 
-// Routes
+// Online Players and Games Tracking
+const onlinePlayers = {};
+const games = {};
+
+// WebSocket Handlers
+io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id);
+
+    // Assign a random name to the connected player
+    const randomName = `Player${Math.floor(Math.random() * 10000)}`;
+    onlinePlayers[socket.id] = randomName;
+
+    // Notify all clients about the new player
+    io.emit('playerUpdate', { players: onlinePlayers });
+
+    // Handle name change
+    socket.on('changeName', (newName) => {
+        if (newName && newName.trim()) {
+            onlinePlayers[socket.id] = newName.trim();
+            io.emit('playerUpdate', { players: onlinePlayers });
+        }
+    });
+
+    // Handle chat messages
+    socket.on('sendMessage', (message) => {
+        if (message && message.trim()) {
+            const name = onlinePlayers[socket.id];
+            io.emit('newMessage', { name, message: message.trim() });
+        }
+    });
+
+    // Notify when a player disconnects
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+        delete onlinePlayers[socket.id];
+        io.emit('playerUpdate', { players: onlinePlayers });
+    });
+
+    // Game-related events
+    socket.on('createGame', ({ roomName, playerName }) => {
+        games[roomName] = { players: [playerName], maxPlayers: 2 };
+        socket.join(roomName);
+        socket.emit('gameCreated', { success: true, roomName });
+        console.log(`Game created by ${playerName} in room: ${roomName}`);
+    });
+
+    socket.on('getAvailableGames', () => {
+        const availableGames = Object.entries(games).map(([roomName, game]) => ({
+            roomName,
+            players: game.players,
+            maxPlayers: game.maxPlayers
+        }));
+        socket.emit('availableGames', availableGames);
+    });
+
+    socket.on('joinGame', ({ roomName, playerName }) => {
+        if (!games[roomName]) {
+            return socket.emit('joinError', { message: 'Room does not exist.' });
+        }
+        if (games[roomName].players.length >= games[roomName].maxPlayers) {
+            return socket.emit('joinError', { message: 'Room is full.' });
+        }
+        games[roomName].players.push(playerName);
+        socket.join(roomName);
+        socket.emit('gameJoined', { success: true, roomName });
+        console.log(`${playerName} joined room: ${roomName}`);
+    });
+});
+
+// API Routes
 
 // Place Bet Endpoint
 app.post('/placeBet', (req, res) => {
@@ -77,15 +148,12 @@ app.post('/leaderboard', (req, res) => {
         return res.status(400).json({ error: 'Invalid name or score.' });
     }
 
-    // Sanitize and validate input
     const sanitizedName = name.trim().substring(0, 50); // Limit name length
     leaderboard.push({ name: sanitizedName, score });
 
-    // Sort and retain the top 100 scores
     leaderboard.sort((a, b) => b.score - a.score);
-    leaderboard = leaderboard.slice(0, 100);
+    leaderboard = leaderboard.slice(0, 100); // Keep top 100 scores
 
-    // Save to disk
     saveLeaderboard();
 
     res.status(201).json({ message: 'Entry added successfully!', leaderboard });
@@ -112,7 +180,7 @@ app.use((req, res) => {
     res.status(404).send('<h1>404 - Not Found</h1>');
 });
 
-// Server Start
-app.listen(port, () => {
+// Start the server
+server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
