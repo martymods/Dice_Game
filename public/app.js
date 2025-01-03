@@ -7,6 +7,12 @@ import { updateUI, showItemPopup, getItemColor, handleGameOverScreen } from './m
 import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
+import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateBalanceDisplay(balance); // Initialize the balance display
+});
+
 
 
 
@@ -22,15 +28,6 @@ let cursorY = window.innerHeight / 2;
 let isShaking = false; // Track if the controller is shaking
 let shakeThreshold = 0.8; // Adjust sensitivity for detecting shakes
 let rollInProgress = false; // Prevent multiple rolls simultaneously
-let balance = 300;
-let currentBet = 0;
-let turns = 0;
-let rent = 400;
-let maxTurns = 6;
-let progression = 1;
-let items = [];
-let dreamCoins = 0; // New DreamCoin balance
-let gameStartTime = Date.now();
 
 let hustlerInventory = []; // Player's hustlers
 
@@ -148,7 +145,15 @@ async function setupSinglePlayer() {
     applyPurchasedItemEffects(purchasedItems); // Apply pre-purchased effects
     console.log('Single Player mode active.');
 
-
+    let balance = 300;
+    let currentBet = 0;
+    let turns = 0;
+    let rent = 400;
+    let maxTurns = 6;
+    let progression = 1;
+    let items = [];
+    let dreamCoins = 0; // New DreamCoin balance
+    let gameStartTime = Date.now();
 
     // Increment games played
     playerStats.gamesPlayed++;
@@ -304,6 +309,7 @@ async function setupSinglePlayer() {
                 // Winning roll
                 winnings = currentBet * 2 * multiplier + cashBonus;
                 balance += winnings;
+                updateBalanceDisplay(balance); // Reflect changes
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
                 playSound("/sounds/Winner_0.ogg");
                 flashScreen('gold');
@@ -320,6 +326,7 @@ async function setupSinglePlayer() {
             } else if (sum === 2 || sum === 3 || sum === 12) {
                 // Losing roll
                 balance -= currentBet; // Deduct the bet on loss
+                updateBalanceDisplay(balance); // Reflect changes
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
                 playSound("/sounds/Loser_0.ogg");
                 flashScreen('red');
