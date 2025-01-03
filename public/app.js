@@ -218,11 +218,36 @@ async function setupSinglePlayer() {
         });
    
 
-    function setBet(amount) {
-        if (amount > balance) amount = balance;
-        currentBet = Math.floor(amount);
-        updateUI();
-    }
+        function setBet(input) {
+            let amount;
+        
+            // Determine if input is a percentage or a fixed amount
+            if (typeof input === "number" && input <= 1) {
+                // If input is a decimal (percentage), calculate the bet amount
+                amount = Math.floor(balance * input);
+            } else {
+                // Otherwise, treat it as a fixed amount
+                amount = input;
+            }
+        
+            // Ensure the bet does not exceed the balance
+            if (amount > balance) amount = balance;
+        
+            // Validate the bet
+            if (amount <= 0) {
+                alert("Insufficient balance to place this bet!");
+                return;
+            }
+        
+            // Update the current bet and UI
+            currentBet = Math.floor(amount);
+            console.log(`Bet set to: $${currentBet}`); // Debugging log
+            updateUI(); // Update the UI with the new bet
+        }
+        
+        // Make the function globally accessible
+        window.setBet = setBet;
+        
 
     function handleRollDice() {
         if (currentBet <= 0) {
