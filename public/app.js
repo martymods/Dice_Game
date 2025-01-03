@@ -1783,6 +1783,39 @@ window.addEventListener("gamepaddisconnected", (event) => {
     document.querySelectorAll(".ps5-button-overlay").forEach((img) => img.remove());
 });
 
+function applyTiltEffect(gamepad) {
+    // Map PS5 motion axes to tilt values
+    const tiltX = gamepad.axes[0]; // Horizontal motion
+    const tiltY = gamepad.axes[1]; // Vertical motion
+
+    // Calculate rotation angles (adjust sensitivity with multiplier)
+    const rotationX = tiltY * 10; // Tilt up/down
+    const rotationY = tiltX * 10; // Tilt left/right
+
+    // Apply the tilt effect to the entire body or a specific container
+    const container = document.body; // Or replace with a specific container
+    container.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+    container.style.transition = "transform 0.1s ease"; // Smooth transition
+}
+
+// Continuously poll for gamepad motion data
+function pollGamepadMotion() {
+    const gamepads = navigator.getGamepads();
+    const gamepad = gamepads[0]; // Use the first connected gamepad
+
+    if (gamepad) {
+        applyTiltEffect(gamepad);
+    }
+
+    requestAnimationFrame(pollGamepadMotion); // Keep polling
+}
+
+// Start polling when the gamepad is connected
+window.addEventListener("gamepadconnected", (event) => {
+    console.log(`Gamepad connected: ${event.gamepad.id}`);
+    pollGamepadMotion(); // Start motion tracking
+});
+
 
 // Make it accessible globally
 window.startHighRoller = startHighRoller;
