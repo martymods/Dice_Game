@@ -1101,6 +1101,6 @@ button img {
 
 /* Loading Image Style */
 #loading-image {
-    width: 300px; /* Adjust size as needed */
-    height: auto;
+    width: 1920px; /* Adjust size as needed */
+    height: 1080px;
 }
