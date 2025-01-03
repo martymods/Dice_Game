@@ -1419,6 +1419,92 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Gamepad Connection Detection
+window.addEventListener("gamepadconnected", (event) => {
+    console.log(`Gamepad connected: ${event.gamepad.id}`);
+    alert("PS5 controller connected!");
+});
+
+window.addEventListener("gamepaddisconnected", (event) => {
+    console.log(`Gamepad disconnected: ${event.gamepad.id}`);
+    alert("PS5 controller disconnected.");
+});
+
+// Gamepad Polling and Input Handling
+function pollGamepadInput() {
+    const gamepads = navigator.getGamepads();
+    const gamepad = gamepads[0]; // Use the first connected gamepad
+
+    if (gamepad) {
+        handleGamepadActions(gamepad);
+    }
+
+    requestAnimationFrame(pollGamepadInput); // Keep polling
+}
+
+pollGamepadInput(); // Start polling
+
+// Mapping Gamepad Actions
+function handleGamepadActions(gamepad) {
+    // Buttons
+    if (gamepad.buttons[0].pressed) { // Cross (X)
+        handleRollDice(); // Call the roll dice function
+    }
+
+    if (gamepad.buttons[1].pressed) { // Circle (O)
+        quitGame(); // Call the quit game function
+    }
+
+    if (gamepad.buttons[12].pressed) { // D-pad Up
+        console.log("Navigate Up");
+    }
+    if (gamepad.buttons[13].pressed) { // D-pad Down
+        console.log("Navigate Down");
+    }
+    if (gamepad.buttons[14].pressed) { // D-pad Left
+        console.log("Navigate Left");
+    }
+    if (gamepad.buttons[15].pressed) { // D-pad Right
+        console.log("Navigate Right");
+    }
+
+    // Left Stick (Axes)
+    const leftStickX = gamepad.axes[0];
+    const leftStickY = gamepad.axes[1];
+
+    if (Math.abs(leftStickX) > 0.2 || Math.abs(leftStickY) > 0.2) {
+        console.log(`Left Stick moved: X=${leftStickX}, Y=${leftStickY}`);
+    }
+}
+
+// Testing Navigation
+let currentMenuIndex = 0;
+const menuButtons = document.querySelectorAll("#menu-buttons button");
+
+function updateMenuNavigation(direction) {
+    menuButtons[currentMenuIndex].classList.remove("active");
+
+    currentMenuIndex += direction;
+    if (currentMenuIndex < 0) currentMenuIndex = menuButtons.length - 1;
+    if (currentMenuIndex >= menuButtons.length) currentMenuIndex = 0;
+
+    menuButtons[currentMenuIndex].classList.add("active");
+    menuButtons[currentMenuIndex].focus();
+}
+
+function handleGamepadNavigation(gamepad) {
+    if (gamepad.buttons[12].pressed) { // D-pad Up
+        updateMenuNavigation(-1);
+    }
+    if (gamepad.buttons[13].pressed) { // D-pad Down
+        updateMenuNavigation(1);
+    }
+    if (gamepad.buttons[0].pressed) { // Cross (X)
+        menuButtons[currentMenuIndex].click();
+    }
+}
+
+
 
 
 // Make it accessible globally
