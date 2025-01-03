@@ -1101,8 +1101,8 @@ button img {
 
 /* Loading Image Style */
 #loading-image {
-    width: 1920px; /* Adjust size as needed */
-    height: 1080px;
+    width: 300px; /* Adjust size as needed */
+    height: auto;
 }
 
 button.active {
@@ -1110,6 +1110,7 @@ button.active {
     transform: scale(1.1);
     transition: transform 0.2s ease;
 }
+
 .ps5-button-overlay {
     z-index: 1000; /* Ensure it appears above other elements */
     pointer-events: none; /* Prevent blocking interactions */
@@ -1119,27 +1120,37 @@ button.active {
     z-index: 1000; /* Ensure it appears above other elements */
     pointer-events: none;
 }
+
 body {
     transform-origin: center center; /* Ensure the tilt originates from the screen's center */
     perspective: 1000px; /* Add 3D perspective for a more realistic tilt effect */
     transition: transform 0.1s ease; /* Smooth transition for the tilt */
 }
-
 #submit-leaderboard,
 #quit-leaderboard {
     display: inline-block;
     margin: 10px;
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 8px 20px;
+    font-size: 18px;
     cursor: pointer;
-    border: 1px solid #ccc;
+    border: 1px solid #ff2929;
     border-radius: 5px;
-    background-color: #f0f0f0;
+    background-color: #797979;
     transition: background-color 0.2s;
 }
 
 #submit-leaderboard:hover,
 #quit-leaderboard:hover {
-    background-color: #e0e0e0;
+    background-color: #605858;
+}
+#balance-display img {
+    display: inline-block;
+    vertical-align: middle;
 }
 
+#balance-display {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
