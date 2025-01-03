@@ -1104,3 +1104,9 @@ button img {
     width: 1920px; /* Adjust size as needed */
     height: 1080px;
 }
+
+button.active {
+    outline: 2px solid #3498db;
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
