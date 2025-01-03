@@ -6,11 +6,44 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 const games = {};
+const onlinePlayers = {}; // To track players and their names
 
 app.use(express.static('public'));
 
+// When a new socket connects
 io.on('connection', (socket) => {
-    console.log('A user connected');
+    console.log('A user connected:', socket.id);
+
+    // Assign a random name to the connected player
+    const randomName = `Player${Math.floor(Math.random() * 10000)}`;
+    onlinePlayers[socket.id] = randomName;
+
+    // Notify all clients about the new player
+    io.emit('playerUpdate', { players: onlinePlayers });
+
+    // Handle name change
+    socket.on('changeName', (newName) => {
+        if (newName && newName.trim()) {
+            onlinePlayers[socket.id] = newName.trim();
+            io.emit('playerUpdate', { players: onlinePlayers });
+        }
+    });
+
+    // Handle chat messages
+    socket.on('sendMessage', (message) => {
+        if (message && message.trim()) {
+            const name = onlinePlayers[socket.id];
+            io.emit('newMessage', { name, message: message.trim() });
+        }
+    });
+
+    // Notify when a player disconnects
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+        delete onlinePlayers[socket.id];
+        io.emit('playerUpdate', { players: onlinePlayers });
+    });
+
 
     socket.on('createGame', ({ roomName, playerName }) => {
         games[roomName] = { players: [playerName], maxPlayers: 2 };
