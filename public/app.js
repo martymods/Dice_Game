@@ -551,6 +551,7 @@ async function setupSinglePlayer() {
     function quitGame() {
         window.location.href = '/';
     }
+
     // Handle Showing and Hiding the Combinations Modal
     document.addEventListener('DOMContentLoaded', () => {
     const showCombinationsButton = document.getElementById('showCombinationsButton');
@@ -1180,16 +1181,16 @@ function handleGameOver() {
 
 // Leaderboard Prompt Function
 async function displayLeaderboardPrompt(score) {
-    const overlay = document.getElementById('leaderboard-overlay');
-    const playerNameInput = document.getElementById('player-name');
-    const submitButton = document.getElementById('submit-leaderboard');
-    const leaderboardDisplay = document.getElementById('leaderboard-entries');
+    const overlay = document.getElementById("leaderboard-overlay");
+    const playerNameInput = document.getElementById("player-name");
+    const submitButton = document.getElementById("submit-leaderboard");
+    const leaderboardDisplay = document.getElementById("leaderboard-entries");
 
-        // Clear previous buttons if any
-        const quitButtonExists = document.getElementById("quit-leaderboard");
-        if (quitButtonExists) quitButtonExists.remove();
+    // Clear previous buttons if any
+    const quitButtonExists = document.getElementById("quit-leaderboard");
+    if (quitButtonExists) quitButtonExists.remove();
 
-    overlay.style.display = 'flex';
+    overlay.style.display = "flex";
 
     try {
         // Fetch leaderboard data
@@ -1202,21 +1203,24 @@ async function displayLeaderboardPrompt(score) {
         // Populate leaderboard display
         leaderboardDisplay.innerHTML = leaderboardData
             .map((entry, index) => `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`)
-            .join('');
+            .join("");
     } catch (error) {
-        console.error('Error fetching leaderboard:', error);
-        leaderboardDisplay.innerHTML = '<p>Unable to load leaderboard.</p>';
+        console.error("Error fetching leaderboard:", error);
+        leaderboardDisplay.innerHTML = "<p>Unable to load leaderboard.</p>";
     }
 
-        // Create a Quit Game button dynamically
-        const quitButton = document.createElement("button");
-        quitButton.id = "quit-leaderboard";
-        quitButton.textContent = "Quit Game";
-        quitButton.style.marginLeft = "10px"; // Add spacing from the Submit button
-        quitButton.onclick = quitGame; // Attach the quitGame function
-    
-        // Add the Quit Game button next to Submit button
-        submitButton.parentNode.insertBefore(quitButton, submitButton.nextSibling);
+    // Create a Quit Game button dynamically
+    const quitButton = document.createElement("button");
+    quitButton.id = "quit-leaderboard";
+    quitButton.textContent = "Quit Game";
+    quitButton.style.marginLeft = "10px"; // Add spacing from the Submit button
+    quitButton.onclick = () => {
+        console.log("Quit Game button clicked");
+        quitGame();
+    };
+
+    // Add the Quit Game button next to Submit button
+    submitButton.parentNode.insertBefore(quitButton, submitButton.nextSibling);
 
     // Submit leaderboard entry
     submitButton.onclick = async () => {
@@ -1224,8 +1228,8 @@ async function displayLeaderboardPrompt(score) {
         if (playerName) {
             try {
                 const response = await fetch(`${API_BASE_URL}/leaderboard`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name: playerName, score }),
                 });
                 if (!response.ok) {
@@ -1233,21 +1237,26 @@ async function displayLeaderboardPrompt(score) {
                 }
 
                 // Refresh leaderboard after submission
-                const updatedLeaderboard = await fetch(`${API_BASE_URL}/leaderboard`).then(res => res.json());
+                const updatedLeaderboard = await fetch(
+                    `${API_BASE_URL}/leaderboard`
+                ).then((res) => res.json());
                 leaderboardDisplay.innerHTML = updatedLeaderboard
                     .map((entry, index) => `<p>${index + 1}. ${entry.name}: $${entry.score}</p>`)
-                    .join('');
+                    .join("");
 
                 // Clear input and display success message
-                playerNameInput.value = '';
-                alert('Leaderboard entry submitted successfully!');
+                playerNameInput.value = "";
+                alert("Leaderboard entry submitted successfully!");
             } catch (error) {
-                console.error('Error submitting leaderboard entry:', error);
-                alert('Unable to submit leaderboard entry. Please try again.');
+                console.error("Error submitting leaderboard entry:", error);
+                alert("Unable to submit leaderboard entry. Please try again.");
             }
+        } else {
+            alert("Please enter a name to submit your score.");
         }
     };
 }
+
 
 // List of fortunes
 const fortunes = [
@@ -1950,3 +1959,4 @@ window.startHighRoller = startHighRoller;
 window.startSinglePlayer = startSinglePlayer;
 window.placeBet = placeBet;
 window.displayLeaderboardPrompt = displayLeaderboardPrompt;
+window.quitGame = quitGame;
