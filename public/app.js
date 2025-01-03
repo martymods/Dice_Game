@@ -19,6 +19,9 @@ let fireSound; // Sound for when "on fire" is active
 let canRollDice = true; // Flag to track if rolling is allowed
 let cursorX = window.innerWidth / 2; // Initialize cursor position (center of the screen)
 let cursorY = window.innerHeight / 2;
+let isShaking = false; // Track if the controller is shaking
+let shakeThreshold = 0.8; // Adjust sensitivity for detecting shakes
+let rollInProgress = false; // Prevent multiple rolls simultaneously
 
 let hustlerInventory = []; // Player's hustlers
 
@@ -1816,6 +1819,113 @@ window.addEventListener("gamepadconnected", (event) => {
     pollGamepadMotion(); // Start motion tracking
 });
 
+// Shake Roll// Start polling when the gamepad is connected
+function handleControllerShake(gamepad) {
+    const motionX = gamepad.axes[2] || 0; // Horizontal motion
+    const motionY = gamepad.axes[3] || 0; // Vertical motion
+    const motionZ = gamepad.axes[4] || 0; // Depth motion (if supported)
+
+    // Calculate total motion intensity
+    const totalMotion = Math.sqrt(motionX ** 2 + motionY ** 2 + motionZ ** 2);
+
+    // Detect shake start
+    if (totalMotion > shakeThreshold && !isShaking) {
+        isShaking = true;
+        console.log("Shaking detected! Starting dice roll...");
+        startRollAnimation();
+    }
+
+    // Detect shake stop
+    if (totalMotion < shakeThreshold && isShaking) {
+        isShaking = false;
+        console.log("Shake stopped! Ending dice roll...");
+        stopRollAnimationAndShowResult();
+    }
+}
+
+// Start the dice roll animation
+function startRollAnimation() {
+    if (rollInProgress || currentBet <= 0) {
+        console.log("Cannot roll: Either rolling is already in progress or no bet placed.");
+        return;
+    }
+
+    rollInProgress = true; // Prevent multiple rolls
+    const dice1Element = document.getElementById("dice1");
+    const dice2Element = document.getElementById("dice2");
+
+    // Animate dice continuously until the player stops shaking
+    let counter = 0;
+    const interval = setInterval(() => {
+        const dice1Roll = Math.floor(Math.random() * 6) + 1;
+        const dice2Roll = Math.floor(Math.random() * 6) + 1;
+
+        dice1Element.src = `/images/dice${dice1Roll}.png`;
+        dice2Element.src = `/images/dice${dice2Roll}.png`;
+
+        counter++;
+        if (!isShaking) {
+            clearInterval(interval);
+        }
+    }, 100); // Update dice every 100ms for a smooth animation
+}
+
+// Stop dice animation and show final result
+function stopRollAnimationAndShowResult() {
+    if (!rollInProgress) return;
+
+    const dice1 = Math.floor(Math.random() * 6) + 1;
+    const dice2 = Math.floor(Math.random() * 6) + 1;
+    const sum = dice1 + dice2;
+
+    const dice1Element = document.getElementById("dice1");
+    const dice2Element = document.getElementById("dice2");
+
+    dice1Element.src = `/images/dice${dice1}.png`;
+    dice2Element.src = `/images/dice${dice2}.png`;
+
+    console.log(`Dice result: ${dice1} + ${dice2} = ${sum}`);
+    handleDiceResult(sum);
+
+    rollInProgress = false; // Allow new rolls
+}
+
+// Handle dice result (win/lose logic)
+function handleDiceResult(sum) {
+    let winnings = 0;
+
+    if (sum === 7 || sum === 11) {
+        winnings = currentBet * 2;
+        balance += winnings;
+        console.log(`You win! Roll: ${sum}, Winnings: ${winnings}`);
+    } else if (sum === 2 || sum === 3 || sum === 12) {
+        balance -= currentBet;
+        console.log(`You lose! Roll: ${sum}`);
+    } else {
+        console.log(`Neutral roll: ${sum}`);
+    }
+
+    currentBet = 0; // Reset bet
+    updateUI(); // Update game UI
+}
+
+// Poll for gamepad motion and detect shaking
+function pollGamepadShake() {
+    const gamepads = navigator.getGamepads();
+    const gamepad = gamepads[0]; // Use the first connected gamepad
+
+    if (gamepad) {
+        handleControllerShake(gamepad);
+    }
+
+    requestAnimationFrame(pollGamepadShake); // Continuously poll for motion
+}
+
+// Start polling for shake motion when the gamepad is connected
+window.addEventListener("gamepadconnected", (event) => {
+    console.log(`Gamepad connected: ${event.gamepad.id}`);
+    pollGamepadShake(); // Start motion tracking
+});
 
 // Make it accessible globally
 window.startHighRoller = startHighRoller;
