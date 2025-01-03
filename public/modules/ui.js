@@ -115,18 +115,19 @@ function handleRestock(balance, items, purchasedItems) {
     return balance; // Return updated balance
 }
 
+// Corrected updateUI function
 export function updateUI(balance, rent = 0, turns = 0, maxTurns = 0, currentBet = 0) {
     const bettingStatus = document.getElementById('betting-status');
     const rentStatus = document.getElementById('rent-status');
+
     if (bettingStatus) {
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
     }
     if (rentStatus) {
         rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
     }
-    updateRestockFee(balance); // Update restock fee dynamically
+    updateRestockFee(balance);
 }
-
 
 
 export function showItemPopup(balance, items, purchasedItems) {
@@ -163,31 +164,38 @@ export function showItemPopup(balance, items, purchasedItems) {
     updateRestockFee(balance);
 }
 
-
+// Single definition of handleItemPurchase
 export function handleItemPurchase(item, balance, purchasedItems = []) {
+    if (!Array.isArray(purchasedItems)) {
+        purchasedItems = [];
+    }
+
     if (balance >= item.cost) {
         balance -= item.cost;
         purchasedItems.push(item);
         updatePurchasedItemsDisplay(purchasedItems);
         updateUI(balance);
+        playSound("/sounds/UI_Buy1.ogg");
+        alert(`You purchased ${item.name}!`);
         return { balance, purchasedItems };
     } else {
-        alert("Not enough money to buy this item.");
+        alert('Not enough money to buy this item.');
         playSound("/sounds/UI_Error.ogg");
         return { balance, purchasedItems };
     }
 }
 
+
+// Consolidated DOMContentLoaded initialization
 document.addEventListener('DOMContentLoaded', () => {
     const restockButton = document.getElementById('restockButton');
-    restockButton.addEventListener('click', () => {
-        balance = handleRestock(balance, items, purchasedItems);
-    });
-
-    // Initialize the restock fee
+    if (restockButton) {
+        restockButton.addEventListener('click', () => {
+            balance = handleRestock(balance, items, purchasedItems);
+        });
+    }
     updateRestockFee(balance);
 });
-
 
 
 /**
@@ -342,31 +350,6 @@ function hideItemDescription() {
     descriptionDiv.style.display = 'none'; // Hide the description
 }
 
-/**
- * Handles item purchase logic, deducting balance and adding the item to inventory.
- */
-export function handleItemPurchase(item, balance, purchasedItems = []) {
-    if (balance >= item.cost) {
-        balance -= item.cost;
-        console.log('Item Purchased:', item); // Debugging: Log the purchased item
-        console.log('Balance Before Purchase:', balance);
-
-        // Add the item and update the display
-        addItemToPurchasedItems(item, purchasedItems);
-
-        playSound("/sounds/UI_Buy1.ogg");
-        alert(`You purchased ${item.name}!`);
-        updatePurchasedItemsDisplay(purchasedItems);
-        updateUI(balance);
-
-        console.log('Updated Purchased Items:', purchasedItems); // Debugging
-        return { balance, purchasedItems };
-    } else {
-        alert('Not enough money to buy this item.');
-        playSound("/sounds/UI_Error.ogg");
-        return { balance, purchasedItems };
-    }
-}
 
 
 // Shop Inventory
