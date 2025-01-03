@@ -1488,6 +1488,57 @@ pollGamepadInput(); // Start polling
 
 // Mapping Gamepad Actions
 function handleGamepadActions(gamepad) {
+        // Check if the gamepad supports haptics
+        const haptics = gamepad.vibrationActuator;
+
+        if (gamepad.buttons[0].pressed) { // Cross (X)
+            handleRollDice(); // Call the roll dice function
+            console.log("Roll Dice: Intense Vibration");
+            if (haptics) {
+                haptics.playEffect("dual-rumble", {
+                    duration: 2000, // 2 seconds
+                    strongMagnitude: 1.0, // Intense vibration
+                    weakMagnitude: 1.0,
+                });
+            }
+        }
+    
+        if (gamepad.buttons[2].pressed) { // Square (Square)
+            console.log("Bet 25%: Soft Vibration");
+            setBet(0.25); // Set bet to 25%
+            if (haptics) {
+                haptics.playEffect("dual-rumble", {
+                    duration: 500, // 0.5 seconds
+                    strongMagnitude: 0.2, // Soft vibration
+                    weakMagnitude: 0.2,
+                });
+            }
+        }
+    
+        if (gamepad.buttons[3].pressed) { // Triangle (△)
+            console.log("Bet 50%: Soft Vibration");
+            setBet(0.50); // Set bet to 50%
+            if (haptics) {
+                haptics.playEffect("dual-rumble", {
+                    duration: 500, // 0.5 seconds
+                    strongMagnitude: 0.2, // Soft vibration
+                    weakMagnitude: 0.2,
+                });
+            }
+        }
+    
+        if (gamepad.buttons[1].pressed) { // Circle (Circle)
+            console.log("Bet 100%: Soft Vibration");
+            setBet(1.00); // Set bet to 100%
+            if (haptics) {
+                haptics.playEffect("dual-rumble", {
+                    duration: 500, // 0.5 seconds
+                    strongMagnitude: 0.2, // Soft vibration
+                    weakMagnitude: 0.2,
+                });
+            }
+        }
+    
     // Buttons
     if (gamepad.buttons[0].pressed) { // Cross (X)
         handleRollDice(); // Call the roll dice function
