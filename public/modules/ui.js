@@ -7,8 +7,6 @@ let activeEffects = [];
 let currentMultiplier = 1;
 let purchasedItems = []; // Proper initialization as an empty array
 
-
-
 // Function to set default cursor
 export function setDefaultCursor() {
     document.body.style.cursor = "url('/images/MouseCursor_0.png'), auto";
@@ -87,41 +85,9 @@ function updateMultiplierUI(multiplier) {
     }
 }
 
-// Function to update the restock fee dynamically
-function updateRestockFee(balance) {
-    const restockFeeElement = document.getElementById('restock-fee');
-    if (!restockFeeElement) {
-        console.error("Element with ID 'restock-fee' not found.");
-        return;
-    }
-    const restockFee = Math.floor(balance * 0.1); // 10% of the current balance
-    restockFeeElement.textContent = restockFee.toLocaleString();
-    return restockFee;
-}
-
-// Handles restocking shop items
-function handleRestock(balance, items, purchasedItems) {
-    const restockFee = updateRestockFee(balance);
-
-    if (balance >= restockFee) {
-        balance -= restockFee; // Deduct restock fee
-        playSound("/sounds/UI_Restock.ogg");
-        alert(`You restocked items for $${restockFee.toLocaleString()}!`);
-
-        // Show new items in the shop
-        showItemPopup(balance, items, purchasedItems);
-
-        // Update UI with new balance
-        updateUI(balance);
-    } else {
-        alert("You don't have enough money to restock!");
-        playSound("/sounds/UI_Error.ogg");
-    }
-
-    return balance; // Return updated balance
-}
-
-// Corrected updateUI function
+/**
+ * Updates the UI elements for balance, rent, and turns remaining.
+ */
 export function updateUI(balance, rent = 0, turns = 0, maxTurns = 0, currentBet = 0) {
     const bettingStatus = document.getElementById('betting-status');
     const rentStatus = document.getElementById('rent-status');
@@ -129,83 +95,11 @@ export function updateUI(balance, rent = 0, turns = 0, maxTurns = 0, currentBet 
     if (bettingStatus) {
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
     }
+
     if (rentStatus) {
         rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
     }
-
-    // Safely update the restock fee
-    if (balance !== undefined) {
-        updateRestockFee(balance);
-    }
 }
-
-
-export function showItemPopup(balance, items, purchasedItems) {
-    const popup = document.getElementById('buy-item-container');
-    const itemList = document.getElementById('item-list');
-
-    popup.style.display = 'block';
-    itemList.innerHTML = '';
-
-    const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
-
-    shuffledItems.forEach(item => {
-        const itemButton = document.createElement('button');
-        itemButton.textContent = `${item.emoji || '❓'} ${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
-        itemButton.style.backgroundColor = getItemColor(item.rarity);
-        itemButton.classList.add('item-button');
-
-        itemButton.onmouseenter = () => showItemDescription(item.description);
-        itemButton.onmouseleave = hideItemDescription;
-
-        itemButton.onclick = () => {
-            const { balance: updatedBalance, purchasedItems: updatedPurchasedItems } = handleItemPurchase(item, balance, purchasedItems);
-            balance = updatedBalance; // Update balance
-            purchasedItems = updatedPurchasedItems; // Update purchased items
-
-            playSound("/sounds/UI_Buy1.ogg");
-            alert(`You purchased ${item.name}!`);
-        };
-
-        itemList.appendChild(itemButton);
-    });
-
-    // Update the restock fee display
-    updateRestockFee(balance);
-}
-
-// Single definition of handleItemPurchase
-export function handleItemPurchase(item, balance, purchasedItems = []) {
-    if (!Array.isArray(purchasedItems)) {
-        purchasedItems = [];
-    }
-
-    if (balance >= item.cost) {
-        balance -= item.cost; // Deduct item cost
-        purchasedItems.push(item); // Add to inventory
-        updatePurchasedItemsDisplay(purchasedItems); // Update inventory UI
-        updateUI(balance); // Reflect balance update
-        playSound("/sounds/UI_Buy1.ogg");
-        alert(`You purchased ${item.name}!`);
-        return { balance, purchasedItems };
-    } else {
-        alert("Not enough money to buy this item.");
-        playSound("/sounds/UI_Error.ogg");
-        return { balance, purchasedItems }; // Return unchanged values
-    }
-}
-
-// Consolidated DOMContentLoaded initialization
-document.addEventListener('DOMContentLoaded', () => {
-    const restockButton = document.getElementById('restockButton');
-    if (restockButton) {
-        restockButton.addEventListener('click', () => {
-            balance = handleRestock(balance, items, purchasedItems);
-        });
-    }
-    updateRestockFee(balance);
-});
-
 
 /**
  * Updates the background image based on the number of rolls remaining.
@@ -341,6 +235,63 @@ export function updateHustlerPanel(hustlerInventory) {
     });
 }
 
+/**
+ * Shows the item popup with a list of available items.
+ */
+export function showItemPopup(balance, items, purchasedItems) {
+    const popup = document.getElementById('buy-item-container');
+    const itemList = document.getElementById('item-list');
+    const restockButton = document.getElementById('restockButton');
+
+    popup.style.display = 'block';
+    itemList.innerHTML = '';
+
+    const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+    shuffledItems.forEach(item => {
+        const itemButton = document.createElement('button');
+        itemButton.textContent = `${item.emoji || '❓'} ${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
+        itemButton.style.backgroundColor = getItemColor(item.rarity);
+        itemButton.classList.add('item-button');
+
+        itemButton.onmouseenter = () => showItemDescription(item.description);
+        itemButton.onmouseleave = hideItemDescription;
+
+        itemButton.onclick = () => {
+            handleItemPurchase(item, balance, purchasedItems); // Ensure it's passed here
+            applyPurchasedItemEffects(purchasedItems); // Ensure it's passed here
+
+            const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
+            playSound(voiceClips, true);
+        };
+
+        itemList.appendChild(itemButton);
+    });
+}
+
+/**
+ * Handles restocking items.
+ */
+export function handleRestock(balance, restockFee, items) {
+    if (balance >= restockFee) {
+        // Deduct the restock fee
+        balance -= restockFee;
+
+        // Regenerate the items in the popup
+        showItemPopup(balance, items);
+
+        // Update the UI to reflect the new balance
+        updateUI(balance);
+
+        // Play sound effect for restocking
+        playSound("/sounds/UI_Restock.ogg");
+
+        alert(`You restocked items for $${restockFee.toLocaleString()}!`);
+    } else {
+        alert("You don't have enough money to restock!");
+        playSound("/sounds/UI_Error.ogg");
+    }
+}
 
 /**
  * Displays the item description.
@@ -359,6 +310,28 @@ function hideItemDescription() {
     descriptionDiv.style.display = 'none'; // Hide the description
 }
 
+/**
+ * Handles item purchase logic, deducting balance and adding the item to inventory.
+ */
+export function handleItemPurchase(item, balance, purchasedItems = []) {
+    if (!Array.isArray(purchasedItems)) {
+        purchasedItems = [];
+    }
+
+    if (balance >= item.cost) {
+        balance -= item.cost; // Deduct item cost
+        purchasedItems.push(item); // Add to inventory
+        updatePurchasedItemsDisplay(purchasedItems); // Update inventory UI
+        updateBalanceDisplay(balance); // Update balance display
+        playSound("/sounds/UI_Buy1.ogg");
+        alert(`You purchased ${item.name}!`);
+        return { balance, purchasedItems };
+    } else {
+        alert("Not enough money to buy this item.");
+        playSound("/sounds/UI_Error.ogg");
+        return { balance, purchasedItems }; // Return unchanged values
+    }
+}
 
 
 // Shop Inventory
@@ -490,4 +463,36 @@ export function handleGameOverScreen() {
         evictedGif.src = '/images/GameOverIdleScreen.png?v=1.0.1'; // Cache-busted URL
         evictedGif.alt = 'Game Over Idle Screen';
     }, 6000);
+}
+
+/**
+ * Updates the balance display using images for each digit.
+ * @param {number} balance - The current balance to display.
+ */
+export function updateBalanceDisplay(balance) {
+    const balanceDisplay = document.getElementById('balance-display');
+
+    // Check if the display container exists
+    if (!balanceDisplay) {
+        console.error("Balance display container not found.");
+        return;
+    }
+
+    // Clear the previous balance display
+    balanceDisplay.innerHTML = '';
+
+    // Convert the balance to a string and iterate over each digit
+    const balanceString = balance.toString();
+    for (const digit of balanceString) {
+        // Create an image element for each digit
+        const digitImage = document.createElement('img');
+        digitImage.src = `/public/images/Font_Number_${digit}.gif`; // Adjust path if needed
+        digitImage.alt = digit;
+        digitImage.style.width = '40px'; // Adjust size
+        digitImage.style.height = 'auto';
+        digitImage.style.margin = '0 2px'; // Add spacing between digits
+
+        // Append the image to the balance display
+        balanceDisplay.appendChild(digitImage);
+    }
 }
