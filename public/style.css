@@ -1119,3 +1119,8 @@ button.active {
     z-index: 1000; /* Ensure it appears above other elements */
     pointer-events: none;
 }
+body {
+    transform-origin: center center; /* Ensure the tilt originates from the screen's center */
+    perspective: 1000px; /* Add 3D perspective for a more realistic tilt effect */
+    transition: transform 0.1s ease; /* Smooth transition for the tilt */
+}
