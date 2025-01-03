@@ -1850,6 +1850,44 @@ window.addEventListener("gamepadconnected", (event) => {
     pollGamepadMotion(); // Start motion tracking
 });
 
+function setPS5ControllerLight(gamepad, color) {
+    if (gamepad.lightBar) {
+        gamepad.lightBar.color = color;
+        console.log(`Set PS5 controller light to ${color}`);
+    } else {
+        console.log("Light bar control is not supported on this gamepad.");
+    }
+}
+
+// Function to set light when controller connects
+function handlePS5ControllerConnected(event) {
+    const gamepad = event.gamepad;
+
+    if (gamepad.id.includes("PS5")) {
+        console.log("PS5 controller connected.");
+
+        // Set the light bar to red
+        setPS5ControllerLight(gamepad, { r: 255, g: 0, b: 0 });
+    }
+}
+
+// Function to reset light when controller disconnects
+function handlePS5ControllerDisconnected(event) {
+    const gamepad = event.gamepad;
+
+    if (gamepad.id.includes("PS5")) {
+        console.log("PS5 controller disconnected.");
+
+        // Optionally reset the light bar color (default or turn off)
+        setPS5ControllerLight(gamepad, { r: 0, g: 0, b: 0 });
+    }
+}
+
+// Event listeners for gamepad connection and disconnection
+window.addEventListener("gamepadconnected", handlePS5ControllerConnected);
+window.addEventListener("gamepaddisconnected", handlePS5ControllerDisconnected);
+
+
 // Shake Roll// Start polling when the gamepad is connected
 function handleControllerShake(gamepad) {
     const motionX = gamepad.axes[2] || 0; // Horizontal motion
