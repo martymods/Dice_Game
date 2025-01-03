@@ -164,20 +164,8 @@ async function setupSinglePlayer() {
     const bet100Button = document.getElementById('bet100Button');
 
     const ambienceSound = new Audio('/sounds/Ambience0.ogg');
-
-    // Preload the audio
-    ambienceSound.preload = 'auto';
-    
-    // Set it to loop
     ambienceSound.loop = true;
-    
-    // Play it once everything is ready
-    document.addEventListener('DOMContentLoaded', () => {
-        window.addEventListener('load', () => {
-            ambienceSound.play().catch(err => console.error('Ambience sound play error:', err));
-        });
-    });
-    
+    ambienceSound.play().catch(err => console.error('Ambience sound error:', err));
 
      // Ensure necessary elements exist
      const requiredElements = [
