@@ -1204,6 +1204,16 @@ async function displayLeaderboardPrompt(score) {
         leaderboardDisplay.innerHTML = '<p>Unable to load leaderboard.</p>';
     }
 
+        // Create a Quit Game button dynamically
+        const quitButton = document.createElement("button");
+        quitButton.id = "quit-leaderboard";
+        quitButton.textContent = "Quit Game";
+        quitButton.style.marginLeft = "10px"; // Add spacing from the Submit button
+        quitButton.onclick = quitGame; // Attach the quitGame function
+    
+        // Add the Quit Game button next to Submit button
+        submitButton.parentNode.insertBefore(quitButton, submitButton.nextSibling);
+        
     // Submit leaderboard entry
     submitButton.onclick = async () => {
         const playerName = playerNameInput.value.trim();
