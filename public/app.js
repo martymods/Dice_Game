@@ -1560,7 +1560,8 @@ function handleGamepadNavigation(gamepad) {
 
 
 // Touch Pad Control
-const cursorSpeed = 10; // Adjust speed of cursor movement
+const cursorSpeed = 10; // Adjust cursor speed
+let controllerActive = false; // Track if the controller is active
 
 function handleGamepadTouchpad(gamepad) {
     // PS5 touchpad axes
@@ -1583,7 +1584,7 @@ function handleGamepadTouchpad(gamepad) {
     }
 
     // Simulate left-click when touchpad is pressed
-    if (gamepad.buttons[13]?.pressed) { // Touchpad click button
+    if (gamepad.buttons[13]?.pressed) {
         simulateMouseClick(cursorX, cursorY);
     }
 }
@@ -1610,7 +1611,7 @@ function pollGamepadTouchpad() {
     const gamepads = navigator.getGamepads();
     const gamepad = gamepads[0]; // Use the first connected gamepad
 
-    if (gamepad) {
+    if (gamepad && controllerActive) {
         handleGamepadTouchpad(gamepad);
     }
 
@@ -1627,8 +1628,30 @@ function createGamepadCursor() {
     cursorElement.style.backgroundColor = "red";
     cursorElement.style.borderRadius = "50%";
     cursorElement.style.pointerEvents = "none"; // Ensure it doesn't interfere with clicks
+    cursorElement.style.display = "none"; // Initially hidden
     document.body.appendChild(cursorElement);
 }
+
+// Show or hide the cursor based on controller activation
+function toggleGamepadCursor(show) {
+    const cursorElement = document.getElementById("gamepad-cursor");
+    if (cursorElement) {
+        cursorElement.style.display = show ? "block" : "none";
+    }
+}
+
+// Gamepad connection and disconnection events
+window.addEventListener("gamepadconnected", (event) => {
+    console.log(`Gamepad connected: ${event.gamepad.id}`);
+    controllerActive = true;
+    toggleGamepadCursor(true); // Show cursor
+});
+
+window.addEventListener("gamepaddisconnected", (event) => {
+    console.log(`Gamepad disconnected: ${event.gamepad.id}`);
+    controllerActive = false;
+    toggleGamepadCursor(false); // Hide cursor
+});
 
 // Initialize touchpad controls
 document.addEventListener("DOMContentLoaded", () => {
