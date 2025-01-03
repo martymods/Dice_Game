@@ -17,6 +17,8 @@ let playerHasPurchased = false; // Track if the player has purchased an item/hus
 let onFire = false; // Whether the dice are "on fire"
 let fireSound; // Sound for when "on fire" is active
 let canRollDice = true; // Flag to track if rolling is allowed
+let cursorX = window.innerWidth / 2; // Initialize cursor position (center of the screen)
+let cursorY = window.innerHeight / 2;
 
 let hustlerInventory = []; // Player's hustlers
 
@@ -1555,6 +1557,84 @@ function handleGamepadNavigation(gamepad) {
         menuButtons[currentMenuIndex].click();
     }
 }
+
+
+// Touch Pad Control
+const cursorSpeed = 10; // Adjust speed of cursor movement
+
+function handleGamepadTouchpad(gamepad) {
+    // PS5 touchpad axes
+    const touchpadX = gamepad.axes[2]; // Horizontal position (-1 to 1)
+    const touchpadY = gamepad.axes[3]; // Vertical position (-1 to 1)
+
+    // Update cursor position
+    cursorX += touchpadX * cursorSpeed;
+    cursorY += touchpadY * cursorSpeed;
+
+    // Clamp cursor within screen bounds
+    cursorX = Math.max(0, Math.min(window.innerWidth, cursorX));
+    cursorY = Math.max(0, Math.min(window.innerHeight, cursorY));
+
+    // Update cursor style (for visual feedback)
+    const cursorElement = document.getElementById("gamepad-cursor");
+    if (cursorElement) {
+        cursorElement.style.left = `${cursorX}px`;
+        cursorElement.style.top = `${cursorY}px`;
+    }
+
+    // Simulate left-click when touchpad is pressed
+    if (gamepad.buttons[13]?.pressed) { // Touchpad click button
+        simulateMouseClick(cursorX, cursorY);
+    }
+}
+
+// Simulate a mouse click at the cursor position
+function simulateMouseClick(x, y) {
+    const event = new MouseEvent("click", {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+    });
+
+    const target = document.elementFromPoint(x, y);
+    if (target) {
+        target.dispatchEvent(event);
+        console.log("Simulated click at:", x, y);
+    }
+}
+
+// Continuously poll for gamepad input
+function pollGamepadTouchpad() {
+    const gamepads = navigator.getGamepads();
+    const gamepad = gamepads[0]; // Use the first connected gamepad
+
+    if (gamepad) {
+        handleGamepadTouchpad(gamepad);
+    }
+
+    requestAnimationFrame(pollGamepadTouchpad);
+}
+
+// Create a visual cursor for feedback
+function createGamepadCursor() {
+    const cursorElement = document.createElement("div");
+    cursorElement.id = "gamepad-cursor";
+    cursorElement.style.position = "absolute";
+    cursorElement.style.width = "10px";
+    cursorElement.style.height = "10px";
+    cursorElement.style.backgroundColor = "red";
+    cursorElement.style.borderRadius = "50%";
+    cursorElement.style.pointerEvents = "none"; // Ensure it doesn't interfere with clicks
+    document.body.appendChild(cursorElement);
+}
+
+// Initialize touchpad controls
+document.addEventListener("DOMContentLoaded", () => {
+    createGamepadCursor(); // Create the cursor element
+    pollGamepadTouchpad(); // Start polling for touchpad input
+});
 
 
 
