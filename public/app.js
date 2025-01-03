@@ -1404,6 +1404,21 @@ document.getElementById('pay-with-bitcoin').addEventListener('click', () => {
     `;
     document.body.appendChild(qrModal);
 });
+    // Hide the Loading Screen
+document.addEventListener('DOMContentLoaded', () => {
+    const loadingScreen = document.getElementById('loading-screen');
+
+    // Wait until all assets are fully loaded
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            loadingScreen.style.opacity = '0'; // Fade out effect
+            setTimeout(() => {
+                loadingScreen.style.display = 'none'; // Remove from view
+            }, 500); // Match fade-out duration
+        }, 500); // Optional delay for smoother transition
+    });
+});
+
 
 
 // Make it accessible globally
