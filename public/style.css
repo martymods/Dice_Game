@@ -1124,3 +1124,22 @@ body {
     perspective: 1000px; /* Add 3D perspective for a more realistic tilt effect */
     transition: transform 0.1s ease; /* Smooth transition for the tilt */
 }
+
+#submit-leaderboard,
+#quit-leaderboard {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+#submit-leaderboard:hover,
+#quit-leaderboard:hover {
+    background-color: #e0e0e0;
+}
+
