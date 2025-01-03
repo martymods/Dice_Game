@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
         io.emit('playerUpdate', { players: onlinePlayers });
     });
 
-
+    // Game-related events
     socket.on('createGame', ({ roomName, playerName }) => {
         games[roomName] = { players: [playerName], maxPlayers: 2 };
         socket.join(roomName);
@@ -73,6 +73,11 @@ io.on('connection', (socket) => {
         socket.emit('gameJoined', { success: true, roomName });
         console.log(`${playerName} joined room: ${roomName}`);
     });
+});
+
+// Serve the Socket.IO client library
+app.get('/socket.io/socket.io.js', (req, res) => {
+    res.sendFile(require.resolve('socket.io-client/dist/socket.io.js'));
 });
 
 const port = process.env.PORT || 10000;
