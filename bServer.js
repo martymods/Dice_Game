@@ -17,25 +17,33 @@ app.use(express.json()); // Parse JSON requests
 app.use(express.static('public'));
 
 // Leaderboard Storage
-const leaderboardFile = './leaderboard.json';
+const leaderboardFile = path.resolve(__dirname, 'leaderboard.json');
 let leaderboard = [];
 
 // Load leaderboard from disk
 const loadLeaderboard = () => {
-    if (fs.existsSync(leaderboardFile)) {
-        const data = fs.readFileSync(leaderboardFile, 'utf-8');
-        return JSON.parse(data);
+    try {
+        if (fs.existsSync(leaderboardFile)) {
+            const data = fs.readFileSync(leaderboardFile, 'utf-8');
+            return JSON.parse(data);
+        }
+    } catch (error) {
+        console.error('Failed to load leaderboard:', error);
     }
     return [];
 };
 
 // Save leaderboard to disk
 const saveLeaderboard = () => {
-    fs.writeFileSync(leaderboardFile, JSON.stringify(leaderboard, null, 2));
+    try {
+        fs.writeFileSync(leaderboardFile, JSON.stringify(leaderboard, null, 2));
+    } catch (error) {
+        console.error('Failed to save leaderboard:', error);
+    }
 };
 
 // Load leaderboard at startup
-leaderboard.push(...loadLeaderboard());
+leaderboard = loadLeaderboard();
 
 // Wallet Initialization
 const privateKey = process.env.PRIVATE_KEY;
@@ -69,10 +77,16 @@ app.post('/leaderboard', (req, res) => {
         return res.status(400).json({ error: 'Invalid name or score.' });
     }
 
-    leaderboard.push({ name, score });
-    leaderboard.sort((a, b) => b.score - a.score); // Sort by score descending
-    leaderboard = leaderboard.slice(0, 100); // Keep top 100 scores
-    saveLeaderboard(); // Save to disk
+    // Sanitize and validate input
+    const sanitizedName = name.trim().substring(0, 50); // Limit name length
+    leaderboard.push({ name: sanitizedName, score });
+
+    // Sort and retain the top 100 scores
+    leaderboard.sort((a, b) => b.score - a.score);
+    leaderboard = leaderboard.slice(0, 100);
+
+    // Save to disk
+    saveLeaderboard();
 
     res.status(201).json({ message: 'Entry added successfully!', leaderboard });
 });
