@@ -7,6 +7,8 @@ let activeEffects = [];
 let currentMultiplier = 1;
 let purchasedItems = []; // Proper initialization as an empty array
 
+
+
 // Function to set default cursor
 export function setDefaultCursor() {
     document.body.style.cursor = "url('/images/MouseCursor_0.png'), auto";
