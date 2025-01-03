@@ -551,6 +551,10 @@ async function setupSinglePlayer() {
     function quitGame() {
         window.location.href = '/';
     }
+    // Attach quitGame to the global window object
+    window.quitGame = quitGame;
+    console.log(window.quitGame); // Should log the quitGame function
+
 
     // Handle Showing and Hiding the Combinations Modal
     document.addEventListener('DOMContentLoaded', () => {
@@ -1178,7 +1182,6 @@ function handleGameOver() {
     }
     
 
-
 // Leaderboard Prompt Function
 async function displayLeaderboardPrompt(score) {
     const overlay = document.getElementById("leaderboard-overlay");
@@ -1214,10 +1217,7 @@ async function displayLeaderboardPrompt(score) {
     quitButton.id = "quit-leaderboard";
     quitButton.textContent = "Quit Game";
     quitButton.style.marginLeft = "10px"; // Add spacing from the Submit button
-    quitButton.onclick = () => {
-        console.log("Quit Game button clicked");
-        quitGame();
-    };
+    quitButton.onclick = window.quitGame; // Use the globally attached quitGame function
 
     // Add the Quit Game button next to Submit button
     submitButton.parentNode.insertBefore(quitButton, submitButton.nextSibling);
@@ -1959,4 +1959,3 @@ window.startHighRoller = startHighRoller;
 window.startSinglePlayer = startSinglePlayer;
 window.placeBet = placeBet;
 window.displayLeaderboardPrompt = displayLeaderboardPrompt;
-window.quitGame = quitGame;
