@@ -1185,6 +1185,10 @@ async function displayLeaderboardPrompt(score) {
     const submitButton = document.getElementById('submit-leaderboard');
     const leaderboardDisplay = document.getElementById('leaderboard-entries');
 
+        // Clear previous buttons if any
+        const quitButtonExists = document.getElementById("quit-leaderboard");
+        if (quitButtonExists) quitButtonExists.remove();
+
     overlay.style.display = 'flex';
 
     try {
@@ -1213,7 +1217,7 @@ async function displayLeaderboardPrompt(score) {
     
         // Add the Quit Game button next to Submit button
         submitButton.parentNode.insertBefore(quitButton, submitButton.nextSibling);
-        
+
     // Submit leaderboard entry
     submitButton.onclick = async () => {
         const playerName = playerNameInput.value.trim();
