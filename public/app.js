@@ -2018,23 +2018,27 @@ document.getElementById('toggle-chat').addEventListener('click', () => {
     chatContainer.classList.toggle('chat-expanded');
 });
 
+// Send a message
 document.getElementById('send-message').addEventListener('click', () => {
     const messageInput = document.getElementById('message-input');
     const message = messageInput.value.trim();
     if (message) {
         socket.emit('sendMessage', message);
-        messageInput.value = '';
+        messageInput.value = ''; // Clear the input field
     }
 });
 
-document.getElementById('change-name').addEventListener('click', () => {
-    const nameInput = document.getElementById('name-input');
-    const newName = nameInput.value.trim();
-    if (newName) {
-        socket.emit('changeName', newName);
-        nameInput.value = '';
-    }
+// Update message list when a new message is received
+socket.on('newMessage', ({ name, message }) => {
+    const messageList = document.getElementById('message-list');
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = `${name}: ${message}`;
+    messageList.appendChild(messageDiv);
+
+    // Scroll to the latest message
+    messageList.scrollTop = messageList.scrollHeight;
 });
+
 
 // Update player list
 socket.on('playerUpdate', ({ players }) => {
