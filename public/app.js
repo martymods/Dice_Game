@@ -1998,6 +1998,20 @@ window.addEventListener("gamepadconnected", (event) => {
 
 const socket = io();
 
+// Debug WebSocket connection
+socket.on('connect', () => {
+    console.log('Connected to the server:', socket.id);
+});
+
+socket.on('connect_error', (error) => {
+    console.error('WebSocket connection error:', error);
+});
+
+socket.on('disconnect', () => {
+    console.log('Disconnected from the server');
+});
+
+
 // Chat functionality
 document.getElementById('toggle-chat').addEventListener('click', () => {
     const chatContainer = document.getElementById('chat-container');
