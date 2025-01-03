@@ -85,21 +85,110 @@ function updateMultiplierUI(multiplier) {
     }
 }
 
-/**
- * Updates the UI elements for balance, rent, and turns remaining.
- */
+// Function to update the restock fee dynamically
+function updateRestockFee(balance) {
+    const restockFeeElement = document.getElementById('restock-fee');
+    const restockFee = Math.floor(balance * 0.1); // 10% of the current balance
+    restockFeeElement.textContent = restockFee.toLocaleString();
+    return restockFee;
+}
+
+// Handles restocking shop items
+function handleRestock(balance, items, purchasedItems) {
+    const restockFee = updateRestockFee(balance);
+
+    if (balance >= restockFee) {
+        balance -= restockFee; // Deduct restock fee
+        playSound("/sounds/UI_Restock.ogg");
+        alert(`You restocked items for $${restockFee.toLocaleString()}!`);
+
+        // Show new items in the shop
+        showItemPopup(balance, items, purchasedItems);
+
+        // Update UI with new balance
+        updateUI(balance);
+    } else {
+        alert("You don't have enough money to restock!");
+        playSound("/sounds/UI_Error.ogg");
+    }
+
+    return balance; // Return updated balance
+}
+
 export function updateUI(balance, rent = 0, turns = 0, maxTurns = 0, currentBet = 0) {
     const bettingStatus = document.getElementById('betting-status');
     const rentStatus = document.getElementById('rent-status');
-
     if (bettingStatus) {
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
     }
-
     if (rentStatus) {
         rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
     }
+    updateRestockFee(balance); // Update restock fee dynamically
 }
+
+
+
+export function showItemPopup(balance, items, purchasedItems) {
+    const popup = document.getElementById('buy-item-container');
+    const itemList = document.getElementById('item-list');
+
+    popup.style.display = 'block';
+    itemList.innerHTML = '';
+
+    const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+    shuffledItems.forEach(item => {
+        const itemButton = document.createElement('button');
+        itemButton.textContent = `${item.emoji || '❓'} ${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
+        itemButton.style.backgroundColor = getItemColor(item.rarity);
+        itemButton.classList.add('item-button');
+
+        itemButton.onmouseenter = () => showItemDescription(item.description);
+        itemButton.onmouseleave = hideItemDescription;
+
+        itemButton.onclick = () => {
+            const { balance: updatedBalance, purchasedItems: updatedPurchasedItems } = handleItemPurchase(item, balance, purchasedItems);
+            balance = updatedBalance; // Update balance
+            purchasedItems = updatedPurchasedItems; // Update purchased items
+
+            playSound("/sounds/UI_Buy1.ogg");
+            alert(`You purchased ${item.name}!`);
+        };
+
+        itemList.appendChild(itemButton);
+    });
+
+    // Update the restock fee display
+    updateRestockFee(balance);
+}
+
+
+export function handleItemPurchase(item, balance, purchasedItems = []) {
+    if (balance >= item.cost) {
+        balance -= item.cost;
+        purchasedItems.push(item);
+        updatePurchasedItemsDisplay(purchasedItems);
+        updateUI(balance);
+        return { balance, purchasedItems };
+    } else {
+        alert("Not enough money to buy this item.");
+        playSound("/sounds/UI_Error.ogg");
+        return { balance, purchasedItems };
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const restockButton = document.getElementById('restockButton');
+    restockButton.addEventListener('click', () => {
+        balance = handleRestock(balance, items, purchasedItems);
+    });
+
+    // Initialize the restock fee
+    updateRestockFee(balance);
+});
+
+
 
 /**
  * Updates the background image based on the number of rolls remaining.
@@ -235,63 +324,6 @@ export function updateHustlerPanel(hustlerInventory) {
     });
 }
 
-/**
- * Shows the item popup with a list of available items.
- */
-export function showItemPopup(balance, items, purchasedItems) {
-    const popup = document.getElementById('buy-item-container');
-    const itemList = document.getElementById('item-list');
-    const restockButton = document.getElementById('restockButton');
-
-    popup.style.display = 'block';
-    itemList.innerHTML = '';
-
-    const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
-
-    shuffledItems.forEach(item => {
-        const itemButton = document.createElement('button');
-        itemButton.textContent = `${item.emoji || '❓'} ${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
-        itemButton.style.backgroundColor = getItemColor(item.rarity);
-        itemButton.classList.add('item-button');
-
-        itemButton.onmouseenter = () => showItemDescription(item.description);
-        itemButton.onmouseleave = hideItemDescription;
-
-        itemButton.onclick = () => {
-            handleItemPurchase(item, balance, purchasedItems); // Ensure it's passed here
-            applyPurchasedItemEffects(purchasedItems); // Ensure it's passed here
-
-            const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
-            playSound(voiceClips, true);
-        };
-
-        itemList.appendChild(itemButton);
-    });
-}
-
-/**
- * Handles restocking items.
- */
-export function handleRestock(balance, restockFee, items) {
-    if (balance >= restockFee) {
-        // Deduct the restock fee
-        balance -= restockFee;
-
-        // Regenerate the items in the popup
-        showItemPopup(balance, items);
-
-        // Update the UI to reflect the new balance
-        updateUI(balance);
-
-        // Play sound effect for restocking
-        playSound("/sounds/UI_Restock.ogg");
-
-        alert(`You restocked items for $${restockFee.toLocaleString()}!`);
-    } else {
-        alert("You don't have enough money to restock!");
-        playSound("/sounds/UI_Error.ogg");
-    }
-}
 
 /**
  * Displays the item description.
@@ -467,4 +499,3 @@ export function handleGameOverScreen() {
         evictedGif.alt = 'Game Over Idle Screen';
     }, 6000);
 }
-
