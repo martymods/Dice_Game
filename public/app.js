@@ -305,6 +305,8 @@ async function setupSinglePlayer() {
         });
     }
 
+    // Attach handleRollDice to the window object
+    window.handleRollDice = handleRollDice;
     
     function updateBalanceImages(balance) {
         console.log(`Updating balance to: ${balance}`); // Debugging log
@@ -1430,6 +1432,7 @@ window.addEventListener("gamepaddisconnected", (event) => {
     alert("PS5 controller disconnected.");
 });
 
+
 // Gamepad Polling and Input Handling
 function pollGamepadInput() {
     const gamepads = navigator.getGamepads();
@@ -1516,4 +1519,4 @@ window.startHighRoller = startHighRoller;
 window.startSinglePlayer = startSinglePlayer;
 window.placeBet = placeBet;
 window.displayLeaderboardPrompt = displayLeaderboardPrompt;
-window.handleRollDice = handleRollDice;
+
