@@ -1453,8 +1453,20 @@ function handleGamepadActions(gamepad) {
     if (gamepad.buttons[0].pressed) { // Cross (X)
         handleRollDice(); // Call the roll dice function
     }
+    if (gamepad.buttons[2].pressed) { // Square (Sqaure)
+        console.log("Bet 25%");
+        setBet(0.25); // Function to set bet to 25%
+    }
+    if (gamepad.buttons[3].pressed) { // △ (Triangle)
+        console.log("Bet 50%");
+        setBet(0.50); // Function to set bet to 50%
+    }
+    if (gamepad.buttons[1].pressed) { // Circle (Circle)
+        console.log("Bet 100%");
+        setBet(1.00); // Function to set bet to 100%
+    }
 
-    if (gamepad.buttons[1].pressed) { // Circle (O)
+    if (gamepad.buttons[8].pressed) { // Back (O)
         quitGame(); // Call the quit game function
     }
 
@@ -1519,4 +1531,3 @@ window.startHighRoller = startHighRoller;
 window.startSinglePlayer = startSinglePlayer;
 window.placeBet = placeBet;
 window.displayLeaderboardPrompt = displayLeaderboardPrompt;
-
