@@ -1659,7 +1659,78 @@ document.addEventListener("DOMContentLoaded", () => {
     pollGamepadTouchpad(); // Start polling for touchpad input
 });
 
+function addPS5ButtonImages() {
+    const buttonMappings = [
+        { id: "rollButton", image: "PS5Button_x.png" },
+        { id: "bet100Button", image: "PS5Button_circle.png" },
+        { id: "quitButton", image: "PS5Button_s.png" },
+        { id: "bet25Button", image: "PS5Button_square.png" },
+        { id: "bet50Button", image: "PS5Button_triangle.png" },
+    ];
 
+    buttonMappings.forEach(({ id, image }) => {
+        const button = document.getElementById(id);
+        if (button) {
+            const img = document.createElement("img");
+            img.src = `/images/${image}`;
+            img.classList.add("ps5-button-overlay");
+            img.style.position = "absolute";
+            img.style.left = `${button.offsetLeft + button.offsetWidth / 2 - 25}px`; // Center over the button
+            img.style.top = `${button.offsetTop - 30}px`; // Slightly above the button
+            img.style.width = "50px"; // Adjust as needed
+            img.style.height = "50px";
+            img.style.pointerEvents = "none"; // Ensure it doesn’t block clicks
+            button.parentElement.appendChild(img);
+        }
+    });
+}
+
+function showPS5MouseCursorImage() {
+    const cursorImage = document.createElement("img");
+    cursorImage.src = "/images/PS5Button_ra.png";
+    cursorImage.id = "ps5-cursor-image";
+    cursorImage.style.position = "absolute";
+    cursorImage.style.width = "30px"; // Adjust size as needed
+    cursorImage.style.height = "30px";
+    cursorImage.style.left = `${cursorX}px`;
+    cursorImage.style.top = `${cursorY}px`;
+    cursorImage.style.transition = "opacity 2s ease"; // Smooth fade-out
+    document.body.appendChild(cursorImage);
+
+    setTimeout(() => {
+        cursorImage.style.opacity = "0"; // Fade out
+        setTimeout(() => {
+            cursorImage.remove(); // Remove from DOM
+        }, 2000); // Wait for fade-out to complete
+    }, 6000); // Display for 6 seconds
+}
+
+// Adjust button positions dynamically on window resize
+window.addEventListener("resize", () => {
+    if (controllerActive) {
+        document.querySelectorAll(".ps5-button-overlay").forEach((img) => img.remove());
+        addPS5ButtonImages();
+    }
+});
+
+// Gamepad connection event
+window.addEventListener("gamepadconnected", (event) => {
+    console.log(`Gamepad connected: ${event.gamepad.id}`);
+    controllerActive = true;
+
+    // Add button overlays and show cursor image
+    addPS5ButtonImages();
+    showPS5MouseCursorImage();
+});
+
+// Gamepad disconnection event
+window.addEventListener("gamepaddisconnected", (event) => {
+    console.log(`Gamepad disconnected: ${event.gamepad.id}`);
+    controllerActive = false;
+
+    // Remove button overlays
+    document.querySelectorAll(".ps5-button-overlay").forEach((img) => img.remove());
+});
 
 
 // Make it accessible globally
