@@ -90,6 +90,10 @@ function updateMultiplierUI(multiplier) {
 // Function to update the restock fee dynamically
 function updateRestockFee(balance) {
     const restockFeeElement = document.getElementById('restock-fee');
+    if (!restockFeeElement) {
+        console.error("Element with ID 'restock-fee' not found.");
+        return;
+    }
     const restockFee = Math.floor(balance * 0.1); // 10% of the current balance
     restockFeeElement.textContent = restockFee.toLocaleString();
     return restockFee;
@@ -128,7 +132,11 @@ export function updateUI(balance, rent = 0, turns = 0, maxTurns = 0, currentBet 
     if (rentStatus) {
         rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
     }
-    updateRestockFee(balance);
+
+    // Safely update the restock fee
+    if (balance !== undefined) {
+        updateRestockFee(balance);
+    }
 }
 
 
@@ -173,20 +181,19 @@ export function handleItemPurchase(item, balance, purchasedItems = []) {
     }
 
     if (balance >= item.cost) {
-        balance -= item.cost;
-        purchasedItems.push(item);
-        updatePurchasedItemsDisplay(purchasedItems);
-        updateUI(balance);
+        balance -= item.cost; // Deduct item cost
+        purchasedItems.push(item); // Add to inventory
+        updatePurchasedItemsDisplay(purchasedItems); // Update inventory UI
+        updateUI(balance); // Reflect balance update
         playSound("/sounds/UI_Buy1.ogg");
         alert(`You purchased ${item.name}!`);
         return { balance, purchasedItems };
     } else {
-        alert('Not enough money to buy this item.');
+        alert("Not enough money to buy this item.");
         playSound("/sounds/UI_Error.ogg");
-        return { balance, purchasedItems };
+        return { balance, purchasedItems }; // Return unchanged values
     }
 }
-
 
 // Consolidated DOMContentLoaded initialization
 document.addEventListener('DOMContentLoaded', () => {
