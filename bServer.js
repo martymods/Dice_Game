@@ -184,3 +184,10 @@ app.use((req, res) => {
 server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
+
+// Serve the Socket.IO client library
+app.get('/socket.io/socket.io.js', (req, res) => {
+    const filePath = require.resolve('socket.io-client/dist/socket.io.js');
+    res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+    res.sendFile(filePath);
+});
