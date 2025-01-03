@@ -10,11 +10,13 @@ import { applyPurchasedItemEffects } from './itemEffects.js';
 
 
 
+
 // Fire Status
 let winStreak = 0; // Track the current winning streak
 let playerHasPurchased = false; // Track if the player has purchased an item/hustler in the shop
 let onFire = false; // Whether the dice are "on fire"
 let fireSound; // Sound for when "on fire" is active
+let canRollDice = true; // Flag to track if rolling is allowed
 
 let hustlerInventory = []; // Player's hustlers
 
@@ -249,11 +251,21 @@ async function setupSinglePlayer() {
         window.setBet = setBet;
         
 
-    function handleRollDice() {
-        if (currentBet <= 0) {
-            alert('Place a bet first!');
-            return;
-        }
+        function handleRollDice() {
+            if (!canRollDice) {
+                console.log("Roll Dice is on cooldown."); // Debugging message
+                return;
+            }
+        
+            if (currentBet <= 0) {
+                alert('Place a bet first!');
+                return;
+            }
+        
+            canRollDice = false; // Disable rolling
+            setTimeout(() => {
+                canRollDice = true; // Re-enable rolling after 0.2 seconds
+            }, 200); // 200 milliseconds delay
 
         // Dim the background and highlight the dice during the roll
         const gameContainer = document.getElementById('game-container');
