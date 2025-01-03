@@ -1110,3 +1110,12 @@ button.active {
     transform: scale(1.1);
     transition: transform 0.2s ease;
 }
+.ps5-button-overlay {
+    z-index: 1000; /* Ensure it appears above other elements */
+    pointer-events: none; /* Prevent blocking interactions */
+}
+
+#ps5-cursor-image {
+    z-index: 1000; /* Ensure it appears above other elements */
+    pointer-events: none;
+}
