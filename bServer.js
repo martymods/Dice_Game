@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const { Server } = require('socket.io');
 const cors = require('cors');
 require('dotenv').config();
 const ethers = require('ethers');
@@ -17,6 +18,9 @@ const port = process.env.PORT || 3000;
 app.use(cors()); // Enable CORS
 app.use(express.json()); // Parse JSON requests
 app.use(express.static('public')); // Serve static files from the 'public' folder
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Leaderboard Storage
 const leaderboardFile = path.resolve(__dirname, 'leaderboard.json');
