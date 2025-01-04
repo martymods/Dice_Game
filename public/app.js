@@ -1998,7 +1998,7 @@ window.addEventListener("gamepadconnected", (event) => {
 
 const socket = io();
 
-// Debug WebSocket connection
+// Debug WebSocket connection 
 socket.on('connect', () => {
     console.log('Connected to the server:', socket.id);
 });
@@ -2021,6 +2021,7 @@ document.getElementById('toggle-chat').addEventListener('click', () => {
 
 // Send a message
 document.getElementById('send-message').addEventListener('click', () => {
+    console.log('Send message button clicked');
     const messageInput = document.getElementById('message-input');
     const message = messageInput.value.trim();
     if (message) {
