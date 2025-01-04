@@ -9,8 +9,9 @@ import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
 
-const io = window.io;
-const socket = io(); // Initialize the socket connection
+const socket = io(); // Ensure io is loaded globally via the HTML script tag
+window.socket = socket; // Expose `socket` globally for other scripts
+
 export { socket };   // Export the socket instance
 
 
