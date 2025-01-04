@@ -529,6 +529,8 @@ document.getElementById('send-message').addEventListener('click', () => {
 
 // Update message list when a new message is received
 socket.on('newMessage', ({ name, message }) => {
+    console.log('Socket initialized in app.js:', socket);
+
     console.log('New message received:', name, message); // Debug log
     const messageList = document.getElementById('message-list');
     const messageDiv = document.createElement('div');
@@ -539,9 +541,10 @@ socket.on('newMessage', ({ name, message }) => {
     messageList.scrollTop = messageList.scrollHeight;
 });
 
-
 // Update player list
 socket.on('playerUpdate', ({ players }) => {
+    console.log('Socket initialized in app.js:', socket);
+
     const playerNames = document.getElementById('player-names');
     playerNames.innerHTML = '';
     Object.values(players).forEach((name) => {
@@ -553,6 +556,8 @@ socket.on('playerUpdate', ({ players }) => {
 
 // Update message list
 socket.on('newMessage', ({ name, message }) => {
+    console.log('Socket initialized in app.js:', socket);
+
     const messageList = document.getElementById('message-list');
     const div = document.createElement('div');
     div.textContent = `${name}: ${message}`;
