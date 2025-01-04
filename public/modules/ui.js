@@ -1,6 +1,6 @@
 import { playSound } from './audio.js';
 import { itemsList } from '/items.js'; // Ensure the correct relative path
-import { socket } from '/app.js'; // Adjust path as needed
+import { socket } from './app.js'; // Adjust path as needed
 
 
 // Global state for multipliers and effects
@@ -526,19 +526,27 @@ document.getElementById('send-message').addEventListener('click', () => {
     }
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const socket = window.socket; // Access the globally initialized socket
 
+    if (!socket) {
+        console.error('Socket is not initialized. Ensure app.js is loaded before ui.js.');
+        return;
+    }
 
-// Update message list when a new message is received
-socket.on('newMessage', ({ name, message }) => {
-    console.log('New message received:', name, message); // Debug log
-    const messageList = document.getElementById('message-list');
-    const messageDiv = document.createElement('div');
-    messageDiv.textContent = `${name}: ${message}`;
-    messageList.appendChild(messageDiv);
+    // Update message list when a new message is received
+    socket.on('newMessage', ({ name, message }) => {
+        console.log('New message received:', name, message); // Debug log
+        const messageList = document.getElementById('message-list');
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = `${name}: ${message}`;
+        messageList.appendChild(messageDiv);
 
-    // Scroll to the latest message
-    messageList.scrollTop = messageList.scrollHeight;
+        // Scroll to the latest message
+        messageList.scrollTop = messageList.scrollHeight;
+    });
 });
+
 
 
 
