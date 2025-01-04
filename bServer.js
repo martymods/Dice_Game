@@ -205,3 +205,8 @@ app.get('/socket.io-client/socket.io.min.js', (req, res) => {
 server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
+
+app.use((req, res, next) => {
+    console.log(`Request received for: ${req.url}`);
+    next();
+});
