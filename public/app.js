@@ -2014,6 +2014,7 @@ socket.on('disconnect', () => {
 
 // Chat functionality
 document.getElementById('toggle-chat').addEventListener('click', () => {
+    console.log('Chat button clicked');
     const chatContainer = document.getElementById('chat-container');
     chatContainer.classList.toggle('chat-expanded');
 });
@@ -2022,10 +2023,12 @@ document.getElementById('toggle-chat').addEventListener('click', () => {
 document.getElementById('send-message').addEventListener('click', () => {
     const messageInput = document.getElementById('message-input');
     const message = messageInput.value.trim();
-    console.log('Sending message:', message); // Debug log
     if (message) {
+        console.log('Sending message:', message); // Debug
         socket.emit('sendMessage', message);
         messageInput.value = ''; // Clear the input field
+    } else {
+        console.error('Message is empty'); // Debug
     }
 });
 
