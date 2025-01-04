@@ -9,20 +9,15 @@ import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
 
-import { io } from 'socket.io-client';
+import { io } from '/socket.io-client/socket.io.min.js';
 
-const socket = io(); // Ensure the socket is initialized here
-export { socket };   // Ensure this export is present
-
-
+const socket = io(); // Initialize the socket connection
+export { socket };   // Export the socket instance
 
 
 document.addEventListener('DOMContentLoaded', () => {
     updateBalanceDisplay(balance); // Initialize the balance display
 });
-
-
-
 
 
 // Fire Status
