@@ -77,11 +77,11 @@ io.on('connection', (socket) => {
 
     // Handle chat messages
     socket.on('sendMessage', (message) => {
-        if (message && message.trim()) {
-            const name = onlinePlayers[socket.id];
-            io.emit('newMessage', { name, message: message.trim() });
-        }
+        console.log('Received message:', message);
+        const name = onlinePlayers[socket.id];
+        io.emit('newMessage', { name, message });
     });
+    
 
     // Notify when a player disconnects
     socket.on('disconnect', () => {
@@ -190,4 +190,11 @@ app.get('/socket.io/socket.io.js', (req, res) => {
     const filePath = require.resolve('socket.io-client/dist/socket.io.js');
     res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
     res.sendFile(filePath);
+});
+
+
+// Test Message Emission
+socket.on('test', (data) => {
+    console.log('Test message received:', data);
+    socket.emit('testReply', 'Hello from Server');
 });
