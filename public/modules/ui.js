@@ -526,7 +526,7 @@ document.getElementById('send-message').addEventListener('click', () => {
     }
 });
 
-const socket = window.socket; // Access the globally initialized socket
+
 
 // Update message list when a new message is received
 socket.on('newMessage', ({ name, message }) => {
