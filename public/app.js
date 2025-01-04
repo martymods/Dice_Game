@@ -8,6 +8,12 @@ import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
+import { io } from 'socket.io-client';
+
+const socket = io();
+export { socket };
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     updateBalanceDisplay(balance); // Initialize the balance display
@@ -1995,8 +2001,6 @@ window.addEventListener("gamepadconnected", (event) => {
     console.log(`Gamepad connected: ${event.gamepad.id}`);
     pollGamepadShake(); // Start motion tracking
 });
-
-const socket = io();
 
 // Debug WebSocket connection 
 socket.on('connect', () => {
