@@ -2013,12 +2013,21 @@ socket.on('disconnect', () => {
 
 
 // Chat functionality
-document.getElementById('toggle-chat').addEventListener('click', () => {
-    console.log('Chat button clicked');
-    const chatContainer = document.getElementById('chat-container');
-    chatContainer.classList.toggle('chat-expanded');
-    console.log('Chat container classes:', chatContainer.className);
+document.addEventListener('DOMContentLoaded', () => {
+    const chatButton = document.getElementById('toggle-chat');
+    if (chatButton) {
+        console.log('Chat button found:', chatButton);
+        chatButton.addEventListener('click', () => {
+            console.log('Chat button clicked');
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.classList.toggle('chat-expanded');
+            console.log('Chat container classes:', chatContainer.className);
+        });
+    } else {
+        console.error('Chat button not found');
+    }
 });
+
 
 // Send a message
 document.getElementById('send-message').addEventListener('click', () => {
