@@ -498,6 +498,8 @@ export function updateBalanceDisplay(balance) {
 }
 
 // Chat functionality
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const chatButton = document.getElementById('toggle-chat');
     if (chatButton) {
@@ -507,4 +509,58 @@ document.addEventListener('DOMContentLoaded', () => {
             chatContainer.classList.toggle('chat-expanded');
         });
     }
+});
+
+// Send a message
+document.getElementById('send-message').addEventListener('click', () => {
+    console.log('Send message button clicked');
+    const messageInput = document.getElementById('message-input');
+    const message = messageInput.value.trim();
+    if (message) {
+        console.log('Sending message:', message); // Debug
+        socket.emit('sendMessage', message);
+        messageInput.value = ''; // Clear the input field
+    } else {
+        console.error('Message is empty'); // Debug
+    }
+});
+
+
+// Update message list when a new message is received
+socket.on('newMessage', ({ name, message }) => {
+    console.log('New message received:', name, message); // Debug log
+    const messageList = document.getElementById('message-list');
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = `${name}: ${message}`;
+    messageList.appendChild(messageDiv);
+
+    // Scroll to the latest message
+    messageList.scrollTop = messageList.scrollHeight;
+});
+
+
+// Update player list
+socket.on('playerUpdate', ({ players }) => {
+    const playerNames = document.getElementById('player-names');
+    playerNames.innerHTML = '';
+    Object.values(players).forEach((name) => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        playerNames.appendChild(li);
+    });
+});
+
+// Update message list
+socket.on('newMessage', ({ name, message }) => {
+    const messageList = document.getElementById('message-list');
+    const div = document.createElement('div');
+    div.textContent = `${name}: ${message}`;
+    messageList.appendChild(div);
+    messageList.scrollTop = messageList.scrollHeight; // Scroll to the latest message
+});
+
+socket.emit('test', 'Hello from Client');
+
+socket.on('testReply', (data) => {
+    console.log('Server reply:', data);
 });
