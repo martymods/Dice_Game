@@ -2,7 +2,6 @@ import { playSound } from './audio.js';
 import { itemsList } from '/items.js'; // Ensure the correct relative path
 import { socket } from '/app.js'; // Adjust path as needed
 
-const socket = io();
 
 // Global state for multipliers and effects
 let activeEffects = [];
