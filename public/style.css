@@ -1232,9 +1232,3 @@ body {
     cursor: pointer;
     padding: 5px 10px;
 }
-#chat-container {
-    display: none; /* Initially hidden */
-}
-#chat-container.chat-expanded {
-    display: block; /* Show when toggled */
-}
