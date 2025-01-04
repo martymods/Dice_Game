@@ -9,8 +9,7 @@ import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
 
-import { io } from '/socket.io-client/dist/socket.io.min.js';
-
+const io = window.io;
 const socket = io(); // Initialize the socket connection
 export { socket };   // Export the socket instance
 
