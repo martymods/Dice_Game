@@ -1,6 +1,6 @@
 import { playSound } from './audio.js';
 import { itemsList } from '/items.js'; // Ensure the correct relative path
-import { socket } from '/app.js'; // Adjust path as needed
+import { socket } from './app.js'; // Adjust path as needed
 
 
 // Global state for multipliers and effects
@@ -526,11 +526,10 @@ document.getElementById('send-message').addEventListener('click', () => {
     }
 });
 
+const socket = window.socket; // Access the globally initialized socket
 
 // Update message list when a new message is received
 socket.on('newMessage', ({ name, message }) => {
-    console.log('Socket initialized in app.js:', socket);
-
     console.log('New message received:', name, message); // Debug log
     const messageList = document.getElementById('message-list');
     const messageDiv = document.createElement('div');
@@ -540,6 +539,8 @@ socket.on('newMessage', ({ name, message }) => {
     // Scroll to the latest message
     messageList.scrollTop = messageList.scrollHeight;
 });
+
+
 
 // Update player list
 socket.on('playerUpdate', ({ players }) => {
