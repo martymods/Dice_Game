@@ -81,7 +81,12 @@ io.on('connection', (socket) => {
         const name = onlinePlayers[socket.id];
         io.emit('newMessage', { name, message });
     });
-    
+
+    // Test message handling
+    socket.on('test', (data) => {
+        console.log('Test message received:', data);
+        socket.emit('testReply', 'Hello from Server');
+    });
 
     // Notify when a player disconnects
     socket.on('disconnect', () => {
@@ -180,11 +185,6 @@ app.use((req, res) => {
     res.status(404).send('<h1>404 - Not Found</h1>');
 });
 
-// Start the server
-server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-});
-
 // Serve the Socket.IO client library
 app.get('/socket.io/socket.io.js', (req, res) => {
     const filePath = require.resolve('socket.io-client/dist/socket.io.js');
@@ -192,9 +192,7 @@ app.get('/socket.io/socket.io.js', (req, res) => {
     res.sendFile(filePath);
 });
 
-
-// Test Message Emission
-socket.on('test', (data) => {
-    console.log('Test message received:', data);
-    socket.emit('testReply', 'Hello from Server');
+// Start the server
+server.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
 });
