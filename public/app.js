@@ -2022,14 +2022,17 @@ document.getElementById('toggle-chat').addEventListener('click', () => {
 document.getElementById('send-message').addEventListener('click', () => {
     const messageInput = document.getElementById('message-input');
     const message = messageInput.value.trim();
+    console.log('Sending message:', message); // Debug log
     if (message) {
         socket.emit('sendMessage', message);
         messageInput.value = ''; // Clear the input field
     }
 });
 
+
 // Update message list when a new message is received
 socket.on('newMessage', ({ name, message }) => {
+    console.log('New message received:', name, message); // Debug log
     const messageList = document.getElementById('message-list');
     const messageDiv = document.createElement('div');
     messageDiv.textContent = `${name}: ${message}`;
@@ -2059,6 +2062,13 @@ socket.on('newMessage', ({ name, message }) => {
     messageList.appendChild(div);
     messageList.scrollTop = messageList.scrollHeight; // Scroll to the latest message
 });
+
+socket.emit('test', 'Hello from Client');
+
+socket.on('testReply', (data) => {
+    console.log('Server reply:', data);
+});
+
 
 
 // Make it accessible globally
