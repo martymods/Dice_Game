@@ -196,9 +196,8 @@ app.use((req, res) => {
 });
 
 // Serve the Socket.IO client library
-app.get('/socket.io/socket.io.js', (req, res) => {
-    const filePath = require.resolve('socket.io-client/dist/socket.io.js');
-    res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+app.get('/socket.io-client/socket.io.min.js', (req, res) => {
+    const filePath = require.resolve('socket.io-client/dist/socket.io.min.js');
     res.sendFile(filePath);
 });
 
