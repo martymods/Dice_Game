@@ -2017,6 +2017,7 @@ document.getElementById('toggle-chat').addEventListener('click', () => {
     console.log('Chat button clicked');
     const chatContainer = document.getElementById('chat-container');
     chatContainer.classList.toggle('chat-expanded');
+    console.log('Chat container classes:', chatContainer.className);
 });
 
 // Send a message
