@@ -60,6 +60,12 @@ const games = {};
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
+    socket.on('sendMessage', (message) => {
+        console.log('Received message:', message); // Debug
+        const name = onlinePlayers[socket.id];
+        io.emit('newMessage', { name, message });
+    });
+
     // Assign a random name to the connected player
     const randomName = `Player${Math.floor(Math.random() * 10000)}`;
     onlinePlayers[socket.id] = randomName;
