@@ -8,7 +8,7 @@ import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
-import { io } from 'socket.io-client';
+
 
 const socket = io();
 export { socket };
