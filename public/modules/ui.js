@@ -486,7 +486,7 @@ export function updateBalanceDisplay(balance) {
     for (const digit of balanceString) {
         // Create an image element for each digit
         const digitImage = document.createElement('img');
-        digitImage.src = `/images/Font_Number_${digit}.gif`; // Adjust path if needed
+        digitImage.src = `/public/images/Font_Number_${digit}.gif`; // Adjust path if needed
         digitImage.alt = digit;
         digitImage.style.width = '40px'; // Adjust size
         digitImage.style.height = 'auto';
@@ -496,3 +496,15 @@ export function updateBalanceDisplay(balance) {
         balanceDisplay.appendChild(digitImage);
     }
 }
+
+// Chat functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const chatButton = document.getElementById('toggle-chat');
+    if (chatButton) {
+        chatButton.addEventListener('click', () => {
+            console.log('Chat button clicked (ui.js)');
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.classList.toggle('chat-expanded');
+        });
+    }
+});
