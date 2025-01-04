@@ -10,12 +10,14 @@
     "node": "18.x"
   },
   "dependencies": {
+    "aws-sdk": "^2.1692.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "ethers": "5.7.2",
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
     "socket.io": "^4.5.1",
-    "fs": "0.0.1-security"
+    "socket.io-client": "^4.8.1"
   },
   "repository": {
     "type": "git",
