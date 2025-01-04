@@ -9,7 +9,11 @@ import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
 
-export { socket };
+import { io } from 'socket.io-client';
+
+const socket = io(); // Ensure the socket is initialized here
+export { socket };   // Ensure this export is present
+
 
 
 
