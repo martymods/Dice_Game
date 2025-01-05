@@ -1,6 +1,7 @@
 import { playSound } from './audio.js';
 import { itemsList } from '/items.js'; // Ensure the correct relative path
 
+
 // Global state for multipliers and effects
 let activeEffects = [];
 let currentMultiplier = 1;
@@ -515,16 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendMessageButton = document.getElementById('send-message');
     const messageInput = document.getElementById('message-input');
 
-    if (sendMessageButton) {
-        // Remove any existing listener before adding a new one
-        sendMessageButton.removeEventListener('click', handleSendMessage);
-        sendMessageButton.addEventListener('click', handleSendMessage);
-    } else {
-        console.error('Send message button not found.');
-    }
-
     function handleSendMessage() {
-        console.log('Send message button clicked');
         if (!window.socket) {
             console.error('Socket is not initialized.');
             return;
@@ -532,14 +524,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const message = messageInput?.value.trim();
         if (message) {
-            console.log('Sending message:', message); // Debug
+            console.log('Sending message:', message);
             window.socket.emit('sendMessage', message);
             messageInput.value = ''; // Clear the input field
         } else {
-            console.error('Message is empty'); // Debug
+            console.error('Message is empty.');
         }
     }
+
+    if (sendMessageButton) {
+        // Remove any existing listener before adding a new one
+        sendMessageButton.removeEventListener('click', handleSendMessage);
+        sendMessageButton.addEventListener('click', handleSendMessage);
+    } else {
+        console.error('Send message button not found.');
+    }
 });
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
