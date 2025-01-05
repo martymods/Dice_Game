@@ -1,5 +1,6 @@
 // app.
 
+import { io } from 'socket.io-client'; // Ensure `socket.io-client` is loaded
 import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
@@ -9,16 +10,24 @@ import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
 
-import { io } from 'socket.io-client'; // Ensure `socket.io-client` is loaded
-export const socket = io(); // Initialize and export the socket
 
-// Expose `socket` globally for other modules/scripts
-window.socket = socket;
+// Initialize and expose the socket globally
+const socket = io(); // Use the globally loaded `io` object
+window.socket = socket; // Make the socket globally accessible
+export { socket };
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Socket initialized in app.js:', socket); // Debug log
+// Debug WebSocket connection
+socket.on('connect', () => {
+    console.log('Connected to the server:', socket.id);
 });
 
+socket.on('connect_error', (error) => {
+    console.error('WebSocket connection error:', error);
+});
+
+socket.on('disconnect', () => {
+    console.log('Disconnected from the server');
+});
 
 // Balance
 document.addEventListener('DOMContentLoaded', () => {
