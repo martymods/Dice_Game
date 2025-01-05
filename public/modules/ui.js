@@ -547,19 +547,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Example: Adding a listener for incoming messages
     socket.on('newMessage', ({ name, message }) => {
-        console.log('New message received:', name, message); // Debug log
         const messageList = document.getElementById('message-list');
         if (messageList) {
             const messageDiv = document.createElement('div');
             messageDiv.textContent = `${name}: ${message}`;
             messageList.appendChild(messageDiv);
-
-            // Scroll to the latest message
-            messageList.scrollTop = messageList.scrollHeight;
+            messageList.scrollTop = messageList.scrollHeight; // Scroll to the latest message
         } else {
-            console.error('Message list element not found.');
+            console.error('message-list element not found in the DOM.');
         }
     });
+    
 });
 
 
