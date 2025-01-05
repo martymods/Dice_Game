@@ -551,7 +551,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Example: Adding a listener for incoming messages
+    // Remove existing listeners to prevent duplicates
+    socket.off('newMessage'); // Unbind existing 'newMessage' listeners
+    socket.off('playerUpdate'); // Unbind 'playerUpdate' listeners
+
+    // Add fresh listeners
     socket.on('newMessage', ({ name, message }) => {
         const messageList = document.getElementById('message-list');
         if (messageList) {
@@ -563,29 +567,22 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('message-list element not found in the DOM.');
         }
     });
-    
-});
 
-
-
-// Update player list
-socket.on('playerUpdate', ({ players }) => {
-    console.log('Socket initialized in app.js:', socket);
-
-    const playerNames = document.getElementById('player-names');
-if (!playerNames) {
-    console.error("Element 'player-names' not found in the DOM.");
-    return; // Exit early if the element is missing
-}
-playerNames.innerHTML = '';
-
-    playerNames.innerHTML = '';
-    Object.values(players).forEach((name) => {
-        const li = document.createElement('li');
-        li.textContent = name;
-        playerNames.appendChild(li);
+    socket.on('playerUpdate', ({ players }) => {
+        const playerNames = document.getElementById('player-names');
+        if (!playerNames) {
+            console.error("Element 'player-names' not found in the DOM.");
+            return; // Exit early if the element is missing
+        }
+        playerNames.innerHTML = '';
+        Object.values(players).forEach((name) => {
+            const li = document.createElement('li');
+            li.textContent = name;
+            playerNames.appendChild(li);
+        });
     });
 });
+
 
 // Update message list
 socket.on('newMessage', ({ name, message }) => {
