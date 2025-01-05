@@ -488,7 +488,7 @@ export function updateBalanceDisplay(balance) {
     for (const digit of balanceString) {
         // Create an image element for each digit
         const digitImage = document.createElement('img');
-        digitImage.src = `/public/images/Font_Number_${digit}.gif`; // Adjust path if needed
+        digitImage.src = `/images/Font_Number_${digit}.gif`; // Adjust path if needed
         digitImage.alt = digit;
         digitImage.style.width = '40px'; // Adjust size
         digitImage.style.height = 'auto';
