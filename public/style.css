@@ -1328,7 +1328,7 @@ body {
     margin-top: 10px; /* Add space above */
     gap: 5px; /* Space between images */
     padding: 10px; /* Optional padding for spacing */
-    background-color: #f9f9f9; /* Optional background for styling */
+    background-color: #f9f9f900; /* Optional background for styling */
     border-radius: 10px; /* Rounded corners */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
 }
