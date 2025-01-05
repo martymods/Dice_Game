@@ -67,6 +67,29 @@ const games = {};
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
+    // Debug: Check for duplicate listeners
+    const existingListeners = socket.listenerCount('sendMessage');
+    if (existingListeners > 0) {
+        console.warn(`sendMessage listener already exists for socket ${socket.id}`);
+    }
+
+    // Ensure the listener is only added once
+    socket.removeAllListeners('sendMessage');
+    socket.on('sendMessage', (message) => {
+        console.log('Received message:', message);
+        const name = onlinePlayers[socket.id] || 'Unknown';
+        io.emit('newMessage', { name, message });
+    });
+
+    // Other event listeners
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+        delete onlinePlayers[socket.id];
+        io.emit('playerUpdate', { players: onlinePlayers });
+    });
+
+
+
     socket.on('sendMessage', (message) => {
         console.log('Received message:', message); // Debug
         const name = onlinePlayers[socket.id];
