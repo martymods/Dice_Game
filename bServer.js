@@ -14,6 +14,9 @@ const server = http.createServer(app);
 const io = socketIo(server);
 const port = process.env.PORT || 3000;
 
+// Middleware to serve the Socket.IO library
+app.use('/socket.io', express.static('node_modules/socket.io/client-dist'));
+
 // Middleware
 app.use(cors()); // Enable CORS
 app.use(express.json()); // Parse JSON requests
