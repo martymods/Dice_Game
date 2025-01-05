@@ -759,7 +759,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCombinationsModal();
 });
 
-function activateOnFire() {
+export function activateOnFire() {
     onFire = true;
     playSound("/sounds/FireIgnite0.ogg"); // Play ignite sound
 
@@ -787,7 +787,7 @@ function activateOnFire() {
     }
 }
 
-function deactivateOnFire() {
+export function deactivateOnFire() {
     onFire = false;
     playSound("/sounds/FireEnd0.ogg"); // Play end sound
 
