@@ -1319,3 +1319,29 @@ body {
         opacity: 1;
     }
 }
+
+/* Balance Display Container */
+#balance-display {
+    display: flex; /* Align elements in a row */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    margin-top: 10px; /* Add space above */
+    gap: 5px; /* Space between images */
+    padding: 10px; /* Optional padding for spacing */
+    background-color: #f9f9f9; /* Optional background for styling */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+/* Balance Images */
+#balance-display img {
+    width: 50px; /* Adjust width for larger images */
+    height: auto; /* Maintain aspect ratio */
+    transition: transform 0.2s ease, opacity 0.2s ease; /* Add hover effect */
+}
+
+/* Hover Effect for Images */
+#balance-display img:hover {
+    transform: scale(1.1); /* Slightly enlarge */
+    opacity: 0.9; /* Subtle transparency effect */
+}
