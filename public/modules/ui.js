@@ -528,8 +528,6 @@ document.getElementById('send-message').addEventListener('click', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    const socket = window.socket; // Access the globally initialized socket
-
     if (!socket) {
         console.error('Socket is not initialized. Ensure app.js is loaded before ui.js.');
         return;
