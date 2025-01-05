@@ -618,3 +618,39 @@ document.addEventListener('DOMContentLoaded', () => {
         messageList.scrollTop = messageList.scrollHeight; // Scroll to the bottom
     });
 });
+
+
+/**
+ * Initializes and manages the combinations modal functionality.
+ */
+export function initializeCombinationsModal() {
+    const showCombinationsButton = document.getElementById('showCombinationsButton');
+    const combinationsModal = document.getElementById('combinationsModal');
+    const closeCombinationsButton = document.getElementById('closeCombinationsButton');
+
+    if (showCombinationsButton && combinationsModal && closeCombinationsButton) {
+        // Show the combinations modal when the button is clicked
+        showCombinationsButton.addEventListener('click', () => {
+            combinationsModal.style.display = 'flex'; // Show the modal
+        });
+
+        // Hide the combinations modal when the close button is clicked
+        closeCombinationsButton.addEventListener('click', () => {
+            combinationsModal.style.display = 'none'; // Hide the modal
+        });
+
+        // Close the modal when clicking outside the modal content
+        combinationsModal.addEventListener('click', (event) => {
+            if (event.target === combinationsModal) {
+                combinationsModal.style.display = 'none';
+            }
+        });
+    } else {
+        console.error('Combination modal elements are missing in the DOM.');
+    }
+}
+
+// Ensure the function is called when the DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    initializeCombinationsModal();
+});
