@@ -200,11 +200,13 @@
         document.getElementById('connect-wallet').addEventListener('click', connectMetaMask);
     </script>
 
-    <script type="module" src="/items.js"></script>
-    <script type="module" src="/itemEffects.js"></script>
-    <script src="/socket.io/socket.io.js"></script> <!-- Ensure the path is correct -->
-    <script type="module" src="app.js"></script>
-    <script type="module" src="/modules/ui.js"></script>
+<script src="/socket.io/socket.io.js"></script> <!-- Load Socket.IO -->
+<script src="/socket-init.js"></script> <!-- Initialize Socket -->
+
+<script type="module" src="/app.js"></script>
+<script type="module" src="/modules/ui.js"></script>
+<script type="module" src="/itemEffects.js"></script>
+>
     
     
     <p id="betting-status"></p>
