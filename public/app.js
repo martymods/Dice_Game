@@ -9,13 +9,10 @@ import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
 
-import { io } from '/socket.io/socket.io.js'; // Adjust path if needed
-
+// Assuming `io` is globally available after including the script in the HTML
 const socket = io(); // Initialize the socket connection
 window.socket = socket; // Expose `socket` globally for other modules to use
-
-export { socket }; // Optionally export it
-
+export { socket };
 
 
 // Fire Status
