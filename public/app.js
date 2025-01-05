@@ -1,6 +1,6 @@
 // app.
 
-import { io } from 'socket.io-client'; // Ensure `socket.io-client` is loaded
+import { io } from '/socket.io/socket.io.js'; // Ensure correct path
 import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
@@ -16,23 +16,10 @@ const socket = io(); // Use the globally loaded `io` object
 window.socket = socket; // Make the socket globally accessible
 export { socket };
 
-// Debug WebSocket connection
-socket.on('connect', () => {
-    console.log('Connected to the server:', socket.id);
-});
-
-socket.on('connect_error', (error) => {
-    console.error('WebSocket connection error:', error);
-});
-
-socket.on('disconnect', () => {
-    console.log('Disconnected from the server');
-});
-
-// Balance
-document.addEventListener('DOMContentLoaded', () => {
-    updateBalanceDisplay(balance); // Initialize the balance display
-});
+// Debug Socket.IO Connection
+socket.on('connect', () => console.log('Connected to server:', socket.id));
+socket.on('disconnect', () => console.log('Disconnected from server'));
+socket.on('connect_error', (err) => console.error('Connection error:', err));
 
 
 // Fire Status
