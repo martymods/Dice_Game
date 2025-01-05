@@ -514,18 +514,28 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Send a message
-document.getElementById('send-message').addEventListener('click', () => {
-    console.log('Send message button clicked');
-    const messageInput = document.getElementById('message-input');
-    const message = messageInput.value.trim();
-    if (message) {
-        console.log('Sending message:', message); // Debug
-        socket.emit('sendMessage', message);
-        messageInput.value = ''; // Clear the input field
+document.addEventListener('DOMContentLoaded', () => {
+    const sendMessageButton = document.getElementById('send-message');
+    console.log(document.getElementById('send-message'));
+
+    if (sendMessageButton) {
+        sendMessageButton.addEventListener('click', () => {
+            console.log('Send message button clicked');
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput?.value.trim();
+            if (message) {
+                console.log('Sending message:', message); // Debug
+                socket.emit('sendMessage', message);
+                messageInput.value = ''; // Clear the input field
+            } else {
+                console.error('Message is empty'); // Debug
+            }
+        });
     } else {
-        console.error('Message is empty'); // Debug
+        console.error('Send message button not found.');
     }
 });
+
 
 document.addEventListener('DOMContentLoaded', () => {
     if (!socket) {
