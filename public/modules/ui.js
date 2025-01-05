@@ -1,6 +1,6 @@
 import { playSound } from './audio.js';
 import { itemsList } from '/items.js'; // Ensure the correct relative path
-import { socket } from '/app.js'; // Correct path
+
 
 
 
