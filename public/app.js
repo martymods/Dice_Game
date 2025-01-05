@@ -9,12 +9,18 @@ import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
 
-const socket = io(); // Ensure io is loaded globally via the HTML script tag
-window.socket = socket; // Expose `socket` globally for other scripts
+import { io } from 'socket.io-client'; // Ensure `socket.io-client` is loaded
+export const socket = io(); // Initialize and export the socket
 
-export { socket };   // Export the socket instance
+// Expose `socket` globally for other modules/scripts
+window.socket = socket;
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Socket initialized in app.js:', socket); // Debug log
+});
 
 
+// Balance
 document.addEventListener('DOMContentLoaded', () => {
     updateBalanceDisplay(balance); // Initialize the balance display
 });
