@@ -11,17 +11,6 @@ import { applyPurchasedItemEffects } from './itemEffects.js';
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
 
 
-// Initialize and expose the socket globally
-const socket = io(); // Use the globally loaded `io` object
-window.socket = socket; // Make the socket globally accessible
-export { socket };
-
-// Debug Socket.IO Connection
-socket.on('connect', () => console.log('Connected to server:', socket.id));
-socket.on('disconnect', () => console.log('Disconnected from server'));
-socket.on('connect_error', (err) => console.error('Connection error:', err));
-
-
 // Fire Status
 let winStreak = 0; // Track the current winning streak
 let playerHasPurchased = false; // Track if the player has purchased an item/hustler in the shop
