@@ -619,7 +619,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-
 /**
  * Initializes and manages the combinations modal functionality.
  */
@@ -631,6 +630,7 @@ export function initializeCombinationsModal() {
     if (showCombinationsButton && combinationsModal && closeCombinationsButton) {
         // Show the combinations modal when the button is clicked
         showCombinationsButton.addEventListener('click', () => {
+            populateCombinationsModal(); // Populate modal with content
             combinationsModal.style.display = 'flex'; // Show the modal
         });
 
@@ -649,6 +649,102 @@ export function initializeCombinationsModal() {
         console.error('Combination modal elements are missing in the DOM.');
     }
 }
+
+/**
+ * Populates the combinations modal with rules and dice images.
+ */
+function populateCombinationsModal() {
+    const modalContent = document.querySelector('#combinationsModal .modal-content');
+    if (!modalContent) {
+        console.error('Modal content element is missing.');
+        return;
+    }
+
+    // Clear existing content
+    modalContent.innerHTML = '';
+
+    // Add title
+    const title = document.createElement('h2');
+    title.textContent = 'Dice Combinations Rules';
+    modalContent.appendChild(title);
+
+    // Add rules
+    const rules = document.createElement('ul');
+    rules.innerHTML = `
+        <li><strong>The Come-Out Roll:</strong> The shooter rolls both dice. The outcome determines the next steps:</li>
+        <li><strong>Win:</strong> If the shooter rolls a <span style="color: green;">7</span> or <span style="color: green;">11</span>, they win.</li>
+        <li><strong>Lose:</strong> If the shooter rolls a <span style="color: red;">2</span>, <span style="color: red;">3</span>, or <span style="color: red;">12</span>, they lose.</li>
+    `;
+    modalContent.appendChild(rules);
+
+    // Add visual combinations
+    const combinationsSection = document.createElement('div');
+    combinationsSection.style.display = 'flex';
+    combinationsSection.style.flexWrap = 'wrap';
+    combinationsSection.style.justifyContent = 'space-around';
+    modalContent.appendChild(combinationsSection);
+
+    // Define winning and losing combinations
+    const combinations = {
+        win: [[1, 6], [2, 5], [3, 4], [4, 3], [5, 2], [6, 1], [5, 6], [6, 5]],
+        lose: [[1, 1], [1, 2], [2, 1], [6, 6], [5, 5], [1, 1], [1, 3]],
+    };
+
+    // Add winning combinations
+    const winTitle = document.createElement('h3');
+    winTitle.textContent = 'Winning Rolls (7, 11):';
+    combinationsSection.appendChild(winTitle);
+
+    combinations.win.forEach(([dice1, dice2]) => {
+        const pair = createDicePairElement(dice1, dice2);
+        combinationsSection.appendChild(pair);
+    });
+
+    // Add losing combinations
+    const loseTitle = document.createElement('h3');
+    loseTitle.textContent = 'Losing Rolls (2, 3, 12):';
+    combinationsSection.appendChild(loseTitle);
+
+    combinations.lose.forEach(([dice1, dice2]) => {
+        const pair = createDicePairElement(dice1, dice2);
+        combinationsSection.appendChild(pair);
+    });
+}
+
+/**
+ * Creates a visual representation of a dice pair.
+ * @param {number} dice1 - First dice value.
+ * @param {number} dice2 - Second dice value.
+ * @returns {HTMLElement} A div element containing the dice images.
+ */
+function createDicePairElement(dice1, dice2) {
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.margin = '10px';
+
+    const img1 = document.createElement('img');
+    img1.src = `/images/dice${dice1}.png`;
+    img1.alt = `Dice ${dice1}`;
+    img1.style.width = '50px';
+
+    const img2 = document.createElement('img');
+    img2.src = `/images/dice${dice2}.png`;
+    img2.alt = `Dice ${dice2}`;
+    img2.style.width = '50px';
+
+    container.appendChild(img1);
+    container.appendChild(img2);
+
+    return container;
+}
+
+// Ensure the function is called when the DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    initializeCombinationsModal();
+});
+
 
 // Ensure the function is called when the DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
