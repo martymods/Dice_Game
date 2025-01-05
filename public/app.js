@@ -9,13 +9,6 @@ import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay, activateOnFire, deactivateOnFire } from './modules/ui.js'; // Ensure the correct path
 
-if (winStreak >= 3 && !onFire) {
-    onFire = activateOnFire(onFire); // Pass and update the onFire variable
-}
-
-if (onFire) {
-    onFire = deactivateOnFire(onFire); // Pass and update the onFire variable
-}
 
 
 // Use `window.socket` instead:
@@ -61,6 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
+// FireStreak
+if (winStreak >= 3 && !onFire) {
+    onFire = activateOnFire(onFire); // Pass and update the onFire variable
+}
+
+if (onFire) {
+    onFire = deactivateOnFire(onFire); // Pass and update the onFire variable
+}
+
 
 // Ensure playerStats and related functions are globally accessible
 if (!window.playerStats) {
