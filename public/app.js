@@ -1,6 +1,5 @@
 // app.
 
-import { io } from '/socket.io/socket.io.js'; // Ensure correct path
 import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
@@ -9,6 +8,9 @@ import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
+
+const socket = io(); // Use the global io object
+window.socket = socket; // Make it globally available if needed
 
 
 // Fire Status
