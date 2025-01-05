@@ -481,6 +481,14 @@ export function updateBalanceDisplay(balance) {
     // Clear the previous balance display
     balanceDisplay.innerHTML = '';
 
+        // Add the $ symbol as the first image
+        const dollarSignImage = document.createElement('img');
+        dollarSignImage.src = '/images/Font_Number_$.gif'; // Update path if needed
+        dollarSignImage.alt = '$';
+        dollarSignImage.style.width = '50px'; // Match CSS
+        dollarSignImage.style.height = 'auto';
+        balanceDisplay.appendChild(dollarSignImage);
+
     // Convert the balance to a string and iterate over each digit
     const balanceString = balance.toString();
     for (const digit of balanceString) {
