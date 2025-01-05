@@ -578,3 +578,21 @@ socket.emit('test', 'Hello from Client');
 socket.on('testReply', (data) => {
     console.log('Server reply:', data);
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const socket = window.socket;
+
+    if (!socket) {
+        console.error('Socket is not initialized. Ensure app.js is loaded before ui.js.');
+        return;
+    }
+
+    socket.on('newMessage', ({ name, message }) => {
+        console.log(`New message from ${name}: ${message}`);
+        const messageList = document.getElementById('message-list');
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = `${name}: ${message}`;
+        messageList.appendChild(messageDiv);
+        messageList.scrollTop = messageList.scrollHeight; // Scroll to the bottom
+    });
+});
