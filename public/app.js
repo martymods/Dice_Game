@@ -9,6 +9,15 @@ import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay, activateOnFire, deactivateOnFire } from './modules/ui.js'; // Ensure the correct path
 
+if (winStreak >= 3 && !onFire) {
+    onFire = activateOnFire(onFire); // Pass and update the onFire variable
+}
+
+if (onFire) {
+    onFire = deactivateOnFire(onFire); // Pass and update the onFire variable
+}
+
+
 // Use `window.socket` instead:
 console.log('Using global socket in app.js:', window.socket);
 
