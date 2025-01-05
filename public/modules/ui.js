@@ -567,6 +567,12 @@ socket.on('playerUpdate', ({ players }) => {
     console.log('Socket initialized in app.js:', socket);
 
     const playerNames = document.getElementById('player-names');
+if (!playerNames) {
+    console.error("Element 'player-names' not found in the DOM.");
+    return; // Exit early if the element is missing
+}
+playerNames.innerHTML = '';
+
     playerNames.innerHTML = '';
     Object.values(players).forEach((name) => {
         const li = document.createElement('li');
