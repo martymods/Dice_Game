@@ -1345,3 +1345,30 @@ body {
     transform: scale(1.1); /* Slightly enlarge */
     opacity: 0.9; /* Subtle transparency effect */
 }
+
+/* Fire Border Container */
+#fire-border-container {
+    position: fixed; /* Position fixed to always stay in view */
+    top: 50%; /* Vertically center */
+    right: 0; /* Stick to the right edge */
+    transform: translateY(-50%); /* Adjust for centering */
+    z-index: 1000; /* Ensure it stays above other elements */
+    display: none; /* Initially hidden */
+    width: 150px; /* Default width */
+    height: auto; /* Maintain aspect ratio */
+    transition: opacity 0.5s ease; /* Smooth fade-in effect */
+}
+
+/* Optional Fire Border Styling */
+#fire-border-container img {
+    width: 100%; /* Use container's width */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 10px; /* Optional rounded corners */
+    box-shadow: 0 0 10px rgba(255, 69, 0, 0.8); /* Glowing effect */
+}
+
+/* Fire Border Active */
+#fire-border-container.active {
+    display: block; /* Make it visible */
+    opacity: 1; /* Full visibility */
+}
