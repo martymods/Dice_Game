@@ -759,8 +759,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCombinationsModal();
 });
 
-export function activateOnFire() {
-    onFire = true;
+export function activateOnFire(onFire) {
+    onFire = true; // Update the state
     playSound("/sounds/FireIgnite0.ogg"); // Play ignite sound
 
     // Change dice to fire versions
@@ -785,10 +785,12 @@ export function activateOnFire() {
     if (fireBorder) {
         fireBorder.classList.add('active');
     }
+
+    return onFire; // Return updated value
 }
 
-export function deactivateOnFire() {
-    onFire = false;
+export function deactivateOnFire(onFire) {
+    onFire = false; // Update the state
     playSound("/sounds/FireEnd0.ogg"); // Play end sound
 
     // Revert dice to normal versions
@@ -814,4 +816,6 @@ export function deactivateOnFire() {
     if (fireBorder) {
         fireBorder.classList.remove('active');
     }
+
+    return onFire; // Return updated value
 }
