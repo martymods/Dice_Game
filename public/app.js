@@ -9,12 +9,8 @@ import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
 
-// Assuming `io` is globally available after including the script in the HTML
-export { socket };
 // Use `window.socket` instead:
 console.log('Using global socket in app.js:', window.socket);
-
-
 
 // Fire Status
 let winStreak = 0; // Track the current winning streak
