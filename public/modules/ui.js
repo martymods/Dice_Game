@@ -551,9 +551,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Remove existing listeners to prevent duplicates
-    socket.off('newMessage'); // Unbind existing 'newMessage' listeners
-    socket.off('playerUpdate'); // Unbind 'playerUpdate' listeners
+    // **Forcefully clear all existing listeners**
+    socket.removeAllListeners(); // Completely unbind all listeners attached to this socket
 
     // Add fresh listeners
     socket.on('newMessage', ({ name, message }) => {
@@ -582,6 +581,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
 
 
 // Update message list
