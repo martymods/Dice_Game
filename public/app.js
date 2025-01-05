@@ -12,6 +12,7 @@ import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct pa
 // Use `window.socket` instead:
 console.log('Using global socket in app.js:', window.socket);
 
+
 // Fire Status
 let winStreak = 0; // Track the current winning streak
 let playerHasPurchased = false; // Track if the player has purchased an item/hustler in the shop
@@ -50,29 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('No specific game mode detected. Defaulting to Main Menu.');
     }
 
-    // Ensure the "Show Combinations" functionality is scoped correctly
-    const showCombinationsButton = document.getElementById('showCombinationsButton');
-    const combinationsModal = document.getElementById('combinationsModal');
-    const closeCombinationsButton = document.getElementById('closeCombinationsButton');
-
-    // Add event listeners for "Show Combinations" modal if the elements are present
-    if (showCombinationsButton && combinationsModal && closeCombinationsButton) {
-        showCombinationsButton.addEventListener('click', () => {
-            combinationsModal.style.display = 'flex'; // Show the modal
-        });
-
-        closeCombinationsButton.addEventListener('click', () => {
-            combinationsModal.style.display = 'none'; // Hide the modal
-        });
-
-        combinationsModal.addEventListener('click', (event) => {
-            if (event.target === combinationsModal) {
-                combinationsModal.style.display = 'none'; // Close the modal when clicking outside the content
-            }
-        });
-    } else {
-        console.error('Combination modal elements are missing in the DOM.');
-    }
 });
 
 // Ensure playerStats and related functions are globally accessible
