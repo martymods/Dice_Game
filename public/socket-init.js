@@ -1,3 +1,6 @@
 // socket-init.js
-const socket = io(); // Uses the globally available `io` object from the script tag
-window.socket = socket; // Expose `socket` globally
+const socket = io(); // Initialize the socket
+window.socket = socket; // Expose globally
+
+// Add debug logs for clarity
+console.log('Socket initialized in socket-init.js:', socket);
