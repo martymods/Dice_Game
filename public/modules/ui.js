@@ -538,24 +538,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 document.addEventListener('DOMContentLoaded', () => {
+    const socket = window.socket; // Access the global `socket`
+
     if (!socket) {
         console.error('Socket is not initialized. Ensure app.js is loaded before ui.js.');
         return;
     }
 
-    // Update message list when a new message is received
+    // Example: Adding a listener for incoming messages
     socket.on('newMessage', ({ name, message }) => {
         console.log('New message received:', name, message); // Debug log
         const messageList = document.getElementById('message-list');
-        const messageDiv = document.createElement('div');
-        messageDiv.textContent = `${name}: ${message}`;
-        messageList.appendChild(messageDiv);
+        if (messageList) {
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = `${name}: ${message}`;
+            messageList.appendChild(messageDiv);
 
-        // Scroll to the latest message
-        messageList.scrollTop = messageList.scrollHeight;
+            // Scroll to the latest message
+            messageList.scrollTop = messageList.scrollHeight;
+        } else {
+            console.error('Message list element not found.');
+        }
     });
 });
-
 
 
 
