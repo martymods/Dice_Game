@@ -102,10 +102,8 @@ function deactivateOnFire(onFire, fireSound) {
     return { onFire, fireSound };
 }
 
-// Single grouped export for all needed functions
+// Grouped export for all needed functions
 export { loadStats, saveStats, resetWinStreak, updateWinStreak };
-
-
 
 // Update dice visuals based on "On Fire" mode
 function updateDiceUI(isOnFire) {
