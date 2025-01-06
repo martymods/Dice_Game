@@ -296,17 +296,10 @@ async function setupSinglePlayer() {
 
             if (sum === 7 || sum === 11) {
                 // Winning roll
-                if (onFire) {
-                    winnings = currentBet * 3 * multiplier + cashBonus; // Apply 3x multiplier for "on fire" mode
-                } else {
-                    winnings = currentBet * 2 * multiplier + cashBonus; // Normal winnings
-                }
+                winnings = currentBet * (onFire ? 3 : 2) * multiplier + cashBonus; // Apply 3x multiplier if on fire
                 balance += winnings;
-                updateBalanceDisplay(balance); // Reflect changes
+                updateBalanceDisplay(balance);
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
-                if (onFire) {
-                    gameStatus.textContent += " 🔥 (3x Fire Mode Active!)";
-                }
                 playSound("/sounds/Winner_0.ogg");
                 flashScreen('gold');
                 showWinningAmount(winnings);
@@ -315,16 +308,11 @@ async function setupSinglePlayer() {
                 playerStats.totalMoneyWon += winnings;
                 saveStats();
             
-                winStreak++;
-                if (winStreak >= 3 && !onFire) {
-                    const fireState = activateOnFire(onFire, fireSound); // Activate "on fire" mode
-                    onFire = fireState.onFire;
-                    fireSound = fireState.fireSound;
-                }
+                updateWinStreak(); // Increment streak and check fire activation
             } else if (sum === 2 || sum === 3 || sum === 12) {
                 // Losing roll
-                balance -= currentBet; // Deduct the bet on loss
-                updateBalanceDisplay(balance); // Reflect changes
+                balance -= currentBet;
+                updateBalanceDisplay(balance);
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
                 playSound("/sounds/Loser_0.ogg");
                 flashScreen('red');
@@ -334,12 +322,13 @@ async function setupSinglePlayer() {
                 playerStats.totalMoneyLost += currentBet;
                 saveStats();
             
-                resetWinStreak(); // Reset win streak and deactivate fire mode if active
+                resetWinStreak(); // Reset streak and deactivate fire mode
             } else {
                 // Neutral roll
                 balance += cashBonus;
                 gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplier}x. Bonus: $${cashBonus}`;
             }
+            
             
             currentBet = 0;
             updateUIAfterRoll();
