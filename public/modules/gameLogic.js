@@ -43,31 +43,35 @@ export function saveStats() {
     }
 }
 
-// Update win streak and check if "On Fire" mode should activate
+// Update win streak and activate "On Fire" mode if necessary
 export function updateWinStreak() {
     gameState.winStreak++;
     if (gameState.winStreak >= GAME_CONFIG.FIRE_STREAK_THRESHOLD && !gameState.onFire) {
-        activateOnFire();
+        gameState.onFire = true;
+        activateOnFireUI(); // Call UI logic
     }
 }
 
 // Reset win streak and deactivate "On Fire" mode if active
 export function resetWinStreak() {
     gameState.winStreak = 0;
-    if (gameState.onFire) deactivateOnFire();
+    if (gameState.onFire) {
+        gameState.onFire = false;
+        deactivateOnFireUI(); // Call UI logic
+    }
 }
 
-// Activate "On Fire" mode
-function activateOnFire() {
-    gameState.onFire = true;
-    updateDiceUI(true);
+// Connect to UI.js fire activation and deactivation
+function activateOnFireUI() {
+    const fireState = activateOnFire(gameState.onFire, null); // Pass current state
+    gameState.onFire = fireState.onFire;
 }
 
-// Deactivate "On Fire" mode
-function deactivateOnFire() {
-    gameState.onFire = false;
-    updateDiceUI(false);
+function deactivateOnFireUI() {
+    const fireState = deactivateOnFire(gameState.onFire, null); // Pass current state
+    gameState.onFire = fireState.onFire;
 }
+
 
 // Update dice visuals based on "On Fire" mode
 function updateDiceUI(isOnFire) {
