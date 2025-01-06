@@ -1,5 +1,17 @@
 // gameLogic.js
 
+// Load player stats from localStorage or initialize default values
+export function loadStats() {
+    try {
+        const savedStats = localStorage.getItem('playerStats');
+        if (savedStats) {
+            Object.assign(playerStats, JSON.parse(savedStats));
+        }
+    } catch (error) {
+        console.error('Error loading player stats:', error);
+    }
+}
+
 const GAME_CONFIG = {
     FIRE_STREAK_THRESHOLD: 3, // Number of wins needed to activate "On Fire" mode
 };
