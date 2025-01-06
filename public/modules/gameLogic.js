@@ -46,24 +46,23 @@ export function saveStats() {
 
 
 // Reset win streak and deactivate "on fire" mode
-export function resetWinStreak() {
+export function resetWinStreak(fireSound) {
     gameState.winStreak = 0;
     if (gameState.onFire) {
         const fireState = deactivateOnFire(gameState.onFire, fireSound); // Deactivate fire mode
         gameState.onFire = fireState.onFire;
-        fireSound = fireState.fireSound;
     }
 }
 
 // Increment streak and activate "on fire" if threshold is met
-export function updateWinStreak() {
+export function updateWinStreak(fireSound) {
     gameState.winStreak++;
     if (gameState.winStreak >= GAME_CONFIG.FIRE_STREAK_THRESHOLD && !gameState.onFire) {
         const fireState = activateOnFire(gameState.onFire, fireSound);
         gameState.onFire = fireState.onFire;
-        fireSound = fireState.fireSound;
     }
 }
+
 
 // Activate "On Fire" mode
 function activateOnFire(onFire, fireSound) {
