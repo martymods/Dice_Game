@@ -24,6 +24,27 @@ export const playerStats = {
     totalTimePlayed: 0,
 };
 
+// Load player stats from localStorage or initialize default values
+export function loadStats() {
+    try {
+        const savedStats = localStorage.getItem('playerStats');
+        if (savedStats) {
+            Object.assign(playerStats, JSON.parse(savedStats));
+        }
+    } catch (error) {
+        console.error('Error loading player stats:', error);
+    }
+}
+
+// Save player stats to localStorage
+export function saveStats() {
+    try {
+        localStorage.setItem('playerStats', JSON.stringify(playerStats));
+    } catch (error) {
+        console.error('Error saving player stats:', error);
+    }
+}
+
 // Reset win streak and deactivate "on fire" mode
 export function resetWinStreak(fireSound) {
     gameState.winStreak = 0;
@@ -86,6 +107,9 @@ function deactivateOnFire(onFire, fireSound) {
 
     return { onFire, fireSound };
 }
+
+export { loadStats, saveStats, resetWinStreak, updateWinStreak };
+
 
 // Update dice visuals based on "On Fire" mode
 function updateDiceUI(isOnFire) {
