@@ -787,10 +787,13 @@ export function activateOnFire(onFire, fireSound) {
     }
 
     // Display the fire border
-    const fireBorder = document.getElementById('fire-border-container');
-    if (fireBorder) {
-        fireBorder.classList.add('active');
+    let fireBorder = document.getElementById('fire-border-container');
+    if (!fireBorder) {
+        fireBorder = document.createElement('div');
+        fireBorder.id = 'fire-border-container';
+        document.body.appendChild(fireBorder);
     }
+    fireBorder.classList.add('active'); // Ensure the active class is added
 
     return { onFire, fireSound }; // Return the updated state
 }
