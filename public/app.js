@@ -325,8 +325,8 @@ async function setupSinglePlayer() {
                 playerStats.totalMoneyLost += currentBet;
                 saveStats();
 
-                winStreak = 0; // Reset streak
-                if (onFire) deactivateOnFire(); // Deactivate "on fire" on loss
+                resetWinStreak(); // Reset win streak and deactivate fire mode if active
+
             } else {
                 // Neutral roll
                 balance += cashBonus;
