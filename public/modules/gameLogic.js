@@ -1,9 +1,7 @@
 // gameLogic.js
 
-import { playSound } from './audio.js';
-
 const GAME_CONFIG = {
-    FIRE_STREAK_THRESHOLD: 3,
+    FIRE_STREAK_THRESHOLD: 3, // Number of wins needed to activate "On Fire" mode
 };
 
 let gameState = {
@@ -24,7 +22,7 @@ export const playerStats = {
     totalTimePlayed: 0,
 };
 
-// Load stats
+// Load player stats from localStorage or initialize default values
 export function loadStats() {
     try {
         const savedStats = localStorage.getItem('playerStats');
@@ -36,7 +34,7 @@ export function loadStats() {
     }
 }
 
-// Save stats
+// Save player stats to localStorage
 export function saveStats() {
     try {
         localStorage.setItem('playerStats', JSON.stringify(playerStats));
@@ -45,65 +43,31 @@ export function saveStats() {
     }
 }
 
-// Reset win streak and deactivate fire mode
-export function resetWinStreak(fireSound) {
-    gameState.winStreak = 0;
-    if (gameState.onFire) {
-        const fireState = deactivateOnFire(gameState.onFire, fireSound);
-        gameState.onFire = fireState.onFire;
-    }
-}
-
-// Increment streak and activate fire mode if threshold is met
-export function updateWinStreak(fireSound) {
+// Update win streak and check if "On Fire" mode should activate
+export function updateWinStreak() {
     gameState.winStreak++;
     if (gameState.winStreak >= GAME_CONFIG.FIRE_STREAK_THRESHOLD && !gameState.onFire) {
-        const fireState = activateOnFire(gameState.onFire, fireSound);
-        gameState.onFire = fireState.onFire;
+        activateOnFire();
     }
 }
 
-// Fire activation
-function activateOnFire(onFire, fireSound) {
-    onFire = true;
-
-    playSound("/sounds/FireIgnite0.ogg");
-
-    if (!fireSound) {
-        fireSound = new Audio('/sounds/FireBurn0.ogg');
-        fireSound.loop = true;
-        fireSound.play().catch(err => console.error('Error playing fire sound:', err));
-    }
-
-    const gameStatus = document.getElementById('gameStatus');
-    if (gameStatus) {
-        gameStatus.textContent = "🔥 You're on fire! All winnings are tripled! 🔥";
-    }
-
-    return { onFire, fireSound };
+// Reset win streak and deactivate "On Fire" mode if active
+export function resetWinStreak() {
+    gameState.winStreak = 0;
+    if (gameState.onFire) deactivateOnFire();
 }
 
-// Fire deactivation
-function deactivateOnFire(onFire, fireSound) {
-    onFire = false;
-
-    if (fireSound) {
-        fireSound.pause();
-        fireSound = null;
-    }
-
-    playSound("/sounds/FireEnd0.ogg");
-
-    const gameStatus = document.getElementById('gameStatus');
-    if (gameStatus) {
-        gameStatus.textContent = "🔥 Fire has ended. Good luck! 🔥";
-    }
-
-    return { onFire, fireSound };
+// Activate "On Fire" mode
+function activateOnFire() {
+    gameState.onFire = true;
+    updateDiceUI(true);
 }
 
-// Grouped export for all needed functions
-export { loadStats, saveStats, resetWinStreak, updateWinStreak };
+// Deactivate "On Fire" mode
+function deactivateOnFire() {
+    gameState.onFire = false;
+    updateDiceUI(false);
+}
 
 // Update dice visuals based on "On Fire" mode
 function updateDiceUI(isOnFire) {
