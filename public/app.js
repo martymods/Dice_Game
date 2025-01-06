@@ -2,14 +2,12 @@
 
 import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
-import { updateUI, activateOnFire, deactivateOnFire, showItemPopup, getItemColor, handleGameOverScreen } from './modules/ui.js';
+import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
+import { updateUI, showItemPopup, getItemColor, handleGameOverScreen } from './modules/ui.js';
 import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
-import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
-
-
 
 // Use `window.socket` instead:
 console.log('Using global socket in app.js:', window.socket);
@@ -54,20 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
-
-// FireStreak
-if (winStreak >= 3 && !onFire) {
-    const fireState = activateOnFire(onFire, fireSound); // Pass fireSound to ui.js
-    onFire = fireState.onFire;
-    fireSound = fireState.fireSound;
-}
-
-if (onFire) {
-    const fireState = deactivateOnFire(onFire, fireSound); // Pass fireSound to ui.js
-    onFire = fireState.onFire;
-    fireSound = fireState.fireSound;
-}
-
 
 // Ensure playerStats and related functions are globally accessible
 if (!window.playerStats) {
@@ -296,52 +280,51 @@ async function setupSinglePlayer() {
 
             if (sum === 7 || sum === 11) {
                 // Winning roll
-                winnings = currentBet * (onFire ? 3 : 2) * multiplier + cashBonus; // Apply 3x multiplier if on fire
+                winnings = currentBet * 2 * multiplier + cashBonus;
                 balance += winnings;
-                updateBalanceDisplay(balance);
+                updateBalanceDisplay(balance); // Reflect changes
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
                 playSound("/sounds/Winner_0.ogg");
                 flashScreen('gold');
                 showWinningAmount(winnings);
-                updateWinStreak(fireSound); // Pass fireSound
-                
-            
+
                 // Update total money won
                 playerStats.totalMoneyWon += winnings;
                 saveStats();
-            
-                updateWinStreak(); // Increment streak and check fire activation
+
+                winStreak++;
+                if (winStreak >= 3 && !onFire) {
+                    activateOnFire(); // Activate "on fire" if streak is 3
+                }
             } else if (sum === 2 || sum === 3 || sum === 12) {
                 // Losing roll
-                balance -= currentBet;
-                updateBalanceDisplay(balance);
+                balance -= currentBet; // Deduct the bet on loss
+                updateBalanceDisplay(balance); // Reflect changes
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
                 playSound("/sounds/Loser_0.ogg");
                 flashScreen('red');
                 showLosingAmount(currentBet);
-                resetWinStreak(fireSound); // Pass fireSound
-            
+
                 // Update total money lost
                 playerStats.totalMoneyLost += currentBet;
                 saveStats();
-            
-                resetWinStreak(); // Reset streak and deactivate fire mode
+
+                winStreak = 0; // Reset streak
+                if (onFire) deactivateOnFire(); // Deactivate "on fire" on loss
             } else {
                 // Neutral roll
                 balance += cashBonus;
                 gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplier}x. Bonus: $${cashBonus}`;
             }
-            
-            
+
             currentBet = 0;
             updateUIAfterRoll();
-            
+
             // Restore background brightness after roll
             setTimeout(() => {
                 gameContainer.classList.remove('dimmed');
                 diceContainer.classList.remove('dimmed-dice');
             }, 1000); // Restore after 1 second
-            
         });
     }
 
@@ -366,6 +349,52 @@ async function setupSinglePlayer() {
         }
     }
     
+
+    function activateOnFire() {
+        onFire = true;
+        playSound("/sounds/FireIgnite0.ogg"); // Play ignite sound
+
+        // Change dice to fire versions
+        const dice1Element = document.getElementById('dice1');
+        const dice2Element = document.getElementById('dice2');
+        dice1Element.src = '/images/DiceFire1.gif';
+        dice2Element.src = '/images/DiceFire2.gif';
+
+        // Add fire effect class
+        dice1Element.classList.add('dice-fire');
+        dice2Element.classList.add('dice-fire');
+
+        // Start fire sound loop
+        fireSound = new Audio('/sounds/FireBurn0.ogg');
+        fireSound.loop = true;
+        fireSound.play().catch(err => console.error('Error playing fire burn sound:', err));
+
+        gameStatus.textContent = "🔥 You're on fire! All winnings are doubled! 🔥";
+    }
+
+    function deactivateOnFire() {
+        onFire = false;
+        playSound("/sounds/FireEnd0.ogg"); // Play end sound
+
+        // Revert dice to normal versions
+        const dice1Element = document.getElementById('dice1');
+        const dice2Element = document.getElementById('dice2');
+        dice1Element.src = '/images/dice1.png';
+        dice2Element.src = '/images/dice2.png';
+
+        // Remove fire effect class
+        dice1Element.classList.remove('dice-fire');
+        dice2Element.classList.remove('dice-fire');
+
+        // Stop fire sound loop
+        if (fireSound) {
+            fireSound.pause();
+            fireSound = null;
+        }
+
+        gameStatus.textContent = "🔥 Fire has ended. Good luck! 🔥";
+    }
+
 
 
     function handlePlaceBet() {
