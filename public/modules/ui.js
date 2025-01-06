@@ -51,10 +51,6 @@ function playHoverSound() {
 export function applyPurchasedItemEffects(purchasedItems) {
     activeEffects = [];
     currentMultiplier = 1; // Reset multiplier
-    if (effect.multiplier && !isNaN(effect.multiplier)) {
-        currentMultiplier *= effect.multiplier;
-    }
-    
 
     purchasedItems.forEach(item => {
         // Remove emoji from item name if present
@@ -276,34 +272,91 @@ export function showItemPopup(balance, items, purchasedItems) {
 /**
  * Handles restocking items.
  */
-export function handleRestock(balance, restockFee, items) {
+/**
+ * Handles restocking items by deducting 10% of the player's balance and updating the store.
+ */
+export function handleRestock(balance, items) {
+    const restockFee = Math.floor(balance * 0.1); // 10% of the player's balance
+
     if (balance >= restockFee) {
         // Deduct the restock fee
         balance -= restockFee;
 
-        // Regenerate the items in the popup
-        showItemPopup(balance, items);
+        // Shuffle and regenerate the items in the popup
+        const newItems = items.sort(() => Math.random() - 0.5).slice(0, 3);
 
-        // Update the UI to reflect the new balance
-        updateUI(balance);
+        // Update the item popup and the player's balance
+        updateStoreUI(newItems, balance);
 
-        // Play sound effect for restocking
+        // Play a sound effect for restocking (optional)
         playSound("/sounds/UI_Restock.ogg");
 
         alert(`You restocked items for $${restockFee.toLocaleString()}!`);
     } else {
-        alert("You don't have enough money to restock!");
+        alert("Not enough balance to restock!");
         playSound("/sounds/UI_Error.ogg");
     }
 }
+
+/**
+ * Updates the store UI with new items and balance.
+ */
+function updateStoreUI(items, balance) {
+    const itemList = document.getElementById('item-list');
+    const balanceDisplay = document.getElementById('balance-display');
+
+    // Clear the current item list
+    itemList.innerHTML = '';
+
+    // Update the balance display
+    if (balanceDisplay) {
+        balanceDisplay.textContent = `$${balance.toLocaleString()}`;
+    }
+
+    // Add new items to the store
+    items.forEach(item => {
+        const itemButton = document.createElement('button');
+        itemButton.textContent = `${item.emoji || '❓'} ${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
+        itemButton.style.backgroundColor = getItemColor(item.rarity);
+        itemButton.classList.add('item-button');
+
+        // Add event listeners for hover effects
+        itemButton.onmouseenter = () => showItemDescription(item.description);
+        itemButton.onmouseleave = hideItemDescription;
+
+        // Add click functionality for purchasing items
+        itemButton.onclick = () => {
+            handleItemPurchase(item, balance, purchasedItems);
+            updatePurchasedItemsDisplay(purchasedItems);
+        };
+
+        itemList.appendChild(itemButton);
+    });
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const restockButton = document.getElementById('restockButton');
+    const playerBalance = 1000; // Replace with dynamic balance retrieval
+    const storeItems = [...itemsList]; // Load the store items dynamically
+
+    if (restockButton) {
+        restockButton.addEventListener('click', () => {
+            handleRestock(playerBalance, storeItems);
+        });
+    } else {
+        console.error("Restock button not found in the DOM.");
+    }
+});
+
 
 /**
  * Displays the item description.
  */
 function showItemDescription(description) {
     const descriptionDiv = document.getElementById('item-description');
-    descriptionDiv.textContent = description;
-    descriptionDiv.style.display = 'block'; // Show the description
+    if (descriptionDiv) {
+        descriptionDiv.textContent = description;
+        descriptionDiv.style.display = 'block';
+    }
 }
 
 /**
@@ -311,7 +364,9 @@ function showItemDescription(description) {
  */
 function hideItemDescription() {
     const descriptionDiv = document.getElementById('item-description');
-    descriptionDiv.style.display = 'none'; // Hide the description
+    if (descriptionDiv) {
+        descriptionDiv.style.display = 'none';
+    }
 }
 
 /**
@@ -762,77 +817,3 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     initializeCombinationsModal();
 });
-
-export function activateOnFire(onFire, fireSound) {
-    onFire = true;
-    playSound("/sounds/FireIgnite0.ogg"); // Play ignite sound
-
-    // Change dice to fire versions
-    const dice1Element = document.getElementById('dice1');
-    const dice2Element = document.getElementById('dice2');
-    dice1Element.src = '/images/DiceFire1.gif';
-    dice2Element.src = '/images/DiceFire2.gif';
-
-    // Add fire effect class
-    dice1Element.classList.add('dice-fire');
-    dice2Element.classList.add('dice-fire');
-
-    // Start fire sound loop
-    if (!fireSound) {
-        fireSound = new Audio('/sounds/FireBurn0.ogg');
-        fireSound.loop = true;
-        fireSound.play().catch(err => console.error('Error playing fire burn sound:', err));
-    }
-
-    // Update game status
-    const gameStatus = document.getElementById('gameStatus');
-    if (gameStatus) {
-        gameStatus.textContent = "🔥 You're on fire! All winnings are doubled! 🔥";
-    }
-
-    // Display the fire border
-    let fireBorder = document.getElementById('fire-border-container');
-    if (!fireBorder) {
-        fireBorder = document.createElement('div');
-        fireBorder.id = 'fire-border-container';
-        document.body.appendChild(fireBorder);
-    }
-    fireBorder.classList.add('active'); // Ensure the active class is added
-
-    return { onFire, fireSound }; // Return the updated state
-}
-
-export function deactivateOnFire(onFire, fireSound) {
-    onFire = false;
-    playSound("/sounds/FireEnd0.ogg"); // Play end sound
-
-    // Revert dice to normal versions
-    const dice1Element = document.getElementById('dice1');
-    const dice2Element = document.getElementById('dice2');
-    dice1Element.src = '/images/dice1.png';
-    dice2Element.src = '/images/dice2.png';
-
-    // Remove fire effect class
-    dice1Element.classList.remove('dice-fire');
-    dice2Element.classList.remove('dice-fire');
-
-    // Stop fire sound loop
-    if (fireSound) {
-        fireSound.pause();
-        fireSound = null;
-    }
-
-    // Update game status
-    const gameStatus = document.getElementById('gameStatus');
-    if (gameStatus) {
-        gameStatus.textContent = "🔥 Fire has ended. Good luck! 🔥";
-    }
-
-    // Hide the fire border
-    const fireBorder = document.getElementById('fire-border-container');
-    if (fireBorder) {
-        fireBorder.classList.remove('active');
-    }
-
-    return { onFire, fireSound }; // Return the updated state
-}
