@@ -759,8 +759,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCombinationsModal();
 });
 
-export function activateOnFire(onFire) {
-    onFire = true; // Update the state
+export function activateOnFire(onFire, fireSound) {
+    onFire = true;
     playSound("/sounds/FireIgnite0.ogg"); // Play ignite sound
 
     // Change dice to fire versions
@@ -774,11 +774,17 @@ export function activateOnFire(onFire) {
     dice2Element.classList.add('dice-fire');
 
     // Start fire sound loop
-    fireSound = new Audio('/sounds/FireBurn0.ogg');
-    fireSound.loop = true;
-    fireSound.play().catch(err => console.error('Error playing fire burn sound:', err));
+    if (!fireSound) {
+        fireSound = new Audio('/sounds/FireBurn0.ogg');
+        fireSound.loop = true;
+        fireSound.play().catch(err => console.error('Error playing fire burn sound:', err));
+    }
 
-    gameStatus.textContent = "🔥 You're on fire! All winnings are doubled! 🔥";
+    // Update game status
+    const gameStatus = document.getElementById('gameStatus');
+    if (gameStatus) {
+        gameStatus.textContent = "🔥 You're on fire! All winnings are doubled! 🔥";
+    }
 
     // Display the fire border
     const fireBorder = document.getElementById('fire-border-container');
@@ -786,11 +792,11 @@ export function activateOnFire(onFire) {
         fireBorder.classList.add('active');
     }
 
-    return onFire; // Return updated value
+    return { onFire, fireSound }; // Return the updated state
 }
 
-export function deactivateOnFire(onFire) {
-    onFire = false; // Update the state
+export function deactivateOnFire(onFire, fireSound) {
+    onFire = false;
     playSound("/sounds/FireEnd0.ogg"); // Play end sound
 
     // Revert dice to normal versions
@@ -809,7 +815,11 @@ export function deactivateOnFire(onFire) {
         fireSound = null;
     }
 
-    gameStatus.textContent = "🔥 Fire has ended. Good luck! 🔥";
+    // Update game status
+    const gameStatus = document.getElementById('gameStatus');
+    if (gameStatus) {
+        gameStatus.textContent = "🔥 Fire has ended. Good luck! 🔥";
+    }
 
     // Hide the fire border
     const fireBorder = document.getElementById('fire-border-container');
@@ -817,5 +827,5 @@ export function deactivateOnFire(onFire) {
         fireBorder.classList.remove('active');
     }
 
-    return onFire; // Return updated value
+    return { onFire, fireSound }; // Return the updated state
 }
