@@ -51,6 +51,10 @@ function playHoverSound() {
 export function applyPurchasedItemEffects(purchasedItems) {
     activeEffects = [];
     currentMultiplier = 1; // Reset multiplier
+    if (effect.multiplier && !isNaN(effect.multiplier)) {
+        currentMultiplier *= effect.multiplier;
+    }
+    
 
     purchasedItems.forEach(item => {
         // Remove emoji from item name if present
