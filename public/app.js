@@ -317,7 +317,9 @@ async function setupSinglePlayer() {
             
                 winStreak++;
                 if (winStreak >= 3 && !onFire) {
-                    activateOnFire(); // Activate "on fire" if streak is 3
+                    const fireState = activateOnFire(onFire, fireSound); // Activate "on fire" mode
+                    onFire = fireState.onFire;
+                    fireSound = fireState.fireSound;
                 }
             } else if (sum === 2 || sum === 3 || sum === 12) {
                 // Losing roll
@@ -339,15 +341,15 @@ async function setupSinglePlayer() {
                 gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplier}x. Bonus: $${cashBonus}`;
             }
             
-
             currentBet = 0;
             updateUIAfterRoll();
-
+            
             // Restore background brightness after roll
             setTimeout(() => {
                 gameContainer.classList.remove('dimmed');
                 diceContainer.classList.remove('dimmed-dice');
             }, 1000); // Restore after 1 second
+            
         });
     }
 
