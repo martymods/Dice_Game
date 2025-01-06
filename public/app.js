@@ -57,11 +57,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // FireStreak
 if (winStreak >= 3 && !onFire) {
-    onFire = activateOnFire(onFire); // Pass and update the onFire variable
+    const fireState = activateOnFire(onFire, fireSound); // Pass fireSound to ui.js
+    onFire = fireState.onFire;
+    fireSound = fireState.fireSound;
 }
 
 if (onFire) {
-    onFire = deactivateOnFire(onFire); // Pass and update the onFire variable
+    const fireState = deactivateOnFire(onFire, fireSound); // Pass fireSound to ui.js
+    onFire = fireState.onFire;
+    fireSound = fireState.fireSound;
 }
 
 
