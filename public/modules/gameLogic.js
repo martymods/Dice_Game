@@ -1,4 +1,6 @@
-// gameLogic.
+// gameLogic.js
+
+import { playSound } from './audio.js';
 
 const GAME_CONFIG = {
     FIRE_STREAK_THRESHOLD: 3, // Number of wins needed to activate "On Fire" mode
@@ -22,34 +24,11 @@ export const playerStats = {
     totalTimePlayed: 0,
 };
 
-
-// Load player stats from localStorage or initialize default values
-export function loadStats() {
-    try {
-        const savedStats = localStorage.getItem('playerStats');
-        if (savedStats) {
-            Object.assign(playerStats, JSON.parse(savedStats));
-        }
-    } catch (error) {
-        console.error('Error loading player stats:', error);
-    }
-}
-
-// Save player stats to localStorage
-export function saveStats() {
-    try {
-        localStorage.setItem('playerStats', JSON.stringify(playerStats));
-    } catch (error) {
-        console.error('Error saving player stats:', error);
-    }
-}
-
-
 // Reset win streak and deactivate "on fire" mode
 export function resetWinStreak(fireSound) {
     gameState.winStreak = 0;
     if (gameState.onFire) {
-        const fireState = deactivateOnFire(gameState.onFire, fireSound); // Deactivate fire mode
+        const fireState = deactivateOnFire(gameState.onFire, fireSound);
         gameState.onFire = fireState.onFire;
     }
 }
@@ -63,13 +42,9 @@ export function updateWinStreak(fireSound) {
     }
 }
 
-
 // Activate "On Fire" mode
 function activateOnFire(onFire, fireSound) {
     onFire = true;
-
-    // Change dice visuals to fire versions
-    updateDiceUI(true);
 
     // Play ignite sound
     playSound("/sounds/FireIgnite0.ogg");
@@ -93,9 +68,6 @@ function activateOnFire(onFire, fireSound) {
 // Deactivate "On Fire" mode
 function deactivateOnFire(onFire, fireSound) {
     onFire = false;
-
-    // Revert dice visuals to normal versions
-    updateDiceUI(false);
 
     // Stop fire sound loop
     if (fireSound) {
