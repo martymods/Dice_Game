@@ -303,6 +303,8 @@ async function setupSinglePlayer() {
                 playSound("/sounds/Winner_0.ogg");
                 flashScreen('gold');
                 showWinningAmount(winnings);
+                updateWinStreak(fireSound); // Pass fireSound
+                
             
                 // Update total money won
                 playerStats.totalMoneyWon += winnings;
@@ -317,6 +319,7 @@ async function setupSinglePlayer() {
                 playSound("/sounds/Loser_0.ogg");
                 flashScreen('red');
                 showLosingAmount(currentBet);
+                resetWinStreak(fireSound); // Pass fireSound
             
                 // Update total money lost
                 playerStats.totalMoneyLost += currentBet;
