@@ -235,19 +235,27 @@ export function updateHustlerPanel(hustlerInventory) {
     });
 }
 
+
 /**
- * Shows the item popup with a list of available items.
+ * Shows the item popup with a list of available items and calculates restocking fee dynamically.
  */
 export function showItemPopup(balance, items, purchasedItems) {
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
     const restockButton = document.getElementById('restockButton');
+    const restockFeeElement = document.getElementById('restock-fee'); // Ensure this exists in your HTML
+    const restockFee = Math.floor(balance * 0.15); // Calculate 15% restock fee
 
     popup.style.display = 'block';
     itemList.innerHTML = '';
 
-    const shuffledItems = window.itemsList.sort(() => 0.5 - Math.random()).slice(0, 3);
+    // Display restock fee dynamically
+    if (restockFeeElement) {
+        restockFeeElement.textContent = `Restock Fee: $${restockFee.toLocaleString()}`;
+    }
 
+    // Shuffle and display items
+    const shuffledItems = items.sort(() => Math.random() - 0.5).slice(0, 3);
     shuffledItems.forEach(item => {
         const itemButton = document.createElement('button');
         itemButton.textContent = `${item.emoji || '❓'} ${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
@@ -267,16 +275,25 @@ export function showItemPopup(balance, items, purchasedItems) {
 
         itemList.appendChild(itemButton);
     });
+
+    // Add restock button functionality
+    if (restockButton) {
+        restockButton.onclick = () => {
+            handleRestock(balance, items);
+        };
+    }
 }
+
+
 
 /**
  * Handles restocking items.
  */
 /**
- * Handles restocking items by deducting 10% of the player's balance and updating the store.
+ * Handles restocking items by deducting 15% of the player's balance and updating the store.
  */
 export function handleRestock(balance, items) {
-    const restockFee = Math.floor(balance * 0.1); // 10% of the player's balance
+    const restockFee = Math.floor(balance * 0.15); // 10% of the player's balance
 
     if (balance >= restockFee) {
         // Deduct the restock fee
