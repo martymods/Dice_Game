@@ -488,7 +488,6 @@ export function addItemToPurchasedItems(item, purchasedItems = []) {
  */
 export function updatePurchasedItemsDisplay(items = []) {
     const purchasedItemsDisplay = document.getElementById('purchased-items-display');
-    purchasedItemsDisplay.innerHTML = '';
 
     if (!Array.isArray(items)) {
         console.error('updatePurchasedItemsDisplay received an invalid items array.');
@@ -496,29 +495,38 @@ export function updatePurchasedItemsDisplay(items = []) {
     }
 
     items.forEach(item => {
-        const itemContainer = document.createElement('div');
-        itemContainer.classList.add('purchased-item');
+        // Check if the item is already displayed
+        const existingItem = Array.from(purchasedItemsDisplay.children).find(child => 
+            child.getAttribute('data-item-name') === item.name
+        );
 
-        // Add item image
-        const itemImage = document.createElement('img');
-        const itemNameFormatted = item.name.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '');
-        itemImage.src = `/images/itemimage/${itemNameFormatted}.png`;
-        itemImage.alt = item.name;
-        itemImage.onerror = () => { itemImage.src = '/images/itemimage/Item_NoIcon.png'; };
-        itemImage.classList.add('item-image');
+        if (!existingItem) {
+            const itemContainer = document.createElement('div');
+            itemContainer.classList.add('purchased-item');
+            itemContainer.setAttribute('data-item-name', item.name); // Unique identifier for the item
 
-        // Add item label
-        const itemLabel = document.createElement('span');
-        itemLabel.textContent = item.name;
+            // Add item image
+            const itemImage = document.createElement('img');
+            const itemNameFormatted = item.name.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '');
+            itemImage.src = `/images/itemimage/${itemNameFormatted}.png`;
+            itemImage.alt = item.name;
+            itemImage.onerror = () => { itemImage.src = '/images/itemimage/Item_NoIcon.png'; };
+            itemImage.classList.add('item-image');
 
-        itemContainer.appendChild(itemImage);
-        itemContainer.appendChild(itemLabel);
+            // Add item label
+            const itemLabel = document.createElement('span');
+            itemLabel.textContent = item.name;
 
-        purchasedItemsDisplay.appendChild(itemContainer);
+            itemContainer.appendChild(itemImage);
+            itemContainer.appendChild(itemLabel);
+
+            purchasedItemsDisplay.appendChild(itemContainer);
+        }
     });
 
     console.log('Purchased Items Display Updated:', items);
 }
+
 
 
 
