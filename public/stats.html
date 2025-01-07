@@ -12,14 +12,34 @@
         <div id="stats-list">
             <!-- Stats will be dynamically loaded here -->
         </div>
+        <button id="view-purchased-items" class="button-small">View Purchased Items</button>
+        <div id="purchased-items-section" style="display: none;">
+            <h3>Purchased Items</h3>
+            <div id="items-pagination">
+                <div id="items-container" class="items-grid"></div>
+                <button id="prev-items" disabled>Previous</button>
+                <button id="next-items">Next</button>
+            </div>
+        </div>
         <button onclick="window.location.href='index.html'" class="back-button">Back to Menu</button>
     </div>
     <script type="module">
         import { displayStats } from './modules/stats.js';
+        import { displayItemsStats } from './modules/ui.js';
 
-        // Call displayStats when the page loads
         document.addEventListener('DOMContentLoaded', () => {
+            // Display stats on load
             displayStats();
+
+            // Setup purchased items button
+            const viewItemsButton = document.getElementById('view-purchased-items');
+            const purchasedItemsSection = document.getElementById('purchased-items-section');
+            const itemsList = []; // Fetch items list dynamically or import it
+
+            viewItemsButton.addEventListener('click', () => {
+                purchasedItemsSection.style.display = 'block'; // Show the section
+                displayItemsStats(itemsList); // Render items with pagination
+            });
         });
     </script>
 </body>
