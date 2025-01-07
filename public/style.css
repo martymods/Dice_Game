@@ -1357,3 +1357,56 @@ body {
     transform: scale(1.1); /* Slightly enlarge */
     opacity: 0.9; /* Subtle transparency effect */
 }
+/* Shop Item Container */
+.item-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+    text-align: center;
+}
+
+/* Item Images for Shop */
+.item-image {
+    width: 80px; /* Adjust size as needed */
+    height: 80px;
+    object-fit: contain; /* Ensure images fit within dimensions */
+    margin-bottom: 5px;
+    border: 1px solid #ddd; /* Optional: Border for better visibility */
+    border-radius: 8px; /* Rounded corners for a polished look */
+}
+
+/* Purchased Items Display */
+.purchased-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+    text-align: center;
+}
+
+/* Purchased Item Images */
+.purchased-item img {
+    width: 50px; /* Smaller size for inventory */
+    height: 50px;
+    object-fit: contain; /* Ensure images fit */
+    margin-bottom: 5px;
+    border-radius: 8px;
+}
+
+/* General Button Styling for Item Buttons */
+.item-button {
+    width: 100%;
+    font-size: 14px;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    background-color: #444; /* Default button background */
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.item-button:hover {
+    background-color: #666; /* Change color on hover */
+}
