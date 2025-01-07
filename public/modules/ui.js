@@ -893,6 +893,102 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+/**
+ * Displays items in the stats screen with pagination.
+ */
+export function displayItemsStats(purchasedItems = [], itemsPerPage = 12) {
+    const itemsContainer = document.getElementById('items-container');
+    const prevButton = document.getElementById('prev-items');
+    const nextButton = document.getElementById('next-items');
+    const totalPages = Math.ceil(itemsList.length / itemsPerPage);
+    let currentPage = 1;
+
+    // Render items
+    function renderItems(page) {
+        itemsContainer.innerHTML = ''; // Clear current items
+        const start = (page - 1) * itemsPerPage;
+        const end = page * itemsPerPage;
+
+        itemsList.slice(start, end).forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('item-grid');
+
+            // Determine item image and hover behavior
+            const itemImage = document.createElement('img');
+            const isLocked = item.purchased === 0;
+
+            itemImage.src = isLocked ? '/images/itemimage/LockedItem.png' : item.image;
+            itemImage.alt = item.name;
+
+            // Add hover tooltip
+            itemImage.addEventListener('mouseenter', () => {
+                const descriptionDiv = document.createElement('div');
+                descriptionDiv.textContent = isLocked
+                    ? "This item is locked. Shop more to unlock!"
+                    : `${item.name}: ${item.description}`;
+                descriptionDiv.style.position = 'absolute';
+                descriptionDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                descriptionDiv.style.color = 'white';
+                descriptionDiv.style.padding = '5px';
+                descriptionDiv.style.borderRadius = '5px';
+                descriptionDiv.style.zIndex = '1000';
+
+                document.body.appendChild(descriptionDiv);
+
+                itemImage.addEventListener('mousemove', (e) => {
+                    descriptionDiv.style.left = `${e.pageX + 10}px`;
+                    descriptionDiv.style.top = `${e.pageY + 10}px`;
+                });
+
+                itemImage.addEventListener('mouseleave', () => {
+                    descriptionDiv.remove();
+                });
+            });
+
+            const itemLabel = document.createElement('span');
+            itemLabel.textContent = isLocked
+                ? "Locked"
+                : `${item.name} (${item.purchased}x)`;
+
+            itemDiv.appendChild(itemImage);
+            itemDiv.appendChild(itemLabel);
+            itemsContainer.appendChild(itemDiv);
+        });
+    }
+
+    // Pagination controls
+    prevButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderItems(currentPage);
+        }
+        prevButton.disabled = currentPage === 1;
+        nextButton.disabled = currentPage === totalPages;
+    });
+
+    nextButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderItems(currentPage);
+        }
+        prevButton.disabled = currentPage === 1;
+        nextButton.disabled = currentPage === totalPages;
+    });
+
+    // Initialize
+    renderItems(currentPage);
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = currentPage === totalPages;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const statsScreen = document.getElementById('stats-container');
+    if (statsScreen) {
+        displayItemsStats(itemsList); // Pass items list
+    }
+});
+
+
 
 
 // Ensure the function is called when the DOM is ready
