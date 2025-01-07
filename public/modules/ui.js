@@ -857,6 +857,27 @@ function createDicePairElement(dice1, dice2) {
     return container;
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const chatButton = document.getElementById('toggle-chat');
+    const chatContainer = document.getElementById('chat-container');
+
+    if (chatButton && chatContainer) {
+        chatButton.addEventListener('click', () => {
+            console.log('Chat button clicked (ui.js)');
+            chatContainer.classList.toggle('chat-minimized');
+            chatContainer.style.display = chatContainer.classList.contains('chat-minimized') ? 'none' : 'block';
+        });
+
+        // Ensure chat is initialized as visible when entering the main menu
+        const mainMenu = document.getElementById('main-menu');
+        if (mainMenu && mainMenu.style.display === 'flex') {
+            chatContainer.classList.remove('chat-minimized');
+            chatContainer.style.display = 'block';
+        }
+    }
+});
+
+
 // Ensure the function is called when the DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     initializeCombinationsModal();
