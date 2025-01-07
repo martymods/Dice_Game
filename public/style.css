@@ -744,16 +744,26 @@ h1 {
 
 #purchased-items-display {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    flex-wrap: wrap; /* Allow wrapping */
+    gap: 10px; /* Spacing between items */
     justify-content: center;
     align-items: center;
 }
 
 .purchased-item {
-    font-size: 24px; /* Adjust emoji size */
-    cursor: pointer;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+    text-align: center;
+}
+
+.purchased-item img {
+    width: 50px; /* Size adjustments */
+    height: 50px;
+    object-fit: contain;
+    margin-bottom: 5px;
+    border-radius: 8px;
 }
 
 .purchased-item:hover::after {
@@ -1428,3 +1438,8 @@ body {
     border-radius: 5px; /* Optional: rounded corners */
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Optional: subtle shadow */
 }
+
+#chat-container.chat-minimized {
+    display: none; /* Chat hidden only when explicitly minimized */
+}
+
