@@ -1,5 +1,10 @@
 import { playSound } from './audio.js';
 import { itemsList } from '/items.js'; // Ensure the correct relative path
+console.log('Items List:', itemsList);
+
+if (!itemsList || itemsList.length === 0) {
+    console.error('itemsList is empty or not loaded.');
+}
 
 
 // Global state for multipliers and effects
@@ -242,6 +247,12 @@ export function updateHustlerPanel(hustlerInventory) {
 export function showItemPopup(balance, items, purchasedItems) {
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
+    console.log('ItemList DOM:', itemList);
+
+if (!itemList) {
+    console.error('item-list element not found. Ensure it exists in game.html.');
+    return;
+}
     const restockButton = document.getElementById('restockButton');
     const restockFeeElement = document.getElementById('restock-fee'); // Ensure this exists in your HTML
     const restockFee = Math.floor(balance * 0.15); // Calculate 15% restock fee
@@ -256,6 +267,7 @@ export function showItemPopup(balance, items, purchasedItems) {
 
     // Shuffle and display items
     const shuffledItems = items.sort(() => Math.random() - 0.5).slice(0, 3);
+    console.log('Shuffled items:', shuffledItems);
     shuffledItems.forEach(item => {
         const itemButton = document.createElement('button');
         itemButton.textContent = `${item.emoji || '❓'} ${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
@@ -279,9 +291,13 @@ export function showItemPopup(balance, items, purchasedItems) {
     // Add restock button functionality
     if (restockButton) {
         restockButton.onclick = () => {
-            handleRestock(balance, items);
+            console.log('Restocking items...');
+            handleRestock(balance, [...itemsList]); // Pass a fresh copy of itemsList
         };
+    } else {
+        console.error('restockButton not found in the DOM.');
     }
+    
 }
 
 
@@ -293,27 +309,21 @@ export function showItemPopup(balance, items, purchasedItems) {
  * Handles restocking items by deducting 15% of the player's balance and updating the store.
  */
 export function handleRestock(balance, items) {
-    const restockFee = Math.floor(balance * 0.15); // 10% of the player's balance
+    const restockFee = Math.floor(balance * 0.15); // 15% of the player's balance
 
     if (balance >= restockFee) {
-        // Deduct the restock fee
         balance -= restockFee;
+        console.log('Restocking items. Remaining balance:', balance);
 
-        // Shuffle and regenerate the items in the popup
+        // Shuffle and regenerate new items
         const newItems = items.sort(() => Math.random() - 0.5).slice(0, 3);
-
-        // Update the item popup and the player's balance
-        updateStoreUI(newItems, balance);
-
-        // Play a sound effect for restocking (optional)
-        playSound("/sounds/UI_Restock.ogg");
-
-        alert(`You restocked items for $${restockFee.toLocaleString()}!`);
+        updateStoreUI(newItems, balance); // Update the store UI
+        alert(`Restocked items for $${restockFee.toLocaleString()}!`);
     } else {
-        alert("Not enough balance to restock!");
-        playSound("/sounds/UI_Error.ogg");
+        alert('Not enough money to restock!');
     }
 }
+
 
 /**
  * Updates the store UI with new items and balance.
