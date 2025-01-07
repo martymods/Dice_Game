@@ -249,36 +249,47 @@ export function showItemPopup(balance, items, purchasedItems) {
     const itemList = document.getElementById('item-list');
     console.log('ItemList DOM:', itemList);
 
-if (!itemList) {
-    console.error('item-list element not found. Ensure it exists in game.html.');
-    return;
-}
+    if (!itemList) {
+        console.error('item-list element not found. Ensure it exists in game.html.');
+        return;
+    }
 
-if (!items || items.length === 0) {
-    console.error('No items available to show in the shop.');
-    return;
-}
+    if (!items || items.length === 0) {
+        console.error('No items available to show in the shop.');
+        return;
+    }
 
     const restockButton = document.getElementById('restockButton');
-    const restockFeeElement = document.getElementById('restock-fee'); // Ensure this exists in your HTML
-    const restockFee = Math.floor(balance * 0.15); // Calculate 15% restock fee
+    const restockFeeElement = document.getElementById('restock-fee');
+    const restockFee = Math.floor(balance * 0.15);
 
     popup.style.display = 'block';
     itemList.innerHTML = '';
 
-    // Display restock fee dynamically
     if (restockFeeElement) {
         restockFeeElement.textContent = `Restock Fee: $${restockFee.toLocaleString()}`;
     }
 
-    // Shuffle and display items
     const shuffledItems = (items.length ? items : [...itemsList])
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3);
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
     console.log('Shuffled items:', shuffledItems);
+
     shuffledItems.forEach(item => {
+        const itemContainer = document.createElement('div');
+        itemContainer.classList.add('item-container');
+
+        // Add item image
+        const itemImage = document.createElement('img');
+        const itemNameFormatted = item.name.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '');
+        itemImage.src = `/images/itemimage/${itemNameFormatted}.png`;
+        itemImage.alt = item.name;
+        itemImage.onerror = () => { itemImage.src = '/images/itemimage/Item_NoIcon.png'; }; // Fallback image
+        itemImage.classList.add('item-image');
+
+        // Create item button
         const itemButton = document.createElement('button');
-        itemButton.textContent = `${item.emoji || '❓'} ${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
+        itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
         itemButton.style.backgroundColor = getItemColor(item.rarity);
         itemButton.classList.add('item-button');
 
@@ -286,27 +297,30 @@ if (!items || items.length === 0) {
         itemButton.onmouseleave = hideItemDescription;
 
         itemButton.onclick = () => {
-            handleItemPurchase(item, balance, purchasedItems); // Ensure it's passed here
-            applyPurchasedItemEffects(purchasedItems); // Ensure it's passed here
+            handleItemPurchase(item, balance, purchasedItems);
+            applyPurchasedItemEffects(purchasedItems);
 
             const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
             playSound(voiceClips, true);
         };
 
-        itemList.appendChild(itemButton);
+        // Append image and button to the container
+        itemContainer.appendChild(itemImage);
+        itemContainer.appendChild(itemButton);
+
+        itemList.appendChild(itemContainer);
     });
 
-    // Add restock button functionality
     if (restockButton) {
         restockButton.onclick = () => {
             console.log('Restocking items...');
-            handleRestock(balance, [...itemsList]); // Pass a fresh copy of itemsList
+            handleRestock(balance, [...itemsList]);
         };
     } else {
         console.error('restockButton not found in the DOM.');
     }
-    
 }
+
 
 
 
@@ -466,45 +480,42 @@ export function addItemToPurchasedItems(item, purchasedItems = []) {
 
 
 /**
- * Updates the display for purchased items with emojis and hover descriptions.
+ * Updates the display for purchased items with images and hover descriptions.
  */
 export function updatePurchasedItemsDisplay(items = []) {
     const purchasedItemsDisplay = document.getElementById('purchased-items-display');
-    purchasedItemsDisplay.innerHTML = ''; // Clear previous items
+    purchasedItemsDisplay.innerHTML = '';
 
     if (!Array.isArray(items)) {
         console.error('updatePurchasedItemsDisplay received an invalid items array.');
         return;
     }
 
-    // Iterate through all items in the array
     items.forEach(item => {
-        const itemElement = document.createElement('div');
-        itemElement.classList.add('purchased-item');
+        const itemContainer = document.createElement('div');
+        itemContainer.classList.add('purchased-item');
 
-        // Display the item's emoji
-        itemElement.textContent = item.emoji || '❓';
+        // Add item image
+        const itemImage = document.createElement('img');
+        const itemNameFormatted = item.name.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '');
+        itemImage.src = `/images/itemimage/${itemNameFormatted}.png`;
+        itemImage.alt = item.name;
+        itemImage.onerror = () => { itemImage.src = '/images/itemimage/Item_NoIcon.png'; };
+        itemImage.classList.add('item-image');
 
-        // Set hover description
-        itemElement.setAttribute('data-description', item.description || 'No description available.');
+        // Add item label
+        const itemLabel = document.createElement('span');
+        itemLabel.textContent = item.name;
 
-        // Add hover effect to show description
-        itemElement.addEventListener('mouseenter', () => {
-            const descriptionDiv = document.getElementById('item-description');
-            descriptionDiv.textContent = item.description || 'No description available.';
-            descriptionDiv.style.display = 'block';
-        });
+        itemContainer.appendChild(itemImage);
+        itemContainer.appendChild(itemLabel);
 
-        itemElement.addEventListener('mouseleave', () => {
-            const descriptionDiv = document.getElementById('item-description');
-            descriptionDiv.style.display = 'none';
-        });
-
-        purchasedItemsDisplay.appendChild(itemElement);
+        purchasedItemsDisplay.appendChild(itemContainer);
     });
 
-    console.log('Purchased Items Display Updated:', items); // Debugging: Verify the display contents
+    console.log('Purchased Items Display Updated:', items);
 }
+
 
 
 /**
