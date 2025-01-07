@@ -105,32 +105,36 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const introContainer = document.getElementById('intro-container');
-        const mainMenu = document.getElementById('main-menu');
-        const skipIntroButton = document.getElementById('skip-intro');
+document.addEventListener('DOMContentLoaded', () => {
+    const introContainer = document.getElementById('intro-container');
+    const mainMenu = document.getElementById('main-menu');
+    const chatContainer = document.getElementById('chat-container');
+    const skipIntroButton = document.getElementById('skip-intro');
 
-        // Create an Audio object for the sound effect
-        const introSFX = new Audio('sounds/IntroVideoSFX_0.ogg');
-        introSFX.play().catch(err => console.error('Error playing intro sound:', err));
+    const showMainMenu = () => {
+        introContainer.style.display = 'none';
+        mainMenu.style.display = 'flex';
+        chatContainer.classList.remove('chat-minimized'); // Ensure chat is visible
+        chatContainer.style.display = 'block'; // Explicitly make chat visible
+    };
 
-        // Transition to main menu after 15 seconds
-        const timer = setTimeout(() => {
-            introContainer.style.display = 'none';
-            mainMenu.style.display = 'flex';
-        }, 14000);
+    const introSFX = new Audio('sounds/IntroVideoSFX_0.ogg');
+    introSFX.play().catch(err => console.error('Error playing intro sound:', err));
 
-        // Skip intro immediately if button is clicked
+    // Automatically transition to main menu after intro
+    const timer = setTimeout(showMainMenu, 14000);
+
+    // Skip intro logic
+    if (skipIntroButton) {
         skipIntroButton.addEventListener('click', () => {
             clearTimeout(timer);
-            introContainer.style.display = 'none';
-            mainMenu.style.display = 'flex';
-
-            // Stop the intro sound if it's still playing
             introSFX.pause();
             introSFX.currentTime = 0;
+            showMainMenu();
         });
-    });
+    }
+});
+
 </script>
 
 
