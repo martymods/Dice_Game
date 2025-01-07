@@ -742,6 +742,46 @@ h1 {
     text-align: center;
 }
 
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 items per row */
+    gap: 10px;
+    justify-items: center;
+    align-items: center;
+}
+
+.items-grid img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.items-grid img:hover {
+    transform: scale(1.1);
+}
+
+#prev-items,
+#next-items {
+    margin: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+    border: 1px solid #FFD700;
+    border-radius: 5px;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#prev-items:disabled,
+#next-items:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
 #purchased-items-display {
     display: flex;
     flex-wrap: wrap; /* Allow wrapping */
@@ -1442,4 +1482,3 @@ body {
 #chat-container.chat-minimized {
     display: none; /* Chat hidden only when explicitly minimized */
 }
-
