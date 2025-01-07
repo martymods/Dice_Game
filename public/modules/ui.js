@@ -253,6 +253,12 @@ if (!itemList) {
     console.error('item-list element not found. Ensure it exists in game.html.');
     return;
 }
+
+if (!items || items.length === 0) {
+    console.error('No items available to show in the shop.');
+    return;
+}
+
     const restockButton = document.getElementById('restockButton');
     const restockFeeElement = document.getElementById('restock-fee'); // Ensure this exists in your HTML
     const restockFee = Math.floor(balance * 0.15); // Calculate 15% restock fee
@@ -266,7 +272,9 @@ if (!itemList) {
     }
 
     // Shuffle and display items
-    const shuffledItems = items.sort(() => Math.random() - 0.5).slice(0, 3);
+    const shuffledItems = (items.length ? items : [...itemsList])
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3);
     console.log('Shuffled items:', shuffledItems);
     shuffledItems.forEach(item => {
         const itemButton = document.createElement('button');
