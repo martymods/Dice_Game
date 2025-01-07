@@ -346,7 +346,6 @@ export function handleRestock(balance, items) {
     }
 }
 
-
 /**
  * Updates the store UI with new items and balance.
  */
@@ -364,6 +363,18 @@ function updateStoreUI(items, balance) {
 
     // Add new items to the store
     items.forEach(item => {
+        // Create a container for the item
+        const itemContainer = document.createElement('div');
+        itemContainer.classList.add('item-container'); // Add a custom class for styling
+
+        // Create the item image
+        const itemImage = document.createElement('img');
+        itemImage.src = `/images/itemimage/${item.name.replace(/\s/g, '')}.png`;
+        itemImage.alt = item.name;
+        itemImage.classList.add('item-image'); // Custom class for styling
+        itemImage.onerror = () => (itemImage.src = '/images/itemimage/Item_NoIcon.png'); // Fallback image
+
+        // Create the item button
         const itemButton = document.createElement('button');
         itemButton.textContent = `${item.emoji || '❓'} ${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
         itemButton.style.backgroundColor = getItemColor(item.rarity);
@@ -379,22 +390,15 @@ function updateStoreUI(items, balance) {
             updatePurchasedItemsDisplay(purchasedItems);
         };
 
-        itemList.appendChild(itemButton);
+        // Append the image and button to the container
+        itemContainer.appendChild(itemImage);
+        itemContainer.appendChild(itemButton);
+
+        // Add the container to the item list
+        itemList.appendChild(itemContainer);
     });
 }
-document.addEventListener('DOMContentLoaded', () => {
-    const restockButton = document.getElementById('restockButton');
-    const playerBalance = 1000; // Replace with dynamic balance retrieval
-    const storeItems = [...itemsList]; // Load the store items dynamically
 
-    if (restockButton) {
-        restockButton.addEventListener('click', () => {
-            handleRestock(playerBalance, storeItems);
-        });
-    } else {
-        console.error("Restock button not found in the DOM.");
-    }
-});
 
 
 /**
