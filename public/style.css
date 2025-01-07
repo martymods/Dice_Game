@@ -1428,7 +1428,3 @@ body {
     border-radius: 5px; /* Optional: rounded corners */
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Optional: subtle shadow */
 }
-
-#chat-container.chat-minimized {
-    display: none; /* Chat hidden only when explicitly minimized */
-}
