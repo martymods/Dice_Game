@@ -864,18 +864,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (chatButton && chatContainer) {
         chatButton.addEventListener('click', () => {
             console.log('Chat button clicked (ui.js)');
+
+            // Toggle the 'chat-minimized' class
             chatContainer.classList.toggle('chat-minimized');
-            chatContainer.style.display = chatContainer.classList.contains('chat-minimized') ? 'none' : 'block';
+
+            // Adjust visibility based on the current state
+            if (chatContainer.classList.contains('chat-minimized')) {
+                chatContainer.style.height = '50px'; // Minimized height
+            } else {
+                chatContainer.style.height = '400px'; // Expanded height
+            }
         });
 
         // Ensure chat is initialized as visible when entering the main menu
         const mainMenu = document.getElementById('main-menu');
         if (mainMenu && mainMenu.style.display === 'flex') {
             chatContainer.classList.remove('chat-minimized');
-            chatContainer.style.display = 'block';
+            chatContainer.style.height = '400px'; // Fully expanded by default
         }
     }
 });
+
 
 
 // Ensure the function is called when the DOM is ready
