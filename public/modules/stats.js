@@ -1,5 +1,6 @@
 // stats.js
 import { playerStats, loadStats } from './gameLogic.js';
+import { itemsList } from './items.js';
 
 export function displayStats() {
     loadStats(); // Ensure stats are loaded from localStorage
