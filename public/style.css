@@ -1482,3 +1482,14 @@ body {
 #chat-container.chat-minimized {
     display: none; /* Chat hidden only when explicitly minimized */
 }
+
+#purchased-items-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#purchased-items-container img {
+    width: 100px;
+    height: 100px;
+}
