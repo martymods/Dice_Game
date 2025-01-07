@@ -1894,6 +1894,23 @@ socket.on('disconnect', () => {
     console.log('Disconnected from the server');
 });
 
+// Display Purchased Items in stats
+function displayPurchasedItems() {
+    const itemsContainer = document.createElement('div');
+    itemsContainer.id = 'purchased-items-container';
+    document.body.appendChild(itemsContainer);
+
+    itemsList.forEach(item => {
+        const itemDiv = document.createElement('div');
+        if (item.purchased > 0) {
+            itemDiv.innerHTML = `<img src="${item.image}" alt="${item.name}"><p>${item.name}: Purchased ${item.purchased} times</p>`;
+        } else {
+            itemDiv.innerHTML = `<img src="/images/itemimage/LockedItem.png" alt="Locked"><p>Locked Item</p>`;
+        }
+        itemsContainer.appendChild(itemDiv);
+    });
+}
+
 
 // Make it accessible globally
 window.startHighRoller = startHighRoller;
