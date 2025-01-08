@@ -3,7 +3,7 @@
 import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
-import { updateUI, showItemPopup, getItemColor, handleGameOverScreen, rollCounts, updateRollCount } from './modules/ui.js';
+import { updateUI, showItemPopup, getItemColor, handleGameOverScreen, updateRollCount } from './modules/ui.js';
 import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
