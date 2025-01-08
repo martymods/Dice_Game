@@ -3,6 +3,23 @@ body {
     cursor: url('/images/MouseCursor_0.png'), auto; /* Default custom cursor */
 }
 
+@font-face {
+    font-family: 'VictorianParlor';
+    src: url('/fonts/VictorianParlorVintageAlternate_free.otf') format('opentype');
+}
+
+body {
+    font-family: 'VictorianParlor', sans-serif;
+}
+
+body {
+    font-family: 'VictorianParlor', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+
+
 /* Button hover styling to cycle through cursors */
 button:hover {
     animation: cursorAnimation 0.9s infinite;
