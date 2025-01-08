@@ -1,7 +1,7 @@
 // stats.js
-import { playerStats, loadStats } from './modules/gameLogic.js';
-import { itemsList } from './items.js';
-import { viewPurchasedItems } from './modules/ui.js';
+import { playerStats, loadStats } from '/modules/gameLogic.js';
+import { itemsList } from 'items.js';
+import { viewPurchasedItems } from '/modules/ui.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Display stats
