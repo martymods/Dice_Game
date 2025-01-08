@@ -24,25 +24,10 @@
         </div>
         <button onclick="window.location.href='index.html'" class="back-button">Back to Menu</button>
     </div>
-    <script type="module">
-        import { displayStats } from './modules/stats.js';
-        import { viewPurchasedItems } from './modules/ui.js';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            displayStats();
-
-            const viewItemsButton = document.getElementById('view-purchased-items');
-            const purchasedItemsSection = document.getElementById('purchased-items-section');
-
-            viewItemsButton.addEventListener('click', () => {
-                purchasedItemsSection.style.display = 'block'; // Show Purchased Items Section
-                viewPurchasedItems(itemsList); // Call the function to display items
-            });
-        });
-    </script>
     <script type="module" src="./modules/stats.js"></script>
     <script type="module" src="./modules/ui.js"></script>
-    <script type="module" src="./gameLogic.js"></script>
+    <script type="module" src="./modules/gameLogic.js"></script>
     <script type="module" src="./items.js"></script>
 </body>
 </html>
+
