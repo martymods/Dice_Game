@@ -631,7 +631,12 @@ if (skipIntroButton) {
                 handleGameOver();
             }
         }
-
+    
+        // Add this check for balance reaching 0
+        if (balance === 0) {
+            showGameOverScreen();
+        }
+    
         if (balance <= 0) {
             handleGameOver();
         }
@@ -745,6 +750,39 @@ if (skipIntroButton) {
             }, 2000);
         }, 2000);
     }
+
+    /**
+ * Displays the GameOverEvicted.gif covering the entire screen when the balance reaches 0.
+ */
+function showGameOverScreen() {
+    // Create an overlay container
+    const overlay = document.createElement('div');
+    overlay.id = 'game-over-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'; // Optional: Dim background
+    overlay.style.zIndex = '9999';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+
+    // Create an image element for the GIF
+    const gameOverGif = document.createElement('img');
+    gameOverGif.src = '/images/GameOverEvicted.gif'; // Adjust the path if necessary
+    gameOverGif.alt = 'Game Over';
+    gameOverGif.style.width = '100%';
+    gameOverGif.style.height = '100%';
+    gameOverGif.style.objectFit = 'cover';
+
+    // Append the GIF to the overlay
+    overlay.appendChild(gameOverGif);
+
+    // Append the overlay to the body
+    document.body.appendChild(overlay);
+}
 
 
 
