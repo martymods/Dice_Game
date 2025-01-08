@@ -26,31 +26,23 @@
     </div>
     <script type="module">
         import { displayStats } from './modules/stats.js';
-        import { displayItemsStats } from './modules/ui.js';
+        import { viewPurchasedItems } from './modules/ui.js';
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Display stats on load
             displayStats();
 
-            // Setup purchased items button
             const viewItemsButton = document.getElementById('view-purchased-items');
             const purchasedItemsSection = document.getElementById('purchased-items-section');
-            const itemsList = []; // Fetch items list dynamically or import it
 
             viewItemsButton.addEventListener('click', () => {
-                purchasedItemsSection.style.display = 'block'; // Show the section
-                displayItemsStats(itemsList); // Render items with pagination
+                purchasedItemsSection.style.display = 'block'; // Show Purchased Items Section
+                viewPurchasedItems(itemsList); // Call the function to display items
             });
         });
     </script>
-
-<script type="module" src="./modules/stats.js"></script>
-<script type="module" src="app.js"></script>
-<script type="module" src="/modules/ui.js"></script>
-<script type="module" src="./gameLogic.js"></script>
-<script type="module" src="./items.js"></script>
-
-
-
+    <script type="module" src="./modules/stats.js"></script>
+    <script type="module" src="./modules/ui.js"></script>
+    <script type="module" src="./gameLogic.js"></script>
+    <script type="module" src="./items.js"></script>
 </body>
 </html>
