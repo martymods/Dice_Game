@@ -1493,3 +1493,19 @@ body {
     width: 100px;
     height: 100px;
 }
+
+.tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    z-index: 1000;
+    pointer-events: none;
+    white-space: nowrap;
+    transform: translate(-50%, -120%);
+    text-align: center;
+    max-width: 200px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
