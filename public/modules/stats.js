@@ -1,34 +1,9 @@
 // stats.js
-import { playerStats, loadStats } from '/modules/gameLogic.js';
-import { itemsList } from 'items.js';
-console.log('Items List Loaded:', itemsList);
-import { viewPurchasedItems } from '/modules/ui.js';
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Display stats
-    loadStats();
-    console.log('Player Stats:', playerStats); // Log the playerStats object
-    displayStats();
-
-    // Set up View Purchased Items button
-    const viewItemsButton = document.getElementById('view-purchased-items');
-    viewItemsButton.addEventListener('click', () => {
-        const purchasedItemsSection = document.getElementById('purchased-items-section');
-        purchasedItemsSection.style.display = 'block'; // Show Purchased Items Section
-        viewPurchasedItems(itemsList); // Call the function to display items
-    });
-});
-
+import { playerStats, loadStats } from './gameLogic.js';
 
 export function displayStats() {
-    console.log('Displaying stats:', playerStats); // Debug log
     loadStats(); // Ensure stats are loaded from localStorage
     const statsList = document.getElementById('stats-list');
-    if (!statsList) {
-        console.error("'stats-list' element not found.");
-        return;
-    }
-
     statsList.innerHTML = `
         <ul>
             <li>Games Played: ${playerStats.gamesPlayed}</li>
@@ -52,16 +27,3 @@ function formatTime(seconds) {
     const secs = seconds % 60;
     return `${hrs}h ${mins}m ${secs}s`;
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    const viewItemsButton = document.getElementById('view-purchased-items');
-    if (!viewItemsButton) {
-        console.error("'View Purchased Items' button not found.");
-        return;
-    }
-
-    viewItemsButton.addEventListener('click', () => {
-        console.log('View Purchased Items button clicked.');
-        viewPurchasedItems(itemsList);
-    });
-});
