@@ -1,8 +1,7 @@
 // stats.js
-import { playerStats, loadStats } from './modules/gameLogic.js'; // Adjust relative path as needed
+import { playerStats, loadStats } from './modules/gameLogic.js';
 import { itemsList } from './items.js';
 import { viewPurchasedItems } from './modules/ui.js';
-
 
 document.addEventListener('DOMContentLoaded', () => {
     // Display stats
@@ -17,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
         viewPurchasedItems(itemsList); // Call the function to display items
     });
 });
-
 
 export function displayStats() {
     loadStats(); // Ensure stats are loaded from localStorage
