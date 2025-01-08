@@ -9,6 +9,7 @@ let gameState = {
     onFire: false,
 };
 
+// Player Statistics Object
 export const playerStats = {
     gamesPlayed: 0,
     gamesWon: 0,
@@ -16,36 +17,34 @@ export const playerStats = {
     monthsUnlocked: 0,
     totalMoneyWon: 0,
     totalMoneyLost: 0,
+    hustlersRecruited: 0,
+    totalTimePlayed: 0, // In seconds
     currentWinStreak: 0,
     longestWinStreak: 0,
-    totalDaysPassed: 0,
-    totalTimePlayed: 0,
+    totalDaysPassed: 0
 };
 
-// Load player stats from localStorage or initialize default values
+// Load player stats from localStorage
 export function loadStats() {
-    try {
-        const savedStats = localStorage.getItem('playerStats');
-        if (savedStats) {
-            Object.assign(playerStats, JSON.parse(savedStats));
-            console.log('Loaded player stats:', playerStats); // Debug log
-        } else {
-            console.warn('No player stats found in localStorage.');
-        }
-    } catch (error) {
-        console.error('Error loading player stats:', error);
+    const savedStats = localStorage.getItem('playerStats');
+    if (savedStats) {
+        Object.assign(playerStats, JSON.parse(savedStats));
     }
 }
-
 
 // Save player stats to localStorage
 export function saveStats() {
-    try {
-        localStorage.setItem('playerStats', JSON.stringify(playerStats));
-    } catch (error) {
-        console.error('Error saving player stats:', error);
-    }
+    localStorage.setItem('playerStats', JSON.stringify(playerStats));
 }
+
+// Format time for display
+export function formatTime(seconds) {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hrs}h ${mins}m ${secs}s`;
+}
+
 
 // Update win streak and check if "On Fire" mode should activate
 export function updateWinStreak() {
