@@ -18,6 +18,10 @@ body::before {
     font-family: 'VictorianParlor', sans-serif;
 }
 
+* {
+    font-family: 'VictorianParlor', sans-serif !important;
+}
+
 
 body {
     font-family: 'VictorianParlor', sans-serif;
