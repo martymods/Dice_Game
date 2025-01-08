@@ -1,5 +1,6 @@
 import { playSound } from './audio.js';
 import { itemsList } from '/items.js'; // Ensure the correct relative path
+
 console.log('Items List:', itemsList);
 
 if (!itemsList || itemsList.length === 0) {
@@ -900,13 +901,16 @@ function createDicePairElement(dice1, dice2, rollCounts) {
 /**
  * Call this function to update the counts whenever a roll occurs.
  */
-function updateRollCount(dice1, dice2) {
-    const combinationKey = `${dice1}-${dice2}`;
-    if (rollCounts.win[combinationKey] !== undefined) {
-        rollCounts.win[combinationKey]++;
-    } else if (rollCounts.lose[combinationKey] !== undefined) {
-        rollCounts.lose[combinationKey]++;
+export function updateRollCount(dice1, dice2) {
+    const key = `${dice1},${dice2}`;
+    if (!rollCounts[key]) {
+        rollCounts[key] = 0;
     }
+    rollCounts[key]++;
+}
+
+export function getRollCounts() {
+    return rollCounts; // Optional: To retrieve the roll counts
 }
 
 
