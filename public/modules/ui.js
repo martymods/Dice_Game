@@ -848,7 +848,7 @@ function createDicePairElement(dice1, dice2) {
     container.style.flexDirection = 'column';
     container.style.alignItems = 'center';
     container.style.margin = '10px';
-    container.style.border = '2px solid #000'; // Add a black outline
+    container.style.border = '2px solid white'; // Add a white outline
     container.style.borderRadius = '10px'; // Round the corners
     container.style.padding = '10px'; // Add some spacing inside the outline
     container.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'; // Add a subtle shadow for depth
