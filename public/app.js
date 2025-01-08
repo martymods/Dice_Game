@@ -8,16 +8,6 @@ import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
-import { displayStats } from './modules/stats.js';
-
-// Example usage in app.js if stats display is required
-document.addEventListener('DOMContentLoaded', () => {
-    const statsPage = document.getElementById('stats-container');
-    if (statsPage) {
-        displayStats();
-    }
-});
-
 
 // Use `window.socket` instead:
 console.log('Using global socket in app.js:', window.socket);
@@ -845,6 +835,26 @@ document.getElementById('saveMoneyButton').addEventListener('click', () => {
 
 
 
+}
+// Stats Display Logic
+function displayStats() {
+    loadStats(); // Ensure stats are loaded from localStorage
+    const statsList = document.getElementById('stats-list');
+    statsList.innerHTML = `
+        <ul>
+            <li>Games Played: ${playerStats.gamesPlayed}</li>
+            <li>Games Won: ${playerStats.gamesWon}</li>
+            <li>Times Evicted: ${playerStats.evictions}</li>
+            <li>Months Unlocked: ${playerStats.monthsUnlocked}/12</li>
+            <li>Total Money Won: $${playerStats.totalMoneyWon.toLocaleString()}</li>
+            <li>Total Money Lost: $${playerStats.totalMoneyLost.toLocaleString()}</li>
+            <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
+            <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
+            <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
+            <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
+            <li>Total Days Passed: ${playerStats.totalDaysPassed}</li>
+        </ul>
+    `;
 }
 
 const ethers = window.ethers;
