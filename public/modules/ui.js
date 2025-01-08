@@ -901,7 +901,7 @@ function createDicePairElement(dice1, dice2, rollCounts) {
 /**
  * Call this function to update the counts whenever a roll occurs.
  */
-const rollCounts = {}; // Global object to store roll counts
+const dicerollCounts = {}; // Global object to store roll counts
 
 export function updateRollCount(dice1, dice2) {
     const key = `${dice1},${dice2}`;
