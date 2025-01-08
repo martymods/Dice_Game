@@ -557,6 +557,10 @@ export function displayBonusFromItems(bonus) {
  * Handles the game-over animations and transitions.
  */
 export function handleGameOverScreen() {
+    if (balance <= 0) {
+        handleGameOverScreen();
+    }
+    
     const gameOverContainer = document.getElementById('gameOverContainer');
     gameOverContainer.innerHTML = ''; // Clear previous content
 
@@ -581,6 +585,52 @@ export function handleGameOverScreen() {
         evictedGif.alt = 'Game Over Idle Screen';
     }, 6000);
 }
+    // Create buttons container
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.style.position = 'fixed';
+    buttonsContainer.style.bottom = '20px';
+    buttonsContainer.style.left = '50%';
+    buttonsContainer.style.transform = 'translateX(-50%)';
+    buttonsContainer.style.zIndex = '9999';
+    buttonsContainer.style.display = 'flex';
+    buttonsContainer.style.gap = '20px';
+
+    // Restart Button
+    const restartButton = document.createElement('button');
+    restartButton.textContent = 'Restart';
+    restartButton.style.padding = '10px 20px';
+    restartButton.style.fontSize = '18px';
+    restartButton.style.backgroundColor = '#28a745';
+    restartButton.style.color = '#fff';
+    restartButton.style.border = 'none';
+    restartButton.style.borderRadius = '5px';
+    restartButton.style.cursor = 'pointer';
+    restartButton.addEventListener('click', () => {
+        window.location.reload(); // Refresh the page
+    });
+
+    // Quit Game Button
+    const quitButton = document.createElement('button');
+    quitButton.textContent = 'Quit Game';
+    quitButton.style.padding = '10px 20px';
+    quitButton.style.fontSize = '18px';
+    quitButton.style.backgroundColor = '#dc3545';
+    quitButton.style.color = '#fff';
+    quitButton.style.border = 'none';
+    quitButton.style.borderRadius = '5px';
+    quitButton.style.cursor = 'pointer';
+    quitButton.addEventListener('click', () => {
+        window.location.href = '/'; // Navigate to the main menu/index page
+    });
+
+    // Append buttons to the container
+    buttonsContainer.appendChild(restartButton);
+    buttonsContainer.appendChild(quitButton);
+
+    // Append buttons container to the game over container
+    gameOverContainer.appendChild(buttonsContainer);
+
+
 
 /**
  * Updates the balance display using images for each digit.
