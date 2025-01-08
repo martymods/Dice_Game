@@ -837,10 +837,10 @@ function populateCombinationsModal() {
 }
 
 /**
- * Creates a visual representation of a dice pair.
+ * Creates a visual representation of a dice pair with an outline.
  * @param {number} dice1 - First dice value.
  * @param {number} dice2 - Second dice value.
- * @returns {HTMLElement} A div element containing the dice images.
+ * @returns {HTMLElement} A div element containing the dice images with an outline.
  */
 function createDicePairElement(dice1, dice2) {
     const container = document.createElement('div');
@@ -848,6 +848,10 @@ function createDicePairElement(dice1, dice2) {
     container.style.flexDirection = 'column';
     container.style.alignItems = 'center';
     container.style.margin = '10px';
+    container.style.border = '2px solid #000'; // Add a black outline
+    container.style.borderRadius = '10px'; // Round the corners
+    container.style.padding = '10px'; // Add some spacing inside the outline
+    container.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'; // Add a subtle shadow for depth
 
     const img1 = document.createElement('img');
     img1.src = `/images/dice${dice1}.png`;
@@ -864,6 +868,7 @@ function createDicePairElement(dice1, dice2) {
 
     return container;
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const chatButton = document.getElementById('toggle-chat');
