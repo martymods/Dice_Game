@@ -267,6 +267,9 @@ async function setupSinglePlayer() {
         const dice1 = Math.floor(Math.random() * 6) + 1;
         const dice2 = Math.floor(Math.random() * 6) + 1;
         const sum = dice1 + dice2;
+        updateRollCount(dice1, dice2);
+        console.log(`Updated roll counts: ${JSON.stringify(rollCounts)}`);
+    
 
         // Update the roll count
         updateRollCount(dice1, dice2);
