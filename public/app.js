@@ -1,19 +1,7 @@
 // app.
 
 import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
-import { playerStats, loadStats, saveStats, formatTime, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
-document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const isSinglePlayer = urlParams.has('singlePlayer');
-
-    if (urlParams.has('stats')) {
-        displayStats();
-    } else if (isSinglePlayer) {
-        setupSinglePlayer();
-    } else {
-        console.log('No specific game mode detected. Defaulting to Main Menu.');
-    }
-});
+import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
 import { updateUI, showItemPopup, getItemColor, handleGameOverScreen } from './modules/ui.js';
 import { itemsList } from './items.js';
@@ -38,6 +26,9 @@ let shakeThreshold = 0.8; // Adjust sensitivity for detecting shakes
 let rollInProgress = false; // Prevent multiple rolls simultaneously
 
 let hustlerInventory = []; // Player's hustlers
+let ambienceSound = new Audio('/sounds/Ambience0.ogg');
+ambienceSound.loop = true;
+
 
 // Global API Base URL
 const API_BASE_URL = 'https://dice-game-1-6iwc.onrender.com'; // Adjust as needed
@@ -66,6 +57,31 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Ensure playerStats and related functions are globally accessible
+if (!window.playerStats) {
+    window.playerStats = {
+        gamesPlayed: 0,
+        gamesWon: 0,
+        evictions: 0,
+        monthsUnlocked: 0,
+        totalMoneyWon: 0,
+        totalMoneyLost: 0,
+        hustlersRecruited: 0,
+        totalTimePlayed: 0, // In seconds
+        currentWinStreak: 0,
+        longestWinStreak: 0,
+        totalDaysPassed: 0
+    };
+
+    window.loadStats = function () {
+        const savedStats = localStorage.getItem('playerStats');
+        if (savedStats) {
+            Object.assign(window.playerStats, JSON.parse(savedStats));
+        }
+    };
+
+    window.saveStats = function () {
+        localStorage.setItem('playerStats', JSON.stringify(window.playerStats));
+    };
 
     window.displayStats = function () {
         window.loadStats();
@@ -87,11 +103,17 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     };
 
-
+    window.formatTime = function (seconds) {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${hrs}h ${mins}m ${secs}s`;
+    };
 
     window.startSinglePlayer = function () {
         window.location.href = 'game.html?singlePlayer=true';
     };
+}
 
 async function setupSinglePlayer() {
     loadStats();
@@ -623,6 +645,12 @@ if (skipIntroButton) {
         playerStats.evictions++;
         playerStats.currentWinStreak = 0;
         saveStats();
+
+            // Stop ambience sound
+    if (ambienceSound) {
+        ambienceSound.pause();
+        ambienceSound.currentTime = 0; // Reset playback position
+    }
     
         flashScreen('red');
         playSound('/sounds/Death0.ogg');
@@ -816,8 +844,26 @@ document.getElementById('saveMoneyButton').addEventListener('click', () => {
 
 
 
+}// Stats Display Logic
+function displayStats() {
+    loadStats(); // Ensure stats are loaded from localStorage
+    const statsList = document.getElementById('stats-list');
+    statsList.innerHTML = `
+        <ul>
+            <li>Games Played: ${playerStats.gamesPlayed}</li>
+            <li>Games Won: ${playerStats.gamesWon}</li>
+            <li>Times Evicted: ${playerStats.evictions}</li>
+            <li>Months Unlocked: ${playerStats.monthsUnlocked}/12</li>
+            <li>Total Money Won: $${playerStats.totalMoneyWon.toLocaleString()}</li>
+            <li>Total Money Lost: $${playerStats.totalMoneyLost.toLocaleString()}</li>
+            <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
+            <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
+            <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
+            <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
+            <li>Total Days Passed: ${playerStats.totalDaysPassed}</li>
+        </ul>
+    `;
 }
-
 
 const ethers = window.ethers;
 
@@ -1023,6 +1069,10 @@ function handleGameOver() {
     flashScreen('red');
 
     // Play game over sound
+    if (ambienceSound) {
+        ambienceSound.pause();
+        ambienceSound.currentTime = 0; // Reset playback position
+    }
     const deathSound = new Audio('/sounds/Death0.ogg');
     deathSound.play().catch(err => console.error('Death sound error:', err));
 
@@ -1856,23 +1906,6 @@ socket.on('connect_error', (error) => {
 socket.on('disconnect', () => {
     console.log('Disconnected from the server');
 });
-
-// Display Purchased Items in stats
-function displayPurchasedItems() {
-    const itemsContainer = document.createElement('div');
-    itemsContainer.id = 'purchased-items-container';
-    document.body.appendChild(itemsContainer);
-
-    itemsList.forEach(item => {
-        const itemDiv = document.createElement('div');
-        if (item.purchased > 0) {
-            itemDiv.innerHTML = `<img src="${item.image}" alt="${item.name}"><p>${item.name}: Purchased ${item.purchased} times</p>`;
-        } else {
-            itemDiv.innerHTML = `<img src="/images/itemimage/LockedItem.png" alt="Locked"><p>Locked Item</p>`;
-        }
-        itemsContainer.appendChild(itemDiv);
-    });
-}
 
 
 // Make it accessible globally
