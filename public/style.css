@@ -6,9 +6,15 @@ body {
 @font-face {
     font-family: 'VictorianParlor';
     src: url('/fonts/VictorianParlorVintageAlternate_free.otf') format('opentype');
+    font-display: swap;
 }
 
 body {
+    font-family: 'VictorianParlor', sans-serif;
+}
+/* Add this rule */
+body::before {
+    content: 'Font Debug';
     font-family: 'VictorianParlor', sans-serif;
 }
 
