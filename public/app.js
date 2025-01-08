@@ -754,37 +754,80 @@ if (skipIntroButton) {
     /**
  * Displays the GameOverEvicted.gif covering the entire screen when the balance reaches 0.
  */
-function showGameOverScreen() {
-    // Create an overlay container
-    const overlay = document.createElement('div');
-    overlay.id = 'game-over-overlay';
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'; // Optional: Dim background
-    overlay.style.zIndex = '9999';
-    overlay.style.display = 'flex';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-
-    // Create an image element for the GIF
-    const gameOverGif = document.createElement('img');
-    gameOverGif.src = '/images/GameOverEvicted.gif'; // Adjust the path if necessary
-    gameOverGif.alt = 'Game Over';
-    gameOverGif.style.width = '100%';
-    gameOverGif.style.height = '100%';
-    gameOverGif.style.objectFit = 'cover';
-
-    // Append the GIF to the overlay
-    overlay.appendChild(gameOverGif);
-
-    // Append the overlay to the body
-    document.body.appendChild(overlay);
-}
-
-
+    function showGameOverScreen() {
+        // Ensure a container for the game over screen
+        const gameOverContainer = document.createElement('div');
+        gameOverContainer.id = 'gameOverContainer';
+        gameOverContainer.style.position = 'fixed';
+        gameOverContainer.style.top = '0';
+        gameOverContainer.style.left = '0';
+        gameOverContainer.style.width = '100%';
+        gameOverContainer.style.height = '100%';
+        gameOverContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.9)'; // Black overlay
+        gameOverContainer.style.display = 'flex';
+        gameOverContainer.style.justifyContent = 'center';
+        gameOverContainer.style.alignItems = 'center';
+        gameOverContainer.style.zIndex = '9999';
+    
+        // Add the GameOverEvicted.gif image
+        const gameOverImage = document.createElement('img');
+        gameOverImage.src = '/images/GameOverEvicted.gif'; // Replace with the correct path
+        gameOverImage.alt = 'Game Over';
+        gameOverImage.style.width = '100%';
+        gameOverImage.style.height = '100%';
+        gameOverImage.style.objectFit = 'cover';
+    
+        gameOverContainer.appendChild(gameOverImage);
+    
+        // Create buttons container
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.style.position = 'fixed';
+        buttonsContainer.style.bottom = '20px';
+        buttonsContainer.style.left = '50%';
+        buttonsContainer.style.transform = 'translateX(-50%)';
+        buttonsContainer.style.zIndex = '9999';
+        buttonsContainer.style.display = 'flex';
+        buttonsContainer.style.gap = '20px';
+    
+        // Restart Button
+        const restartButton = document.createElement('button');
+        restartButton.textContent = 'Restart';
+        restartButton.style.padding = '10px 20px';
+        restartButton.style.fontSize = '18px';
+        restartButton.style.backgroundColor = '#28a745';
+        restartButton.style.color = '#fff';
+        restartButton.style.border = 'none';
+        restartButton.style.borderRadius = '5px';
+        restartButton.style.cursor = 'pointer';
+        restartButton.addEventListener('click', () => {
+            window.location.reload(); // Refresh the page
+        });
+    
+        // Quit Game Button
+        const quitButton = document.createElement('button');
+        quitButton.textContent = 'Quit Game';
+        quitButton.style.padding = '10px 20px';
+        quitButton.style.fontSize = '18px';
+        quitButton.style.backgroundColor = '#dc3545';
+        quitButton.style.color = '#fff';
+        quitButton.style.border = 'none';
+        quitButton.style.borderRadius = '5px';
+        quitButton.style.cursor = 'pointer';
+        quitButton.addEventListener('click', () => {
+            window.location.href = '/'; // Navigate to the main menu/index page
+        });
+    
+        // Append buttons to the container
+        buttonsContainer.appendChild(restartButton);
+        buttonsContainer.appendChild(quitButton);
+    
+        // Append buttons container to the game over container
+        gameOverContainer.appendChild(buttonsContainer);
+    
+        // Append the entire container to the body
+        document.body.appendChild(gameOverContainer);
+    }
+    
 
 function addHustlerToInventory(hustler) {
     if (hustlerInventory.length >= 5) {
