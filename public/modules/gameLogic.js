@@ -28,11 +28,15 @@ export function loadStats() {
         const savedStats = localStorage.getItem('playerStats');
         if (savedStats) {
             Object.assign(playerStats, JSON.parse(savedStats));
+            console.log('Loaded player stats:', playerStats); // Debug log
+        } else {
+            console.warn('No player stats found in localStorage.');
         }
     } catch (error) {
         console.error('Error loading player stats:', error);
     }
 }
+
 
 // Save player stats to localStorage
 export function saveStats() {
