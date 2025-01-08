@@ -1,6 +1,22 @@
 // stats.js
 import { playerStats, loadStats } from './gameLogic.js';
 import { itemsList } from '/items.js';
+import { viewPurchasedItems } from './modules/ui.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Display stats
+    loadStats();
+    displayStats();
+
+    // Set up View Purchased Items button
+    const viewItemsButton = document.getElementById('view-purchased-items');
+    viewItemsButton.addEventListener('click', () => {
+        const purchasedItemsSection = document.getElementById('purchased-items-section');
+        purchasedItemsSection.style.display = 'block'; // Show Purchased Items Section
+        viewPurchasedItems(itemsList); // Call the function to display items
+    });
+});
+
 
 export function displayStats() {
     loadStats(); // Ensure stats are loaded from localStorage
