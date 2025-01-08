@@ -990,6 +990,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // View Purchased Items stats/unlockable
 export function viewPurchasedItems(itemsList) {
+    console.log('viewPurchasedItems called with:', itemsList); // Log the itemsList
+
     const itemsPerPage = 12;
     let currentPage = 0;
 
@@ -997,6 +999,11 @@ export function viewPurchasedItems(itemsList) {
     const itemsContainer = document.getElementById('items-container');
     const prevButton = document.getElementById('prev-items');
     const nextButton = document.getElementById('next-items');
+
+    if (!itemsContainer) {
+        console.error("'items-container' not found.");
+        return;
+    }
 
     // Filter purchased and locked items
     const purchasedItems = itemsList.filter(item => item.purchased > 0);
@@ -1009,6 +1016,7 @@ export function viewPurchasedItems(itemsList) {
 
     function renderItems() {
         itemsContainer.innerHTML = ''; // Clear current items
+        console.log('Rendering items for page:', currentPage); // Log the current page
 
         const start = currentPage * itemsPerPage;
         const end = start + itemsPerPage;
@@ -1046,7 +1054,7 @@ export function viewPurchasedItems(itemsList) {
 
         // Handle pagination buttons
         prevButton.disabled = currentPage === 0;
-        nextButton.disabled = end >= allItems.length;
+        nextButton.disabled = (currentPage + 1) * itemsPerPage >= allItems.length;
     }
 
     // Set up pagination controls
