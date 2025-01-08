@@ -12,21 +12,15 @@
         <div id="stats-list">
             <!-- Stats will be dynamically loaded here -->
         </div>
-        <button id="view-purchased-items" class="back-button">View Purchased Items</button>
-        
-        <div id="purchased-items-section" style="display: none;">
-            <h3>Purchased Items</h3>
-            <div id="items-pagination">
-                <div id="items-container" class="items-grid"></div>
-                <button id="prev-items" disabled>Previous</button>
-                <button id="next-items">Next</button>
-            </div>
-        </div>
         <button onclick="window.location.href='index.html'" class="back-button">Back to Menu</button>
     </div>
-    <script type="module" src="/modules/ui.js"></script>
-    <script type="module" src="/modules/gameLogic.js"></script>
-    <script type="module" src="items.js"></script>
+    <script type="module">
+        import { displayStats } from './modules/stats.js';
+
+        // Call displayStats when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            displayStats();
+        });
+    </script>
 </body>
 </html>
-
