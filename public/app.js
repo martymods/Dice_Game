@@ -268,6 +268,9 @@ async function setupSinglePlayer() {
         const dice2 = Math.floor(Math.random() * 6) + 1;
         const sum = dice1 + dice2;
 
+        // Update the roll count
+        updateRollCount(dice1, dice2);
+
         // Apply Hustler Effects
         const { multiplier, cashBonus } = applyHustlerEffects(dice1, dice2);
 
