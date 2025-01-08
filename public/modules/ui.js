@@ -988,6 +988,84 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// View Purchased Items stats/unlockable
+export function viewPurchasedItems(itemsList) {
+    const itemsPerPage = 12;
+    let currentPage = 0;
+
+    const purchasedItemsSection = document.getElementById('purchased-items-section');
+    const itemsContainer = document.getElementById('items-container');
+    const prevButton = document.getElementById('prev-items');
+    const nextButton = document.getElementById('next-items');
+
+    // Filter purchased and locked items
+    const purchasedItems = itemsList.filter(item => item.purchased > 0);
+    const lockedItems = itemsList.filter(item => item.purchased === 0).map(item => ({
+        ...item,
+        image: '/images/itemimage/LockedItem.png',
+        description: 'This item has not yet been purchased. Shop more to unlock it!',
+    }));
+    const allItems = [...purchasedItems, ...lockedItems];
+
+    function renderItems() {
+        itemsContainer.innerHTML = ''; // Clear current items
+
+        const start = currentPage * itemsPerPage;
+        const end = start + itemsPerPage;
+        const itemsToDisplay = allItems.slice(start, end);
+
+        itemsToDisplay.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('item-container');
+
+            const itemImage = document.createElement('img');
+            itemImage.src = item.image;
+            itemImage.alt = item.name;
+            itemImage.classList.add('item-image');
+
+            const itemName = document.createElement('span');
+            itemName.textContent = item.purchased > 0 ? item.name : 'Locked Item';
+
+            itemDiv.appendChild(itemImage);
+            itemDiv.appendChild(itemName);
+
+            itemDiv.addEventListener('mouseenter', () => {
+                const tooltip = document.createElement('div');
+                tooltip.classList.add('tooltip');
+                tooltip.textContent = item.description;
+                itemDiv.appendChild(tooltip);
+            });
+
+            itemDiv.addEventListener('mouseleave', () => {
+                const tooltip = itemDiv.querySelector('.tooltip');
+                if (tooltip) tooltip.remove();
+            });
+
+            itemsContainer.appendChild(itemDiv);
+        });
+
+        // Handle pagination buttons
+        prevButton.disabled = currentPage === 0;
+        nextButton.disabled = end >= allItems.length;
+    }
+
+    // Set up pagination controls
+    prevButton.addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            renderItems();
+        }
+    });
+
+    nextButton.addEventListener('click', () => {
+        if ((currentPage + 1) * itemsPerPage < allItems.length) {
+            currentPage++;
+            renderItems();
+        }
+    });
+
+    renderItems(); // Initial render
+}
 
 
 
