@@ -802,12 +802,12 @@ function populateCombinationsModal() {
     `;
     modalContent.appendChild(rules);
 
-    // Add visual combinations
-    const combinationsSection = document.createElement('div');
-    combinationsSection.style.display = 'flex';
-    combinationsSection.style.flexWrap = 'wrap';
-    combinationsSection.style.justifyContent = 'space-around';
-    modalContent.appendChild(combinationsSection);
+    // Create container for all combinations
+    const combinationsContainer = document.createElement('div');
+    combinationsContainer.style.display = 'flex';
+    combinationsContainer.style.flexDirection = 'column';
+    combinationsContainer.style.gap = '20px';
+    modalContent.appendChild(combinationsContainer);
 
     // Define winning and losing combinations
     const combinations = {
@@ -816,58 +816,77 @@ function populateCombinationsModal() {
     };
 
     // Add winning combinations
-    const winTitle = document.createElement('h3');
-    winTitle.textContent = 'Winning Rolls (7, 11):';
-    combinationsSection.appendChild(winTitle);
+    const winRow = document.createElement('div');
+    winRow.style.display = 'flex';
+    winRow.style.flexWrap = 'nowrap';
+    winRow.style.gap = '10px';
+    winRow.style.justifyContent = 'center';
 
     combinations.win.forEach(([dice1, dice2]) => {
-        const pair = createDicePairElement(dice1, dice2);
-        combinationsSection.appendChild(pair);
+        const pair = createDicePairElement(dice1, dice2, true); // Adjusted function call
+        winRow.appendChild(pair);
     });
+
+    const winTitle = document.createElement('h3');
+    winTitle.textContent = 'Winning Rolls (7, 11):';
+    combinationsContainer.appendChild(winTitle);
+    combinationsContainer.appendChild(winRow);
 
     // Add losing combinations
-    const loseTitle = document.createElement('h3');
-    loseTitle.textContent = 'Losing Rolls (2, 3, 12):';
-    combinationsSection.appendChild(loseTitle);
+    const loseRow = document.createElement('div');
+    loseRow.style.display = 'flex';
+    loseRow.style.flexWrap = 'nowrap';
+    loseRow.style.gap = '10px';
+    loseRow.style.justifyContent = 'center';
 
     combinations.lose.forEach(([dice1, dice2]) => {
-        const pair = createDicePairElement(dice1, dice2);
-        combinationsSection.appendChild(pair);
+        const pair = createDicePairElement(dice1, dice2, false); // Adjusted function call
+        loseRow.appendChild(pair);
     });
+
+    const loseTitle = document.createElement('h3');
+    loseTitle.textContent = 'Losing Rolls (2, 3, 12):';
+    combinationsContainer.appendChild(loseTitle);
+    combinationsContainer.appendChild(loseRow);
 }
 
 /**
- * Creates a visual representation of a dice pair with an outline.
+ * Creates a visual representation of a dice pair with optional styling for winning combinations.
  * @param {number} dice1 - First dice value.
  * @param {number} dice2 - Second dice value.
- * @returns {HTMLElement} A div element containing the dice images with an outline.
+ * @param {boolean} isWinning - Whether the combination is a winning one.
+ * @returns {HTMLElement} A div element containing the dice images.
  */
-function createDicePairElement(dice1, dice2) {
+function createDicePairElement(dice1, dice2, isWinning) {
     const container = document.createElement('div');
     container.style.display = 'flex';
     container.style.flexDirection = 'column';
     container.style.alignItems = 'center';
     container.style.margin = '10px';
-    container.style.border = '2px solid white'; // Add a white outline
-    container.style.borderRadius = '10px'; // Round the corners
-    container.style.padding = '10px'; // Add some spacing inside the outline
-    container.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'; // Add a subtle shadow for depth
+    container.style.border = '2px solid';
+    container.style.borderColor = isWinning ? 'green' : 'red'; // Green for winning, red for losing
+    container.style.borderRadius = '5px';
+    container.style.padding = '5px';
+    container.style.backgroundColor = '#fff';
 
     const img1 = document.createElement('img');
     img1.src = `/images/dice${dice1}.png`;
     img1.alt = `Dice ${dice1}`;
-    img1.style.width = '50px';
+    img1.style.width = '30px'; // Adjusted for smaller size
+    img1.style.height = '30px';
 
     const img2 = document.createElement('img');
     img2.src = `/images/dice${dice2}.png`;
     img2.alt = `Dice ${dice2}`;
-    img2.style.width = '50px';
+    img2.style.width = '30px'; // Adjusted for smaller size
+    img2.style.height = '30px';
 
     container.appendChild(img1);
     container.appendChild(img2);
 
     return container;
 }
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
