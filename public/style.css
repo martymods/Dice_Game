@@ -1340,12 +1340,12 @@ body {
 .modal-content {
     background-color: #000000; /* White background */
     margin: 10% auto; /* Center the modal vertically and horizontally */
-    padding: 225px; /* Padding inside the modal */
-    border: 1px solid #888; /* Light border */
+    padding: 155px; /* Padding inside the modal */
+    border: 2px solid #888; /* Light border */
     border-radius: 10px; /* Rounded corners */
     width: 80%; /* Default width */
     max-width: 750px; /* Maximum width */
-    box-shadow: 10 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    box-shadow: 10 8px 16px rgba(0, 0, 0, 0.6); /* Subtle shadow */
     animation: fadeIn 0.3s ease; /* Smooth fade-in effect */
 }
 
@@ -1359,8 +1359,8 @@ body {
     font-size: 14px; /* Font size */
     cursor: pointer; /* Pointer cursor on hover */
     float: right; /* Align to the right */
-    margin-top: -10px; /* Adjust positioning */
-    margin-right: -10px; /* Adjust positioning */
+    margin-top: 10px; /* Adjust positioning */
+    margin-right: 10px; /* Adjust positioning */
     transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
 }
 
