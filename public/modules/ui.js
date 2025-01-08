@@ -778,6 +778,11 @@ export function initializeCombinationsModal() {
 /**
  * Populates the combinations modal with rules and dice images.
  */
+let rollCounts = {
+    win: { '1-6': 0, '2-5': 0, '3-4': 0, '4-3': 0, '5-2': 0, '6-1': 0, '5-6': 0, '6-5': 0 },
+    lose: { '1-1': 0, '1-2': 0, '2-1': 0, '6-6': 0, '5-5': 0, '1-3': 0 }
+};
+
 function populateCombinationsModal() {
     const modalContent = document.querySelector('#combinationsModal .modal-content');
     if (!modalContent) {
@@ -802,91 +807,107 @@ function populateCombinationsModal() {
     `;
     modalContent.appendChild(rules);
 
-    // Create container for all combinations
-    const combinationsContainer = document.createElement('div');
-    combinationsContainer.style.display = 'flex';
-    combinationsContainer.style.flexDirection = 'column';
-    combinationsContainer.style.gap = '20px';
-    modalContent.appendChild(combinationsContainer);
+    // Add visual combinations
+    const combinationsSection = document.createElement('div');
+    combinationsSection.style.display = 'flex';
+    combinationsSection.style.flexDirection = 'column';
+    combinationsSection.style.alignItems = 'center';
+    modalContent.appendChild(combinationsSection);
 
     // Define winning and losing combinations
     const combinations = {
         win: [[1, 6], [2, 5], [3, 4], [4, 3], [5, 2], [6, 1], [5, 6], [6, 5]],
-        lose: [[1, 1], [1, 2], [2, 1], [6, 6], [5, 5], [1, 1], [1, 3]],
+        lose: [[1, 1], [1, 2], [2, 1], [6, 6], [5, 5], [1, 3]],
     };
 
     // Add winning combinations
+    const winTitle = document.createElement('h3');
+    winTitle.textContent = 'Winning Rolls (7, 11):';
+    combinationsSection.appendChild(winTitle);
+
     const winRow = document.createElement('div');
     winRow.style.display = 'flex';
-    winRow.style.flexWrap = 'nowrap';
-    winRow.style.gap = '10px';
     winRow.style.justifyContent = 'center';
+    winRow.style.flexWrap = 'wrap';
+    combinationsSection.appendChild(winRow);
 
     combinations.win.forEach(([dice1, dice2]) => {
-        const pair = createDicePairElement(dice1, dice2, true); // Adjusted function call
+        const pair = createDicePairElement(dice1, dice2, rollCounts.win);
         winRow.appendChild(pair);
     });
 
-    const winTitle = document.createElement('h3');
-    winTitle.textContent = 'Winning Rolls (7, 11):';
-    combinationsContainer.appendChild(winTitle);
-    combinationsContainer.appendChild(winRow);
-
     // Add losing combinations
-    const loseRow = document.createElement('div');
-    loseRow.style.display = 'flex';
-    loseRow.style.flexWrap = 'nowrap';
-    loseRow.style.gap = '10px';
-    loseRow.style.justifyContent = 'center';
-
-    combinations.lose.forEach(([dice1, dice2]) => {
-        const pair = createDicePairElement(dice1, dice2, false); // Adjusted function call
-        loseRow.appendChild(pair);
-    });
-
     const loseTitle = document.createElement('h3');
     loseTitle.textContent = 'Losing Rolls (2, 3, 12):';
-    combinationsContainer.appendChild(loseTitle);
-    combinationsContainer.appendChild(loseRow);
+    combinationsSection.appendChild(loseTitle);
+
+    const loseRow = document.createElement('div');
+    loseRow.style.display = 'flex';
+    loseRow.style.justifyContent = 'center';
+    loseRow.style.flexWrap = 'wrap';
+    combinationsSection.appendChild(loseRow);
+
+    combinations.lose.forEach(([dice1, dice2]) => {
+        const pair = createDicePairElement(dice1, dice2, rollCounts.lose);
+        loseRow.appendChild(pair);
+    });
 }
 
 /**
- * Creates a visual representation of a dice pair with optional styling for winning combinations.
+ * Creates a visual representation of a dice pair with roll count.
  * @param {number} dice1 - First dice value.
  * @param {number} dice2 - Second dice value.
- * @param {boolean} isWinning - Whether the combination is a winning one.
- * @returns {HTMLElement} A div element containing the dice images.
+ * @param {object} rollCounts - Object to track roll counts for the combination.
+ * @returns {HTMLElement} A div element containing the dice images and count.
  */
-function createDicePairElement(dice1, dice2, isWinning) {
+function createDicePairElement(dice1, dice2, rollCounts) {
     const container = document.createElement('div');
     container.style.display = 'flex';
     container.style.flexDirection = 'column';
     container.style.alignItems = 'center';
     container.style.margin = '10px';
-    container.style.border = '2px solid';
-    container.style.borderColor = isWinning ? 'green' : 'red'; // Green for winning, red for losing
-    container.style.borderRadius = '5px';
-    container.style.padding = '5px';
-    container.style.backgroundColor = '#fff';
+    container.style.border = '2px solid white';
+    container.style.borderRadius = '10px';
+    container.style.padding = '10px';
+    container.style.backgroundColor = '#f4f4f4';
 
     const img1 = document.createElement('img');
     img1.src = `/images/dice${dice1}.png`;
     img1.alt = `Dice ${dice1}`;
-    img1.style.width = '30px'; // Adjusted for smaller size
-    img1.style.height = '30px';
+    img1.style.width = '40px';
 
     const img2 = document.createElement('img');
     img2.src = `/images/dice${dice2}.png`;
     img2.alt = `Dice ${dice2}`;
-    img2.style.width = '30px'; // Adjusted for smaller size
-    img2.style.height = '30px';
+    img2.style.width = '40px';
+
+    const combinationKey = `${dice1}-${dice2}`;
+    const count = rollCounts[combinationKey] || 0; // Default to 0 if no count exists
+
+    const countDisplay = document.createElement('span');
+    countDisplay.textContent = `Rolled: ${count} times`;
+    countDisplay.style.marginTop = '5px';
+    countDisplay.style.fontSize = '14px';
+    countDisplay.style.color = '#333';
 
     container.appendChild(img1);
     container.appendChild(img2);
+    container.appendChild(countDisplay);
 
     return container;
 }
 
+/**
+ * Call this function to update the counts whenever a roll occurs.
+ */
+function updateRollCount(dice1, dice2) {
+    const combinationKey = `${dice1}-${dice2}`;
+    if (rollCounts.win[combinationKey] !== undefined) {
+        rollCounts.win[combinationKey]++;
+    } else if (rollCounts.lose[combinationKey] !== undefined) {
+        rollCounts.lose[combinationKey]++;
+    }
+}
 
 
 document.addEventListener('DOMContentLoaded', () => {
