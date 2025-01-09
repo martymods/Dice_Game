@@ -471,11 +471,11 @@ function deactivateOnFire() {
     function updateBackgroundImage() {
         const rollsRemaining = maxTurns - turns;
         if (rollsRemaining === maxTurns) {
-            document.body.style.backgroundImage = "url('/images/LandLord0.png')";
+            document.body.style.backgroundImage = "url('/images/LandLord0.gif')";
         } else if (rollsRemaining <= maxTurns / 2 && rollsRemaining > 2) {
-            document.body.style.backgroundImage = "url('/images/LandLord1.png')";
+            document.body.style.backgroundImage = "url('/images/LandLord1.gif')";
         } else if (rollsRemaining <= 2) {
-            document.body.style.backgroundImage = "url('/images/LandLord2.png')";
+            document.body.style.backgroundImage = "url('/images/LandLord2.gif')";
         }
     }
 
