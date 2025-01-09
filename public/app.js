@@ -389,6 +389,7 @@ function activateOnFire() {
         fireBorderElement.style.zIndex = '9997'; // Just below other interactive elements
         fireBorderElement.style.opacity = '0'; // Start fully transparent
         fireBorderElement.style.transition = 'opacity 0.5s ease-in'; // Smooth fade-in
+        fireBorderElement.style.pointerEvents = 'none'; // Make it non-interactive
         document.body.appendChild(fireBorderElement);
 
         // Trigger fade-in
