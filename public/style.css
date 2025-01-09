@@ -4,22 +4,24 @@ body {
 }
 
 @font-face {
-    font-family: 'VictorianParlor';
-    src: url('/fonts/VictorianParlorVintageAlternate_free.otf') format('opentype');
-    font-display: swap;
+    font-family: 'GameFont';
+    src: url('/fonts/Old_Englished_Boots.ttf') format('truetype'); /* Update the font file path */
+    font-weight: normal;
+    font-style: normal;
 }
 
+
 body {
-    font-family: 'VictorianParlor', sans-serif;
+    font-family: 'GameFont', sans-serif;
 }
 
 * {
-    font-family: 'VictorianParlor', sans-serif !important;
+    font-family: 'GameFont', sans-serif !important;
 }
 
 
 body {
-    font-family: 'VictorianParlor', sans-serif;
+    font-family: 'GameFont', sans-serif;
     font-size: 24px;
     line-height: 1.5;
 }
