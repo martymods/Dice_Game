@@ -3,7 +3,7 @@
 import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
-import { updateUI, showItemPopup, getItemColor, handleGameOverScreen } from './modules/ui.js';
+import { updateUI, showItemPopup, getItemColor, handleGameOverScreen, updateRollCount } from './modules/ui.js';
 import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
@@ -267,6 +267,14 @@ async function setupSinglePlayer() {
         const dice1 = Math.floor(Math.random() * 6) + 1;
         const dice2 = Math.floor(Math.random() * 6) + 1;
         const sum = dice1 + dice2;
+        updateRollCount(dice1, dice2);
+        console.log(`Updated roll counts: ${JSON.stringify(rollCounts)}`);
+    
+
+        // Update the roll count
+        updateRollCount(dice1, dice2);
+        // Log the updated counts
+        console.log(`Updated roll counts: ${JSON.stringify(rollCounts)}`);
 
         // Apply Hustler Effects
         const { multiplier, cashBonus } = applyHustlerEffects(dice1, dice2);
@@ -353,50 +361,87 @@ async function setupSinglePlayer() {
     }
     
 
-    function activateOnFire() {
-        onFire = true;
-        playSound("/sounds/FireIgnite0.ogg"); // Play ignite sound
+// Global variable for the fire border
+let fireBorderElement;
 
-        // Change dice to fire versions
-        const dice1Element = document.getElementById('dice1');
-        const dice2Element = document.getElementById('dice2');
-        dice1Element.src = '/images/DiceFire1.gif';
-        dice2Element.src = '/images/DiceFire2.gif';
+function activateOnFire() {
+    onFire = true;
+    playSound("/sounds/FireIgnite0.ogg"); // Play ignite sound
 
-        // Add fire effect class
-        dice1Element.classList.add('dice-fire');
-        dice2Element.classList.add('dice-fire');
+    // Change dice to fire versions
+    const dice1Element = document.getElementById('dice1');
+    const dice2Element = document.getElementById('dice2');
+    dice1Element.src = '/images/DiceFire1.gif';
+    dice2Element.src = '/images/DiceFire2.gif';
 
-        // Start fire sound loop
-        fireSound = new Audio('/sounds/FireBurn0.ogg');
-        fireSound.loop = true;
-        fireSound.play().catch(err => console.error('Error playing fire burn sound:', err));
+    // Add fire effect class
+    dice1Element.classList.add('dice-fire');
+    dice2Element.classList.add('dice-fire');
 
-        gameStatus.textContent = "🔥 You're on fire! All winnings are doubled! 🔥";
+    // Start fire sound loop
+    fireSound = new Audio('/sounds/FireBurn0.ogg');
+    fireSound.loop = true;
+    fireSound.play().catch(err => console.error('Error playing fire burn sound:', err));
+
+    // Display the fire border image with fade-in
+    if (!fireBorderElement) {
+        fireBorderElement = document.createElement('img');
+        fireBorderElement.src = '/images/Border_FireDice.gif';
+        fireBorderElement.alt = 'Fire Border';
+        fireBorderElement.style.position = 'fixed';
+        fireBorderElement.style.top = '0';
+        fireBorderElement.style.left = '0';
+        fireBorderElement.style.width = '100%';
+        fireBorderElement.style.height = '100%';
+        fireBorderElement.style.objectFit = 'cover';
+        fireBorderElement.style.zIndex = '9997'; // Just below other interactive elements
+        fireBorderElement.style.opacity = '0'; // Start fully transparent
+        fireBorderElement.style.transition = 'opacity 0.5s ease-in'; // Smooth fade-in
+        document.body.appendChild(fireBorderElement);
+
+        // Trigger fade-in
+        setTimeout(() => {
+            fireBorderElement.style.opacity = '1';
+        }, 10); // Allow the browser to render before starting the transition
     }
 
-    function deactivateOnFire() {
-        onFire = false;
-        playSound("/sounds/FireEnd0.ogg"); // Play end sound
+    gameStatus.textContent = "🔥 You're on fire! All winnings are doubled! 🔥";
+}
 
-        // Revert dice to normal versions
-        const dice1Element = document.getElementById('dice1');
-        const dice2Element = document.getElementById('dice2');
-        dice1Element.src = '/images/dice1.png';
-        dice2Element.src = '/images/dice2.png';
+function deactivateOnFire() {
+    onFire = false;
+    playSound("/sounds/FireEnd0.ogg"); // Play end sound
 
-        // Remove fire effect class
-        dice1Element.classList.remove('dice-fire');
-        dice2Element.classList.remove('dice-fire');
+    // Revert dice to normal versions
+    const dice1Element = document.getElementById('dice1');
+    const dice2Element = document.getElementById('dice2');
+    dice1Element.src = '/images/dice1.png';
+    dice2Element.src = '/images/dice2.png';
 
-        // Stop fire sound loop
-        if (fireSound) {
-            fireSound.pause();
-            fireSound = null;
-        }
+    // Remove fire effect class
+    dice1Element.classList.remove('dice-fire');
+    dice2Element.classList.remove('dice-fire');
 
-        gameStatus.textContent = "🔥 Fire has ended. Good luck! 🔥";
+    // Stop fire sound loop
+    if (fireSound) {
+        fireSound.pause();
+        fireSound = null;
     }
+
+    // Hide the fire border image with fade-out
+    if (fireBorderElement) {
+        fireBorderElement.style.transition = 'opacity 0.5s ease-out'; // Smooth fade-out
+        fireBorderElement.style.opacity = '0';
+        setTimeout(() => {
+            if (fireBorderElement && fireBorderElement.parentNode) {
+                fireBorderElement.parentNode.removeChild(fireBorderElement);
+                fireBorderElement = null; // Clean up
+            }
+        }, 500); // Wait for the fade-out to complete
+    }
+
+    gameStatus.textContent = "🔥 Fire has ended. Good luck! 🔥";
+}
 
 
 
