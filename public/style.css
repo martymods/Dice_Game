@@ -1570,3 +1570,18 @@ body {
     width: 250px; /* Adjust tooltip width */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.7); /* Add subtle shadow for better visibility */
 }
+
+/* Bet 25 Button */
+img[src="/images/Button_Bet25.gif"]:hover {
+    content: url('/images/Button_Bet25_Hover.gif');
+}
+
+/* Bet 50 Button */
+img[src="/images/Button_Bet50.gif"]:hover {
+    content: url('/images/Button_Bet50_Hover.gif');
+}
+
+/* Bet 100 Button */
+img[src="/images/Button_Bet100.gif"]:hover {
+    content: url('/images/Button_Bet100_Hover.gif');
+}
