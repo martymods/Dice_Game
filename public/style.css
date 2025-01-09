@@ -12,11 +12,6 @@ body {
 body {
     font-family: 'VictorianParlor', sans-serif;
 }
-/* Add this rule */
-body::before {
-    content: 'Font Debug';
-    font-family: 'VictorianParlor', sans-serif;
-}
 
 * {
     font-family: 'VictorianParlor', sans-serif !important;
@@ -25,7 +20,7 @@ body::before {
 
 body {
     font-family: 'VictorianParlor', sans-serif;
-    font-size: 16px;
+    font-size: 24px;
     line-height: 1.5;
 }
 
