@@ -1532,3 +1532,35 @@ body {
     max-width: 200px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
+/* Purchased Item Container Styling */
+.purchased-item {
+    width: 120px; /* Adjust width of the item container */
+    height: 140px; /* Adjust height of the item container */
+    margin: 10px; /* Spacing between items */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative; /* Allows precise control over child elements */
+}
+
+/* Hide Item Label Below Icons */
+.purchased-item span {
+    display: none; /* Hide the item name label */
+}
+
+/* Item Image Styling */
+.purchased-item .item-image {
+    width: 100px; /* Set the desired width for the image */
+    height: auto; /* Maintain aspect ratio */
+}
+.purchased-item:hover::after {
+    content: attr(data-item-name); /* Use the item's name */
+    position: absolute;
+    bottom: -20px; /* Adjust as needed */
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    text-align: center;
+}
