@@ -112,11 +112,11 @@ export function updateUI(balance, rent = 0, turns = 0, maxTurns = 0, currentBet 
  */
 export function updateBackgroundImage(rollsRemaining, maxTurns) {
     if (rollsRemaining === maxTurns) {
-        document.body.style.backgroundImage = "url('/images/LandLord0.png')";
+        document.body.style.backgroundImage = "url('/images/LandLord0.gif')";
     } else if (rollsRemaining <= maxTurns / 2 && rollsRemaining > 2) {
-        document.body.style.backgroundImage = "url('/images/LandLord1.png')";
+        document.body.style.backgroundImage = "url('/images/LandLord1.gif')";
     } else if (rollsRemaining <= 2) {
-        document.body.style.backgroundImage = "url('/images/LandLord2.png')";
+        document.body.style.backgroundImage = "url('/images/LandLord2.gif')";
     }
 }
 
@@ -495,6 +495,16 @@ export function updatePurchasedItemsDisplay(items = []) {
         return;
     }
 
+    // Array of hover sound file paths
+    const hoverSounds = [
+        '/sounds/itemHover0.ogg',
+        '/sounds/itemHover1.ogg',
+        '/sounds/itemHover2.ogg',
+        '/sounds/itemHover3.ogg',
+        '/sounds/itemHover4.ogg',
+        '/sounds/itemHover5.ogg',
+    ];
+
     items.forEach(item => {
         // Check if the item is already displayed
         const existingItem = Array.from(purchasedItemsDisplay.children).find(child => 
@@ -515,6 +525,13 @@ export function updatePurchasedItemsDisplay(items = []) {
             itemImage.onerror = () => { itemImage.src = '/images/itemimage/Item_NoIcon.png'; };
             itemImage.classList.add('item-image');
 
+            // Add hover event to play a random sound
+            itemContainer.addEventListener('mouseenter', () => {
+                const randomSound = hoverSounds[Math.floor(Math.random() * hoverSounds.length)];
+                const audio = new Audio(randomSound);
+                audio.play().catch(err => console.error('Error playing hover sound:', err));
+            });
+
             // Add item label
             const itemLabel = document.createElement('span');
             itemLabel.textContent = item.name;
@@ -528,8 +545,6 @@ export function updatePurchasedItemsDisplay(items = []) {
 
     console.log('Purchased Items Display Updated:', items);
 }
-
-
 
 
 
