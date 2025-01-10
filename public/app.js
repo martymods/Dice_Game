@@ -205,39 +205,6 @@ async function setupSinglePlayer() {
             playSound('/sounds/UI_Click1.ogg');
             setBet(balance);
         });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const rollDiceButton = document.getElementById('rollDiceButton');
-            const betInput = document.getElementById('betAmount'); // Replace with your actual bet input element
-            let currentBet = 0; // Track the current bet value
-        
-            // Function to update the Roll Dice button state
-            function updateRollDiceButton() {
-                if (currentBet > 0) {
-                    rollDiceButton.src = '/images/Button_RollDice_Active.gif'; // Active state
-                } else {
-                    rollDiceButton.src = '/images/Button_RollDice.gif'; // Default state
-                }
-            }
-        
-            // Monitor changes to the bet input (if using an input field)
-            if (betInput) {
-                betInput.addEventListener('input', (event) => {
-                    currentBet = parseFloat(event.target.value) || 0; // Get the bet value
-                    updateRollDiceButton();
-                });
-            }
-        
-            // Monitor external changes to the bet value (if it's updated programmatically)
-            window.setBet = function (betValue) {
-                currentBet = betValue;
-                updateRollDiceButton();
-            };
-        
-            // Initialize button state on page load
-            updateRollDiceButton();
-        });
-        
    
 
         function setBet(input) {
