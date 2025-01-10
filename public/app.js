@@ -205,6 +205,39 @@ async function setupSinglePlayer() {
             playSound('/sounds/UI_Click1.ogg');
             setBet(balance);
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const rollDiceButton = document.getElementById('rollDiceButton');
+            const betInput = document.getElementById('betAmount'); // Replace with your actual bet input element
+            let currentBet = 0; // Track the current bet value
+        
+            // Function to update the Roll Dice button state
+            function updateRollDiceButton() {
+                if (currentBet > 0) {
+                    rollDiceButton.src = '/images/Button_RollDice_Active.gif'; // Active state
+                } else {
+                    rollDiceButton.src = '/images/Button_RollDice.gif'; // Default state
+                }
+            }
+        
+            // Monitor changes to the bet input (if using an input field)
+            if (betInput) {
+                betInput.addEventListener('input', (event) => {
+                    currentBet = parseFloat(event.target.value) || 0; // Get the bet value
+                    updateRollDiceButton();
+                });
+            }
+        
+            // Monitor external changes to the bet value (if it's updated programmatically)
+            window.setBet = function (betValue) {
+                currentBet = betValue;
+                updateRollDiceButton();
+            };
+        
+            // Initialize button state on page load
+            updateRollDiceButton();
+        });
+        
    
 
         function setBet(input) {
@@ -468,16 +501,50 @@ function deactivateOnFire() {
     }
 
 
-    function updateBackgroundImage() {
+    function updateBackgroundImage() { 
         const rollsRemaining = maxTurns - turns;
+    
+        // Arrays of sounds
+        const footstepSounds = [
+            '/sounds/Footstep_001.ogg',
+            '/sounds/Footstep_002.ogg',
+            '/sounds/Footstep_003.ogg',
+            '/sounds/Footstep_004.ogg',
+            '/sounds/Footstep_005.ogg'
+        ];
+    
+        const splashSounds = [
+            '/sounds/PuddleSplash0.ogg',
+            '/sounds/PuddleSplash1.ogg',
+            '/sounds/PuddleSplash2.ogg',
+            '/sounds/PuddleSplash3.ogg',
+            '/sounds/PuddleSplash4.ogg',
+            '/sounds/PuddleSplash5.ogg'
+        ];
+    
+        // Helper function to play a random sound
+        function playRandomSound(soundsArray, volume) {
+            const randomSound = soundsArray[Math.floor(Math.random() * soundsArray.length)];
+            const audio = new Audio(randomSound);
+            audio.volume = volume; // Set the volume
+            audio.play().catch(err => console.error('Error playing sound:', err));
+        }
+    
         if (rollsRemaining === maxTurns) {
             document.body.style.backgroundImage = "url('/images/LandLord0.gif')";
+            playRandomSound(footstepSounds, 0.6); // Play footstep sound at 0.6 volume
+            playRandomSound(splashSounds, 0.6);   // Play splash sound at 0.6 volume
         } else if (rollsRemaining <= maxTurns / 2 && rollsRemaining > 2) {
             document.body.style.backgroundImage = "url('/images/LandLord1.gif')";
+            playRandomSound(footstepSounds, 1.0); // Play footstep sound at 1.0 volume
+            playRandomSound(splashSounds, 1.0);   // Play splash sound at 1.0 volume
         } else if (rollsRemaining <= 2) {
             document.body.style.backgroundImage = "url('/images/LandLord2.gif')";
+            playRandomSound(footstepSounds, 1.2); // Play footstep sound at 1.2 volume
+            playRandomSound(splashSounds, 1.2);   // Play splash sound at 1.2 volume
         }
     }
+    
 
     function quitGame() {
         window.location.href = '/';
