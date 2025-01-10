@@ -1188,8 +1188,13 @@ button img {
 
 /* Loading Image Style */
 #loading-image {
-    width: 300px; /* Adjust size as needed */
-    height: auto;
+    position: absolute; /* Ensures it can stretch to fit the screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image scales appropriately */
+    z-index: 10000; /* Ensure it appears above other elements */
 }
 
 button.active {
