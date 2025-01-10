@@ -1541,8 +1541,8 @@ body {
 }
 /* Purchased Item Container Styling */
 .purchased-item {
-    width: 120px; /* Adjust width of the item container */
-    height: 140px; /* Adjust height of the item container */
+    width: 50px; /* Adjust width of the item container */
+    height: 50px; /* Adjust height of the item container */
     margin: 10px; /* Spacing between items */
     display: flex;
     align-items: center;
@@ -1557,23 +1557,23 @@ body {
 
 /* Item Image Styling */
 .purchased-item .item-image {
-    width: 100px; /* Set the desired width for the image */
+    width: 65px; /* Set the desired width for the image */
     height: auto; /* Maintain aspect ratio */
 }
 .purchased-item:hover::after {
     content: attr(data-item-name) '\A' attr(data-item-description); /* Use name and description */
     position: absolute;
     bottom: -40px; /* Adjust for extra space for the description */
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.9);
     color: white;
     padding: 10px;
     border-radius: 5px;
-    font-size: 12px;
+    font-size: 22px;
     text-align: center;
     white-space: pre-line; /* Ensures line breaks from \A */
     z-index: 10;
-    width: 150px; /* Adjust tooltip width */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add subtle shadow for better visibility */
+    width: 250px; /* Adjust tooltip width */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.8); /* Add subtle shadow for better visibility */
 }
 
 /* Bet 25 Button */
