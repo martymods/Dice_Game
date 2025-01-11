@@ -264,27 +264,6 @@ let tickets = [];
 let pot = 3000; // Starting pot
 let winningNumber = Math.floor(Math.random() * 50000) + 1;
 
-// Lottery Routes
-app.post('/buy-ticket', (req, res) => {
-    const { number, price } = req.body;
-
-    if (!number || number < 1 || number > 50000 || !price || price <= 0) {
-        return res.status(400).json({ error: 'Invalid ticket data.' });
-    }
-
-    tickets.push({ number, price, date: new Date() });
-    pot += price;
-
-    res.status(200).json({ success: true, pot });
-});
-
-app.get('/pot', (req, res) => {
-    res.status(200).json({ pot });
-});
-
-app.get('/winning-number', (req, res) => {
-    res.status(200).json({ winningNumber });
-});
 
 // Update ETH Prices
 async function updateEthPrices() {
