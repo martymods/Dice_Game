@@ -1045,13 +1045,22 @@ function addTicketToRecent(ticket) {
 
 
 async function fetchEthPrice() {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-    const data = await response.json();
-    const ethToUsd = data.ethereum.usd;
+    try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+        const data = await response.json();
+        const ethToUsd = data.ethereum.usd;
 
-    document.getElementById('current-pot-usd').textContent = (pot * ethToUsd).toFixed(2);
-    document.getElementById('current-pot').textContent = pot.toFixed(4);
+        const pot = await fetchPot(); // Fetch the current pot from the server
+
+        if (pot !== null) {
+            document.getElementById('current-pot-usd').textContent = (pot * ethToUsd).toFixed(2);
+            document.getElementById('current-pot').textContent = pot.toFixed(4);
+        }
+    } catch (error) {
+        console.error('Error fetching ETH price or pot:', error);
+    }
 }
+
 
 setInterval(fetchEthPrice, 60000); // Update every minute
 fetchEthPrice();
@@ -1112,3 +1121,16 @@ function showRules() {
 
 // Attach the rules modal to the Info button
 document.getElementById('info-button').addEventListener('click', showRules);
+
+
+
+async function fetchPot() {
+    try {
+        const response = await fetch('/pot');
+        const data = await response.json();
+        return data.pot; // Return the pot value
+    } catch (error) {
+        console.error('Error fetching pot:', error);
+        return null; // Return null if fetching fails
+    }
+}
