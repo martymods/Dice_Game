@@ -7,6 +7,12 @@ const io = socketIo(server);
 
 const games = {};
 const onlinePlayers = {}; // To track players and their names
+const express = require('express');
+app.use(express.static('public'));
+app.listen(3000, () => {
+    console.log('Server running on http://localhost:3000');
+});
+
 
 app.use(express.static('public'));
 
@@ -74,7 +80,6 @@ io.on('connection', (socket) => {
         console.log(`${playerName} joined room: ${roomName}`);
     });
 });
-
 
 // Serve the Socket.IO client library
 app.get('/socket.io/socket.io.js', (req, res) => {
