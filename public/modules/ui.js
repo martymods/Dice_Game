@@ -984,33 +984,41 @@ function toggleLotteryModal() {
 document.getElementById('lotto-icon').addEventListener('click', toggleLotteryModal);
 
 // Buy a Lottery Ticket
-async function buyLotteryTicket(ticketNumber) {
-    const ticketPrice = 0.002; // Price in ETH
+export function buyLotteryTicket() {
+    window.buyLotteryTicket = buyLotteryTicket;
+
+    const ticketNumber = document.getElementById('ticket-number').value;
+    const ticketPriceEth = 0.002; // Cost of one ticket in ETH
+
     if (!ticketNumber || ticketNumber < 1 || ticketNumber > 50000) {
-        alert('Please pick a valid number between 1 and 50,000.');
+        alert('Please pick a valid number between 1 and 50000.');
         return;
     }
 
     try {
-        const response = await fetch('/buy-ticket', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ number: ticketNumber, price: ticketPrice }),
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const tx = await signer.sendTransaction({
+            to: "YOUR_LOTTERY_WALLET_ADDRESS", // Replace with your wallet address
+            value: ethers.utils.parseEther(ticketPriceEth.toString()),
         });
 
-        const result = await response.json();
+        const ticket = {
+            number: ticketNumber,
+            date: new Date(),
+            price: ticketPriceEth,
+            txHash: tx.hash,
+        };
 
-        if (result.success) {
-            alert('Ticket purchased successfully!');
-            updatePotDisplay(result.pot);
-        } else {
-            alert('Error purchasing ticket.');
-        }
+        alert('Ticket purchased successfully!');
+        addTicketToUser(ticket); // Update user ticket list
+        addTicketToRecent(ticket); // Update recent ticket list
     } catch (error) {
         console.error('Error purchasing ticket:', error);
-        alert('Failed to buy ticket.');
+        alert('Transaction failed. Please try again.');
     }
 }
+
 
 function updatePotDisplay(pot) {
     const potElement = document.getElementById('current-pot');
