@@ -984,39 +984,46 @@ function toggleLotteryModal() {
 document.getElementById('lotto-icon').addEventListener('click', toggleLotteryModal);
 
 // Buy a Lottery Ticket
-async function buyLotteryTicket() {
-    const ticketNumber = document.getElementById('ticket-number').value;
-    const ticketPriceEth = 0.002; // Cost of one ticket in ETH
+async function buyLotteryTicket(ticketNumber) {
+    const ticketPrice = 0.002; // Price in ETH
     if (!ticketNumber || ticketNumber < 1 || ticketNumber > 50000) {
-        alert('Please pick a valid number between 1 and 50000.');
+        alert('Please pick a valid number between 1 and 50,000.');
         return;
     }
 
     try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        const tx = await signer.sendTransaction({
-            to: "YOUR_LOTTERY_WALLET_ADDRESS", // Replace with your wallet address
-            value: ethers.utils.parseEther(ticketPriceEth.toString()),
+        const response = await fetch('/buy-ticket', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ number: ticketNumber, price: ticketPrice }),
         });
 
-        const ticket = {
-            number: ticketNumber,
-            date: new Date(),
-            price: ticketPriceEth,
-            txHash: tx.hash,
-        };
+        const result = await response.json();
 
-        alert('Ticket purchased successfully!');
-
-        // Add ticket to the user's ticket list
-        addTicketToUser(ticket);
-        // Update recent tickets
-        addTicketToRecent(ticket);
+        if (result.success) {
+            alert('Ticket purchased successfully!');
+            updatePotDisplay(result.pot);
+        } else {
+            alert('Error purchasing ticket.');
+        }
     } catch (error) {
         console.error('Error purchasing ticket:', error);
-        alert('Transaction failed. Please try again.');
+        alert('Failed to buy ticket.');
     }
+}
+
+function updatePotDisplay(pot) {
+    const potElement = document.getElementById('current-pot');
+    const potUsdElement = document.getElementById('current-pot-usd');
+
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
+        .then((res) => res.json())
+        .then((data) => {
+            const ethToUsd = data.ethereum.usd;
+            potUsdElement.textContent = (pot * ethToUsd).toFixed(2);
+            potElement.textContent = pot.toFixed(4);
+        })
+        .catch((err) => console.error('Error fetching ETH price:', err));
 }
 
 // Add Ticket to User's List
@@ -1035,27 +1042,6 @@ function addTicketToRecent(ticket) {
     recentTickets.appendChild(ticketDiv);
 }
 
-
-let pot = 3000; // Initial pot in USD
-
-
-let tickets = [];
-let winningNumber = Math.floor(Math.random() * 50000) + 1;
-
-app.post('/buy-ticket', (req, res) => {
-    const { number, price } = req.body;
-    tickets.push({ number, price, date: new Date() });
-    pot += price;
-    res.send({ success: true, pot });
-});
-
-app.get('/pot', (req, res) => {
-    res.send({ pot });
-});
-
-app.get('/winning-number', (req, res) => {
-    res.send({ winningNumber });
-});
 
 
 async function fetchEthPrice() {
