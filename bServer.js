@@ -59,6 +59,16 @@ const privateKey = process.env.PRIVATE_KEY;
 const provider = new ethers.providers.JsonRpcProvider(process.env.ALCHEMY_API_URL);
 const wallet = new ethers.Wallet(privateKey, provider);
 
+// Lottery Setup
+let tickets = [];
+let pot = 3000; // Starting pot
+let winningNumber = Math.floor(Math.random() * 50000) + 1;
+
+app.get('/pot', (req, res) => {
+    res.status(200).json({ pot });
+});
+
+
 // Online Players and Games Tracking
 const onlinePlayers = {};
 const games = {};
@@ -251,18 +261,9 @@ app.post('/buy-ticket', (req, res) => {
     res.status(200).json({ success: true, pot });
 });
 
-app.get('/pot', (req, res) => {
-    res.status(200).json({ pot });
-});
-
 app.get('/winning-number', (req, res) => {
     res.status(200).json({ winningNumber });
 });
-
-// Lottery Setup
-let tickets = [];
-let pot = 3000; // Starting pot
-let winningNumber = Math.floor(Math.random() * 50000) + 1;
 
 
 // Update ETH Prices
