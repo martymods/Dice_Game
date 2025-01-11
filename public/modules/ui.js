@@ -1074,3 +1074,60 @@ async function fetchEthPrice() {
 
 setInterval(fetchEthPrice, 60000); // Update every minute
 fetchEthPrice();
+
+// Simple rules text
+const simpleRules = `
+1. Buy a ticket for $2 ETH each. Pick a number or get a random one.
+2. Every Sunday, a winning number is chosen from 1 to 50,000.
+3. If your number matches, you win the pot! You'll get a notification and your prize in your wallet.
+4. If multiple people win, the pot is split among them.
+5. If no one wins, the pot carries over to the next week. Tickets only last one week.
+6. After a win, the pot starts with $3000 added by the bank.
+7. From each ticket sold, $1 goes to the pot, and $1 goes to the bank.
+`;
+
+// Show the rules modal
+function showRules() {
+    const rulesModal = document.createElement('div');
+    rulesModal.style.position = 'fixed';
+    rulesModal.style.top = '0';
+    rulesModal.style.left = '0';
+    rulesModal.style.width = '100%';
+    rulesModal.style.height = '100%';
+    rulesModal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    rulesModal.style.color = '#fff';
+    rulesModal.style.display = 'flex';
+    rulesModal.style.flexDirection = 'column';
+    rulesModal.style.justifyContent = 'center';
+    rulesModal.style.alignItems = 'center';
+    rulesModal.style.zIndex = '1003';
+    rulesModal.style.padding = '20px';
+    rulesModal.style.textAlign = 'center';
+
+    // Add the rules text
+    const rulesText = document.createElement('p');
+    rulesText.textContent = simpleRules;
+    rulesText.style.whiteSpace = 'pre-wrap'; // Preserve line breaks
+    rulesText.style.marginBottom = '20px';
+    rulesModal.appendChild(rulesText);
+
+    // Add a close button
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'Close';
+    closeButton.style.padding = '10px 20px';
+    closeButton.style.fontSize = '16px';
+    closeButton.style.backgroundColor = '#28a745';
+    closeButton.style.color = '#fff';
+    closeButton.style.border = 'none';
+    closeButton.style.borderRadius = '5px';
+    closeButton.style.cursor = 'pointer';
+    closeButton.addEventListener('click', () => {
+        document.body.removeChild(rulesModal);
+    });
+
+    rulesModal.appendChild(closeButton);
+    document.body.appendChild(rulesModal);
+}
+
+// Attach the rules modal to the Info button
+document.getElementById('info-button').addEventListener('click', showRules);
