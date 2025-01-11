@@ -984,9 +984,7 @@ function toggleLotteryModal() {
 document.getElementById('lotto-icon').addEventListener('click', toggleLotteryModal);
 
 // Buy a Lottery Ticket
-export function buyLotteryTicket() {
-    window.buyLotteryTicket = buyLotteryTicket;
-
+export async function buyLotteryTicket() {
     const ticketNumber = document.getElementById('ticket-number').value;
     const ticketPriceEth = 0.002; // Cost of one ticket in ETH
 
@@ -999,7 +997,7 @@ export function buyLotteryTicket() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const tx = await signer.sendTransaction({
-            to: "YOUR_LOTTERY_WALLET_ADDRESS", // Replace with your wallet address
+            to: "0x5638c9f84361a7430b29a63216f0af0914399eA2", // Replace with your wallet address
             value: ethers.utils.parseEther(ticketPriceEth.toString()),
         });
 
@@ -1142,3 +1140,4 @@ async function fetchPot() {
         return null; // Return null if fetching fails
     }
 }
+
