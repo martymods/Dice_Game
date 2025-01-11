@@ -236,3 +236,9 @@ app.use((req, res, next) => {
     console.log(`Request received for: ${req.url}`);
     next();
 });
+
+const express = require('express');
+app.use(express.static('public'));
+app.listen(3000, () => {
+    console.log('Server running on http://localhost:3000');
+});
