@@ -973,3 +973,104 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     initializeCombinationsModal();
 });
+
+// Show/Hide Lottery Modal
+function toggleLotteryModal() {
+    const modal = document.getElementById('lottery-modal');
+    modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+}
+
+// Attach to Lotto Icon
+document.getElementById('lotto-icon').addEventListener('click', toggleLotteryModal);
+
+// Buy a Lottery Ticket
+async function buyLotteryTicket() {
+    const ticketNumber = document.getElementById('ticket-number').value;
+    const ticketPriceEth = 0.002; // Cost of one ticket in ETH
+    if (!ticketNumber || ticketNumber < 1 || ticketNumber > 50000) {
+        alert('Please pick a valid number between 1 and 50000.');
+        return;
+    }
+
+    try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const tx = await signer.sendTransaction({
+            to: "YOUR_LOTTERY_WALLET_ADDRESS", // Replace with your wallet address
+            value: ethers.utils.parseEther(ticketPriceEth.toString()),
+        });
+
+        const ticket = {
+            number: ticketNumber,
+            date: new Date(),
+            price: ticketPriceEth,
+            txHash: tx.hash,
+        };
+
+        alert('Ticket purchased successfully!');
+
+        // Add ticket to the user's ticket list
+        addTicketToUser(ticket);
+        // Update recent tickets
+        addTicketToRecent(ticket);
+    } catch (error) {
+        console.error('Error purchasing ticket:', error);
+        alert('Transaction failed. Please try again.');
+    }
+}
+
+// Add Ticket to User's List
+function addTicketToUser(ticket) {
+    const userTickets = document.getElementById('user-tickets');
+    const ticketDiv = document.createElement('div');
+    ticketDiv.textContent = `Number: ${ticket.number} - Bought: ${ticket.date.toLocaleString()} - Price: ${ticket.price} ETH`;
+    userTickets.appendChild(ticketDiv);
+}
+
+// Add Ticket to Recent List
+function addTicketToRecent(ticket) {
+    const recentTickets = document.getElementById('recent-tickets');
+    const ticketDiv = document.createElement('div');
+    ticketDiv.textContent = `Number: ${ticket.number} - Bought: ${ticket.date.toLocaleString()} - Price: ${ticket.price} ETH`;
+    recentTickets.appendChild(ticketDiv);
+}
+
+const express = require('express');
+const app = express();
+let pot = 3000; // Initial pot in USD
+
+app.use(express.json());
+
+let tickets = [];
+let winningNumber = Math.floor(Math.random() * 50000) + 1;
+
+app.post('/buy-ticket', (req, res) => {
+    const { number, price } = req.body;
+    tickets.push({ number, price, date: new Date() });
+    pot += price;
+    res.send({ success: true, pot });
+});
+
+app.get('/pot', (req, res) => {
+    res.send({ pot });
+});
+
+app.get('/winning-number', (req, res) => {
+    res.send({ winningNumber });
+});
+
+app.listen(3000, () => {
+    console.log('Lottery backend running on port 3000');
+});
+
+async function fetchEthPrice() {
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+    const data = await response.json();
+    const ethToUsd = data.ethereum.usd;
+
+    document.getElementById('current-pot-usd').textContent = (pot * ethToUsd).toFixed(2);
+    document.getElementById('current-pot').textContent = pot.toFixed(4);
+}
+
+setInterval(fetchEthPrice, 60000); // Update every minute
+fetchEthPrice();
