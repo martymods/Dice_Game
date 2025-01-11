@@ -1038,7 +1038,6 @@ function addTicketToRecent(ticket) {
 
 let pot = 3000; // Initial pot in USD
 
-app.use(express.json());
 
 let tickets = [];
 let winningNumber = Math.floor(Math.random() * 50000) + 1;
