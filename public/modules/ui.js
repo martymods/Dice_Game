@@ -1016,7 +1016,8 @@ export async function buyLotteryTicket() {
         alert('Transaction failed. Please try again.');
     }
 }
-
+// Expose the function globally
+window.buyLotteryTicket = buyLotteryTicket;
 
 function updatePotDisplay(pot) {
     const potElement = document.getElementById('current-pot');
