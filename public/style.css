@@ -1641,3 +1641,18 @@ img[src="/images/Button_Bet100.gif"]:hover {
     font-size: 20px;
     font-weight: bold;
 }
+
+#info-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 40px;
+    height: auto;
+    cursor: pointer;
+    z-index: 1002; /* Ensure it appears above other elements */
+    transition: transform 0.3s ease-in-out;
+}
+
+#info-button:hover {
+    transform: scale(1.2); /* Slight zoom effect on hover */
+}
