@@ -1596,8 +1596,8 @@ img[src="/images/Button_Bet100.gif"]:hover {
 }
 #lottery-widget {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 1px;
+    left: 20px;
     z-index: 1000;
 }
 
@@ -1625,7 +1625,7 @@ img[src="/images/Button_Bet100.gif"]:hover {
 }
 
 .modal-content {
-    background-color: white;
+    background-color: #070707;
     padding: 20px;
     border-radius: 10px;
     width: 400px;
