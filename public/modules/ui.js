@@ -1035,8 +1035,7 @@ function addTicketToRecent(ticket) {
     recentTickets.appendChild(ticketDiv);
 }
 
-const express = require('express');
-const app = express();
+
 let pot = 3000; // Initial pot in USD
 
 app.use(express.json());
@@ -1059,9 +1058,6 @@ app.get('/winning-number', (req, res) => {
     res.send({ winningNumber });
 });
 
-app.listen(3000, () => {
-    console.log('Lottery backend running on port 3000');
-});
 
 async function fetchEthPrice() {
     const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
