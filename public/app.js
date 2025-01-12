@@ -8,6 +8,8 @@ import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
+import { ethers } from 'ethers';
+
 
 // Use `window.socket` instead:
 console.log('Using global socket in app.js:', window.socket);
