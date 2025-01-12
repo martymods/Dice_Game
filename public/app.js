@@ -1073,7 +1073,8 @@ export async function connectMetaMask() {
         alert("MetaMask is not installed. Please install it to use this feature.");
     }
 }
-
+// Make signer accessible globally
+window.signer = signer;
 
 
 // Restore Wallet Connection on Page Reload
@@ -1125,7 +1126,6 @@ export async function placeBet(betAmountETH) {
 
         // Transaction: send ETH to your wallet
         const transaction = await signer.sendTransaction({
-            to: "0xYourEthereumAddressHere", // Replace with your wallet address
             to: "0x5638c9f84361a7430b29a63216f0af0914399eA2", // Replace with your wallet address
             value: ethers.utils.parseEther(betAmount.toString()),
         });
