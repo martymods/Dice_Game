@@ -990,6 +990,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+/**
+ * Fetches the current Ethereum price in USD and updates relevant elements in the UI.
+ */
+async function fetchEthPrice() {
+    try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+        const data = await response.json();
+        const ethToUsd = data.ethereum.usd;
+
+        // Update UI with the fetched ETH price
+        document.getElementById('eth-price-display').textContent = `1 ETH = $${ethToUsd.toFixed(2)}`;
+
+        // Optionally update other ETH-dependent values (e.g., pot in lottery or bet amounts)
+        const potElement = document.getElementById('current-pot-usd');
+        if (potElement) {
+            const potInEth = parseFloat(potElement.dataset.eth || 0); // Assuming pot ETH is stored in data attribute
+            potElement.textContent = `$${(potInEth * ethToUsd).toFixed(2)}`;
+        }
+    } catch (error) {
+        console.error('Error fetching ETH price:', error);
+    }
+}
+
+
 // Add dynamic ETH price conversion for $2 equivalent
 async function getEthForUsd(usd) {
     try {
@@ -1182,3 +1206,4 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Connect MetaMask button not found in the lottery widget.");
     }
 });
+
