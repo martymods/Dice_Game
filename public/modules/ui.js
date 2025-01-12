@@ -1035,6 +1035,8 @@ async function getEthForUsd(usd) {
 
 // Updated buyLotteryTicket function
 async function buyLotteryTicket() {
+    console.log("Attempting to buy a lottery ticket. Signer status:", signer);
+
     if (!signer) {
         alert("Please connect your MetaMask wallet first.");
         return;
@@ -1216,4 +1218,3 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Connect MetaMask button not found in the lottery widget.");
     }
 });
-
