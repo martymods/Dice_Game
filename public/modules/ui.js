@@ -1218,3 +1218,46 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Connect MetaMask button not found in the lottery widget.");
     }
 });
+
+// Ensure this is placed after the definition of `buyLotteryTicket`
+function buyLotteryTicket() {
+    console.log("Buying a lottery ticket...");
+    // Check if MetaMask wallet is connected
+    if (!window.signer) {
+        alert("Please connect your MetaMask wallet first.");
+        return;
+    }
+
+    // Fetch ETH price and calculate ticket cost in ETH
+    getEthForUsd(2).then(async (ticketPriceInEth) => {
+        if (!ticketPriceInEth) {
+            alert("Unable to determine ticket price. Please try again later.");
+            return;
+        }
+
+        console.log(`Ticket price in ETH: ${ticketPriceInEth}`);
+
+        // Attempt to purchase the ticket
+        try {
+            await placeBet(ticketPriceInEth); // Assuming placeBet handles ETH transactions
+            addLotteryTicket(); // Add ticket to the user's list
+            alert("Ticket purchased successfully!");
+        } catch (error) {
+            console.error("Transaction failed:", error);
+            alert("Failed to buy ticket. Please try again.");
+        }
+    });
+}
+
+// Attach buyLotteryTicket to the global scope after it's defined
+window.buyLotteryTicket = buyLotteryTicket;
+
+// Attach event listener for the Buy Ticket button
+document.addEventListener('DOMContentLoaded', () => {
+    const buyTicketButton = document.getElementById('buy-lottery-ticket-button');
+    if (buyTicketButton) {
+        buyTicketButton.addEventListener('click', buyLotteryTicket);
+    } else {
+        console.error("Buy Lottery Ticket button not found in the DOM.");
+    }
+});
