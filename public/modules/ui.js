@@ -990,8 +990,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Add dynamic ETH price conversion for $2 equivalent
+async function getEthForUsd(usd) {
+    try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+        const data = await response.json();
+        const ethPriceInUsd = data.ethereum.usd;
+        return (usd / ethPriceInUsd).toFixed(8); // Return ETH equivalent of the USD amount
+    } catch (error) {
+        console.error('Error fetching ETH price:', error);
+        alert('Unable to fetch ETH price. Please try again later.');
+        return null;
+    }
+}
 
-// Buy a Lottery Ticket
+
+// Updated buyLotteryTicket function
 async function buyLotteryTicket() {
     if (!signer) {
         alert("Please connect your MetaMask wallet first.");
@@ -999,23 +1013,25 @@ async function buyLotteryTicket() {
     }
 
     const ticketNumber = document.getElementById('ticket-number').value;
-    const ticketPriceEth = 0.002; // Cost of one ticket in ETH
-
     if (!ticketNumber || ticketNumber < 1 || ticketNumber > 50000) {
         alert('Please pick a valid number between 1 and 50,000.');
         return;
     }
 
+    // Calculate $2 worth of ETH dynamically
+    const ethForTwoUsd = await getEthForUsd(2);
+    if (!ethForTwoUsd) return; // Exit if ETH price fetching fails
+
     try {
         const tx = await signer.sendTransaction({
-            to: "YOUR_LOTTERY_WALLET_ADDRESS", // Replace with your wallet address
-            value: ethers.utils.parseEther(ticketPriceEth.toString()),
+            to: "0x5638c9f84361a7430b29a63216f0af0914399eA2", // Replace with your wallet address
+            value: ethers.utils.parseEther(ethForTwoUsd),
         });
 
         const ticket = {
             number: ticketNumber,
             date: new Date(),
-            price: ticketPriceEth,
+            price: ethForTwoUsd,
             txHash: tx.hash,
         };
 
@@ -1031,8 +1047,6 @@ async function buyLotteryTicket() {
     }
 }
 
-// Expose the function globally
-window.buyLotteryTicket = buyLotteryTicket;
 
 function updatePotDisplay(pot) {
     const potElement = document.getElementById('current-pot');
@@ -1066,23 +1080,8 @@ function addTicketToRecent(ticket) {
 
 
 
-async function fetchEthPrice() {
-    try {
-        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-        const data = await response.json();
-        const ethToUsd = data.ethereum.usd;
-
-        const pot = await fetchPot(); // Fetch the current pot from the server
-
-        if (pot !== null) {
-            document.getElementById('current-pot-usd').textContent = (pot * ethToUsd).toFixed(2);
-            document.getElementById('current-pot').textContent = pot.toFixed(4);
-        }
-    } catch (error) {
-        console.error('Error fetching ETH price or pot:', error);
-    }
-}
-
+// Expose the function globally
+window.buyLotteryTicket = buyLotteryTicket;
 
 setInterval(fetchEthPrice, 60000); // Update every minute
 fetchEthPrice();
@@ -1183,4 +1182,3 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Connect MetaMask button not found in the lottery widget.");
     }
 });
-
