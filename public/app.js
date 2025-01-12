@@ -1059,22 +1059,29 @@ let signer;
 // MetaMask Connection
 export async function connectMetaMask() {
     if (typeof window.ethereum !== "undefined") {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const accounts = await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        const address = await signer.getAddress();
-        console.log("Connected wallet:", address);
+        try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const accounts = await provider.send("eth_requestAccounts", []);
+            signer = provider.getSigner();
+            const address = await signer.getAddress();
+            console.log("Connected wallet:", address);
 
-        // Persist wallet address in localStorage
-        localStorage.setItem("connectedWallet", address);
+            // Persist wallet address in localStorage
+            localStorage.setItem("connectedWallet", address);
 
-        alert(`Connected wallet: ${address}`);
+            // Make signer available globally
+            window.signer = signer;
+
+            alert(`Connected wallet: ${address}`);
+        } catch (error) {
+            console.error("Error connecting MetaMask:", error);
+            alert("Failed to connect to MetaMask. Please try again.");
+        }
     } else {
         alert("MetaMask is not installed. Please install it to use this feature.");
     }
 }
-// Make signer accessible globally
-window.signer = signer;
+
 
 
 // Restore Wallet Connection on Page Reload
