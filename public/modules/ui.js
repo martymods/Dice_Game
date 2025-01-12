@@ -992,23 +992,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Buy a Lottery Ticket
-async function buyLotteryTicket() {
-    if (!signer) {
+export async function buyLotteryTicket() {
+    if (!window.signer) {
         alert("Please connect your MetaMask wallet first.");
         return;
     }
 
-    const ticketNumber = document.getElementById('ticket-number').value;
-    const ticketPriceEth = 0.002; // Cost of one ticket in ETH
+    const ticketNumber = document.getElementById("ticket-number").value; // Assuming input field with this ID
+    const ticketPriceEth = 0.002; // Define the cost of one ticket in ETH
 
     if (!ticketNumber || ticketNumber < 1 || ticketNumber > 50000) {
-        alert('Please pick a valid number between 1 and 50,000.');
+        alert("Please pick a valid number between 1 and 50,000.");
         return;
     }
 
     try {
         const tx = await signer.sendTransaction({
-            to: "YOUR_LOTTERY_WALLET_ADDRESS", // Replace with your wallet address
+            to: "YOUR_LOTTERY_WALLET_ADDRESS", // Replace with the lottery wallet address
             value: ethers.utils.parseEther(ticketPriceEth.toString()),
         });
 
@@ -1019,15 +1019,14 @@ async function buyLotteryTicket() {
             txHash: tx.hash,
         };
 
-        alert('Ticket purchased successfully!');
+        alert("Ticket purchased successfully!");
 
-        // Add ticket to the user's ticket list
+        // Add the ticket to user's and recent tickets lists
         addTicketToUser(ticket);
-        // Update recent tickets
         addTicketToRecent(ticket);
     } catch (error) {
-        console.error('Error purchasing ticket:', error);
-        alert('Transaction failed. Please try again.');
+        console.error("Error purchasing ticket:", error);
+        alert("Transaction failed. Please try again.");
     }
 }
 
@@ -1048,18 +1047,18 @@ function updatePotDisplay(pot) {
         .catch((err) => console.error('Error fetching ETH price:', err));
 }
 
-// Add Ticket to User's List
+// Function to display the purchased ticket in the user's ticket list
 function addTicketToUser(ticket) {
-    const userTickets = document.getElementById('user-tickets');
-    const ticketDiv = document.createElement('div');
+    const userTickets = document.getElementById("user-tickets");
+    const ticketDiv = document.createElement("div");
     ticketDiv.textContent = `Number: ${ticket.number} - Bought: ${ticket.date.toLocaleString()} - Price: ${ticket.price} ETH`;
     userTickets.appendChild(ticketDiv);
 }
 
-// Add Ticket to Recent List
+// Function to display the purchased ticket in the recent tickets list
 function addTicketToRecent(ticket) {
-    const recentTickets = document.getElementById('recent-tickets');
-    const ticketDiv = document.createElement('div');
+    const recentTickets = document.getElementById("recent-tickets");
+    const ticketDiv = document.createElement("div");
     ticketDiv.textContent = `Number: ${ticket.number} - Bought: ${ticket.date.toLocaleString()} - Price: ${ticket.price} ETH`;
     recentTickets.appendChild(ticketDiv);
 }
