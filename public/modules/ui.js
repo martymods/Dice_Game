@@ -985,6 +985,10 @@ document.getElementById('lotto-icon').addEventListener('click', toggleLotteryMod
 
 // Buy a Lottery Ticket
 export async function buyLotteryTicket() {
+    if (!signer) {
+        alert("Please connect your MetaMask wallet first.");
+        return;
+    }
     const ticketNumber = document.getElementById('ticket-number').value;
     const ticketPriceEth = 0.002; // Cost of one ticket in ETH
 
@@ -1142,3 +1146,21 @@ async function fetchPot() {
     }
 }
 
+// ConnectMetaMask function to the new button
+document.addEventListener('DOMContentLoaded', () => {
+    const connectMetaMaskButton = document.getElementById('connect-metamask-lottery');
+
+    if (connectMetaMaskButton) {
+        connectMetaMaskButton.addEventListener('click', async () => {
+            try {
+                await connectMetaMask();
+                alert("MetaMask connected successfully!");
+            } catch (error) {
+                console.error("Error connecting MetaMask:", error);
+                alert("Failed to connect MetaMask. Please try again.");
+            }
+        });
+    } else {
+        console.error("Connect MetaMask button not found in the lottery widget.");
+    }
+});
