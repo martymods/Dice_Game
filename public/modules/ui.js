@@ -974,11 +974,21 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCombinationsModal();
 });
 
+
+
 // Show/Hide Lottery Modal
 function toggleLotteryModal() {
     const modal = document.getElementById('lottery-modal');
-    modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+    if (modal) {
+        modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+    } else {
+        console.error('Lottery modal element not found.');
+    }
 }
+
+// Attach it to the global scope
+window.toggleLotteryModal = toggleLotteryModal;
+
 
 // Attach to Lotto Icon
 document.addEventListener('DOMContentLoaded', () => {
