@@ -69,6 +69,7 @@
 <!-- Main Menu Container -->
 <div id="main-menu" style="display: none;">
     <div id="menu-buttons">
+        <div id="eth-price-display" style="font-size: 18px; color: white; text-align: center;">Loading ETH price...</div>
         <button onclick="startSinglePlayer()">Single Player</button>
         <button onclick="startHighRoller()">High Roller</button>
         <button onclick="showCreateGame()">Host Game</button>
@@ -77,6 +78,7 @@
         <button onclick="viewLeaderboard()">Leaderboard</button>
     </div>
 </div>
+
 
 <!-- Chat -->
 <div id="chat-container" class="chat-minimized">
@@ -108,7 +110,7 @@
         <img id="info-button" src="/images/Info_Button0.png" alt="Info Button" />
         <span class="close-button" onclick="toggleLotteryModal()">×</span>
         <h2>Lottery</h2>
-        <p>Current Pot: <span id="current-pot"></span> ETH (<span id="current-pot-usd"></span>)</p>
+        <p>Current Pot: <span id="current-pot"></span> ETH (<span id="current-pot-usd" data-eth="10">Calculating pot...</span>)</p>
         
         <h3>Buy Tickets</h3>
         <div>
@@ -128,6 +130,7 @@
     </div>
     <button id="connect-metamask-lottery">Connect MetaMask</button>
 </div>
+
 
 
 
