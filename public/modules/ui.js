@@ -992,24 +992,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Buy a Lottery Ticket
-export async function buyLotteryTicket() {
+async function buyLotteryTicket() {
     if (!signer) {
         alert("Please connect your MetaMask wallet first.");
         return;
     }
+
     const ticketNumber = document.getElementById('ticket-number').value;
     const ticketPriceEth = 0.002; // Cost of one ticket in ETH
 
     if (!ticketNumber || ticketNumber < 1 || ticketNumber > 50000) {
-        alert('Please pick a valid number between 1 and 50000.');
+        alert('Please pick a valid number between 1 and 50,000.');
         return;
     }
 
     try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
         const tx = await signer.sendTransaction({
-            to: "0x5638c9f84361a7430b29a63216f0af0914399eA2", // Replace with your wallet address
+            to: "YOUR_LOTTERY_WALLET_ADDRESS", // Replace with your wallet address
             value: ethers.utils.parseEther(ticketPriceEth.toString()),
         });
 
@@ -1021,13 +1020,17 @@ export async function buyLotteryTicket() {
         };
 
         alert('Ticket purchased successfully!');
-        addTicketToUser(ticket); // Update user ticket list
-        addTicketToRecent(ticket); // Update recent ticket list
+
+        // Add ticket to the user's ticket list
+        addTicketToUser(ticket);
+        // Update recent tickets
+        addTicketToRecent(ticket);
     } catch (error) {
         console.error('Error purchasing ticket:', error);
         alert('Transaction failed. Please try again.');
     }
 }
+
 // Expose the function globally
 window.buyLotteryTicket = buyLotteryTicket;
 
