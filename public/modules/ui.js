@@ -981,7 +981,14 @@ function toggleLotteryModal() {
 }
 
 // Attach to Lotto Icon
-document.getElementById('lotto-icon').addEventListener('click', toggleLotteryModal);
+document.addEventListener('DOMContentLoaded', () => {
+    const lottoIcon = document.getElementById('lotto-icon');
+    if (lottoIcon) {
+        lottoIcon.addEventListener('click', toggleLotteryModal);
+    } else {
+        console.log('Lotto icon not found. Skipping lottery functionality.');
+    }
+});
 
 // Buy a Lottery Ticket
 export async function buyLotteryTicket() {
