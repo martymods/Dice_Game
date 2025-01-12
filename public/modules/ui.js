@@ -990,6 +990,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+
 // Buy a Lottery Ticket
 export async function buyLotteryTicket() {
     if (!signer) {
@@ -1138,7 +1139,15 @@ function showRules() {
 }
 
 // Attach the rules modal to the Info button
-document.getElementById('info-button').addEventListener('click', showRules);
+document.addEventListener('DOMContentLoaded', () => {
+    const infoButton = document.getElementById('info-button');
+    if (infoButton) {
+        infoButton.addEventListener('click', showRules);
+    } else {
+        console.log('Info button not found. Skipping rules modal setup.');
+    }
+});
+
 
 
 
