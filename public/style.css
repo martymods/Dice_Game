@@ -1656,3 +1656,18 @@ img[src="/images/Button_Bet100.gif"]:hover {
 #info-button:hover {
     transform: scale(1.2); /* Slight zoom effect on hover */
 }
+
+#connect-metamask-lottery {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #f6851b; /* MetaMask orange */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px; /* Add spacing below the button */
+}
+
+#connect-metamask-lottery:hover {
+    background-color: #e5781b; /* Slightly darker orange on hover */
+}
