@@ -1671,3 +1671,31 @@ img[src="/images/Button_Bet100.gif"]:hover {
 #connect-metamask-lottery:hover {
     background-color: #e5781b; /* Slightly darker orange on hover */
 }
+
+.close-button {
+    font-size: 24px; /* Increases the font size */
+    width: 40px; /* Makes the button larger horizontally */
+    height: 40px; /* Makes the button larger vertically */
+    line-height: 40px; /* Centers the "×" vertically */
+    text-align: center; /* Centers the "×" horizontally */
+    background-color: #f5f5f5; /* Optional: Add a background color */
+    color: #333; /* Text color */
+    border: none; /* Removes any default borders */
+    border-radius: 50%; /* Makes the button circular */
+    cursor: pointer; /* Changes the cursor to a pointer on hover */
+    display: inline-block; /* Ensures the button stays inline */
+    padding: 0; /* Removes unnecessary padding */
+    margin: 10px; /* Adds space around the button */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional: Adds a subtle shadow */
+    transition: all 0.2s ease; /* Adds a hover animation */
+}
+
+.close-button:hover {
+    background-color: #e0e0e0; /* Changes background on hover */
+    transform: scale(1.2); /* Enlarges the button on hover */
+}
+
+.close-button:active {
+    transform: scale(1.1); /* Slightly shrinks on click */
+}
+
