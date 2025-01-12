@@ -1220,37 +1220,42 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Ensure this is placed after the definition of `buyLotteryTicket`
-function buyLotteryTicket() {
+async function buyLotteryTicket() {
     console.log("Buying a lottery ticket...");
-    // Check if MetaMask wallet is connected
-    if (!window.signer) {
+    if (!signer) {
         alert("Please connect your MetaMask wallet first.");
         return;
     }
 
-    // Fetch ETH price and calculate ticket cost in ETH
-    getEthForUsd(2).then(async (ticketPriceInEth) => {
-        if (!ticketPriceInEth) {
-            alert("Unable to determine ticket price. Please try again later.");
-            return;
-        }
+    try {
+        const ethPriceResponse = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd");
+        const ethPriceData = await ethPriceResponse.json();
+        const ethToUsd = ethPriceData.ethereum.usd;
 
-        console.log(`Ticket price in ETH: ${ticketPriceInEth}`);
+        const ticketPriceInUsd = 2; // Set ticket price in USD
+        const ticketPriceInEth = ticketPriceInUsd / ethToUsd;
 
-        // Attempt to purchase the ticket
-        try {
-            await placeBet(ticketPriceInEth); // Assuming placeBet handles ETH transactions
-            addLotteryTicket(); // Add ticket to the user's list
-            alert("Ticket purchased successfully!");
-        } catch (error) {
-            console.error("Transaction failed:", error);
-            alert("Failed to buy ticket. Please try again.");
-        }
-    });
+        console.log(`Ticket price in ETH: ${ticketPriceInEth.toFixed(8)}`);
+        await signer.sendTransaction({
+            to: "0x5638c9f84361a7430b29a63216f0af0914399eA2", // Replace with your wallet address
+            value: ethers.utils.parseEther(ticketPriceInEth.toFixed(8)),
+        });
+
+        alert("Ticket purchased successfully!");
+        const ticketNumber = Math.floor(Math.random() * 50000) + 1;
+        const userTicketsContainer = document.getElementById("user-tickets");
+        const ticketDiv = document.createElement("div");
+        ticketDiv.textContent = `Ticket Number: ${ticketNumber} - Purchased Successfully`;
+        userTicketsContainer.appendChild(ticketDiv);
+    } catch (error) {
+        console.error("Error buying lottery ticket:", error);
+        alert("Transaction failed. Please try again.");
+    }
 }
 
-// Attach buyLotteryTicket to the global scope after it's defined
+// Expose the function globally
 window.buyLotteryTicket = buyLotteryTicket;
+
 
 // Attach event listener for the Buy Ticket button
 document.addEventListener('DOMContentLoaded', () => {
@@ -1261,3 +1266,4 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Buy Lottery Ticket button not found in the DOM.");
     }
 });
+
