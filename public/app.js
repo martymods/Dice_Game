@@ -32,6 +32,7 @@ let ambienceSound = new Audio('/sounds/Ambience0.ogg');
 ambienceSound.loop = true;
 
 
+
 // Global API Base URL
 const API_BASE_URL = 'https://dice-game-1-6iwc.onrender.com'; // Adjust as needed
 
@@ -987,7 +988,6 @@ function displayStats() {
 }
 
 
-
 // Payout Winnings (Transfer ETH from your wallet to player's wallet)
 async function payoutWinnings(playerAddress, winningsETH) {
     try {
@@ -1061,6 +1061,8 @@ let signer;
 export async function connectMetaMask() {
     if (typeof window.ethereum !== "undefined") {
         try {
+                        // Define the provider once and reuse
+                        const provider = new window.ethers.providers.Web3Provider(window.ethereum);
             provider = new ethers.providers.Web3Provider(window.ethereum);
             const accounts = await provider.send("eth_requestAccounts", []);
             signer = provider.getSigner();
