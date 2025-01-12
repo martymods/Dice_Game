@@ -986,7 +986,6 @@ function displayStats() {
     `;
 }
 
-const ethers = window.ethers;
 
 // Payout Winnings (Transfer ETH from your wallet to player's wallet)
 async function payoutWinnings(playerAddress, winningsETH) {
