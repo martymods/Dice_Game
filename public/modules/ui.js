@@ -999,19 +999,23 @@ async function fetchEthPrice() {
         const data = await response.json();
         const ethToUsd = data.ethereum.usd;
 
-        // Update UI with the fetched ETH price
-        document.getElementById('eth-price-display').textContent = `1 ETH = $${ethToUsd.toFixed(2)}`;
+        // Update ETH price display if the element exists
+        const ethPriceDisplay = document.getElementById('eth-price-display');
+        if (ethPriceDisplay) {
+            ethPriceDisplay.textContent = `1 ETH = $${ethToUsd.toFixed(2)}`;
+        }
 
-        // Optionally update other ETH-dependent values (e.g., pot in lottery or bet amounts)
+        // Update the pot in USD if the element exists
         const potElement = document.getElementById('current-pot-usd');
         if (potElement) {
-            const potInEth = parseFloat(potElement.dataset.eth || 0); // Assuming pot ETH is stored in data attribute
+            const potInEth = parseFloat(potElement.dataset.eth || 0); // Use data attribute or default to 0
             potElement.textContent = `$${(potInEth * ethToUsd).toFixed(2)}`;
         }
     } catch (error) {
         console.error('Error fetching ETH price:', error);
     }
 }
+
 
 
 // Add dynamic ETH price conversion for $2 equivalent
@@ -1107,8 +1111,14 @@ function addTicketToRecent(ticket) {
 // Expose the function globally
 window.buyLotteryTicket = buyLotteryTicket;
 
-setInterval(fetchEthPrice, 60000); // Update every minute
-fetchEthPrice();
+document.addEventListener('DOMContentLoaded', () => {
+    // Fetch initial ETH price
+    fetchEthPrice();
+
+    // Set up periodic updates
+    setInterval(fetchEthPrice, 60000); // Update every minute
+});
+
 
 // Simple rules text
 const simpleRules = `
