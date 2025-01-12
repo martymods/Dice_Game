@@ -8,7 +8,6 @@ import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay } from './modules/ui.js'; // Ensure the correct path
-import { ethers } from 'ethers';
 
 
 // Use `window.socket` instead:
@@ -1058,41 +1057,37 @@ export function startSinglePlayer() {
 let provider;
 let signer;
 
-// MetaMask Connection Function
+// MetaMask Connection
 export async function connectMetaMask() {
-    console.log("MetaMask connection triggered...");
- 
     if (typeof window.ethereum !== "undefined") {
-        try {
-            provider = new ethers.providers.Web3Provider(window.ethereum);
-            const accounts = await provider.send("eth_requestAccounts", []);
-            signer = provider.getSigner();
-            const address = await signer.getAddress();
-            console.log("Connected wallet:", address);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const accounts = await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        const address = await signer.getAddress();
+        console.log("Connected wallet:", address);
 
-            // Persist wallet address in localStorage
-            localStorage.setItem("connectedWallet", address);
+        // Persist wallet address in localStorage
+        localStorage.setItem("connectedWallet", address);
 
-            alert(`Connected wallet: ${address}`);
-        } catch (error) {
-            console.error("Error connecting to MetaMask:", error);
-            alert("Failed to connect MetaMask. Please try again.");
-        }
+        alert(`Connected wallet: ${address}`);
     } else {
         alert("MetaMask is not installed. Please install it to use this feature.");
     }
 }
+// Make signer accessible globally
+window.signer = signer;
 
-// Restore Wallet Connection on Page Load
-document.addEventListener("DOMContentLoaded", async () => {
-    console.log("Attempting to restore wallet...");
 
+// Restore Wallet Connection on Page Reload
+document.addEventListener('DOMContentLoaded', async () => {
     const savedWallet = localStorage.getItem("connectedWallet");
     if (savedWallet) {
         console.log(`Restoring connection to wallet: ${savedWallet}`);
+
         if (typeof window.ethereum !== "undefined") {
-            provider = new ethers.providers.Web3Provider(window.ethereum);
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
             signer = provider.getSigner();
+
             try {
                 const address = await signer.getAddress();
                 console.log(`Wallet successfully restored: ${address}`);
@@ -1106,12 +1101,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-// Make the connectMetaMask function globally accessible
+
+// Make connectMetaMask globally accessible
 window.connectMetaMask = connectMetaMask;
 
-
-// Make signer accessible globally
-window.signer = signer;
 
 // Place Bet (Transfer ETH from player to your wallet)
 export async function placeBet(betAmountETH) {
