@@ -411,8 +411,8 @@ function deactivateOnFire() {
     // Revert dice to normal versions
     const dice1Element = document.getElementById('dice1');
     const dice2Element = document.getElementById('dice2');
-    dice1Element.src = '/images/dice1.png';
-    dice2Element.src = '/images/dice2.png';
+    dice1Element.src = '/images/dice1.gif';
+    dice2Element.src = '/images/dice2.gif';
 
     // Remove fire effect class
     dice1Element.classList.remove('dice-fire');
