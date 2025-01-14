@@ -607,7 +607,6 @@ export function handleGameOverScreen() {
 export function updateBalanceDisplay(balance) {
     const balanceDisplay = document.getElementById('balance-display');
 
-    // Check if the display container exists
     if (!balanceDisplay) {
         console.error("Balance display container not found.");
         return;
@@ -627,29 +626,34 @@ export function updateBalanceDisplay(balance) {
     // Convert the balance to a string and iterate over each digit
     const balanceString = balance.toString();
     for (const digit of balanceString) {
-        // Create an image element for each digit
         const digitImage = document.createElement('img');
         digitImage.src = `/images/Font_Number_${digit}.gif`; // Adjust path if needed
         digitImage.alt = digit;
         digitImage.style.width = '40px'; // Adjust size
         digitImage.style.height = 'auto';
         digitImage.style.margin = '0 2px'; // Add spacing between digits
-
-        // Append the image to the balance display
         balanceDisplay.appendChild(digitImage);
     }
 
-    // Update earnings per second
+    // Update earnings per second from the new balance
     setEarningsPerSecondFromBalance(balance);
 }
 
-let lastBalance = 0; // Track the last balance
 
-function setEarningsPerSecondFromBalance(currentBalance) {
-    const timeInterval = 1; // Interval in seconds for calculations
-    const earnings = (currentBalance - lastBalance) / timeInterval;
-    lastBalance = currentBalance; // Update last balance for next calculation
-    animateEarningsCounter(earnings, lastBalance); // Use animateEarningsCounter to update UI
+
+export function setEarningsPerSecondFromBalance(balance) {
+    const currentTime = Date.now();
+    const timeDeltaSeconds = (currentTime - lastBalanceUpdateTime) / 1000;
+
+    if (lastBalance !== null && timeDeltaSeconds > 0) {
+        const balanceDelta = balance - lastBalance;
+        const earningsPerSecond = balanceDelta / timeDeltaSeconds;
+        setEarningsPerSecond(earningsPerSecond);
+    }
+
+    let lastBalance = 0; // Track the last balance
+    lastBalanceUpdateTime = currentTime;
+
 }
 
 
@@ -904,12 +908,12 @@ function createDicePairElement(dice1, dice2, rollCounts) {
     container.style.backgroundColor = '#f4f4f4';
 
     const img1 = document.createElement('img');
-    img1.src = `/images/dice${dice1}.png`;
+    img1.src = `/images/dice${dice1}.gif`;
     img1.alt = `Dice ${dice1}`;
     img1.style.width = '40px';
 
     const img2 = document.createElement('img');
-    img2.src = `/images/dice${dice2}.png`;
+    img2.src = `/images/dice${dice2}.gif`;
     img2.alt = `Dice ${dice2}`;
     img2.style.width = '40px';
 
