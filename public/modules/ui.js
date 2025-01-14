@@ -1228,3 +1228,35 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Connect MetaMask button not found in the lottery widget.");
     }
 });
+
+// Initialize the earnings per second
+let earningsPerSecond = 0;
+
+// Function to update the earnings counter
+function animateEarningsCounter(target, currentValue) {
+    const increment = (target - currentValue) / 10; // Adjust the speed
+    let value = currentValue;
+
+    const interval = setInterval(() => {
+        value += increment;
+        if ((increment > 0 && value >= target) || (increment < 0 && value <= target)) {
+            value = target;
+            clearInterval(interval);
+        }
+        document.getElementById("earnings-per-second").textContent = value.toFixed(2);
+    }, 50); // Update every 50ms
+}
+
+// Function to set earnings per second
+export function setEarningsPerSecond(amount) {
+    earningsPerSecond = amount;
+    updateEarningsCounter(); // Update immediately
+}
+
+// Start a live update interval
+setInterval(() => {
+    const balanceDisplay = document.getElementById("balance-display");
+    if (balanceDisplay) {
+        updateEarningsCounter();
+    }
+}, 1000); // Update every second
