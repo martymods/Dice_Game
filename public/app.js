@@ -9,8 +9,6 @@ import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay, setEarningsPerSecond } from './modules/ui.js'; // Ensure the correct path
 
-// Example: Setting earnings dynamically based on gameplay logic
-setEarningsPerSecond(15.75); // This sets the earnings per second to $15.75
 
 // Use `window.socket` instead:
 console.log('Using global socket in app.js:', window.socket);
