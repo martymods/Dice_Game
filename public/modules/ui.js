@@ -640,8 +640,6 @@ export function updateBalanceDisplay(balance) {
 }
 
 
-let lastBalance = 0; // Track the last balance
-lastBalanceUpdateTime = currentTime;
 
 export function setEarningsPerSecondFromBalance(balance) {
     const currentTime = Date.now();
@@ -652,6 +650,10 @@ export function setEarningsPerSecondFromBalance(balance) {
         const earningsPerSecond = balanceDelta / timeDeltaSeconds;
         setEarningsPerSecond(earningsPerSecond);
     }
+
+    let lastBalance = 0; // Track the last balance
+    lastBalanceUpdateTime = currentTime;
+
 }
 
 
