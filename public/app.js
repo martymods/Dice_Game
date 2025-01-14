@@ -1951,8 +1951,8 @@ function startRollAnimation() {
         const dice1Roll = Math.floor(Math.random() * 6) + 1;
         const dice2Roll = Math.floor(Math.random() * 6) + 1;
 
-        dice1Element.src = `/images/dice${dice1Roll}.png`;
-        dice2Element.src = `/images/dice${dice2Roll}.png`;
+        dice1Element.src = `/images/dice${dice1Roll}.gif`;
+        dice2Element.src = `/images/dice${dice2Roll}.gif`;
 
         counter++;
         if (!isShaking) {
@@ -1972,8 +1972,8 @@ function stopRollAnimationAndShowResult() {
     const dice1Element = document.getElementById("dice1");
     const dice2Element = document.getElementById("dice2");
 
-    dice1Element.src = `/images/dice${dice1}.png`;
-    dice2Element.src = `/images/dice${dice2}.png`;
+    dice1Element.src = `/images/dice${dice1}.gif`;
+    dice2Element.src = `/images/dice${dice2}.gif`;
 
     console.log(`Dice result: ${dice1} + ${dice2} = ${sum}`);
     handleDiceResult(sum);
