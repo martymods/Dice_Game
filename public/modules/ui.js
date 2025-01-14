@@ -1290,8 +1290,3 @@ function calculateEarningsPerSecond(currentBalance) {
     lastBalance = currentBalance; // Update last balance for next calculation
     return earnings;
 }
-
-function setEarningsPerSecondFromBalance(currentBalance) {
-    earningsPerSecond = calculateEarningsPerSecond(currentBalance);
-    animateEarningsCounter(earningsPerSecond, currentBalance);
-}
