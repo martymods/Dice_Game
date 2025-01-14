@@ -9,6 +9,8 @@ import { playSound } from './modules/audio.js';
 import { applyPurchasedItemEffects } from './itemEffects.js'; 
 import { updateBalanceDisplay, setEarningsPerSecond } from './modules/ui.js'; // Ensure the correct path
 
+// Example: Setting earnings dynamically based on gameplay logic
+setEarningsPerSecond(15.75); // This sets the earnings per second to $15.75
 
 // Use `window.socket` instead:
 console.log('Using global socket in app.js:', window.socket);
@@ -1007,8 +1009,6 @@ async function payoutWinnings(playerAddress, winningsETH) {
 // Example: Call this function when the player wins
 async function handleWin(betAmount) {
     const winnings = betAmount * 2; // x1 bonus = double the bet
-    balance += winnings;
-    updateBalanceDisplay(balance); // Update balance display and earnings
     const ethToUsdRate = 3500; // Example conversion rate: 1 ETH = $3500
     const winningsUSD = (winnings * ethToUsdRate).toFixed(2);
 
@@ -1029,8 +1029,6 @@ async function handleWin(betAmount) {
 
 // Example: Call this function when the player loses
 function handleLoss(betAmount) {
-    balance -= betAmount;
-    updateBalanceDisplay(balance); // Update balance display and earnings
     const ethToUsdRate = 3500; // Example conversion rate
     const lossUSD = (betAmount * ethToUsdRate).toFixed(2);
 
