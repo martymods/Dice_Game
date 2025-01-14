@@ -1229,34 +1229,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Initialize the earnings per second
+// Initialize earnings-related variables
 let earningsPerSecond = 0;
+let currentEarningsValue = 0;
 
-// Function to update the earnings counter
+// Function to animate the earnings counter
 function animateEarningsCounter(target, currentValue) {
-    const increment = (target - currentValue) / 10; // Adjust the speed
-    let value = currentValue;
+    const earningsCounterElement = document.getElementById("earnings-per-second");
+    if (earningsCounterElement) {
+        const step = (target - currentValue) / 20; // Animation duration divided into steps
+        let animationFrame = 0;
 
-    const interval = setInterval(() => {
-        value += increment;
-        if ((increment > 0 && value >= target) || (increment < 0 && value <= target)) {
-            value = target;
-            clearInterval(interval);
-        }
-        document.getElementById("earnings-per-second").textContent = value.toFixed(2);
-    }, 50); // Update every 50ms
+        const updateAnimation = () => {
+            if (animationFrame < 20) {
+                currentValue += step;
+                earningsCounterElement.textContent = currentValue.toFixed(2);
+                animationFrame++;
+                requestAnimationFrame(updateAnimation);
+            } else {
+                earningsCounterElement.textContent = target.toFixed(2); // Final value
+            }
+        };
+
+        updateAnimation();
+    } else {
+        console.error("Earnings counter element not found in the DOM.");
+    }
 }
 
-// Function to set earnings per second
+// Exported function to set earnings per second
 export function setEarningsPerSecond(amount) {
     earningsPerSecond = amount;
-    updateEarningsCounter(); // Update immediately
+    animateEarningsCounter(earningsPerSecond, currentEarningsValue); // Use animateEarningsCounter
 }
 
 // Start a live update interval
 setInterval(() => {
-    const balanceDisplay = document.getElementById("balance-display");
-    if (balanceDisplay) {
-        updateEarningsCounter();
-    }
-}, 1000); // Update every second
+    currentEarningsValue += earningsPerSecond;
+    animateEarningsCounter(currentEarningsValue, currentEarningsValue - earningsPerSecond); // Update incrementally
+}, 1000);
