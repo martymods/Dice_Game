@@ -616,13 +616,13 @@ export function updateBalanceDisplay(balance) {
     // Clear the previous balance display
     balanceDisplay.innerHTML = '';
 
-        // Add the $ symbol as the first image
-        const dollarSignImage = document.createElement('img');
-        dollarSignImage.src = '/images/Font_Number_$.gif'; // Update path if needed
-        dollarSignImage.alt = '$';
-        dollarSignImage.style.width = '50px'; // Match CSS
-        dollarSignImage.style.height = 'auto';
-        balanceDisplay.appendChild(dollarSignImage);
+    // Add the $ symbol as the first image
+    const dollarSignImage = document.createElement('img');
+    dollarSignImage.src = '/images/Font_Number_$.gif'; // Update path if needed
+    dollarSignImage.alt = '$';
+    dollarSignImage.style.width = '50px'; // Match CSS
+    dollarSignImage.style.height = 'auto';
+    balanceDisplay.appendChild(dollarSignImage);
 
     // Convert the balance to a string and iterate over each digit
     const balanceString = balance.toString();
@@ -638,7 +638,21 @@ export function updateBalanceDisplay(balance) {
         // Append the image to the balance display
         balanceDisplay.appendChild(digitImage);
     }
+
+    // Update earnings per second
+    setEarningsPerSecondFromBalance(balance);
 }
+
+let lastBalance = 0; // Track the last balance
+
+function setEarningsPerSecondFromBalance(currentBalance) {
+    const timeInterval = 1; // Interval in seconds for calculations
+    const earnings = (currentBalance - lastBalance) / timeInterval;
+    lastBalance = currentBalance; // Update last balance for next calculation
+    animateEarningsCounter(earnings, lastBalance); // Use animateEarningsCounter to update UI
+}
+
+
 
 // Chat functionality
 
@@ -1231,7 +1245,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Initialize earnings-related variables
 let earningsPerSecond = 0;
-let currentEarningsValue = 0;
+let currentEarningsValue = 0; // Current earnings per second
+
 
 // Function to animate the earnings counter
 function animateEarningsCounter(target, currentValue) {
@@ -1268,3 +1283,15 @@ setInterval(() => {
     currentEarningsValue += earningsPerSecond;
     animateEarningsCounter(currentEarningsValue, currentEarningsValue - earningsPerSecond); // Update incrementally
 }, 1000);
+
+function calculateEarningsPerSecond(currentBalance) {
+    const timeInterval = 1; // Interval in seconds for calculations
+    const earnings = (currentBalance - lastBalance) / timeInterval;
+    lastBalance = currentBalance; // Update last balance for next calculation
+    return earnings;
+}
+
+function setEarningsPerSecondFromBalance(currentBalance) {
+    earningsPerSecond = calculateEarningsPerSecond(currentBalance);
+    animateEarningsCounter(earningsPerSecond, currentBalance);
+}
