@@ -11,223 +11,110 @@
     <script type="module" src="app.js"></script>
     <script type="module" src="/modules/ui.js"></script>
     <script type="module" src="itemEffects.js"></script>
-
-    
-
 </head>
 <body>
-
-    <div id="loading-screen">
-        <img src="/images/Transition_0.gif" alt="Loading..." id="loading-image">
-    </div>
-
-
-    
-    
     <div id="game-container">
-        <!-- Left Side -->
-        <div id="left-side">
+        <!-- Left Section: Store and Sponsored Content -->
+        <div id="left-section">
+            <div id="sponsored-banner">
+                <img src="/images/sponsored-banner.png" alt="Sponsored Content" class="sponsored-image">
+                <p><a href="#" target="_blank">Visit our sponsor!</a></p>
+            </div>
+            <div id="store-section">
+                <h2>Store</h2>
+                <div id="item-list"></div>
+                <button id="restockButton">
+                    <img src="/images/restock-icon.gif" alt="Restock Icon">
+                    Restock ($5)
+                </button>
+                <button id="doneShoppingButton">Done Shopping</button>
+            </div>
+            <!-- Leaderboard Section -->
+            <div id="leaderboard-overlay" style="display: none;">
+                <div id="leaderboard-prompt">
+                    <h2>Enter Your Name for the Leaderboard</h2>
+                    <input type="text" id="player-name" placeholder="Your Name" maxlength="20" />
+                    <button id="submit-leaderboard">Submit</button>
+                </div>
+                <div id="leaderboard-display">
+                    <h2>Global Leaderboard</h2>
+                    <div id="leaderboard-entries"></div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Combinations Modal -->
-<div id="combinationsModal" class="modal">
-    <div class="modal-content">
-        <h2>Dice Combinations</h2>
-        <p>Here are the possible dice combinations...</p>
-        <button id="closeCombinationsButton">Close</button>
-    </div>
-</div>
+        <!-- Center Section: Play Area -->
+        <div id="center-section">
+            <div id="balance-display">
+                Balance: <span id="balance-images"></span> | Bet: $0
+            </div>
+            <div id="play-area">
+                <div id="dice-container">
+                    <img id="dice1" class="dice" src="/images/dice1.png" alt="Dice 1">
+                    <img id="dice2" class="dice" src="/images/dice2.png" alt="Dice 2">
+                </div>
+                <div id="controls">
+                    <img id="rollButton" src="/images/Button_RollDice.gif" alt="Roll Dice" class="button-image">
+                    <input type="number" id="betAmount" placeholder="Enter Bet Amount" min="1">
+                    <img id="betButton" src="/images/Button_PlaceBet.gif" alt="Place Bet" class="button-image">
+                    <button id="quitButton" class="small-button">Quit Game</button>
+                </div>
+                <p id="gameStatus"></p>
+            </div>
+        </div>
 
-    <div id="player-info">
-        <p id="betting-status">
-            Balance: <span id="balance-images"></span> | Bet: $0
-        </p>
-        <p id="rent-status">Rent Due: $0 in 0 rolls</p>
-    </div>
-
-
-<button id="showCombinationsButton">Show Combinations</button>
-            <!-- Hustler Info -->
-            <div id="hustler-info">
-                <p id="multiplier-display">Multiplier: 1x</p> <!-- New Multiplier Display -->
+        <!-- Right Section: Interactive Elements -->
+        <div id="right-section">
+            <div id="eth-bets">
+                <button onclick="connectMetaMask()">
+                    <img src="/images/MetaMask_Fox.png" alt="MetaMask" style="width: 20px; margin-right: 8px;">
+                    Connect MetaMask
+                </button>
+                <input type="number" id="betAmountETH" placeholder="Enter Bet in ETH">
+                <button onclick="placeBet(document.getElementById('betAmountETH').value)">
+                    <img src="/images/ETH_Logo.png" alt="ETH" style="width: 20px; margin-right: 8px;">
+                    Place Bet (ETH)
+                </button>
             </div>
 
-            <!-- Inventory -->
-            <div id="purchased-items-section">
-                <h3>Purchased Items</h3>
-                <div id="purchased-items-display"></div>
-            </div>
-            
-
-            <!-- Buy Item -->
-            <div id="buy-item-section">
-                <img id="store-image" src="/images/StoreSign_Closed0.gif" alt="Store Closed" />
-                <div id="buy-item-container">
-                    <h2>SHOP</h2>
-                    <div id="item-list"></div>
-                    <div id="item-description"></div>
-                    <div id="button-container">
-                        <button id="saveMoneyButton">Done Shopping</button>
-                        
-                        <button id="restockButton">
-                            <img src="/images/restock-icon.gif" alt="Restock Icon" />
-                            <span id="restock-fee">Restock Fee: $0</span>
-                        </button>
-                        
+            <div id="chat-container" class="chat-minimized">
+                <div id="chat-header">Chat</div>
+                <div id="chat-body">
+                    <div id="message-list"></div>
+                    <div id="chat-footer">
+                        <input id="message-input" type="text" placeholder="Type your message...">
+                        <button id="send-message">Send</button>
                     </div>
                 </div>
             </div>
-            
 
-            <!-- Inventory -->
-            <div id="inventory">
-                <h3>Inventory</h3>
-                <ul id="inventory-list"></ul>
-            </div>
-        </div>
-
-
-        <!-- Right Side -->
-        <div id="right-side">
-            <div id="balance-display" style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
-                <!-- Balance images will be displayed here -->
-            </div>
-            
-
-            <div id="controls">
-                <img id="rollButton" src="/images/Button_RollDice.gif" alt="Roll Dice" class="button-image">
-                <input type="number" id="betAmount" placeholder="Enter Bet Amount" min="1">
-                <img id="betButton" src="/images/Button_PlaceBet.gif" alt="Place Bet" class="button-image">
-                <img id="bet25Button" src="/images/Button_Bet25.gif" alt="Bet 25%" class="button-image">
-                <img id="bet50Button" src="/images/Button_Bet50.gif" alt="Bet 50%" class="button-image">
-                <img id="bet100Button" src="/images/Button_Bet100.gif" alt="Bet 100%" class="button-image">
-                <button id="quitButton" class="small-button">Quit Game</button>
+            <div id="fortune-cookie-section">
+                <img id="cookie-buy" src="/images/cookie_Buy.png" alt="Buy Fortune Cookie">
+                <button id="buy-cookie-button">
+                    <img src="/images/ETH_Logo.png" alt="ETH Logo">
+                    Buy ($1 ETH)
+                </button>
             </div>
 
-            <div id="dice-container">
-                <img id="dice1" class="dice" src="/images/dice1.png" alt="Dice 1">
-                <img id="dice2" class="dice" src="/images/dice2.png" alt="Dice 2">
+            <!-- Fortune Display -->
+            <div id="fortune-display" style="display: none;">
+                <img id="cookie-open" src="/images/cookie_Open.png" alt="Open Fortune Cookie">
+                <div id="fortune-text"></div>
+                <button id="close-fortune">Close</button>
             </div>
-            
-            <p id="gameStatus"></p>
 
-            <!-- Game Over Section -->
-            <div id="gameOverContainer" style="display: none;">
-                <h2>Game Over</h2>
-                <p>Better luck next time!</p>
-                <button onclick="window.location.href='/';">Return to Main Menu</button>
+            <!-- Collected Cookies Section -->
+            <div id="fortune-collection">
+                <h3>My Fortune Cookies</h3>
+                <p>Collected: <span id="cookie-count">0</span>/25</p>
+                <div id="collected-cookies"></div>
             </div>
         </div>
     </div>
-
-    <div id="crypto-section">
-        <button id="pay-with-bitcoin">
-            <img src="/images/CashAppLogo.png" alt="CashApp Logo" style="width: 24px; vertical-align: middle;">
-            Pay with Bitcoin
-        </button>
-        
-        <button onclick="connectMetaMask()">
-            <img src="/images/MetaMask_Fox.png" alt="MetaMask" style="width: 20px; vertical-align: middle; margin-right: 8px;">
-            Connect MetaMask
-        </button>
-        <input type="number" id="betAmountETH" placeholder="Enter Bet in ETH">
-        <button onclick="placeBet(document.getElementById('betAmountETH').value)">
-            <img src="/images/ETH_Logo.png" alt="ETH" style="width: 20px; vertical-align: middle; margin-right: 8px;">
-            Place Bet (ETH)
-        </button>
-    </div>
-    
-    
-    <div id="shop-container">
-        <h3>Shop</h3>
-        <div id="hustler-list">
-            <!-- Hustlers will be dynamically added here -->
-        </div>
-        <div id="item-list">
-            <!-- Items will be dynamically added here -->
-        </div>
-        <button id="saveMoneyButtonAlt">Done Shopping (Alt)</button>
-    </div>
-    
-    <!-- Hustler Panel -->
-<div id="hustler-panel" style="display: none;">
-    <h3>Hustlers</h3>
-    <div id="hustlers-display">
-        <!-- Dynamically add hustlers with JS -->
-    </div>
-</div>
-
-<div id="shop-area" style="display: none;">
-    <h2>Shop</h2>
-    <div id="shop-items">
-        <!-- Items rendered here -->
-    </div>
-    <button id="reroll-button">Reroll ($5)</button>
-</div>
-
-<div id="score-rent-panel">
-    <p id="rent-status">Rent: $400 in 6 rolls</p>
-    <p id="score-status">Score: 0</p>
-</div>
-
-<div id="leaderboard-overlay" style="display: none;">
-    <div id="leaderboard-prompt">
-        <h2>Enter Your Name for the Leaderboard</h2>
-        <input type="text" id="player-name" placeholder="Your Name" maxlength="20" />
-        <button id="submit-leaderboard">Submit</button>
-    </div>
-    <div id="leaderboard-display">
-        <h2>Global Leaderboard</h2>
-        <div id="leaderboard-entries"></div>
-    </div>
-</div>
-
-<!-- Fortune Cookie Section -->
-<div id="fortune-cookie-section">
-    <img id="cookie-buy" src="/images/cookie_Buy.png" alt="Buy Fortune Cookie">
-    <button id="buy-cookie-button">
-        <img src="/images/ETH_Logo.png" alt="ETH Logo">
-        Buy ($1 ETH)
-    </button>
-</div>
-
-<div id="fortune-display" style="display: none;">
-    <img id="cookie-open" src="/images/cookie_Open.png" alt="Open Fortune Cookie">
-    <div id="fortune-text"></div>
-    <button id="close-fortune">Close</button>
-</div>
-
-<div id="chat-footer">
-    <input id="message-input" type="text" placeholder="Type your message..." />
-    <ul id="player-names"></ul>
-    <button id="send-message">Send</button>
-    <div id="message-list"></div>
-
-</div>
-
-<div id="fortune-collection">
-    <h3>My Fortune Cookies</h3>
-    <p>Collected: <span id="cookie-count">0</span>/25</p>
-    <div id="collected-cookies"></div> <!-- Updated to use a div for flex display -->
-</div>
-
 
     <script type="module">
         import { connectMetaMask } from './app.js';
-    
         document.getElementById('connect-wallet').addEventListener('click', connectMetaMask);
     </script>
-
-<script src="/socket.io/socket.io.js"></script> <!-- Load Socket.IO -->
-<script src="/socket-init.js"></script> <!-- Initialize Socket -->
-<script type="module" src="items.js"></script>
-<script type="module" src="/modules/ui.js"></script>
-<script type="module" src="/itemEffects.js"></script>
-<script type="module" src="/app.js"></script>
-    
-    
-    <p id="betting-status"></p>
-    <p id="gameStatus"></p>
-     
 </body>
 </html>
-
