@@ -607,7 +607,6 @@ export function handleGameOverScreen() {
 export function updateBalanceDisplay(balance) {
     const balanceDisplay = document.getElementById('balance-display');
 
-    // Check if the display container exists
     if (!balanceDisplay) {
         console.error("Balance display container not found.");
         return;
@@ -627,29 +626,32 @@ export function updateBalanceDisplay(balance) {
     // Convert the balance to a string and iterate over each digit
     const balanceString = balance.toString();
     for (const digit of balanceString) {
-        // Create an image element for each digit
         const digitImage = document.createElement('img');
         digitImage.src = `/images/Font_Number_${digit}.gif`; // Adjust path if needed
         digitImage.alt = digit;
         digitImage.style.width = '40px'; // Adjust size
         digitImage.style.height = 'auto';
         digitImage.style.margin = '0 2px'; // Add spacing between digits
-
-        // Append the image to the balance display
         balanceDisplay.appendChild(digitImage);
     }
 
-    // Update earnings per second
+    // Update earnings per second from the new balance
     setEarningsPerSecondFromBalance(balance);
 }
 
-let lastBalance = 0; // Track the last balance
 
-function setEarningsPerSecondFromBalance(currentBalance) {
-    const timeInterval = 1; // Interval in seconds for calculations
-    const earnings = (currentBalance - lastBalance) / timeInterval;
-    lastBalance = currentBalance; // Update last balance for next calculation
-    animateEarningsCounter(earnings, lastBalance); // Use animateEarningsCounter to update UI
+let lastBalance = 0; // Track the last balance
+lastBalanceUpdateTime = currentTime;
+
+export function setEarningsPerSecondFromBalance(balance) {
+    const currentTime = Date.now();
+    const timeDeltaSeconds = (currentTime - lastBalanceUpdateTime) / 1000;
+
+    if (lastBalance !== null && timeDeltaSeconds > 0) {
+        const balanceDelta = balance - lastBalance;
+        const earningsPerSecond = balanceDelta / timeDeltaSeconds;
+        setEarningsPerSecond(earningsPerSecond);
+    }
 }
 
 
