@@ -112,9 +112,9 @@ h1 {
 }
 
 .dice {
-    width: 75px;
-    height: 75px;
-    margin: 10px;
+    width: 120px;
+    height: 120px;
+    margin: 8px;
 }
 
 /* Item Popup Styling */
@@ -1628,7 +1628,7 @@ img[src="/images/Button_Bet100.gif"]:hover {
     background-color: #070707;
     padding: 20px;
     border-radius: 10px;
-    width: 400px;
+    width: 1000px;
     text-align: center;
     position: relative;
 }
