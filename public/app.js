@@ -679,6 +679,7 @@ function animateDice(dice1, dice2, callback) {
                 maxTurns++;
                 progression++;
                 turns = 0;
+                updateBalanceDisplay(balance); // Reflect changes
 
                 // Update player stats
                 playerStats.totalDaysPassed += 30;
