@@ -3,29 +3,24 @@ body {
     cursor: url('/images/MouseCursor_0.png'), auto; /* Default custom cursor */
 }
 
+/* Import OPTI Times Roman font */
 @font-face {
     font-family: 'GameFont';
-    src: url('/fonts/Old_Englished_Boots.ttf') format('truetype'); /* Update the font file path */
+    src: url('/fonts/OPTITimes-Roman.otf') format('opentype'); /* Update the font file path */
     font-weight: normal;
     font-style: normal;
 }
 
-
+/* Global font settings */
 body {
-    font-family: 'GameFont', sans-serif;
-}
-
-* {
-    font-family: 'GameFont', sans-serif !important;
-}
-
-
-body {
-    font-family: 'GameFont', sans-serif;
+    font-family: 'GameFont', serif; /* Use OPTI Times Roman with serif fallback */
     font-size: 24px;
     line-height: 1.5;
 }
 
+* {
+    font-family: 'GameFont', serif !important; /* Ensure consistent usage */
+}
 
 
 /* Button hover styling to cycle through cursors */
