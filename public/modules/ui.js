@@ -342,7 +342,6 @@ export function handleRestock(balance, items) {
         const newItems = items.sort(() => Math.random() - 0.5).slice(0, 3);
         updateStoreUI(newItems, balance); // Update the store UI
         alert(`Restocked items for $${restockFee.toLocaleString()}!`);
-        animateBalanceDisplay(newBalance, currentBalance);
         updateBalanceDisplay(balance); // Reflect changes
     } else {
         alert('Not enough money to restock!');
