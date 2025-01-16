@@ -1349,10 +1349,14 @@ function closeModal() {
 
 function selectMode(mode) {
     if (mode === 1) {
-        // Load Heads or Tails
-        window.location.href = 'headsOrTails.html';
+        window.location.href = 'public/modules/headsOrTails.html';
     } else {
         alert('This mode is under development.');
     }
     closeModal();
 }
+
+
+// Add this in ui.js
+window.openHighRoller = openHighRoller;
+
