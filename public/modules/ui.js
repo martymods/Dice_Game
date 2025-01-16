@@ -652,6 +652,30 @@ function setEarningsPerSecondFromBalance(currentBalance) {
     animateEarningsCounter(earnings, lastBalance); // Use animateEarningsCounter to update UI
 }
 
+function animateBalanceDisplay(targetBalance, currentBalance) {
+    const balanceDisplayElement = document.getElementById('balance-display');
+    if (!balanceDisplayElement) {
+        console.error("Balance display element not found in the DOM.");
+        return;
+    }
+
+    const step = (targetBalance - currentBalance) / 20; // Dividing into 20 steps for smooth animation
+    let animationFrame = 0;
+
+    const updateAnimation = () => {
+        if (animationFrame < 20) {
+            currentBalance += step;
+            updateBalanceImages(Math.round(currentBalance)); // Update balance with animation
+            animationFrame++;
+            requestAnimationFrame(updateAnimation);
+        } else {
+            updateBalanceImages(Math.round(targetBalance)); // Set final balance
+        }
+    };
+
+    updateAnimation();
+}
+
 
 
 // Chat functionality
