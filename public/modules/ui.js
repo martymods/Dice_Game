@@ -1315,3 +1315,44 @@ function calculateEarningsPerSecond(currentBalance) {
     lastBalance = currentBalance; // Update last balance for next calculation
     return earnings;
 }
+
+// ui.js
+
+export function openHighRoller() {
+    const modal = document.createElement('div');
+    modal.id = 'high-roller-modal';
+    modal.style.position = 'fixed';
+    modal.style.top = '50%';
+    modal.style.left = '50%';
+    modal.style.transform = 'translate(-50%, -50%)';
+    modal.style.backgroundColor = '#fff';
+    modal.style.padding = '20px';
+    modal.style.borderRadius = '10px';
+    modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+    modal.style.textAlign = 'center';
+    
+    modal.innerHTML = `
+        <h2>Select a Game Mode</h2>
+        <div style="display: flex; gap: 20px; justify-content: center;">
+            <img src="public/images/GameSelect0.png" alt="Mode 0" style="width: 150px; cursor: pointer;" onclick="selectMode(0)" />
+            <img src="public/images/GameSelect1.png" alt="Heads or Tails" style="width: 150px; cursor: pointer;" onclick="selectMode(1)" />
+        </div>
+        <button onclick="closeModal()" style="margin-top: 20px;">Close</button>
+    `;
+    document.body.appendChild(modal);
+}
+
+function closeModal() {
+    const modal = document.getElementById('high-roller-modal');
+    if (modal) modal.remove();
+}
+
+function selectMode(mode) {
+    if (mode === 1) {
+        // Load Heads or Tails
+        window.location.href = 'headsOrTails.html';
+    } else {
+        alert('This mode is under development.');
+    }
+    closeModal();
+}
