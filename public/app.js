@@ -338,22 +338,42 @@ async function setupSinglePlayer() {
     window.handleRollDice = handleRollDice;
     
     function updateBalanceImages(balance) {
-        console.log(`Updating balance to: ${balance}`); // Debugging log
-        const balanceContainer = document.getElementById('balance-images');
-        if (!balanceContainer) {
-            console.error('Balance container not found');
+        const balanceDisplayElement = document.getElementById('balance-display');
+    
+        // Ensure the balance container exists
+        if (!balanceDisplayElement) {
+            console.error("Balance display element not found in the DOM.");
             return;
         }
-        balanceContainer.innerHTML = ''; // Clear existing images
     
-        const balanceString = balance.toString(); // Convert balance to string
-        for (let digit of balanceString) {
-            const digitElement = document.createElement('div');
-            digitElement.classList.add('balance-digit');
-            digitElement.style.backgroundImage = `url('/images/Font_Number_${digit}.gif')`;
-            balanceContainer.appendChild(digitElement);
+        // Clear previous balance display
+        balanceDisplayElement.innerHTML = '';
+    
+        // Convert balance to string to iterate over digits
+        const balanceString = balance.toString();
+    
+        // Add "$" as the first character
+        const dollarSign = document.createElement('span');
+        dollarSign.textContent = '$';
+        balanceDisplayElement.appendChild(dollarSign);
+    
+        // Create an image or text for each digit
+        for (const digit of balanceString) {
+            const digitElement = document.createElement('span');
+            digitElement.textContent = digit; // You can replace this with images if needed
+            digitElement.style.margin = '0 2px';
+            balanceDisplayElement.appendChild(digitElement);
         }
     }
+    
+
+    let currentBalance = 0; // Keep track of the current balance
+
+function updateBalance(newBalance) {
+    animateBalanceDisplay(newBalance, currentBalance);
+    currentBalance = newBalance; // Update current balance to the new value
+}
+
     
 
 // Global variable for the fire border
