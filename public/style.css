@@ -14,7 +14,7 @@ body {
 /* Global font settings */
 body {
     font-family: 'GameFont', serif; /* Use OPTI Times Roman with serif fallback */
-    font-size: 24px;
+    font-size: 14px;
     line-height: 1.5;
 }
 
@@ -86,7 +86,7 @@ button {
     border: none;
     border-radius: 5px;
     padding: 15px 30px;
-    font-size: 18px;
+    font-size: 12px;
     font-weight: bold;
     text-shadow: 1px 1px 2px black;
     cursor: pointer;
@@ -1722,7 +1722,7 @@ img[src="/images/Button_Bet100.gif"]:hover {
     border: 2px solid #FFD700; /* Gold border */
     border-radius: 10px; /* Rounded corners */
     padding: 10px 20px; /* Button padding */
-    font-size: 16px; /* Font size */
+    font-size: 14px; /* Font size */
     cursor: pointer; /* Pointer cursor */
     text-align: center; /* Center text */
     position: relative; /* Required for animation */
