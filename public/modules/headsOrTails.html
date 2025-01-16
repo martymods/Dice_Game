@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heads or Tails</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="/app.js" type="module"></script>
+    <script src="/modules/ui.js" type="module"></script>
+</head>
+<body>
+    <div id="game-container" style="text-align: center; padding: 20px;">
+        <h1>Heads or Tails</h1>
+        <p id="game-rules">Select Heads or Tails, place your ETH bet, and flip the coin to win!</p>
+
+        <div id="selection">
+            <button id="heads-button">Heads</button>
+            <button id="tails-button">Tails</button>
+        </div>
+
+        <div id="betting-section">
+            <label for="bet-amount">Place Your Bet (ETH):</label>
+            <input type="number" id="bet-amount" placeholder="e.g., 0.01" min="0.01">
+            <button id="place-bet-button">Place Bet</button>
+        </div>
+
+        <div id="flip-section" style="display: none;">
+            <button id="flip-coin-button">Flip Coin</button>
+        </div>
+
+        <div id="result-section" style="display: none;">
+            <h2 id="flip-result">Result: </h2>
+            <p id="winner-message"></p>
+        </div>
+
+        <div id="history-section">
+            <h3>Last 3 Results</h3>
+            <ul id="result-history"></ul>
+        </div>
+
+        <div id="leaderboard-section">
+            <h3>Winners Leaderboard</h3>
+            <ul id="leaderboard"></ul>
+        </div>
+    </div>
+
+    <script type="module">
+        import { ethers } from 'ethers';
+
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+
+        const resultHistory = [];
+        const leaderboard = [];
+
+        document.getElementById('heads-button').addEventListener('click', () => setSelection('heads'));
+        document.getElementById('tails-button').addEventListener('click', () => setSelection('tails'));
+
+        let userSelection = '';
+
+        function setSelection(selection) {
+            userSelection = selection;
+            document.getElementById('flip-section').style.display = 'block';
+            alert(`You selected ${selection.toUpperCase()}`);
+        }
+
+        document.getElementById('place-bet-button').addEventListener('click', async () => {
+            const betAmount = document.getElementById('bet-amount').value;
+
+            if (!betAmount || betAmount <= 0) {
+                alert('Please enter a valid bet amount.');
+                return;
+            }
+
+            await provider.send('eth_requestAccounts', []);
+            const tx = await signer.sendTransaction({
+                to: '0x5638c9f84361a7430b29a63216f0af0914399eA2',
+                value: ethers.utils.parseEther(betAmount),
+            });
+            alert('Bet placed! Transaction sent.');
+        });
+
+        document.getElementById('flip-coin-button').addEventListener('click', () => {
+            if (!userSelection) {
+                alert('Please select Heads or Tails.');
+                return;
+            }
+
+            const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
+            const isWinner = userSelection === flipResult;
+
+            document.getElementById('flip-result').textContent = `Result: ${flipResult.toUpperCase()}`;
+            document.getElementById('winner-message').textContent = isWinner ? 'You won!' : 'You lost!';
+            document.getElementById('result-section').style.display = 'block';
+
+            resultHistory.unshift({ flipResult, isWinner });
+            if (resultHistory.length > 3) resultHistory.pop();
+            updateHistoryUI();
+
+            if (isWinner) {
+                leaderboard.push({ user: 'You', winnings: '2x your bet' });
+                updateLeaderboardUI();
+            }
+        });
+
+        function updateHistoryUI() {
+            const historyList = document.getElementById('result-history');
+            historyList.innerHTML = '';
+            resultHistory.forEach((result, index) => {
+                const li = document.createElement('li');
+                li.textContent = `Flip ${index + 1}: ${result.flipResult.toUpperCase()} (${result.isWinner ? 'Won' : 'Lost'})`;
+                historyList.appendChild(li);
+            });
+        }
+
+        function updateLeaderboardUI() {
+            const leaderboardList = document.getElementById('leaderboard');
+            leaderboardList.innerHTML = '';
+            leaderboard.forEach((entry) => {
+                const li = document.createElement('li');
+                li.textContent = `${entry.user}: ${entry.winnings}`;
+                leaderboardList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
