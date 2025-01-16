@@ -249,7 +249,7 @@ h1 {
 @media screen and (max-width: 600px) {
     button {
         width: 100%;
-        font-size: 18px;
+        font-size: 12px;
         padding: 12px;
     }
 
@@ -726,7 +726,7 @@ h1 {
     width: 80%;
     background-color: #28a745;
     margin: 12px 0;
-    font-size: 16px;
+    font-size: 12px;
     border: none;
     border-radius: 5px;
     color: white;
@@ -1571,7 +1571,7 @@ body {
     color: white;
     padding: 10px;
     border-radius: 5px;
-    font-size: 22px;
+    font-size: 12px;
     text-align: center;
     white-space: pre-line; /* Ensures line breaks from \A */
     z-index: 10;
