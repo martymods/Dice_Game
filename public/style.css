@@ -1776,4 +1776,21 @@ img[src="/images/Button_Bet100.gif"]:hover {
     display: inline-block;
     margin: 10px; /* Add spacing between dice */
 }
+#balance-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px; /* Adjust font size */
+    font-weight: bold;
+    color: #FFD700; /* Gold color */
+    text-shadow: 1px 1px 2px black; /* Subtle shadow */
+}
 
+#balance-display span {
+    margin: 0 2px;
+    transition: transform 0.2s ease; /* Optional hover animation */
+}
+
+#balance-display span:hover {
+    transform: scale(1.2);
+}
