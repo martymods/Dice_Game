@@ -288,6 +288,7 @@ async function setupSinglePlayer() {
                 // Winning roll
                 winnings = currentBet * 2 * multiplier + cashBonus;
                 balance += winnings;
+                animateBalanceDisplay(newBalance, currentBalance);
                 updateBalanceDisplay(balance); // Reflect changes
                 gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
                 playSound("/sounds/Winner_0.ogg");
@@ -305,6 +306,7 @@ async function setupSinglePlayer() {
             } else if (sum === 2 || sum === 3 || sum === 12) {
                 // Losing roll
                 balance -= currentBet; // Deduct the bet on loss
+                animateBalanceDisplay(newBalance, currentBalance);
                 updateBalanceDisplay(balance); // Reflect changes
                 gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
                 playSound("/sounds/Loser_0.ogg");
@@ -679,6 +681,7 @@ function animateDice(dice1, dice2, callback) {
                 maxTurns++;
                 progression++;
                 turns = 0;
+                animateBalanceDisplay(newBalance, currentBalance);
                 updateBalanceDisplay(balance); // Reflect changes
 
                 // Update player stats
