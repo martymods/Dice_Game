@@ -1756,3 +1756,24 @@ img[src="/images/Button_Bet100.gif"]:hover {
 .animated-button.glowing {
     animation: glowAnimation 1.5s infinite alternate;
 }
+
+/* Styling for fire dice */
+.dice-fire {
+    width: 180px; /* Increase the width for larger size */
+    height: 180px; /* Increase the height for larger size */
+    border-radius: 10px; /* Optional: Slightly rounded corners */
+    box-shadow: 0 0 25px rgba(255, 165, 0, 0.8), 0 0 40px rgba(255, 69, 0, 0.8); /* Enhanced fire glow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth animation */
+}
+
+.dice-fire:hover {
+    transform: scale(1.2); /* Slight zoom effect on hover */
+    box-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 50px rgba(255, 69, 0, 1); /* Stronger glow on hover */
+}
+
+/* For all dice to ensure consistency */
+.dice {
+    display: inline-block;
+    margin: 10px; /* Add spacing between dice */
+}
+
