@@ -593,26 +593,36 @@ if (skipIntroButton) {
 });
 
 
-    function animateDice(dice1, dice2, callback) {
-        const dice1Element = document.getElementById('dice1');
-        const dice2Element = document.getElementById('dice2');
+function animateDice(dice1, dice2, callback) {
+    const dice1Element = document.getElementById('dice1');
+    const dice2Element = document.getElementById('dice2');
 
-        let counter = 0;
-        const interval = setInterval(() => {
-            const dice1Src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}${onFire ? '.gif' : '.gif'}`;
-            const dice2Src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}${onFire ? '.gif' : '.gif'}`;
-            dice1Element.src = dice1Src;
-            dice2Element.src = dice2Src;
-            counter++;
-
-            if (counter >= 10) {
-                clearInterval(interval);
-                dice1Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice1}${onFire ? '.gif' : '.gif'}`;
-                dice2Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice2}${onFire ? '.gif' : '.gif'}`;
-                callback();
-            }
-        }, 100);
+    if (!dice1Element || !dice2Element) {
+        console.error("Dice elements not found in the DOM.");
+        return;
     }
+
+    // Set the rolling animation for both dice
+    const rollingAnimation = '/images/3dDiceRoll_1.gif';
+    dice1Element.src = rollingAnimation;
+    dice2Element.src = rollingAnimation;
+
+    // Play the rolling sound effect
+    playSound("/sounds/DiceRoll.ogg");
+
+    // Wait for the rolling animation to finish before showing the result
+    setTimeout(() => {
+        // Set the final dice result based on whether "onFire" is active
+        dice1Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice1}${onFire ? '.gif' : '.gif'}`;
+        dice2Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice2}${onFire ? '.gif' : '.gif'}`;
+
+        // Execute the callback function after the final dice are displayed
+        if (typeof callback === 'function') {
+            callback();
+        }
+    }, 2000); // Adjust this timeout to match the duration of your rolling animation GIF
+}
+
 
     function updateUIAfterRoll() {
         updateUI(balance, rent, turns, maxTurns, currentBet);
@@ -747,7 +757,7 @@ if (skipIntroButton) {
         winAmountDiv.style.top = '50%';
         winAmountDiv.style.left = '50%';
         winAmountDiv.style.transform = 'translate(-50%, -50%)';
-        winAmountDiv.style.fontSize = '48px';
+        winAmountDiv.style.fontSize = '52px';
         winAmountDiv.style.color = 'limegreen';
         winAmountDiv.style.textShadow = '0 0 10px limegreen, 0 0 20px lime, 0 0 30px green';
         winAmountDiv.style.fontWeight = 'bold';
