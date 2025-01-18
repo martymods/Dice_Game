@@ -342,7 +342,6 @@ export function handleRestock(balance, items) {
         const newItems = items.sort(() => Math.random() - 0.5).slice(0, 3);
         updateStoreUI(newItems, balance); // Update the store UI
         alert(`Restocked items for $${restockFee.toLocaleString()}!`);
-        updateBalanceDisplay(balance); // Reflect changes
     } else {
         alert('Not enough money to restock!');
     }
@@ -651,30 +650,6 @@ function setEarningsPerSecondFromBalance(currentBalance) {
     const earnings = (currentBalance - lastBalance) / timeInterval;
     lastBalance = currentBalance; // Update last balance for next calculation
     animateEarningsCounter(earnings, lastBalance); // Use animateEarningsCounter to update UI
-}
-
-function animateBalanceDisplay(targetBalance, currentBalance) {
-    const balanceDisplayElement = document.getElementById('balance-display');
-    if (!balanceDisplayElement) {
-        console.error("Balance display element not found in the DOM.");
-        return;
-    }
-
-    const step = (targetBalance - currentBalance) / 20; // Dividing into 20 steps for smooth animation
-    let animationFrame = 0;
-
-    const updateAnimation = () => {
-        if (animationFrame < 20) {
-            currentBalance += step;
-            updateBalanceImages(Math.round(currentBalance)); // Update balance with animation
-            animationFrame++;
-            requestAnimationFrame(updateAnimation);
-        } else {
-            updateBalanceImages(Math.round(targetBalance)); // Set final balance
-        }
-    };
-
-    updateAnimation();
 }
 
 
@@ -1316,47 +1291,4 @@ function calculateEarningsPerSecond(currentBalance) {
     return earnings;
 }
 
-// ui.js
-
-export function openHighRoller() {
-    const modal = document.createElement('div');
-    modal.id = 'high-roller-modal';
-    modal.style.position = 'fixed';
-    modal.style.top = '50%';
-    modal.style.left = '50%';
-    modal.style.transform = 'translate(-50%, -50%)';
-    modal.style.backgroundColor = '#fff';
-    modal.style.padding = '20px';
-    modal.style.borderRadius = '10px';
-    modal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-    modal.style.textAlign = 'center';
-    
-    modal.innerHTML = `
-        <h2>Select a Game Mode</h2>
-        <div style="display: flex; gap: 20px; justify-content: center;">
-            <img src="public/images/GameSelect0.png" alt="Mode 0" style="width: 150px; cursor: pointer;" onclick="selectMode(0)" />
-            <img src="public/images/GameSelect1.png" alt="Heads or Tails" style="width: 150px; cursor: pointer;" onclick="selectMode(1)" />
-        </div>
-        <button onclick="closeModal()" style="margin-top: 20px;">Close</button>
-    `;
-    document.body.appendChild(modal);
-}
-
-function closeModal() {
-    const modal = document.getElementById('high-roller-modal');
-    if (modal) modal.remove();
-}
-
-function selectMode(mode) {
-    if (mode === 1) {
-        window.location.href = 'public/modules/headsOrTails.html';
-    } else {
-        alert('This mode is under development.');
-    }
-    closeModal();
-}
-
-
-// Add this in ui.js
-window.openHighRoller = openHighRoller;
 
