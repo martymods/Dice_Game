@@ -35,9 +35,59 @@ const addPlaceholderEffect = (name) => {
     };
 };
 
+// Add effect functions for specific items
+window.itemEffects['Loaded Dice'] = () => {
+    console.log('Effect applied: Loaded Dice');
+    // Boosts rolls of 7 and 11 by doubling their payouts
+    const originalRollFunction = window.rollDice;
+    window.rollDice = () => {
+        const { dice1, dice2 } = originalRollFunction();
+        const sum = dice1 + dice2;
+        if (sum === 7 || sum === 11) {
+            const winnings = window.currentBet * 2;
+            window.updateBalance(window.balance + winnings);
+            console.log(`Loaded Dice activated: Won $${winnings}`);
+        }
+        return { dice1, dice2 };
+    };
+};
+
+window.itemEffects['Forged Papers'] = () => {
+    console.log('Effect applied: Forged Papers');
+    // Adds 3 random items to the Purchased Items section
+    for (let i = 0; i < 3; i++) {
+        const randomItem = itemsList[Math.floor(Math.random() * itemsList.length)];
+        window.addToPurchasedItems(randomItem);
+        console.log(`Forged Papers added item: ${randomItem.name}`);
+    }
+};
+
+window.itemEffects['Old Gang Leaders Blade'] = () => {
+    console.log('Effect applied: Old Gang Leaders Blade');
+    // Earn 10% of all bet amounts, win or lose
+    const originalPlaceBet = window.placeBet;
+    window.placeBet = (betAmount) => {
+        const earnings = betAmount * 0.1;
+        window.updateBalance(window.balance + earnings);
+        console.log(`Old Gang Leader's Blade added $${earnings} to balance.`);
+        originalPlaceBet(betAmount);
+    };
+};
+
+window.itemEffects['Neighborhood OGs Manual'] = () => {
+    console.log('Effect applied: Neighborhood OGs Manual');
+    // Boost payouts of all purchased items by 5%
+    const originalPayoutFunction = window.calculateItemPayout;
+    window.calculateItemPayout = (item) => {
+        const basePayout = originalPayoutFunction(item);
+        const boostedPayout = basePayout * 1.05;
+        console.log(`Neighborhood OG's Manual boosted payout for ${item.name}: $${boostedPayout}`);
+        return boostedPayout;
+    };
+};
+
 // Add effect functions for missing items
-const missingItems = [
-    'Loaded Dice', 'Forged Papers', 'Old Gang Leaders Blade', 'Neighborhood OGs Manual', 
+const missingItems = [ 
     'Barrel of Hustlers', 'Big Dreamers Bomb', 'Pigeon Coop', 'Black Cat Amulet',
     'Street Pepper', 'Street Adoption Papers', 'Brown Pay Bump', 'Unmarked Bills', 
     'Pocket Burner', 'Big Symbol Stash', 'Lucky Black Cat', 'Sticky Fingers',
@@ -107,5 +157,8 @@ window.itemEffects.junkyardJackpotEffect = () => {
 
 window.itemEffects.goldPlatedDiceEffect = (roll) => {
     console.log('Effect applied for Gold-Plated Dice');
+    return roll > 6 ? roll + 3 : roll; // Example effect: Adds 3 to rolls over 6
+};
+
     return roll > 6 ? roll + 3 : roll; // Example effect: Adds 3 to rolls over 6
 };
