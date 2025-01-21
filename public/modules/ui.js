@@ -54,7 +54,11 @@ function playHoverSound() {
  * Applies the effects of all purchased items.
  * Updates the multiplier and other game effects dynamically.
  */
-export function applyPurchasedItemEffects(purchasedItems) {
+export function applyPurchasedItemEffects(purchasedItems = []) {
+    if (!Array.isArray(purchasedItems)) {
+        console.error('purchasedItems is not an array or is undefined.');
+        purchasedItems = [];
+    }
     activeEffects = [];
     currentMultiplier = 1; // Reset multiplier
 
@@ -1290,5 +1294,3 @@ function calculateEarningsPerSecond(currentBalance) {
     lastBalance = currentBalance; // Update last balance for next calculation
     return earnings;
 }
-
-
