@@ -38,7 +38,6 @@ const addPlaceholderEffect = (name) => {
 // Add effect functions for specific items
 window.itemEffects['Loaded Dice'] = () => {
     console.log('Effect applied: Loaded Dice');
-    // Boosts rolls of 7 and 11 by doubling their payouts
     const originalRollFunction = window.rollDice;
     window.rollDice = () => {
         const { dice1, dice2 } = originalRollFunction();
@@ -54,7 +53,6 @@ window.itemEffects['Loaded Dice'] = () => {
 
 window.itemEffects['Forged Papers'] = () => {
     console.log('Effect applied: Forged Papers');
-    // Adds 3 random items to the Purchased Items section
     for (let i = 0; i < 3; i++) {
         const randomItem = itemsList[Math.floor(Math.random() * itemsList.length)];
         window.addToPurchasedItems(randomItem);
@@ -64,7 +62,6 @@ window.itemEffects['Forged Papers'] = () => {
 
 window.itemEffects['Old Gang Leaders Blade'] = () => {
     console.log('Effect applied: Old Gang Leaders Blade');
-    // Earn 10% of all bet amounts, win or lose
     const originalPlaceBet = window.placeBet;
     window.placeBet = (betAmount) => {
         const earnings = betAmount * 0.1;
@@ -76,7 +73,6 @@ window.itemEffects['Old Gang Leaders Blade'] = () => {
 
 window.itemEffects['Neighborhood OGs Manual'] = () => {
     console.log('Effect applied: Neighborhood OGs Manual');
-    // Boost payouts of all purchased items by 5%
     const originalPayoutFunction = window.calculateItemPayout;
     window.calculateItemPayout = (item) => {
         const basePayout = originalPayoutFunction(item);
@@ -86,7 +82,7 @@ window.itemEffects['Neighborhood OGs Manual'] = () => {
     };
 };
 
-// Add effect functions for missing items
+// Add placeholder effects for all missing items
 const missingItems = [ 
     'Barrel of Hustlers', 'Big Dreamers Bomb', 'Pigeon Coop', 'Black Cat Amulet',
     'Street Pepper', 'Street Adoption Papers', 'Brown Pay Bump', 'Unmarked Bills', 
@@ -131,7 +127,6 @@ const missingItems = [
     'The Enforcer', 'Shifty Gambler', 'Dice Whiz'
 ];
 
-// Add placeholder effects for all missing items
 missingItems.forEach(item => addPlaceholderEffect(item));
 
 // Check for missing functions in the future
@@ -143,22 +138,3 @@ itemsList.forEach(item => {
         console.warn(`Missing effect function for item: ${item.name}`);
     }
 });
-window.itemEffects = window.itemEffects || {};
-
-window.itemEffects.grifterEffect = (item) => {
-    console.log(`Grifter effect triggered for item: ${item.name}`);
-    return { multiplier: 1 }; // Placeholder effect
-};
-
-window.itemEffects.junkyardJackpotEffect = () => {
-    console.log('Effect applied for Junkyard Jackpot');
-    // Add actual effect logic here
-};
-
-window.itemEffects.goldPlatedDiceEffect = (roll) => {
-    console.log('Effect applied for Gold-Plated Dice');
-    return roll > 6 ? roll + 3 : roll; // Example effect: Adds 3 to rolls over 6
-};
-
-    return roll > 6 ? roll + 3 : roll; // Example effect: Adds 3 to rolls over 6
-};
