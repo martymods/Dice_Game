@@ -1173,17 +1173,27 @@ export async function placeBet(betAmountETH) {
 window.placeBet = placeBet;
 
 
-document.getElementById('crypto-section').addEventListener('click', (event) => {
-    if (event.target.tagName === 'BUTTON') {
-        const action = event.target.textContent.trim();
-        if (action === "Connect MetaMask") {
-            connectMetaMask();
-        } else if (action === "Place Bet") {
-            const betAmountETH = document.getElementById('betAmountETH').value;
-            placeBet(betAmountETH);
+const cryptoSection = document.getElementById('crypto-section');
+if (cryptoSection) {
+    cryptoSection.addEventListener('click', (event) => {
+        if (event.target.tagName === 'BUTTON') {
+            const action = event.target.textContent.trim();
+            if (action === "Connect MetaMask") {
+                connectMetaMask();
+            } else if (action === "Place Bet") {
+                const betAmountETH = document.getElementById('betAmountETH')?.value;
+                if (betAmountETH) {
+                    placeBet(betAmountETH);
+                } else {
+                    alert("Please enter a valid bet amount.");
+                }
+            }
         }
-    }
-});
+    });
+} else {
+    console.warn("crypto-section element not found in the DOM. Skipping event listener setup.");
+}
+
 
 function disconnectWallet() {
     localStorage.removeItem("connectedWallet");
