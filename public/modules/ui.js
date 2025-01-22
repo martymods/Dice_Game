@@ -790,32 +790,35 @@ document.addEventListener('DOMContentLoaded', () => {
  * Initializes and manages the combinations modal functionality.
  */
 export function initializeCombinationsModal() {
+    // Check if the modal elements exist before initializing
     const showCombinationsButton = document.getElementById('showCombinationsButton');
     const combinationsModal = document.getElementById('combinationsModal');
     const closeCombinationsButton = document.getElementById('closeCombinationsButton');
 
-    if (showCombinationsButton && combinationsModal && closeCombinationsButton) {
-        // Show the combinations modal when the button is clicked
-        showCombinationsButton.addEventListener('click', () => {
-            populateCombinationsModal(); // Populate modal with content
-            combinationsModal.style.display = 'flex'; // Show the modal
-        });
-
-        // Hide the combinations modal when the close button is clicked
-        closeCombinationsButton.addEventListener('click', () => {
-            combinationsModal.style.display = 'none'; // Hide the modal
-        });
-
-        // Close the modal when clicking outside the modal content
-        combinationsModal.addEventListener('click', (event) => {
-            if (event.target === combinationsModal) {
-                combinationsModal.style.display = 'none';
-            }
-        });
-    } else {
-        console.error('Combination modal elements are missing in the DOM.');
+    if (!showCombinationsButton || !combinationsModal || !closeCombinationsButton) {
+        console.warn('Combination modal elements are not present. Skipping initialization.');
+        return; // Exit the function early if elements are missing
     }
+
+    // Show the combinations modal when the button is clicked
+    showCombinationsButton.addEventListener('click', () => {
+        populateCombinationsModal(); // Populate modal with content
+        combinationsModal.style.display = 'flex'; // Show the modal
+    });
+
+    // Hide the combinations modal when the close button is clicked
+    closeCombinationsButton.addEventListener('click', () => {
+        combinationsModal.style.display = 'none'; // Hide the modal
+    });
+
+    // Close the modal when clicking outside the modal content
+    combinationsModal.addEventListener('click', (event) => {
+        if (event.target === combinationsModal) {
+            combinationsModal.style.display = 'none';
+        }
+    });
 }
+
 
 /**
  * Populates the combinations modal with rules and dice images.
