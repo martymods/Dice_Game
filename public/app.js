@@ -1,5 +1,10 @@
 // app.
 
+if (!window.ethereum) {
+    console.error("window.ethereum is not available. Make sure MetaMask is installed.");
+}
+
+
 import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
@@ -1071,12 +1076,19 @@ export function startSinglePlayer() {
 let provider;
 let signer;
 
+
 // MetaMask Connection
 export async function connectMetaMask() {
-    if (typeof window.ethereum !== "undefined") {
+    // Check if MetaMask is installed
+    if (typeof window.ethereum === "undefined") {
+        alert("MetaMask is not installed. Please install it to use this feature.");
+        return; // Stop further execution
+    }
+
+    try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const accounts = await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
+        const signer = provider.getSigner();
         const address = await signer.getAddress();
         console.log("Connected wallet:", address);
 
@@ -1084,10 +1096,14 @@ export async function connectMetaMask() {
         localStorage.setItem("connectedWallet", address);
 
         alert(`Connected wallet: ${address}`);
-    } else {
-        alert("MetaMask is not installed. Please install it to use this feature.");
+    } catch (error) {
+        console.error("Error connecting MetaMask:", error);
+        alert("Failed to connect MetaMask. Please try again.");
     }
 }
+
+
+
 // Make signer accessible globally
 window.signer = signer;
 
@@ -2076,3 +2092,4 @@ window.startHighRoller = startHighRoller;
 window.startSinglePlayer = startSinglePlayer;
 window.placeBet = placeBet;
 window.displayLeaderboardPrompt = displayLeaderboardPrompt;
+
