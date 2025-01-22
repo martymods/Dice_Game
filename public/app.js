@@ -1345,16 +1345,22 @@ const fortuneTextElement = document.getElementById("fortune-text");
 const fortuneDisplayElement = document.getElementById("fortune-display");
 
 // Purchase Fortune Cookie
-document.getElementById("buy-cookie-button").addEventListener("click", async () => {
-    // Use existing ETH system to charge player $1
-    const ethAmount = 0.00042; // Replace with correct ETH equivalent
-    try {
-        await placeBet(ethAmount); // Assuming placeBet() handles ETH transfers
-        openFortuneCookie();
-    } catch (error) {
-        console.error("Transaction failed", error);
-    }
-});
+const buyCookieButton = document.getElementById("buy-cookie-button");
+if (buyCookieButton) {
+    buyCookieButton.addEventListener("click", async () => {
+        // Use existing ETH system to charge player $1
+        const ethAmount = 0.00042; // Replace with correct ETH equivalent
+        try {
+            await placeBet(ethAmount); // Assuming placeBet() handles ETH transfers
+            openFortuneCookie();
+        } catch (error) {
+            console.error("Transaction failed", error);
+        }
+    });
+} else {
+    console.warn("buy-cookie-button element not found in the DOM. Skipping event listener setup.");
+}
+
 
 // Open Fortune Cookie and show random fortune
 function openFortuneCookie() {
