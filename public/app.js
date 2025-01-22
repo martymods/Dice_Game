@@ -1381,9 +1381,20 @@ function openFortuneCookie() {
 
 
 // Close fortune display
-document.getElementById("close-fortune").addEventListener("click", () => {
-    fortuneDisplayElement.style.display = "none";
-});
+const closeFortuneButton = document.getElementById("close-fortune");
+if (closeFortuneButton) {
+    closeFortuneButton.addEventListener("click", () => {
+        const fortuneDisplayElement = document.getElementById("fortune-display");
+        if (fortuneDisplayElement) {
+            fortuneDisplayElement.style.display = "none";
+        } else {
+            console.warn("Fortune display element not found.");
+        }
+    });
+} else {
+    console.warn("close-fortune element not found in the DOM. Skipping event listener setup.");
+}
+
 
 
 // Function to save fortunes in local storage
