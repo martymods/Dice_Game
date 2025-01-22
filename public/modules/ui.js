@@ -1285,7 +1285,7 @@ function animateEarningsCounter(target, currentValue) {
 
 
 // Exported function to set earnings per second
-function setEarningsPerSecond(value) {
+export function setEarningsPerSecond(value) {
     const earningsCounterElement = document.getElementById("earnings-per-second");
     if (!earningsCounterElement) {
         console.warn("Earnings counter element not found. Skipping setEarningsPerSecond.");
