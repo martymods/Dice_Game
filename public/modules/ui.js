@@ -650,11 +650,17 @@ export function updateBalanceDisplay(balance) {
 let lastBalance = 0; // Track the last balance
 
 function setEarningsPerSecondFromBalance(currentBalance) {
+    const earningsCounterElement = document.getElementById("earnings-per-second");
+    if (!earningsCounterElement) {
+        console.warn("Earnings counter element not found. Skipping setEarningsPerSecondFromBalance.");
+        return;
+    }
     const timeInterval = 1; // Interval in seconds for calculations
     const earnings = (currentBalance - lastBalance) / timeInterval;
     lastBalance = currentBalance; // Update last balance for next calculation
-    animateEarningsCounter(earnings, lastBalance); // Use animateEarningsCounter to update UI
+    animateEarningsCounter(earnings, parseFloat(earningsCounterElement.textContent) || 0);
 }
+
 
 
 
@@ -1252,34 +1258,40 @@ let earningsPerSecond = 0;
 let currentEarningsValue = 0; // Current earnings per second
 
 
-// Function to animate the earnings counter
+// Check if the earnings-per-second element exists before animating
 function animateEarningsCounter(target, currentValue) {
     const earningsCounterElement = document.getElementById("earnings-per-second");
-    if (earningsCounterElement) {
-        const step = (target - currentValue) / 20; // Animation duration divided into steps
-        let animationFrame = 0;
-
-        const updateAnimation = () => {
-            if (animationFrame < 20) {
-                currentValue += step;
-                earningsCounterElement.textContent = currentValue.toFixed(2);
-                animationFrame++;
-                requestAnimationFrame(updateAnimation);
-            } else {
-                earningsCounterElement.textContent = target.toFixed(2); // Final value
-            }
-        };
-
-        updateAnimation();
-    } else {
-        console.error("Earnings counter element not found in the DOM.");
+    if (!earningsCounterElement) {
+        // Skip execution if the element is not found
+        return;
     }
+
+    const step = (target - currentValue) / 20; // Animation duration divided into steps
+    let animationFrame = 0;
+
+    const updateAnimation = () => {
+        if (animationFrame < 20) {
+            currentValue += step;
+            earningsCounterElement.textContent = currentValue.toFixed(2);
+            animationFrame++;
+            requestAnimationFrame(updateAnimation);
+        } else {
+            earningsCounterElement.textContent = target.toFixed(2); // Final value
+        }
+    };
+
+    updateAnimation();
 }
 
+
 // Exported function to set earnings per second
-export function setEarningsPerSecond(amount) {
-    earningsPerSecond = amount;
-    animateEarningsCounter(earningsPerSecond, currentEarningsValue); // Use animateEarningsCounter
+function setEarningsPerSecond(value) {
+    const earningsCounterElement = document.getElementById("earnings-per-second");
+    if (!earningsCounterElement) {
+        console.warn("Earnings counter element not found. Skipping setEarningsPerSecond.");
+        return;
+    }
+    animateEarningsCounter(value, parseFloat(earningsCounterElement.textContent) || 0);
 }
 
 // Start a live update interval
