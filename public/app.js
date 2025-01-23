@@ -1100,10 +1100,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (typeof window.ethereum !== "undefined") {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
-            signer = provider.getSigner();
+            window.signer = provider.getSigner(); // Attach to global window object
 
             try {
-                const address = await signer.getAddress();
+                const address = await window.signer.getAddress();
                 console.log(`Wallet successfully restored: ${address}`);
             } catch (err) {
                 console.error("Error restoring wallet:", err);
@@ -1114,6 +1114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
+
 
 
 // Make connectMetaMask globally accessible
