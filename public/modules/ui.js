@@ -1338,17 +1338,17 @@ export function openHighRoller() {
     document.body.appendChild(modal);
 }
 
-function closeModal() {
+export function closeModal() {
     const modal = document.getElementById('high-roller-modal');
     if (modal) modal.remove();
 }
 
-function selectMode(mode) {
+export function selectMode(mode) {
     if (mode === 1) {
-        // Redirect to Heads or Tails
         window.location.href = 'headsOrTails.html';
     } else {
         alert('This mode is under development.');
     }
     closeModal();
 }
+
