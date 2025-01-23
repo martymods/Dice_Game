@@ -1202,6 +1202,27 @@ function disconnectWallet() {
     alert("Wallet disconnected.");
 }
 
+ //  Refactor Wallet Restoration
+export async function ensureWalletConnection() {
+    if (!window.signer) {
+        console.log("No signer detected, attempting to restore wallet connection...");
+        const savedWallet = localStorage.getItem("connectedWallet");
+        if (savedWallet && typeof window.ethereum !== "undefined") {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            window.signer = provider.getSigner();
+            try {
+                const address = await window.signer.getAddress();
+                console.log(`Wallet connection restored: ${address}`);
+            } catch (err) {
+                console.error("Failed to restore wallet connection:", err);
+                localStorage.removeItem("connectedWallet");
+                alert("Please reconnect your wallet.");
+            }
+        }
+    }
+}
+
+
 function handleGameOver() {
     const gameEndTime = Date.now();
     const timePlayed = Math.floor((gameEndTime - gameStartTime) / 1000);
@@ -2077,3 +2098,4 @@ window.startHighRoller = startHighRoller;
 window.startSinglePlayer = startSinglePlayer;
 window.placeBet = placeBet;
 window.displayLeaderboardPrompt = displayLeaderboardPrompt;
+
