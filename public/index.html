@@ -201,7 +201,13 @@ document.addEventListener('DOMContentLoaded', () => {
 <script type="module" src="/modules/ui.js"></script>
 <script type="module" src="/itemEffects.js"></script>
 
+<script type="module">
+    import { openHighRoller } from '/modules/ui.js';
+    window.openHighRoller = openHighRoller;
+</script>
+
 
 
 </body>
 </html>
+
