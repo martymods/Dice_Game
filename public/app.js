@@ -1203,14 +1203,14 @@ function disconnectWallet() {
 }
 
  //  Refactor Wallet Restoration
-export async function ensureWalletConnection() {
+ export async function ensureWalletConnection() {
     if (!window.signer) {
         console.log("No signer detected, attempting to restore wallet connection...");
         const savedWallet = localStorage.getItem("connectedWallet");
         if (savedWallet && typeof window.ethereum !== "undefined") {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            window.signer = provider.getSigner();
             try {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                window.signer = provider.getSigner();
                 const address = await window.signer.getAddress();
                 console.log(`Wallet connection restored: ${address}`);
             } catch (err) {
@@ -1218,9 +1218,13 @@ export async function ensureWalletConnection() {
                 localStorage.removeItem("connectedWallet");
                 alert("Please reconnect your wallet.");
             }
+        } else if (!window.ethereum) {
+            console.error("MetaMask is not installed.");
+            alert("MetaMask is required to connect your wallet.");
         }
     }
 }
+
 
 
 function handleGameOver() {
@@ -2098,4 +2102,3 @@ window.startHighRoller = startHighRoller;
 window.startSinglePlayer = startSinglePlayer;
 window.placeBet = placeBet;
 window.displayLeaderboardPrompt = displayLeaderboardPrompt;
-
