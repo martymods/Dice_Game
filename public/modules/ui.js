@@ -1,5 +1,6 @@
 import { playSound } from './audio.js';
 import { itemsList } from '/items.js'; // Ensure the correct relative path
+import { ensureWalletConnection } from '/app.js';
 
 console.log('Items List:', itemsList);
 
@@ -1072,12 +1073,17 @@ async function getEthForUsd(usd) {
 
 // Updated buyLotteryTicket function
 async function buyLotteryTicket() {
-    console.log("Attempting to buy a lottery ticket. Signer status:", signer);
+    console.log("Attempting to buy a lottery ticket...");
 
-    if (!signer) {
+    // Ensure wallet connection before proceeding
+    await ensureWalletConnection();
+
+    if (!window.signer) {
         alert("Please connect your MetaMask wallet first.");
         return;
     }
+
+    console.log("Signer is ready:", window.signer);
 
     const ticketNumber = document.getElementById('ticket-number').value;
     if (!ticketNumber || ticketNumber < 1 || ticketNumber > 50000) {
@@ -1087,10 +1093,10 @@ async function buyLotteryTicket() {
 
     // Calculate $2 worth of ETH dynamically
     const ethForTwoUsd = await getEthForUsd(2);
-    if (!ethForTwoUsd) return; // Exit if ETH price fetching fails
+    if (!ethForTwoUsd) return;
 
     try {
-        const tx = await signer.sendTransaction({
+        const tx = await window.signer.sendTransaction({
             to: "0x5638c9f84361a7430b29a63216f0af0914399eA2", // Replace with your wallet address
             value: ethers.utils.parseEther(ethForTwoUsd),
         });
@@ -1103,10 +1109,7 @@ async function buyLotteryTicket() {
         };
 
         alert('Ticket purchased successfully!');
-
-        // Add ticket to the user's ticket list
         addTicketToUser(ticket);
-        // Update recent tickets
         addTicketToRecent(ticket);
     } catch (error) {
         console.error('Error purchasing ticket:', error);
