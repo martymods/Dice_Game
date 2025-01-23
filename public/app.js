@@ -1544,26 +1544,35 @@ function startHighRoller() {
 }
 
 // CashApp BTC
-document.getElementById('pay-with-bitcoin').addEventListener('click', () => {
-    const bitcoinAddress = '3BuG5H7qyEVsnRk7cs6i2sgjYoRVGEHXtb'; // Replace with your actual address
-    const paymentAmount = 0.00005; // Example Bitcoin amount to charge
+document.addEventListener('DOMContentLoaded', () => {
+    const payWithBitcoinButton = document.getElementById('pay-with-bitcoin');
+    if (payWithBitcoinButton) {
+        payWithBitcoinButton.addEventListener('click', () => {
+            const bitcoinAddress = '3BuG5H7qyEVsnRk7cs6i2sgjYoRVGEHXtb'; // Replace with your actual address
+            const paymentAmount = 0.00005; // Example Bitcoin amount to charge
 
-    const qrCodeUrl = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=bitcoin:${bitcoinAddress}?amount=${paymentAmount}&choe=UTF-8`;
+            const qrCodeUrl = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=bitcoin:${bitcoinAddress}?amount=${paymentAmount}&choe=UTF-8`;
 
-    alert(`Send ${paymentAmount} BTC to the following address:\n${bitcoinAddress}`);
+            alert(`Send ${paymentAmount} BTC to the following address:\n${bitcoinAddress}`);
 
-    // Optionally, display a QR code for easier payment
-    const qrModal = document.createElement('div');
-    qrModal.id = 'qr-modal';
-    qrModal.innerHTML = `
-        <div style="text-align: center;">
-            <p>Scan this QR code to pay:</p>
-            <img src="${qrCodeUrl}" alt="QR Code" style="width: 200px; height: 200px;">
-            <button onclick="document.getElementById('qr-modal').remove()">Close</button>
-        </div>
-    `;
-    document.body.appendChild(qrModal);
+            const qrModal = document.createElement('div');
+            qrModal.id = 'qr-modal';
+            qrModal.innerHTML = `
+                <div style="text-align: center;">
+                    <p>Scan this QR code to pay:</p>
+                    <img src="${qrCodeUrl}" alt="QR Code" style="width: 200px; height: 200px;">
+                    <button onclick="document.getElementById('qr-modal').remove()">Close</button>
+                </div>
+            `;
+            document.body.appendChild(qrModal);
+        });
+    } else {
+        console.warn("pay-with-bitcoin button not found in the DOM.");
+    }
 });
+
+
+
     // Hide the Loading Screen
 document.addEventListener('DOMContentLoaded', () => {
     const loadingScreen = document.getElementById('loading-screen');
