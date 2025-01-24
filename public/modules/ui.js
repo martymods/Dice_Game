@@ -1356,12 +1356,14 @@ export function closeModal() {
 
 export function selectMode(mode) {
     if (mode === 1) {
-        window.location.href = 'headsOrTails.html';
+        // Updated path to the correct location of headsOrTails.html
+        window.location.href = '/public/modules/headsOrTails.html';
     } else {
         alert('This mode is under development.');
     }
     closeModal();
 }
+
 
 // Attach to the global scope
 window.selectMode = selectMode;
