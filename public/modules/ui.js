@@ -1329,14 +1329,25 @@ export function openHighRoller() {
 
     modal.innerHTML = `
         <h2>Select a Game Mode</h2>
-        <div style="display: flex; gap: 20px; justify-content: center;">
-            <img src="/images/GameSelect0.png" alt="Mode 0" style="width: 150px; cursor: pointer;" onclick="selectMode(0)" />
-            <img src="/images/GameSelect1.png" alt="Heads or Tails" style="width: 150px; cursor: pointer;" onclick="selectMode(1)" />
+        <div id="game-mode-selection" style="display: flex; gap: 20px; justify-content: center;">
+            <img src="/images/GameSelect0.png" alt="Mode 0" style="width: 150px; cursor: pointer;" data-mode="0" />
+            <img src="/images/GameSelect1.png" alt="Heads or Tails" style="width: 150px; cursor: pointer;" data-mode="1" />
         </div>
         <button onclick="closeModal()" style="margin-top: 20px;">Close</button>
     `;
+
     document.body.appendChild(modal);
+
+    // Attach event listeners dynamically
+    const gameModeImages = modal.querySelectorAll('#game-mode-selection img');
+    gameModeImages.forEach((img) => {
+        img.addEventListener('click', (event) => {
+            const mode = parseInt(event.target.getAttribute('data-mode'), 10);
+            selectMode(mode);
+        });
+    });
 }
+
 
 export function closeModal() {
     const modal = document.getElementById('high-roller-modal');
@@ -1351,6 +1362,10 @@ export function selectMode(mode) {
     }
     closeModal();
 }
+
+// Attach to the global scope
+window.selectMode = selectMode;
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const headsOrTailsImage = document.querySelector('img[alt="Heads or Tails"]');
