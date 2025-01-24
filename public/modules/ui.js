@@ -1357,7 +1357,7 @@ export function closeModal() {
 export function selectMode(mode) {
     if (mode === 1) {
         // Updated path to the correct location of headsOrTails.html
-        window.location.href = '/public/modules/headsOrTails.html';
+        window.location.href = '/modules/headsOrTails.html';
     } else {
         alert('This mode is under development.');
     }
