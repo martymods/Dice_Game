@@ -1352,3 +1352,11 @@ export function selectMode(mode) {
     closeModal();
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const headsOrTailsImage = document.querySelector('img[alt="Heads or Tails"]');
+    if (headsOrTailsImage) {
+        headsOrTailsImage.addEventListener('click', () => selectMode(1));
+    } else {
+        console.warn("Heads or Tails image not found in the DOM.");
+    }
+});
