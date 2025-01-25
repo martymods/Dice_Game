@@ -31,7 +31,6 @@
             </div>
             <button id="flip-coin-button">Flip Coin</button>
         </div>
-        
 
         <div id="result-section" style="display: none;">
             <h2 id="flip-result">Result: </h2>
@@ -51,7 +50,6 @@
 
     <script type="module">
         import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js';
-
 
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
@@ -92,21 +90,50 @@
                 return;
             }
 
-            const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
-            const isWinner = userSelection === flipResult;
+            const resultText = document.getElementById('flip-result');
+            const coinImage = document.getElementById('coin-animation');
 
-            document.getElementById('flip-result').textContent = `Result: ${flipResult.toUpperCase()}`;
-            document.getElementById('winner-message').textContent = isWinner ? 'You won!' : 'You lost!';
-            document.getElementById('result-section').style.display = 'block';
+            // Reset result text and play flipping animation
+            resultText.textContent = '';
+            coinImage.src = '/images/CoinToss_Quarter.gif';
 
-            resultHistory.unshift({ flipResult, isWinner });
-            if (resultHistory.length > 3) resultHistory.pop();
-            updateHistoryUI();
+            setTimeout(() => {
+                // Determine the result
+                const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
+                const isWinner = userSelection === flipResult;
 
-            if (isWinner) {
-                leaderboard.push({ user: 'You', winnings: '2x your bet' });
-                updateLeaderboardUI();
-            }
+                // Show the result animation
+                if (flipResult === 'heads') {
+                    coinImage.src = '/images/CoinToss_Quarter_Heads.gif';
+                    setTimeout(() => {
+                        coinImage.src = '/images/CoinToss_Quarter_Heads_loop.gif';
+                    }, 2000);
+                } else {
+                    coinImage.src = '/images/CoinToss_Quarter_Tails.gif';
+                    setTimeout(() => {
+                        coinImage.src = '/images/CoinToss_Quarter_Tails_loop.gif';
+                    }, 2000);
+                }
+
+                // Play sound
+                const sound = new Audio(isWinner ? '/sounds/CoinToss_Win.mp3' : '/sounds/CoinToss_Lose.mp3');
+                sound.play();
+
+                // Display result text
+                resultText.textContent = `Result: ${flipResult.toUpperCase()}`;
+                document.getElementById('winner-message').textContent = isWinner ? 'You won!' : 'You lost!';
+                document.getElementById('result-section').style.display = 'block';
+
+                // Update history and leaderboard
+                resultHistory.unshift({ flipResult, isWinner });
+                if (resultHistory.length > 3) resultHistory.pop();
+                updateHistoryUI();
+
+                if (isWinner) {
+                    leaderboard.push({ user: 'You', winnings: '2x your bet' });
+                    updateLeaderboardUI();
+                }
+            }, 2000);
         });
 
         function updateHistoryUI() {
@@ -128,13 +155,6 @@
                 leaderboardList.appendChild(li);
             });
         }
-        
-
-
-
     </script>
-
-
-
 </body>
 </html>
