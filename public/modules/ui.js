@@ -1356,13 +1356,81 @@ export function closeModal() {
 
 export function selectMode(mode) {
     if (mode === 1) {
-        // Updated path to the correct location of headsOrTails.html
-        window.location.href = '/modules/headsOrTails.html';
+        // Play the cutscene before starting Heads or Tails
+        playCoinTossCutscene();
     } else {
-        alert('This mode is under development.');
+        alert("This mode is under development.");
     }
     closeModal();
 }
+
+
+export function playCoinTossCutscene() {
+    // Check if the cutscene has already been played
+    if (localStorage.getItem("cutscenePlayed")) {
+        startHeadsOrTailsGame(); // Skip cutscene and start the game
+        return;
+    }
+
+    // Set cutscene as played in localStorage
+    localStorage.setItem("cutscenePlayed", "true");
+
+    // Fullscreen overlay for cutscene
+    const cutsceneContainer = document.createElement("div");
+    cutsceneContainer.id = "cutscene-container";
+    cutsceneContainer.style.position = "fixed";
+    cutsceneContainer.style.top = "0";
+    cutsceneContainer.style.left = "0";
+    cutsceneContainer.style.width = "100%";
+    cutsceneContainer.style.height = "100%";
+    cutsceneContainer.style.backgroundColor = "black";
+    cutsceneContainer.style.zIndex = "9999";
+    cutsceneContainer.style.display = "flex";
+    cutsceneContainer.style.justifyContent = "center";
+    cutsceneContainer.style.alignItems = "center";
+
+    document.body.appendChild(cutsceneContainer);
+
+    // Load and play audio
+    const audio = new Audio("sounds/CoinToss.mp3");
+    audio.play();
+
+    // Array of cutscene GIFs
+    const cutscenes = [
+        "images/CoinToss_Scenes1.gif",
+        "images/CoinToss_Scenes2.gif",
+        "images/CoinToss_Scenes3.gif",
+        "images/CoinToss_Scenes4.gif"
+    ];
+
+    let currentScene = 0;
+
+    const playNextScene = () => {
+        if (currentScene >= cutscenes.length) {
+            // End of cutscene
+            cutsceneContainer.remove();
+            audio.pause();
+            startHeadsOrTailsGame(); // Start the game
+            return;
+        }
+
+        // Update cutscene GIF
+        cutsceneContainer.innerHTML = `<img src="${cutscenes[currentScene]}" style="width: 100%; height: 100%; object-fit: cover;" alt="Cutscene">`;
+        currentScene++;
+
+        // Set timer for the next scene (15 seconds per GIF)
+        setTimeout(playNextScene, 15000);
+    };
+
+    // Start the first scene
+    playNextScene();
+}
+
+function startHeadsOrTailsGame() {
+    // Redirect to Heads or Tails gameplay
+    window.location.href = "headsOrTails.html";
+}
+
 
 
 // Attach to the global scope
