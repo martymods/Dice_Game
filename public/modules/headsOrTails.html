@@ -26,8 +26,12 @@
         </div>
 
         <div id="flip-section" style="display: none;">
+            <div id="coin-display" style="margin: auto; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center;">
+                <img src="/images/CoinToss_Quarter.gif" id="coin-animation" alt="Coin Toss" style="max-width: 100%; max-height: 100%;">
+            </div>
             <button id="flip-coin-button">Flip Coin</button>
         </div>
+        
 
         <div id="result-section" style="display: none;">
             <h2 id="flip-result">Result: </h2>
@@ -125,5 +129,72 @@
             });
         }
     </script>
+
+<!-- JavaScript to handle the coin flip logic -->
+document.addEventListener('DOMContentLoaded', () => {
+    const coinDisplay = document.getElementById('coin-display');
+    const coinImage = document.getElementById('coin-animation');
+    const resultText = document.getElementById('flip-result');
+    const flipCoinButton = document.getElementById('flip-coin-button');
+    const headsButton = document.getElementById('heads-button');
+    const tailsButton = document.getElementById('tails-button');
+    const betAmountInput = document.getElementById('bet-amount');
+
+    let selectedChoice = null;
+
+    headsButton.addEventListener('click', () => {
+        selectedChoice = 'heads';
+        headsButton.style.backgroundColor = 'blue';
+        tailsButton.style.backgroundColor = '';
+    });
+
+    tailsButton.addEventListener('click', () => {
+        selectedChoice = 'tails';
+        tailsButton.style.backgroundColor = 'blue';
+        headsButton.style.backgroundColor = '';
+    });
+
+    flipCoinButton.addEventListener('click', () => {
+        if (!selectedChoice || !betAmountInput.value) {
+            alert('Please select Heads or Tails and enter a bet amount.');
+            return;
+        }
+
+        // Reset result text and play flipping animation
+        resultText.textContent = '';
+        coinImage.src = '/images/CoinToss_Quarter.gif';
+
+        setTimeout(() => {
+            // Determine the result
+            const result = Math.random() < 0.5 ? 'heads' : 'tails';
+
+            // Show the result animation
+            if (result === 'heads') {
+                coinImage.src = '/images/CoinToss_Quarter_Heads.gif';
+                setTimeout(() => {
+                    coinImage.src = '/images/CoinToss_Quarter_Heads_loop.gif';
+                }, 2000);
+            } else {
+                coinImage.src = '/images/CoinToss_Quarter_Tails.gif';
+                setTimeout(() => {
+                    coinImage.src = '/images/CoinToss_Quarter_Tails_loop.gif';
+                }, 2000);
+            }
+
+            // Play sound
+            const sound = new Audio(result === selectedChoice ? '/sounds/CoinToss_Win.mp3' : '/sounds/CoinToss_Lose.mp3');
+            sound.play();
+
+            // Display result text
+            if (result === selectedChoice) {
+                resultText.textContent = `You won! The coin landed on ${result.toUpperCase()}.`;
+            } else {
+                resultText.textContent = `You lost! The coin landed on ${result.toUpperCase()}.`;
+            }
+        }, 2000); // Play result after flipping animation
+    });
+});
+
+
 </body>
 </html>
