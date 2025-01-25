@@ -1794,3 +1794,19 @@ img[src="/images/Button_Bet100.gif"]:hover {
 #balance-display span:hover {
     transform: scale(1.2);
 }
+
+#cutscene-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
