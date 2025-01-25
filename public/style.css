@@ -1810,3 +1810,27 @@ img[src="/images/Button_Bet100.gif"]:hover {
         opacity: 1;
     }
 }
+
+#coin-display img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+#flip-section {
+    margin-top: 20px;
+}
+
+#flip-coin-button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#flip-coin-button:hover {
+    background-color: #45a049;
+}
