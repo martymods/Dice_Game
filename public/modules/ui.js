@@ -1392,7 +1392,7 @@ export function playCoinTossCutscene() {
     document.body.appendChild(cutsceneContainer);
 
     // Load and play audio
-    const audio = new Audio("sounds/CoinToss.mp3");
+    const audio = new Audio("sounds/CoinToss_Scenes.mp3");
     audio.play();
 
     // Array of cutscene GIFs
