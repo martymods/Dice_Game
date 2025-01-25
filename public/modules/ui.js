@@ -1428,7 +1428,7 @@ export function playCoinTossCutscene() {
 
 function startHeadsOrTailsGame() {
     // Redirect to Heads or Tails gameplay
-    window.location.href = "headsOrTails.html";
+    window.location.href = "modules/headsOrTails.html";
 }
 
 
