@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heads or Tails</title>
+    <link rel="icon" type="image/png" href="/images/favicon_headsortails.png"> <!-- Favicon -->
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/modules/headsOrTails.css"> <!-- Include the scoped stylesheet -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
@@ -149,7 +150,7 @@
         });
 
         function playAmbience() {
-            const delay = Math.random() * 180000; // Random delay between 0 and 180 seconds
+            const delay = Math.random() * 100000; // Random delay between 0 and 180 seconds
             ambienceTimeout = setTimeout(() => {
                 const ambience = new Audio('/sounds/Ambience1.mp3');
                 ambience.play();
@@ -158,7 +159,7 @@
         }
 
         function playMusic() {
-            const delay = Math.random() * 180000; // Random delay between 0 and 180 seconds
+            const delay = Math.random() * 60000; // Random delay between 0 and 180 seconds
             musicTimeout = setTimeout(() => {
                 const music = new Audio('/sounds/Music1.mp3');
                 music.play();
