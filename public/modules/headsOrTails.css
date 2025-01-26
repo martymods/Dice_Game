@@ -20,21 +20,18 @@
     gap: 20px;
     height: 100vh;
     box-sizing: border-box;
-    box-shadow: none; /* Ensure no shadow is applied */
-    border: none; /* Explicitly remove any border */
 }
 
-
 /* Section Styling */
-#heads-or-tails #selection, 
-#heads-or-tails #betting-section, 
-#heads-or-tails #flip-section, 
-#heads-or-tails #result-section, 
-#heads-or-tails #history-section, 
+#heads-or-tails #selection,
+#heads-or-tails #betting-section,
+#heads-or-tails #flip-section,
+#heads-or-tails #result-section,
+#heads-or-tails #history-section,
 #heads-or-tails #leaderboard-section {
     width: 80%;
     max-width: 500px;
-    margin: 3px auto;
+    margin: 10px auto;
     padding: 10px;
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 5px;
@@ -47,17 +44,20 @@
     font-size: 2.5rem;
     margin-bottom: 10px;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    text-align: center;
 }
 
-#heads-or-tails h2, #heads-or-tails h3 {
+#heads-or-tails h2,
+#heads-or-tails h3 {
     margin: 10px 0;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.65);
+    text-align: center;
 }
 
 /* Button Styling */
 #heads-or-tails button {
     padding: 10px 20px;
-    margin: 5px;
+    margin: 10px;
     font-size: 1.2rem;
     border: none;
     border-radius: 5px;
@@ -66,6 +66,8 @@
     background: linear-gradient(to bottom, #34ba3a, #357a38);
     transition: all 0.3s ease;
     text-shadow: 1px 1px 2px black;
+    width: 100%; /* Default for mobile */
+    max-width: 300px; /* Limit button size on larger screens */
 }
 
 #heads-or-tails button:hover {
@@ -96,31 +98,10 @@
     box-shadow: none; /* No shadow */
 }
 
-/* Coin Image Styling */
 #heads-or-tails #coin-animation {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-}
-
-/* Flip Section */
-#heads-or-tails #flip-section {
-    margin-top: 20px;
-}
-
-/* Flip Coin Button */
-#heads-or-tails #flip-coin-button {
-    padding: 20px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-#heads-or-tails #flip-coin-button:hover {
-    background-color: #45a049;
 }
 
 /* Result Section Styling */
@@ -130,12 +111,11 @@
     animation: fadeIn 1s ease-in-out;
 }
 
-/* History Section Styling */
+/* History Section */
 #heads-or-tails #history-section ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
-    text-align: left;
 }
 
 #heads-or-tails #history-section ul li {
@@ -145,14 +125,7 @@
     border-radius: 5px;
 }
 
-/* Leaderboard Section Styling */
-#heads-or-tails #leaderboard-section ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    text-align: left;
-}
-
+/* Leaderboard Section */
 #heads-or-tails #leaderboard-section ul li {
     margin: 5px 0;
     padding: 5px;
@@ -162,28 +135,8 @@
     font-weight: bold;
 }
 
-
-/* Transition Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-/* Media Query for Responsive Design */
+/* Responsive Design for Mobile */
 @media (max-width: 768px) {
-    #heads-or-tails #game-container {
-        padding: 10px;
-    }
-
-    #heads-or-tails #coin-display {
-        width: 200px;
-        height: 200px;
-    }
-
     #heads-or-tails h1 {
         font-size: 2rem;
     }
@@ -191,5 +144,21 @@
     #heads-or-tails button {
         font-size: 1rem;
         padding: 8px 15px;
+    }
+
+    #heads-or-tails #coin-display {
+        width: 200px;
+        height: 200px;
+    }
+
+    #heads-or-tails #selection,
+    #heads-or-tails #betting-section,
+    #heads-or-tails #flip-section,
+    #heads-or-tails #result-section,
+    #heads-or-tails #history-section,
+    #heads-or-tails #leaderboard-section {
+        width: 90%;
+        margin: 5px auto;
+        padding: 5px;
     }
 }
