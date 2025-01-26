@@ -146,7 +146,20 @@ const toggleToHistory = document.getElementById('toggle-to-history');
         const toggleHistory = document.getElementById('toggle-history');
         const toggleLeaderboard = document.getElementById('toggle-leaderboard');
 
+        // Toggle History and Leaderboard
+        toggleHistory.addEventListener('click', () => {
+            toggleHistory.classList.add('active');
+            toggleLeaderboard.classList.remove('active');
+            historySection.style.display = 'block';
+            leaderboardSection.style.display = 'none';
+        });
 
+        toggleLeaderboard.addEventListener('click', () => {
+            toggleLeaderboard.classList.add('active');
+            toggleHistory.classList.remove('active');
+            historySection.style.display = 'none';
+            leaderboardSection.style.display = 'block';
+        });
 
         // Toggle to History
 toggleToHistory.addEventListener('click', () => {
