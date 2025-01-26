@@ -14,13 +14,12 @@
             background-size: cover;
         }
         #game-container {
-    text-align: center;
-    padding: 20px;
-    color: white;
-    background: transparent; /* Ensure no background color is applied */
-    box-shadow: none; /* Remove any shadow effect */
-}
-
+            text-align: center;
+            padding: 20px;
+            color: white;
+            background: transparent; /* Ensure no background color is applied */
+            box-shadow: none; /* Remove any shadow effect */
+        }
     </style>
 </head>
 <body>
@@ -70,14 +69,23 @@
 
         const resultHistory = [];
         const leaderboard = [];
+        let userSelection = '';
+
+        const coinImage = document.getElementById('coin-animation');
 
         document.getElementById('heads-button').addEventListener('click', () => setSelection('heads'));
         document.getElementById('tails-button').addEventListener('click', () => setSelection('tails'));
 
-        let userSelection = '';
-
         function setSelection(selection) {
             userSelection = selection;
+
+            // Update the coin display based on the selection
+            if (selection === 'heads') {
+                coinImage.src = '/images/Coin_Quarter_Float_Heads.gif';
+            } else if (selection === 'tails') {
+                coinImage.src = '/images/Coin_Quarter_Float_Tails.gif';
+            }
+
             document.getElementById('flip-section').style.display = 'block';
             alert(`You selected ${selection.toUpperCase()}`);
         }
@@ -105,7 +113,6 @@
             }
 
             const resultText = document.getElementById('flip-result');
-            const coinImage = document.getElementById('coin-animation');
 
             // Reset result text and play flipping animation
             resultText.textContent = '';
@@ -151,7 +158,7 @@
                     leaderboard.push({ user: 'You', winnings: '2x your bet' });
                     updateLeaderboardUI();
                 }
-            }, 5800); // Wait 5 seconds for CoinToss_Quarter.gif to finish
+            }, 5800); // Wait for CoinToss_Quarter.gif to finish
         });
 
         function updateHistoryUI() {
@@ -176,3 +183,4 @@
     </script>
 </body>
 </html>
+
