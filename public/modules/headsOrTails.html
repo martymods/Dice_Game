@@ -65,6 +65,8 @@
         const headsButton = document.getElementById('heads-button');
         const tailsButton = document.getElementById('tails-button');
         const flipCoinButton = document.getElementById('flip-coin-button');
+        const resultCoinImage = document.getElementById('result-coin');
+        const resultText = document.getElementById('flip-result');
 
         headsButton.addEventListener('click', () => setSelection('heads'));
         tailsButton.addEventListener('click', () => setSelection('tails'));
@@ -99,6 +101,7 @@
 
             // Reset result text and play flipping animation
             resultText.textContent = '';
+            resultCoinImage.src = ''; // Clear previous result image
             coinImage.src = '/images/CoinToss_Quarter.gif';
 
             // Play sound for coin flip
@@ -109,6 +112,13 @@
                 // Determine the result
                 const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
                 const isWinner = userSelection === flipResult;
+
+                // Update result text and image
+                resultText.textContent = `Result: ${flipResult.toUpperCase()}`;
+                resultCoinImage.src = flipResult === 'heads'
+                    ? '/images/Coin_Quarter_Float_Heads.gif'
+                    : '/images/Coin_Quarter_Float_Tails.gif';
+
 
                 // Show the result animation
                 if (flipResult === 'heads') {
