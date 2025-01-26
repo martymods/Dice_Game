@@ -1822,7 +1822,7 @@ img[src="/images/Button_Bet100.gif"]:hover {
 }
 
 #flip-coin-button {
-    padding: 10px 20px;
+    padding: 20px 20px;
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -1865,12 +1865,12 @@ body {
 #selection, #betting-section, #flip-section, #result-section, #history-section, #leaderboard-section {
     width: 80%;
     max-width: 500px;
-    margin: 10px auto;
+    margin: 3px auto;
     padding: 10px;
     border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.7);
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    background-color: rgb(0 0 0 / 0%);
+    box-shadow: 0px 4px 10px rgb(240 235 235 / 28%);
 }
 
 /* Header Styling */
@@ -1882,7 +1882,7 @@ h1 {
 
 h2, h3 {
     margin: 10px 0;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    text-shadow: 1px 1px 3px rgb(0 0 0 / 65%);
 }
 
 /* Button Styling */
@@ -1894,7 +1894,7 @@ button {
     border-radius: 5px;
     cursor: pointer;
     color: white;
-    background: linear-gradient(to bottom, #4caf50, #357a38);
+    background: linear-gradient(to bottom, #34ba3a, #357a38);
     transition: all 0.3s ease;
     text-shadow: 1px 1px 2px black;
 }
@@ -1916,16 +1916,16 @@ button:active {
     justify-content: center;
     align-items: center;
     margin: 20px auto;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
+    background: none; /* Remove the grey background */
+    border-radius: 0; /* Remove the circular shape */
+    box-shadow: none; /* Remove any shadow */
 }
 
 /* Coin Image Styling */
 #coin-animation {
     max-width: 100%;
     max-height: 100%;
-    animation: spin 5s infinite linear;
+
 }
 
 /* Coin Spin Animation */
@@ -2007,3 +2007,4 @@ button:active {
         padding: 8px 15px;
     }
 }
+
