@@ -1834,3 +1834,176 @@ img[src="/images/Button_Bet100.gif"]:hover {
 #flip-coin-button:hover {
     background-color: #45a049;
 }
+/* General Styling */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+/* Background Styling */
+body {
+    background: url('/images/Background_Loop.gif') no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* Game Container Styling */
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    gap: 20px;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Section Styling */
+#selection, #betting-section, #flip-section, #result-section, #history-section, #leaderboard-section {
+    width: 80%;
+    max-width: 500px;
+    margin: 10px auto;
+    padding: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Header Styling */
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+h2, h3 {
+    margin: 10px 0;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Button Styling */
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    background: linear-gradient(to bottom, #4caf50, #357a38);
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px black;
+}
+
+button:hover {
+    background: linear-gradient(to bottom, #357a38, #4caf50);
+    transform: scale(1.1);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* Coin Display Styling */
+#coin-display {
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.8);
+}
+
+/* Coin Image Styling */
+#coin-animation {
+    max-width: 100%;
+    max-height: 100%;
+    animation: spin 5s infinite linear;
+}
+
+/* Coin Spin Animation */
+@keyframes spin {
+    0% {
+        transform: rotateY(0deg);
+    }
+    100% {
+        transform: rotateY(360deg);
+    }
+}
+
+/* Result Section Styling */
+#result-section {
+    font-size: 1.5rem;
+    font-weight: bold;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* History Section Styling */
+#history-section ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+#history-section ul li {
+    margin: 5px 0;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+/* Leaderboard Section Styling */
+#leaderboard-section ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+#leaderboard-section ul li {
+    margin: 5px 0;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    color: #ffdf00;
+    font-weight: bold;
+}
+
+/* Transition Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Media Query for Responsive Design */
+@media (max-width: 768px) {
+    #game-container {
+        padding: 10px;
+    }
+
+    #coin-display {
+        width: 200px;
+        height: 200px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    button {
+        font-size: 1rem;
+        padding: 8px 15px;
+    }
+}
