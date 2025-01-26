@@ -14,10 +14,13 @@
             background-size: cover;
         }
         #game-container {
-            text-align: center;
-            padding: 20px;
-            color: white;
-        }
+    text-align: center;
+    padding: 20px;
+    color: white;
+    background: transparent; /* Ensure no background color is applied */
+    box-shadow: none; /* Remove any shadow effect */
+}
+
     </style>
 </head>
 <body>
@@ -148,7 +151,7 @@
                     leaderboard.push({ user: 'You', winnings: '2x your bet' });
                     updateLeaderboardUI();
                 }
-            }, 5998); // Wait 5 seconds for CoinToss_Quarter.gif to finish
+            }, 5000); // Wait 5 seconds for CoinToss_Quarter.gif to finish
         });
 
         function updateHistoryUI() {
