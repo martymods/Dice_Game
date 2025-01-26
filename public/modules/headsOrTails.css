@@ -3,13 +3,14 @@
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    color: white;
+    color: #ffffff;
     background: url('/images/Background_Loop.gif') no-repeat center center fixed;
     background-size: cover;
 }
 
 /* Game Container Styling */
 #heads-or-tails #game-container {
+    background-color: rgb(0 0 0 / 0%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -19,7 +20,10 @@
     gap: 20px;
     height: 100vh;
     box-sizing: border-box;
+    box-shadow: none; /* Ensure no shadow is applied */
+    border: none; /* Explicitly remove any border */
 }
+
 
 /* Section Styling */
 #heads-or-tails #selection, 
