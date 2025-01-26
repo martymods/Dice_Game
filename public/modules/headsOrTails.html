@@ -36,6 +36,7 @@
 
         <div id="result-section" style="display: none;">
             <h2 id="flip-result">Result: </h2>
+            <img id="result-coin" src="" alt="Coin Result" style="max-width: 80px; margin-top: 10px;"> <!-- Coin Result Image -->
             <p id="winner-message"></p>
         </div>
 
@@ -97,8 +98,6 @@
             // Disable the Flip Coin button to prevent multiple presses
             flipCoinButton.disabled = true;
 
-            const resultText = document.getElementById('flip-result');
-
             // Reset result text and play flipping animation
             resultText.textContent = '';
             resultCoinImage.src = ''; // Clear previous result image
@@ -119,7 +118,6 @@
                     ? '/images/Coin_Quarter_Float_Heads.gif'
                     : '/images/Coin_Quarter_Float_Tails.gif';
 
-
                 // Show the result animation
                 if (flipResult === 'heads') {
                     coinImage.src = '/images/CoinToss_Quarter_Heads.gif';
@@ -137,8 +135,7 @@
                 const resultSound = new Audio(isWinner ? '/sounds/CoinToss_Win.mp3' : '/sounds/CoinToss_Lose.mp3');
                 resultSound.play();
 
-                // Display result text
-                resultText.textContent = `Result: ${flipResult.toUpperCase()}`;
+                // Display winner message
                 document.getElementById('winner-message').textContent = isWinner ? 'You won!' : 'You lost!';
                 document.getElementById('result-section').style.display = 'block';
 
@@ -160,22 +157,22 @@
         });
 
         function playAmbience() {
-        const delay = Math.random() * 100000; // Random delay between 0 and 180 seconds
-        ambienceTimeout = setTimeout(() => {
-            const ambience = new Audio('/sounds/Ambience1.mp3');
-            ambience.play();
-            ambience.onended = playAmbience; // Automatically play again after it finishes
-        }, delay);
-    }
+            const delay = Math.random() * 100000; // Random delay between 0 and 180 seconds
+            ambienceTimeout = setTimeout(() => {
+                const ambience = new Audio('/sounds/Ambience1.mp3');
+                ambience.play();
+                ambience.onended = playAmbience; // Automatically play again after it finishes
+            }, delay);
+        }
 
-    function playMusic() {
-        const delay = Math.random() * 60000; // Random delay between 0 and 180 seconds
-        musicTimeout = setTimeout(() => {
-            const music = new Audio('/sounds/Music1.mp3');
-            music.play();
-            music.onended = playMusic; // Automatically play again after it finishes
-        }, delay);
-    }
+        function playMusic() {
+            const delay = Math.random() * 60000; // Random delay between 0 and 180 seconds
+            musicTimeout = setTimeout(() => {
+                const music = new Audio('/sounds/Music1.mp3');
+                music.play();
+                music.onended = playMusic; // Automatically play again after it finishes
+            }, delay);
+        }
 
         function updateHistoryUI() {
             const historyList = document.getElementById('result-history');
@@ -203,3 +200,4 @@
     </script>
 </body>
 </html>
+
