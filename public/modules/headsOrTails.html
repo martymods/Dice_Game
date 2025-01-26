@@ -17,8 +17,13 @@
             text-align: center;
             padding: 20px;
             color: white;
-            background: transparent; /* Ensure no background color is applied */
-            box-shadow: none; /* Remove any shadow effect */
+            background: transparent;
+            box-shadow: none;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -70,47 +75,41 @@
         const resultHistory = [];
         const leaderboard = [];
         let userSelection = '';
+        let ambienceTimeout, musicTimeout;
 
         const coinImage = document.getElementById('coin-animation');
+        const headsButton = document.getElementById('heads-button');
+        const tailsButton = document.getElementById('tails-button');
+        const flipCoinButton = document.getElementById('flip-coin-button');
 
-        document.getElementById('heads-button').addEventListener('click', () => setSelection('heads'));
-        document.getElementById('tails-button').addEventListener('click', () => setSelection('tails'));
+        headsButton.addEventListener('click', () => setSelection('heads'));
+        tailsButton.addEventListener('click', () => setSelection('tails'));
 
-function setSelection(selection) {
-    userSelection = selection;
+        function setSelection(selection) {
+            userSelection = selection;
 
-    // Update the coin display image based on the selection
-    if (selection === 'heads') {
-        coinImage.src = '/images/Coin_Quarter_Float_Heads.gif';
-    } else if (selection === 'tails') {
-        coinImage.src = '/images/Coin_Quarter_Float_Tails.gif';
-    }
+            // Disable selection buttons until the flip is resolved
+            headsButton.disabled = true;
+            tailsButton.disabled = true;
 
-    document.getElementById('flip-section').style.display = 'block';
-}
-
-
-        document.getElementById('place-bet-button').addEventListener('click', async () => {
-            const betAmount = document.getElementById('bet-amount').value;
-
-            if (!betAmount || betAmount <= 0) {
-                alert('Please enter a valid bet amount.');
-                return;
+            // Update the coin display based on the selection
+            if (selection === 'heads') {
+                coinImage.src = '/images/Coin_Quarter_Float_Heads.gif';
+            } else if (selection === 'tails') {
+                coinImage.src = '/images/Coin_Quarter_Float_Tails.gif';
             }
 
-            await provider.send('eth_requestAccounts', []);
-            const tx = await signer.sendTransaction({
-                to: '0x5638c9f84361a7430b29a63216f0af0914399eA2',
-                value: ethers.utils.parseEther(betAmount),
-            });
-            alert('Bet placed! Transaction sent.');
-        });
+            document.getElementById('flip-section').style.display = 'block';
+        }
 
-        document.getElementById('flip-coin-button').addEventListener('click', () => {
+        flipCoinButton.addEventListener('click', () => {
             if (!userSelection) {
                 alert('Please select Heads or Tails.');
                 return;
             }
+
+            // Disable the Flip Coin button to prevent multiple presses
+            flipCoinButton.disabled = true;
 
             const resultText = document.getElementById('flip-result');
 
@@ -149,6 +148,11 @@ function setSelection(selection) {
                 document.getElementById('winner-message').textContent = isWinner ? 'You won!' : 'You lost!';
                 document.getElementById('result-section').style.display = 'block';
 
+                // Re-enable buttons after the result is shown
+                headsButton.disabled = false;
+                tailsButton.disabled = false;
+                flipCoinButton.disabled = false;
+
                 // Update history and leaderboard
                 resultHistory.unshift({ flipResult, isWinner });
                 if (resultHistory.length > 3) resultHistory.pop();
@@ -160,6 +164,24 @@ function setSelection(selection) {
                 }
             }, 5800); // Wait for CoinToss_Quarter.gif to finish
         });
+
+        function playAmbience() {
+            const delay = Math.random() * 180000; // Random delay between 0 and 180 seconds
+            ambienceTimeout = setTimeout(() => {
+                const ambience = new Audio('/sounds/Ambience1.mp3');
+                ambience.play();
+                playAmbience();
+            }, delay);
+        }
+
+        function playMusic() {
+            const delay = Math.random() * 180000; // Random delay between 0 and 180 seconds
+            musicTimeout = setTimeout(() => {
+                const music = new Audio('/sounds/Music1.mp3');
+                music.play();
+                playMusic();
+            }, delay + 280000); // Add 4:40 (280 seconds) to ensure no overlap
+        }
 
         function updateHistoryUI() {
             const historyList = document.getElementById('result-history');
@@ -180,6 +202,10 @@ function setSelection(selection) {
                 leaderboardList.appendChild(li);
             });
         }
+
+        // Start ambient and music playback loops
+        playAmbience();
+        playMusic();
     </script>
 </body>
 </html>
