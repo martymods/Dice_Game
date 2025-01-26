@@ -146,32 +146,44 @@
                 return;
             }
 
+            // Disable the Flip Coin button to prevent multiple presses
             flipCoinButton.disabled = true;
 
-            resultText.textContent = 'Result:';
-            resultCoinImage.src = '/images/Coin_Spinning.gif';
+    // Reset result text and show the spinning coin placeholder
+    if (resultText) resultText.textContent = 'Result:';
+    if (resultCoinImage) resultCoinImage.src = '/images/Coin_Spinning.gif'; // Spinning coin placeholder
+    coinImage.src = '/images/CoinToss_Quarter.gif';
 
             const flipSound = new Audio('/sounds/CoinToss.mp3');
             flipSound.play();
 
             setTimeout(() => {
+                // Determine the result
                 const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
                 const isWinner = userSelection === flipResult;
 
-                resultText.textContent = `Result: ${flipResult.toUpperCase()}`;
-                resultCoinImage.src = flipResult === 'heads'
-                    ? '/images/Coin_Quarter_Float_Heads.gif'
-                    : '/images/Coin_Quarter_Float_Tails.gif';
+                // Update result text and image
+                if (resultText) {
+                    resultText.textContent = `Result: ${flipResult.toUpperCase()}`;
+                }
+                if (resultCoinImage) {
+                    resultCoinImage.src = flipResult === 'heads'
+                        ? '/images/Coin_Quarter_Float_Heads.gif'
+                        : '/images/Coin_Quarter_Float_Tails.gif';
+                }
 
-                coinImage.src = flipResult === 'heads'
-                    ? '/images/CoinToss_Quarter_Heads.gif'
-                    : '/images/CoinToss_Quarter_Tails.gif';
-
-                setTimeout(() => {
-                    coinImage.src = flipResult === 'heads'
-                        ? '/images/CoinToss_Quarter_Heads_loop.gif'
-                        : '/images/CoinToss_Quarter_Tails_loop.gif';
-                }, 2000);
+                // Show the result animation
+                if (flipResult === 'heads') {
+                    coinImage.src = '/images/CoinToss_Quarter_Heads.gif';
+                    setTimeout(() => {
+                        coinImage.src = '/images/CoinToss_Quarter_Heads_loop.gif';
+                    }, 2000);
+                } else {
+                    coinImage.src = '/images/CoinToss_Quarter_Tails.gif';
+                    setTimeout(() => {
+                        coinImage.src = '/images/CoinToss_Quarter_Tails_loop.gif';
+                    }, 2000);
+                }
 
                 const resultSound = new Audio(isWinner ? '/sounds/CoinToss_Win.mp3' : '/sounds/CoinToss_Lose.mp3');
                 resultSound.play();
