@@ -8,9 +8,20 @@
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="/app.js" type="module"></script>
     <script src="/modules/ui.js" type="module"></script>
+    <style>
+        body {
+            background: url('/images/Background_Loop.gif') no-repeat center center fixed;
+            background-size: cover;
+        }
+        #game-container {
+            text-align: center;
+            padding: 20px;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <div id="game-container" style="text-align: center; padding: 20px;">
+    <div id="game-container">
         <h1>Heads or Tails</h1>
         <p id="game-rules">Select Heads or Tails, place your ETH bet, and flip the coin to win!</p>
 
@@ -97,6 +108,10 @@
             resultText.textContent = '';
             coinImage.src = '/images/CoinToss_Quarter.gif';
 
+            // Play sound for coin flip
+            const flipSound = new Audio('/sounds/CoinToss.mp3');
+            flipSound.play();
+
             setTimeout(() => {
                 // Determine the result
                 const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
@@ -115,9 +130,9 @@
                     }, 2000);
                 }
 
-                // Play sound
-                const sound = new Audio(isWinner ? '/sounds/CoinToss_Win.mp3' : '/sounds/CoinToss_Lose.mp3');
-                sound.play();
+                // Play win or lose sound
+                const resultSound = new Audio(isWinner ? '/sounds/CoinToss_Win.mp3' : '/sounds/CoinToss_Lose.mp3');
+                resultSound.play();
 
                 // Display result text
                 resultText.textContent = `Result: ${flipResult.toUpperCase()}`;
@@ -133,7 +148,7 @@
                     leaderboard.push({ user: 'You', winnings: '2x your bet' });
                     updateLeaderboardUI();
                 }
-            }, 2000);
+            }, 5000); // Wait 5 seconds for CoinToss_Quarter.gif to finish
         });
 
         function updateHistoryUI() {
