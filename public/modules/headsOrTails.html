@@ -52,6 +52,26 @@
         #history-section, #leaderboard-section {
             display: none;
         }
+
+        .toggle-button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        border: none;
+        border-radius: 5px;
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .toggle-button:hover {
+        background-color: #45a049;
+    }
+
+    .toggle-button:active {
+        transform: scale(0.95);
+    }
     </style>
 </head>
 <body id="heads-or-tails">
@@ -88,16 +108,18 @@
             <button id="toggle-leaderboard">Leaderboard</button>
         </div>
 
-        <div id="history-section">
+        <div id="history-section" style="display: block;">
             <h3>Last 3 Results</h3>
             <ul id="result-history"></ul>
+            <button id="toggle-to-leaderboard" class="toggle-button">View Leaderboard</button>
         </div>
-
-        <div id="leaderboard-section">
+        
+        <div id="leaderboard-section" style="display: none;">
             <h3>Winners Leaderboard</h3>
             <ul id="leaderboard"></ul>
+            <button id="toggle-to-history" class="toggle-button">View History</button>
         </div>
-    </div>
+        
 
     <script type="module">
         import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js';
@@ -117,6 +139,8 @@
         const resultCoinImage = document.getElementById('result-coin');
         const resultText = document.getElementById('flip-result');
         const winnerMessage = document.getElementById('winner-message');
+        const toggleToLeaderboard = document.getElementById('toggle-to-leaderboard');
+const toggleToHistory = document.getElementById('toggle-to-history');
         const historySection = document.getElementById('history-section');
         const leaderboardSection = document.getElementById('leaderboard-section');
         const toggleHistory = document.getElementById('toggle-history');
@@ -136,6 +160,13 @@
             historySection.style.display = 'none';
             leaderboardSection.style.display = 'block';
         });
+
+        // Toggle to History
+toggleToHistory.addEventListener('click', () => {
+    leaderboardSection.style.display = 'none';
+    historySection.style.display = 'block';
+});
+
 
         headsButton.addEventListener('click', () => setSelection('heads'));
         tailsButton.addEventListener('click', () => setSelection('tails'));
