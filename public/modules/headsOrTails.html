@@ -166,7 +166,7 @@
         });
 
         function playAmbience() {
-            const delay = Math.random() * 180000; // Random delay between 0 and 180 seconds
+            const delay = Math.random() * 100000; // Random delay between 0 and 180 seconds
             ambienceTimeout = setTimeout(() => {
                 const ambience = new Audio('/sounds/Ambience1.mp3');
                 ambience.play();
@@ -175,7 +175,7 @@
         }
 
         function playMusic() {
-            const delay = Math.random() * 180000; // Random delay between 0 and 180 seconds
+            const delay = Math.random() * 100000; // Random delay between 0 and 180 seconds
             musicTimeout = setTimeout(() => {
                 const music = new Audio('/sounds/Music1.mp3');
                 music.play();
