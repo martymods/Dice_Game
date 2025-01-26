@@ -76,19 +76,19 @@
         document.getElementById('heads-button').addEventListener('click', () => setSelection('heads'));
         document.getElementById('tails-button').addEventListener('click', () => setSelection('tails'));
 
-        function setSelection(selection) {
-            userSelection = selection;
+function setSelection(selection) {
+    userSelection = selection;
 
-            // Update the coin display based on the selection
-            if (selection === 'heads') {
-                coinImage.src = '/images/Coin_Quarter_Float_Heads.gif';
-            } else if (selection === 'tails') {
-                coinImage.src = '/images/Coin_Quarter_Float_Tails.gif';
-            }
+    // Update the coin display image based on the selection
+    if (selection === 'heads') {
+        coinImage.src = '/images/Coin_Quarter_Float_Heads.gif';
+    } else if (selection === 'tails') {
+        coinImage.src = '/images/Coin_Quarter_Float_Tails.gif';
+    }
 
-            document.getElementById('flip-section').style.display = 'block';
-            alert(`You selected ${selection.toUpperCase()}`);
-        }
+    document.getElementById('flip-section').style.display = 'block';
+}
+
 
         document.getElementById('place-bet-button').addEventListener('click', async () => {
             const betAmount = document.getElementById('bet-amount').value;
@@ -183,4 +183,3 @@
     </script>
 </body>
 </html>
-
