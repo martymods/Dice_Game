@@ -26,6 +26,32 @@
             max-width: 80px;
             max-height: 80px;
         }
+
+        /* History and Leaderboard Toggle */
+        .toggle-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .toggle-section button {
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        .toggle-section button.active {
+            background-color: #45a049;
+            font-weight: bold;
+        }
+
+        #history-section, #leaderboard-section {
+            display: none;
+        }
     </style>
 </head>
 <body id="heads-or-tails">
@@ -54,6 +80,12 @@
         <div id="result-section" style="display: none;">
             <h2 id="flip-result">Result:</h2>
             <img id="result-coin" src="" alt="Coin Result"> <!-- Coin Result Image -->
+            <p id="winner-message"></p>
+        </div>
+
+        <div class="toggle-section">
+            <button id="toggle-history" class="active">History</button>
+            <button id="toggle-leaderboard">Leaderboard</button>
         </div>
 
         <div id="history-section">
@@ -76,14 +108,34 @@
         const resultHistory = [];
         const leaderboard = [];
         let userSelection = '';
-        let ambienceTimeout, musicTimeout;
 
+        // DOM Elements
         const coinImage = document.getElementById('coin-animation');
         const headsButton = document.getElementById('heads-button');
         const tailsButton = document.getElementById('tails-button');
         const flipCoinButton = document.getElementById('flip-coin-button');
         const resultCoinImage = document.getElementById('result-coin');
         const resultText = document.getElementById('flip-result');
+        const winnerMessage = document.getElementById('winner-message');
+        const historySection = document.getElementById('history-section');
+        const leaderboardSection = document.getElementById('leaderboard-section');
+        const toggleHistory = document.getElementById('toggle-history');
+        const toggleLeaderboard = document.getElementById('toggle-leaderboard');
+
+        // Toggle History and Leaderboard
+        toggleHistory.addEventListener('click', () => {
+            toggleHistory.classList.add('active');
+            toggleLeaderboard.classList.remove('active');
+            historySection.style.display = 'block';
+            leaderboardSection.style.display = 'none';
+        });
+
+        toggleLeaderboard.addEventListener('click', () => {
+            toggleLeaderboard.classList.add('active');
+            toggleHistory.classList.remove('active');
+            historySection.style.display = 'none';
+            leaderboardSection.style.display = 'block';
+        });
 
         headsButton.addEventListener('click', () => setSelection('heads'));
         tailsButton.addEventListener('click', () => setSelection('tails'));
@@ -96,11 +148,9 @@
             tailsButton.disabled = true;
 
             // Update the coin display based on the selection
-            if (selection === 'heads') {
-                coinImage.src = '/images/Coin_Quarter_Float_Heads.gif';
-            } else if (selection === 'tails') {
-                coinImage.src = '/images/Coin_Quarter_Float_Tails.gif';
-            }
+            coinImage.src = selection === 'heads'
+                ? '/images/Coin_Quarter_Float_Heads.gif'
+                : '/images/Coin_Quarter_Float_Tails.gif';
 
             document.getElementById('flip-section').style.display = 'block';
         }
@@ -115,8 +165,8 @@
             flipCoinButton.disabled = true;
 
             // Reset result text and play flipping animation
-            resultText.textContent = '';
-            resultCoinImage.src = ''; // Clear previous result image
+            if (resultText) resultText.textContent = '';
+            if (resultCoinImage) resultCoinImage.src = ''; // Clear previous result image
             coinImage.src = '/images/CoinToss_Quarter.gif';
 
             // Play sound for coin flip
@@ -129,22 +179,13 @@
                 const isWinner = userSelection === flipResult;
 
                 // Update result text and image
-                resultText.textContent = `Result: ${flipResult.toUpperCase()}`;
-                resultCoinImage.src = flipResult === 'heads'
-                    ? '/images/Coin_Quarter_Float_Heads.gif'
-                    : '/images/Coin_Quarter_Float_Tails.gif';
-
-                // Show the result animation
-                if (flipResult === 'heads') {
-                    coinImage.src = '/images/CoinToss_Quarter_Heads.gif';
-                    setTimeout(() => {
-                        coinImage.src = '/images/CoinToss_Quarter_Heads_loop.gif';
-                    }, 2000);
-                } else {
-                    coinImage.src = '/images/CoinToss_Quarter_Tails.gif';
-                    setTimeout(() => {
-                        coinImage.src = '/images/CoinToss_Quarter_Tails_loop.gif';
-                    }, 2000);
+                if (resultText) {
+                    resultText.textContent = `Result: ${flipResult.toUpperCase()}`;
+                }
+                if (resultCoinImage) {
+                    resultCoinImage.src = flipResult === 'heads'
+                        ? '/images/Coin_Quarter_Float_Heads.gif'
+                        : '/images/Coin_Quarter_Float_Tails.gif';
                 }
 
                 // Play win or lose sound
@@ -152,8 +193,11 @@
                 resultSound.play();
 
                 // Display winner message
-                document.getElementById('winner-message').textContent = isWinner ? 'You won!' : 'You lost!';
-                document.getElementById('result-section').style.display = 'block';
+                if (winnerMessage) {
+                    winnerMessage.textContent = isWinner ? 'You won!' : 'You lost!';
+                }
+
+                document.getElementById('result-section').style.display = 'flex';
 
                 // Re-enable buttons after the result is shown
                 headsButton.disabled = false;
