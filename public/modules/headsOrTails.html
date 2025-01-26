@@ -99,6 +99,8 @@
         const resultHistory = [];
         const leaderboard = [];
         let userSelection = '';
+        let ambienceTimeout;
+        let musicTimeout;
 
         // DOM Elements
         const coinImage = document.getElementById('coin-animation');
@@ -206,23 +208,24 @@
             }, 5800);
         });
 
-                function playAmbience() {
-            const delay = Math.random() * 100000; // Random delay between 0 and 180 seconds
-            ambienceTimeout = setTimeout(() => {
-                const ambience = new Audio('/sounds/Ambience1.mp3');
-                ambience.play();
-                ambience.onended = playAmbience; // Automatically play again after it finishes
-            }, delay);
-        }
+function playAmbience() {
+    const delay = Math.random() * 100000; // Random delay between 0 and 180 seconds
+    ambienceTimeout = setTimeout(() => {
+        const ambience = new Audio('/sounds/Ambience1.mp3');
+        ambience.play();
+        ambience.onended = playAmbience; // Automatically schedule next play after it finishes
+    }, delay);
+}
 
-        function playMusic() {
-            const delay = Math.random() * 60000; // Random delay between 0 and 180 seconds
-            musicTimeout = setTimeout(() => {
-                const music = new Audio('/sounds/Music1.mp3');
-                music.play();
-                music.onended = playMusic; // Automatically play again after it finishes
-            }, delay);
-        }
+function playMusic() {
+    const delay = Math.random() * 60000; // Random delay between 0 and 180 seconds
+    musicTimeout = setTimeout(() => {
+        const music = new Audio('/sounds/Music1.mp3');
+        music.play();
+        music.onended = playMusic; // Automatically schedule next play after it finishes
+    }, delay);
+}
+
 
 
         function updateHistoryUI() {
