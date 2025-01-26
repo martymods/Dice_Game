@@ -1,0 +1,191 @@
+/* General Styling */
+#heads-or-tails {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+    background: url('/images/Background_Loop.gif') no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* Game Container Styling */
+#heads-or-tails #game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    gap: 20px;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Section Styling */
+#heads-or-tails #selection, 
+#heads-or-tails #betting-section, 
+#heads-or-tails #flip-section, 
+#heads-or-tails #result-section, 
+#heads-or-tails #history-section, 
+#heads-or-tails #leaderboard-section {
+    width: 80%;
+    max-width: 500px;
+    margin: 3px auto;
+    padding: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 10px rgba(240, 235, 235, 0.28);
+}
+
+/* Header Styling */
+#heads-or-tails h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+#heads-or-tails h2, #heads-or-tails h3 {
+    margin: 10px 0;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.65);
+}
+
+/* Button Styling */
+#heads-or-tails button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    background: linear-gradient(to bottom, #34ba3a, #357a38);
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px black;
+}
+
+#heads-or-tails button:hover {
+    background: linear-gradient(to bottom, #357a38, #4caf50);
+    transform: scale(1.1);
+}
+
+#heads-or-tails button:active {
+    transform: scale(0.95);
+}
+
+/* Disabled Button Styling */
+#heads-or-tails button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Coin Display Styling */
+#heads-or-tails #coin-display {
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    background: none; /* No background */
+    border-radius: 0; /* No border radius */
+    box-shadow: none; /* No shadow */
+}
+
+/* Coin Image Styling */
+#heads-or-tails #coin-animation {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Flip Section */
+#heads-or-tails #flip-section {
+    margin-top: 20px;
+}
+
+/* Flip Coin Button */
+#heads-or-tails #flip-coin-button {
+    padding: 20px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#heads-or-tails #flip-coin-button:hover {
+    background-color: #45a049;
+}
+
+/* Result Section Styling */
+#heads-or-tails #result-section {
+    font-size: 1.5rem;
+    font-weight: bold;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* History Section Styling */
+#heads-or-tails #history-section ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+#heads-or-tails #history-section ul li {
+    margin: 5px 0;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+/* Leaderboard Section Styling */
+#heads-or-tails #leaderboard-section ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+#heads-or-tails #leaderboard-section ul li {
+    margin: 5px 0;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    color: #ffdf00;
+    font-weight: bold;
+}
+
+
+/* Transition Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Media Query for Responsive Design */
+@media (max-width: 768px) {
+    #heads-or-tails #game-container {
+        padding: 10px;
+    }
+
+    #heads-or-tails #coin-display {
+        width: 200px;
+        height: 200px;
+    }
+
+    #heads-or-tails h1 {
+        font-size: 2rem;
+    }
+
+    #heads-or-tails button {
+        font-size: 1rem;
+        padding: 8px 15px;
+    }
+}
