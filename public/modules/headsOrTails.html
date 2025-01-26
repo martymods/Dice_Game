@@ -10,6 +10,23 @@
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="/app.js" type="module"></script>
     <script src="/modules/ui.js" type="module"></script>
+    <style>
+        /* Flexbox for result section */
+        #result-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px; /* Space between text and image */
+            font-size: 1.5rem;
+            font-weight: bold;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        #result-coin {
+            max-width: 80px;
+            max-height: 80px;
+        }
+    </style>
 </head>
 <body id="heads-or-tails">
     <div id="game-container">
@@ -35,9 +52,8 @@
         </div>
 
         <div id="result-section" style="display: none;">
-            <h2 id="flip-result">Result: </h2>
-            <img id="result-coin" src="" alt="Coin Result" style="max-width: 80px; margin-top: 10px;"> <!-- Coin Result Image -->
-            <p id="winner-message"></p>
+            <h2 id="flip-result">Result:</h2>
+            <img id="result-coin" src="" alt="Coin Result"> <!-- Coin Result Image -->
         </div>
 
         <div id="history-section">
@@ -200,4 +216,3 @@
     </script>
 </body>
 </html>
-
