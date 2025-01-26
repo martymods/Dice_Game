@@ -188,6 +188,19 @@
                         : '/images/Coin_Quarter_Float_Tails.gif';
                 }
 
+                // Show the result animation
+                if (flipResult === 'heads') {
+                    coinImage.src = '/images/CoinToss_Quarter_Heads.gif';
+                    setTimeout(() => {
+                        coinImage.src = '/images/CoinToss_Quarter_Heads_loop.gif';
+                    }, 2000);
+                } else {
+                    coinImage.src = '/images/CoinToss_Quarter_Tails.gif';
+                    setTimeout(() => {
+                        coinImage.src = '/images/CoinToss_Quarter_Tails_loop.gif';
+                    }, 2000);
+                }
+
                 // Play win or lose sound
                 const resultSound = new Audio(isWinner ? '/sounds/CoinToss_Win.mp3' : '/sounds/CoinToss_Lose.mp3');
                 resultSound.play();
