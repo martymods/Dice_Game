@@ -164,10 +164,10 @@
             // Disable the Flip Coin button to prevent multiple presses
             flipCoinButton.disabled = true;
 
-            // Reset result text and play flipping animation
-            if (resultText) resultText.textContent = '';
-            if (resultCoinImage) resultCoinImage.src = ''; // Clear previous result image
-            coinImage.src = '/images/CoinToss_Quarter.gif';
+    // Reset result text and show the spinning coin placeholder
+    if (resultText) resultText.textContent = 'Result:';
+    if (resultCoinImage) resultCoinImage.src = '/images/Coin_Spinning.gif'; // Spinning coin placeholder
+    coinImage.src = '/images/CoinToss_Quarter.gif';
 
             // Play sound for coin flip
             const flipSound = new Audio('/sounds/CoinToss.mp3');
