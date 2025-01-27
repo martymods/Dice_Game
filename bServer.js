@@ -7,6 +7,7 @@ require('dotenv').config();
 const ethers = require('ethers');
 const fs = require('fs');
 const path = require('path');
+const fetch = require('node-fetch'); // Ensure node-fetch is installed
 
 
 // Initialize App
@@ -237,9 +238,6 @@ app.get('/', (req, res) => {
 });
 
 // TikTok API Route for Token Fetching
-const TIKTOK_CLIENT_KEY = "aws542ajv138ec7n";
-const TIKTOK_CLIENT_SECRET = "oieHWVFlQsWSseB3K6gksGUyH5EC9ewl";
-
 app.post('/api/tiktok/token', async (req, res) => {
     try {
         const response = await fetch("https://api.tiktok.com/live/token", {
@@ -248,17 +246,18 @@ app.post('/api/tiktok/token', async (req, res) => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                client_key: TIKTOK_CLIENT_KEY,
-                client_secret: TIKTOK_CLIENT_SECRET,
+                client_key: process.env.TIKTOK_CLIENT_KEY,
+                client_secret: process.env.TIKTOK_CLIENT_SECRET,
             }),
         });
 
         if (!response.ok) {
+            console.error("TikTok API Error:", await response.text());
             return res.status(response.status).json({ error: "Failed to fetch TikTok token" });
         }
 
         const data = await response.json();
-        res.json(data);
+        res.json(data); // Return the token to the client
     } catch (error) {
         console.error("Error fetching TikTok token:", error);
         res.status(500).json({ error: "Server error" });
@@ -317,4 +316,3 @@ async function updateEthPrices() {
     }
 }
 setInterval(updateEthPrices, 60000); // Update every 60 seconds
-
