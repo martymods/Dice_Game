@@ -26,6 +26,10 @@ app.use(express.static('public')); // Serve static files from the 'public' folde
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/privacy', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/privacy.html'));
+});
+
 // Serve the Terms of Service page (Move here)
 app.get('/terms', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/terms.html')); // Adjust path as needed
@@ -284,4 +288,3 @@ async function updateEthPrices() {
     }
 }
 setInterval(updateEthPrices, 60000); // Update every 60 seconds
-
