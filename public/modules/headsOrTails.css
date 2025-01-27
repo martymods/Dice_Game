@@ -199,3 +199,23 @@
     align-items: center;
     gap: 20px;
 }
+
+#result-gif {
+    display: none; /* Initially hidden */
+    transition: opacity 1s ease-in-out; /* Smooth fade-out effect */
+}
+
+button {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    }
+}
