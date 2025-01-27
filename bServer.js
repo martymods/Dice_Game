@@ -8,6 +8,11 @@ const ethers = require('ethers');
 const fs = require('fs');
 const path = require('path');
 
+// Serve the Terms of Service page
+app.get('/terms', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/terms.html')); // Adjust path as needed
+});
+
 // Initialize App
 const app = express();
 const server = http.createServer(app);
