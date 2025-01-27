@@ -12,7 +12,7 @@
     <script src="/modules/ui.js" type="module"></script>
     <style>
         /* Flexbox for result section */
-        #result-section {
+        #result-section { 
             position: relative;
             display: flex;
             justify-content: center;
@@ -21,12 +21,14 @@
             font-size: 1.5rem;
             font-weight: bold;
             animation: fadeIn 1s ease-in-out;
-            overflow: hidden; /* Ensure content fits within the container */
+            height: 300px; /* Ensure enough space for GIFs */
+            overflow: hidden; /* Prevent overflow content */
         }
 
         #result-coin {
             max-width: 80px;
             max-height: 80px;
+            z-index: 2; /* Above the GIF */
         }
 
         #result-gif {
@@ -37,7 +39,7 @@
             height: 100%;
             object-fit: cover; /* Stretch the GIF to cover the container */
             display: none; /* Initially hidden */
-            z-index: 1; /* Ensure it appears on top */
+            z-index: 10; /* Ensure it appears above everything */
         }
 
         .toggle-button {
@@ -85,9 +87,9 @@
         </div>
 
         <div id="result-section" style="display: none;">
-            <h2 id="flip-result" style="z-index: 2;">Result:</h2>
-            <img id="result-coin" src="/images/Coin_Spinning.gif" alt="Coin Result" style="z-index: 2;"> <!-- Coin Result -->
             <img id="result-gif" src="" alt="Result GIF"> <!-- Winner/Loser GIF -->
+            <h2 id="flip-result" style="z-index: 2;">Result:</h2>
+            <img id="result-coin" src="/images/Coin_Spinning.gif" alt="Coin Result" style="z-index: 2;">
             <p id="winner-message" style="z-index: 2;"></p>
         </div>
 
@@ -145,7 +147,6 @@
 
         function setSelection(selection) {
             userSelection = selection;
-
             headsButton.disabled = true;
             tailsButton.disabled = true;
 
