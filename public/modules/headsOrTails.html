@@ -61,6 +61,83 @@
         .toggle-button:active {
             transform: scale(0.95);
         }
+
+/* Result Section - Default Style */
+#result-section {
+    position: relative;
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    animation: fadeIn 1s ease-in-out;
+    height: 500px; /* Increase height for more space */
+    width: 90%; /* Adjust width as needed */
+    max-width: 700px; /* Limit maximum width */
+    margin: 20px auto; /* Center section with margin */
+    padding: 20px; /* Add inner spacing */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* Optional border */
+    border-radius: 10px; /* Add rounded corners */
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow effect */
+    overflow: hidden; /* Ensure content doesn't overflow */
+}
+
+/* Result Section - Expanded (Optional for larger screens) */
+@media (min-width: 768px) {
+    #result-section {
+        height: 600px; /* Larger height for desktop screens */
+        max-width: 800px; /* Adjust maximum width for larger displays */
+    }
+}
+
+/* Coin Result Styling */
+#result-coin {
+    max-width: 100px; /* Increase image size */
+    max-height: 100px;
+    z-index: 2; /* Above GIFs */
+}
+
+/* Winner/Loser GIF Styling */
+#result-gif {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; /* Stretch to fit the container */
+    height: 100%; /* Stretch to fit the container */
+    object-fit: cover; /* Maintain aspect ratio and cover the space */
+    display: none; /* Initially hidden */
+    z-index: 10; /* Ensure it appears above everything else */
+}
+
+/* Winner Message Styling */
+#winner-message {
+    font-size: 1.2rem;
+    text-align: center;
+    color: #FFD700; /* Gold color for visibility */
+    z-index: 2; /* Above GIFs */
+}
+
+/* Optional Styling for Responsive Design */
+@media (max-width: 768px) {
+    #result-section {
+        height: 400px; /* Smaller height for mobile screens */
+        padding: 15px; /* Reduce padding */
+    }
+
+    #result-coin {
+        max-width: 80px; /* Smaller coin size */
+        max-height: 80px;
+    }
+
+    #winner-message {
+        font-size: 1rem; /* Adjust font size for smaller screens */
+    }
+}
+
+
     </style>
 </head>
 <body id="heads-or-tails">
@@ -272,3 +349,4 @@
     </script>
 </body>
 </html>
+
