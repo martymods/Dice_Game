@@ -199,3 +199,7 @@
     align-items: center;
     gap: 20px;
 }
+#result-gif {
+    display: none; /* Initially hidden */
+    transition: opacity 1s ease-in-out; /* Smooth fade-out effect */
+}
