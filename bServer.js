@@ -236,6 +236,35 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// TikTok API Route for Token Fetching
+const TIKTOK_CLIENT_KEY = "aws542ajv138ec7n";
+const TIKTOK_CLIENT_SECRET = "oieHWVFlQsWSseB3K6gksGUyH5EC9ewl";
+
+app.post('/api/tiktok/token', async (req, res) => {
+    try {
+        const response = await fetch("https://api.tiktok.com/live/token", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                client_key: TIKTOK_CLIENT_KEY,
+                client_secret: TIKTOK_CLIENT_SECRET,
+            }),
+        });
+
+        if (!response.ok) {
+            return res.status(response.status).json({ error: "Failed to fetch TikTok token" });
+        }
+
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error("Error fetching TikTok token:", error);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
 // Catch-all route for undefined endpoints
 app.use((req, res) => {
     res.status(404).send('<h1>404 - Not Found</h1>');
@@ -288,3 +317,4 @@ async function updateEthPrices() {
     }
 }
 setInterval(updateEthPrices, 60000); // Update every 60 seconds
+
