@@ -7,7 +7,7 @@ require('dotenv').config();
 const ethers = require('ethers');
 const fs = require('fs');
 const path = require('path');
-const fetch = require('node-fetch'); // Ensure node-fetch is installed
+import fetch from 'node-fetch'; // ESM syntax
 
 
 // Initialize App
@@ -316,3 +316,4 @@ async function updateEthPrices() {
     }
 }
 setInterval(updateEthPrices, 60000); // Update every 60 seconds
+
