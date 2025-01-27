@@ -8,10 +8,6 @@ const ethers = require('ethers');
 const fs = require('fs');
 const path = require('path');
 
-// Serve the Terms of Service page
-app.get('/terms', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/terms.html')); // Adjust path as needed
-});
 
 // Initialize App
 const app = express();
@@ -29,6 +25,11 @@ app.use(express.static('public')); // Serve static files from the 'public' folde
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve the Terms of Service page (Move here)
+app.get('/terms', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/terms.html')); // Adjust path as needed
+});
 
 // Leaderboard Storage
 const leaderboardFile = path.resolve(__dirname, 'leaderboard.json');
@@ -283,3 +284,4 @@ async function updateEthPrices() {
     }
 }
 setInterval(updateEthPrices, 60000); // Update every 60 seconds
+
