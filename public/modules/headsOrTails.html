@@ -16,7 +16,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
+            gap: 20px; /* Space between text and image */
             font-size: 1.5rem;
             font-weight: bold;
             animation: fadeIn 1s ease-in-out;
@@ -27,25 +27,51 @@
             max-height: 80px;
         }
 
-        .toggle-button {
-            margin-top: 10px;
-            padding: 10px 20px;
+        /* History and Leaderboard Toggle */
+        .toggle-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .toggle-section button {
+            padding: 10px;
             font-size: 14px;
             border: none;
             border-radius: 5px;
             background-color: #4CAF50;
             color: white;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
-        .toggle-button:hover {
+        .toggle-section button.active {
             background-color: #45a049;
+            font-weight: bold;
         }
 
-        .toggle-button:active {
-            transform: scale(0.95);
+        #history-section, #leaderboard-section {
+            display: none;
         }
+
+        .toggle-button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        border: none;
+        border-radius: 5px;
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .toggle-button:hover {
+        background-color: #45a049;
+    }
+
+    .toggle-button:active {
+        transform: scale(0.95);
+    }
     </style>
 </head>
 <body id="heads-or-tails">
@@ -73,8 +99,15 @@
 
         <div id="result-section" style="display: none;">
             <h2 id="flip-result">Result:</h2>
-            <img id="result-coin" src="/images/Coin_Spinning.gif" alt="Coin Result">
+            <img id="result-coin" src="/images/Coin_Spinning.gif" alt="Coin Result"> <!-- Coin Result -->
+            <img id="result-gif" src="" alt="Result GIF" style="max-width: 200px; max-height: 200px; display: none;"> <!-- Winner/Loser GIF -->
             <p id="winner-message"></p>
+        </div>
+        
+
+        <div class="toggle-section">
+            <button id="toggle-history" class="active">History</button>
+            <button id="toggle-leaderboard">Leaderboard</button>
         </div>
 
         <div id="history-section" style="display: block;">
@@ -82,13 +115,13 @@
             <ul id="result-history"></ul>
             <button id="toggle-to-leaderboard" class="toggle-button">View Leaderboard</button>
         </div>
-
+        
         <div id="leaderboard-section" style="display: none;">
             <h3>Winners Leaderboard</h3>
             <ul id="leaderboard"></ul>
             <button id="toggle-to-history" class="toggle-button">View History</button>
         </div>
-    </div>
+        
 
     <script type="module">
         import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js';
@@ -99,8 +132,6 @@
         const resultHistory = [];
         const leaderboard = [];
         let userSelection = '';
-        let ambienceTimeout;
-        let musicTimeout;
 
         // DOM Elements
         const coinImage = document.getElementById('coin-animation');
@@ -110,21 +141,34 @@
         const resultCoinImage = document.getElementById('result-coin');
         const resultText = document.getElementById('flip-result');
         const winnerMessage = document.getElementById('winner-message');
+        const toggleToLeaderboard = document.getElementById('toggle-to-leaderboard');
+const toggleToHistory = document.getElementById('toggle-to-history');
         const historySection = document.getElementById('history-section');
         const leaderboardSection = document.getElementById('leaderboard-section');
-        const toggleToLeaderboard = document.getElementById('toggle-to-leaderboard');
-        const toggleToHistory = document.getElementById('toggle-to-history');
+        const toggleHistory = document.getElementById('toggle-history');
+        const toggleLeaderboard = document.getElementById('toggle-leaderboard');
 
-        // Toggle between History and Leaderboard
-        toggleToLeaderboard.addEventListener('click', () => {
+        // Toggle History and Leaderboard
+        toggleHistory.addEventListener('click', () => {
+            toggleHistory.classList.add('active');
+            toggleLeaderboard.classList.remove('active');
+            historySection.style.display = 'block';
+            leaderboardSection.style.display = 'none';
+        });
+
+        toggleLeaderboard.addEventListener('click', () => {
+            toggleLeaderboard.classList.add('active');
+            toggleHistory.classList.remove('active');
             historySection.style.display = 'none';
             leaderboardSection.style.display = 'block';
         });
 
-        toggleToHistory.addEventListener('click', () => {
-            leaderboardSection.style.display = 'none';
-            historySection.style.display = 'block';
-        });
+        // Toggle to History
+toggleToHistory.addEventListener('click', () => {
+    leaderboardSection.style.display = 'none';
+    historySection.style.display = 'block';
+});
+
 
         headsButton.addEventListener('click', () => setSelection('heads'));
         tailsButton.addEventListener('click', () => setSelection('tails'));
@@ -132,9 +176,11 @@
         function setSelection(selection) {
             userSelection = selection;
 
+            // Disable selection buttons until the flip is resolved
             headsButton.disabled = true;
             tailsButton.disabled = true;
 
+            // Update the coin display based on the selection
             coinImage.src = selection === 'heads'
                 ? '/images/Coin_Quarter_Float_Heads.gif'
                 : '/images/Coin_Quarter_Float_Tails.gif';
@@ -154,8 +200,11 @@
     // Reset result text and show the spinning coin placeholder
     if (resultText) resultText.textContent = 'Result:';
     if (resultCoinImage) resultCoinImage.src = '/images/Coin_Spinning.gif'; // Spinning coin placeholder
+    const resultGif = document.getElementById('result-gif');
+    resultGif.style.display = 'none'; // Hide the GIF initially
     coinImage.src = '/images/CoinToss_Quarter.gif';
 
+            // Play sound for coin flip
             const flipSound = new Audio('/sounds/CoinToss.mp3');
             flipSound.play();
 
@@ -173,6 +222,12 @@
                         ? '/images/Coin_Quarter_Float_Heads.gif'
                         : '/images/Coin_Quarter_Float_Tails.gif';
                 }
+        // Show the result GIF (Winner or Loser)
+        resultGif.src = isWinner
+            ? '/images/CoinToss_Winner.gif'
+            : '/images/CoinToss_Loser.gif';
+        resultGif.style.display = 'block'; // Display the GIF
+
 
                 // Show the result animation
                 if (flipResult === 'heads') {
@@ -187,16 +242,33 @@
                     }, 2000);
                 }
 
+                // Play win or lose sound
                 const resultSound = new Audio(isWinner ? '/sounds/CoinToss_Win.mp3' : '/sounds/CoinToss_Lose.mp3');
                 resultSound.play();
 
-                winnerMessage.textContent = isWinner ? 'You won!' : 'You lost!';
+                // Display winner message
+                if (winnerMessage) {
+                    winnerMessage.textContent = isWinner ? 'You won!' : 'You lost!';
+                }
+
                 document.getElementById('result-section').style.display = 'flex';
 
+                        // Fade-out effect after 3 seconds
+        setTimeout(() => {
+            resultGif.style.opacity = '1';
+            resultGif.style.transition = 'opacity 1s';
+            resultGif.style.opacity = '0';
+            setTimeout(() => {
+                resultGif.style.display = 'none';
+            }, 1000); // Hide GIF after fade-out
+        }, 3000);
+
+                // Re-enable buttons after the result is shown
                 headsButton.disabled = false;
                 tailsButton.disabled = false;
                 flipCoinButton.disabled = false;
 
+                // Update history and leaderboard
                 resultHistory.unshift({ flipResult, isWinner });
                 if (resultHistory.length > 3) resultHistory.pop();
                 updateHistoryUI();
@@ -205,28 +277,26 @@
                     leaderboard.push({ user: 'You', winnings: '2x your bet' });
                     updateLeaderboardUI();
                 }
-            }, 5800);
+            }, 5800); // Wait for CoinToss_Quarter.gif to finish
         });
 
-function playAmbience() {
-    const delay = Math.random() * 100000; // Random delay between 0 and 180 seconds
-    ambienceTimeout = setTimeout(() => {
-        const ambience = new Audio('/sounds/Ambience1.mp3');
-        ambience.play();
-        ambience.onended = playAmbience; // Automatically schedule next play after it finishes
-    }, delay);
-}
+        function playAmbience() {
+            const delay = Math.random() * 100000; // Random delay between 0 and 180 seconds
+            ambienceTimeout = setTimeout(() => {
+                const ambience = new Audio('/sounds/Ambience1.mp3');
+                ambience.play();
+                ambience.onended = playAmbience; // Automatically play again after it finishes
+            }, delay);
+        }
 
-function playMusic() {
-    const delay = Math.random() * 60000; // Random delay between 0 and 180 seconds
-    musicTimeout = setTimeout(() => {
-        const music = new Audio('/sounds/Music1.mp3');
-        music.play();
-        music.onended = playMusic; // Automatically schedule next play after it finishes
-    }, delay);
-}
-
-
+        function playMusic() {
+            const delay = Math.random() * 60000; // Random delay between 0 and 180 seconds
+            musicTimeout = setTimeout(() => {
+                const music = new Audio('/sounds/Music1.mp3');
+                music.play();
+                music.onended = playMusic; // Automatically play again after it finishes
+            }, delay);
+        }
 
         function updateHistoryUI() {
             const historyList = document.getElementById('result-history');
@@ -247,8 +317,8 @@ function playMusic() {
                 leaderboardList.appendChild(li);
             });
         }
-        
-         // Start ambient and music playback loops
+
+        // Start ambient and music playback loops
         playAmbience();
         playMusic();
     </script>
