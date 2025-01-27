@@ -13,6 +13,7 @@
     <style>
         /* Flexbox for result section */
         #result-section {
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -20,11 +21,23 @@
             font-size: 1.5rem;
             font-weight: bold;
             animation: fadeIn 1s ease-in-out;
+            overflow: hidden; /* Ensure content fits within the container */
         }
 
         #result-coin {
             max-width: 80px;
             max-height: 80px;
+        }
+
+        #result-gif {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Stretch the GIF to cover the container */
+            display: none; /* Initially hidden */
+            z-index: 1; /* Ensure it appears on top */
         }
 
         .toggle-button {
@@ -72,10 +85,10 @@
         </div>
 
         <div id="result-section" style="display: none;">
-            <h2 id="flip-result">Result:</h2>
-            <img id="result-coin" src="/images/Coin_Spinning.gif" alt="Coin Result">
-            <img id="result-gif" src="" alt="Result GIF" style="max-width: 200px; max-height: 200px; display: none;">
-            <p id="winner-message"></p>
+            <h2 id="flip-result" style="z-index: 2;">Result:</h2>
+            <img id="result-coin" src="/images/Coin_Spinning.gif" alt="Coin Result" style="z-index: 2;"> <!-- Coin Result -->
+            <img id="result-gif" src="" alt="Result GIF"> <!-- Winner/Loser GIF -->
+            <p id="winner-message" style="z-index: 2;"></p>
         </div>
 
         <div id="history-section" style="display: block;">
@@ -111,13 +124,12 @@
         const resultCoinImage = document.getElementById('result-coin');
         const resultText = document.getElementById('flip-result');
         const winnerMessage = document.getElementById('winner-message');
-        const resultGif = document.getElementById('result-gif'); // Ensure resultGif is declared
+        const resultGif = document.getElementById('result-gif');
         const historySection = document.getElementById('history-section');
         const leaderboardSection = document.getElementById('leaderboard-section');
         const toggleToLeaderboard = document.getElementById('toggle-to-leaderboard');
         const toggleToHistory = document.getElementById('toggle-to-history');
 
-        // Toggle between History and Leaderboard
         toggleToLeaderboard.addEventListener('click', () => {
             historySection.style.display = 'none';
             leaderboardSection.style.display = 'block';
@@ -153,7 +165,7 @@
             flipCoinButton.disabled = true;
 
             resultText.textContent = 'Result:';
-            resultCoinImage.src = '/images/Coin_Spinning.gif'; 
+            resultCoinImage.src = '/images/Coin_Spinning.gif';
             resultGif.style.display = 'none';
             resultGif.src = '';
 
@@ -259,3 +271,4 @@
     </script>
 </body>
 </html>
+
