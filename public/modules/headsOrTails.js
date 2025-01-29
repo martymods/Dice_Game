@@ -109,20 +109,12 @@ function startCountdown(seconds) {
 startCountdown(3);
 
 document.getElementById('heads-button').addEventListener('click', function () {
-    let headsImg = document.getElementById('heads-img');
-    headsImg.src = "/images/HT_Button2.png";  // Change to selected state
-
-    setTimeout(() => {
-        headsImg.src = "/images/HT_Button1.png"; // Reset back
-    }, 2000);
+    this.classList.add('clicked'); // Apply class to change background image
+    document.getElementById('tails-button').classList.remove('clicked'); // Reset Tails button
 });
 
 document.getElementById('tails-button').addEventListener('click', function () {
-    let tailsImg = document.getElementById('tails-img');
-    tailsImg.src = "/images/HT_Button2.png";  // Change to selected state
-
-    setTimeout(() => {
-        tailsImg.src = "/images/HT_Button1.png"; // Reset back
-    }, 2000);
+    this.classList.add('clicked'); // Apply class to change background image
+    document.getElementById('heads-button').classList.remove('clicked'); // Reset Heads button
 });
 
