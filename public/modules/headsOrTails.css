@@ -220,33 +220,75 @@ button {
     }
 }
 
-button {
-    position: relative;
-    width: 150px;  /* Adjust as needed */
-    height: 60px;  /* Adjust as needed */
-    border: none;
-    background: none;
-    padding: 0;
-    cursor: pointer;
+
+
+
+/* General Button Styling - Excluding Heads & Tails */
+#betting-section button,
+#flip-section button,
+#history-section button,
+#leaderboard-section button {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-}
-
-button img {
-    width: 100%;   /* Ensure image covers entire button */
-    height: 100%;
-    object-fit: cover;  /* Prevents stretching */
-    position: absolute; /* Keeps image behind text */
-    z-index: 1;
-}
-
-button span {
-    position: relative;
-    z-index: 2;  /* Keeps text on top */
+    align-items: center;
+    text-align: center;
+    margin: 10px auto;
+    width: 180px;
+    height: 60px;
     font-size: 1.2rem;
     font-weight: bold;
     color: white;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    cursor: pointer;
+    border: none; /* Remove default button border */
+    background: url('/images/HT_Button1.png') no-repeat center center; /* Add button background */
+    background-size: cover; /* Ensure the image covers the button */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hover Effect */
+#betting-section button:hover,
+#flip-section button:hover,
+#history-section button:hover,
+#leaderboard-section button:hover {
+    background-image: url('/images/HT_Button1.png'); /* Keep image same on hover */
+    transform: scale(1.05);
+}
+
+/* Centering the Sections */
+#betting-section,
+#flip-section,
+#history-section,
+#leaderboard-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Ensure Flip Coin Button is Centered */
+#flip-coin-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 70px;
+    font-size: 1.3rem;
+    background: url('/images/HT_Button1.png') no-repeat center center;
+    background-size: cover;
+    border: none;
+}
+
+/* Ensure Toggle Buttons are Centered */
+.toggle-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 180px;
+    height: 50px;
+    margin-top: 10px;
+    background: url('/images/HT_Button1.png') no-repeat center center;
+    background-size: cover;
+    border: none;
 }
