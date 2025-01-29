@@ -66,28 +66,7 @@
             transform: scale(0.95);
         }
 
-/* Result Section - Default Style */
-#result-section {
-    position: relative;
-    display: flex;
-    flex-direction: column; /* Stack items vertically */
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    animation: fadeIn 1s ease-in-out;
-    height: 500px; /* Increase height for more space */
-    width: 90%; /* Adjust width as needed */
-    max-width: 700px; /* Limit maximum width */
-    margin: 20px auto; /* Center section with margin */
-    padding: 20px; /* Add inner spacing */
-    border: 2px solid rgba(255, 255, 255, 0.5); /* Optional border */
-    border-radius: 10px; /* Add rounded corners */
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow effect */
-    overflow: hidden; /* Ensure content doesn't overflow */
-}
+
 
 /* Result Section - Expanded (Optional for larger screens) */
 @media (min-width: 768px) {
@@ -149,18 +128,15 @@
         <h1>Heads or Tails</h1>
         <p id="game-rules">Select Heads or Tails, place your ETH bet, and flip the coin to win!</p>
 
-<div id="selection">
-    <button id="heads-button">
-        <img src="/images/HT_Button1.png" alt="Heads Button">
-        Heads
-    </button>
-    
-    <button id="tails-button">
-        <img src="/images/HT_Button1.png" alt="Tails Button">
-        Tails
-    </button>
-</div>
-
+        <div id="selection">
+            <button id="heads-button" class="game-button">
+                Heads
+            </button>
+        
+            <button id="tails-button" class="game-button">
+                Tails
+            </button>
+        </div>
         
 
         <div id="poll-section" style="width: 100%; margin-top: 20px;">
