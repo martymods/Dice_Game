@@ -193,87 +193,105 @@
     }
 }
 
-/* 🔥 Result Section - General Styling */
-/* 🎯 RESULT SECTION - Fully Adjustable */
+/* 🎯 RESULT SECTION - Scaled Down to Fit 100px */
 #result-section {
     position: relative;
     display: flex;
     flex-direction: column; /* Stack contents */
     justify-content: center;
     align-items: center;
-    gap: 20px;
-    font-size: 1.5rem;
+    gap: 5px; /* Reduce spacing */
+    font-size: 1rem; /* Scale down font size */
     font-weight: bold;
     animation: fadeIn 1s ease-in-out;
     
     /* 🔥 Fully Scalable Dimensions */
-    min-height: 400px; /* Ensures section is always visible */
+    min-height: 100px; /* Smaller height */
     width: 100%;
     max-width: 90vw; /* Adjust based on viewport */
     margin: auto;
-    padding: 20px;
+    padding: 10px; /* Reduce padding */
     
     /* 🔄 Borders & Shadows */
     border: 2px solid rgba(255, 255, 255, 0.5);
     border-radius: 10px;
     background-color: rgba(0, 0, 0, 0.7);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     
     /* Enable scroll if content overflows */
-    overflow: auto;
+    overflow: hidden;
 }
 
-/* 🎯 Result Coin Image - Fully Scalable */
+/* 🎯 Result Coin - Small Fit */
 #result-coin {
-    max-width: 150px; /* Default size */
-    max-height: 150px;
+    max-width: 60px; /* Shrink coin size */
+    max-height: 60px;
     transition: transform 0.3s ease-in-out;
 }
 
-/* 🔄 Make Coin Expand Slightly on Win/Loss */
+/* 🔄 Slightly Expand Coin on Win/Loss */
 #result-coin.winner {
-    transform: scale(1.2); /* Slightly expand */
-}
-
-#result-coin.loser {
     transform: scale(1.1);
 }
 
-/* 🎥 GIF Background for Wins/Losses */
+#result-coin.loser {
+    transform: scale(1.05);
+}
+
+/* 🎥 GIF Background for Wins/Losses - Fits Small Container */
 #result-gif {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; /* Ensure it fits inside without cropping */
     display: none;
-    z-index: 10;
+    z-index: 5;
 }
 
-/* 🎯 Winner/Loser Message */
+/* 🎯 Winner/Loser Message - Fit Inside Small Box */
 #winner-message {
-    font-size: 1.3rem;
+    font-size: 0.8rem; /* Smaller text */
     text-align: center;
     color: #FFD700;
     font-weight: bold;
-    z-index: 2;
+    z-index: 6;
+    position: absolute;
+    bottom: 5px; /* Place closer to the bottom */
+    width: 100%;
+}
+
+/* ✅ Result Text (Result: HEADS/TAILS) - Always Visible */
+#flip-result {
+    font-size: 1rem; /* Adjust text size */
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    z-index: 6;
+    position: absolute;
+    top: 5px; /* Position closer to the top */
+    width: 100%;
 }
 
 /* ✅ Responsive Adjustments */
 @media (max-width: 768px) {
     #result-section {
-        min-height: 300px;
-        padding: 15px;
+        min-height: 80px; /* Reduce for mobile */
+        padding: 5px;
     }
 
     #result-coin {
-        max-width: 100px;
-        max-height: 100px;
+        max-width: 50px;
+        max-height: 50px;
     }
 
     #winner-message {
-        font-size: 1rem;
+        font-size: 0.7rem;
+    }
+
+    #flip-result {
+        font-size: 0.9rem;
     }
 }
 
@@ -542,3 +560,4 @@ button {
         height: 350px;
     }
 }
+
