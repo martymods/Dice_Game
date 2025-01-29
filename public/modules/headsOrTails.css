@@ -220,32 +220,33 @@ button {
     }
 }
 
-.ht-button {
+button {
     position: relative;
-    width: 150px; /* Adjust as needed */
-    height: 60px; /* Adjust as needed */
+    width: 150px;  /* Adjust as needed */
+    height: 60px;  /* Adjust as needed */
     border: none;
     background: none;
     padding: 0;
     cursor: pointer;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
-.button-img {
-    position: absolute;
-    width: 100%; /* Cover entire button */
+button img {
+    width: 100%;   /* Ensure image covers entire button */
     height: 100%;
-    object-fit: cover; /* Ensures image fills button without distortion */
+    object-fit: cover;  /* Prevents stretching */
+    position: absolute; /* Keeps image behind text */
+    z-index: 1;
 }
 
-.ht-text {
-    position: absolute;
-    font-size: 1.5rem;
+button span {
+    position: relative;
+    z-index: 2;  /* Keeps text on top */
+    font-size: 1.2rem;
     font-weight: bold;
     color: white;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-    pointer-events: none; /* Ensures clicking only affects the button */
 }
-
