@@ -193,17 +193,56 @@
     }
 }
 
+/* 🔥 Result Section - General Styling */
 #result-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
+    display: flex;  /* Controls overall layout */
+    flex-direction: column;  /* Stacks items vertically */
+    justify-content: center;  /* Centers items vertically */
+    align-items: center;  /* Centers items horizontally */
+    text-align: center;
+    gap: 20px;  /* Space between elements inside */
+    width: 90%;  /* Adjust width as needed */
+    max-width: 800px;  /* Prevents section from stretching too wide */
+    height: 500px;  /* Default height - increase or decrease */
+    padding: 20px;  /* Inner spacing */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* Border effect */
+    border-radius: 10px;  /* Rounded corners */
+    background-color: rgba(0, 0, 0, 0.7);  /* Semi-transparent background */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);  /* Adds shadow effect */
+    overflow: hidden;  /* Ensures contents don't overflow */
 }
 
-#result-gif {
-    display: none; /* Initially hidden */
-    transition: opacity 1s ease-in-out; /* Smooth fade-out effect */
+/* 🖥️ Desktop Version - Larger Screens */
+@media (min-width: 1024px) {
+    #result-section {
+        max-width: 900px;  /* Wider for bigger screens */
+        height: 600px;  /* Taller for more content space */
+    }
 }
+
+/* 📱 Mobile Version - Adjust for Smaller Screens */
+@media (max-width: 768px) {
+    #result-section {
+        width: 95%;
+        height: 400px;  /* Smaller height */
+        padding: 10px;  /* Reduce padding */
+    }
+}
+
+
+/* 🎥 Winner/Loser GIF - Covers Entire Result Section */
+#result-gif {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;  /* Full width */
+    height: 100%;  /* Full height */
+    object-fit: cover;  /* Ensures image stretches while keeping aspect ratio */
+    display: none;  /* Initially hidden */
+    z-index: 10;  /* Ensures it appears above other elements */
+    transition: opacity 1s ease-in-out;  /* Smooth fade effect */
+}
+
 
 button {
     animation: pulse 1.5s infinite;
@@ -219,7 +258,6 @@ button {
         box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
     }
 }
-
 
 
 
@@ -358,3 +396,83 @@ button {
     filter: brightness(1.2);
 }
 
+/* 🎯 Result Text (Winner / Loser) */
+#flip-result {
+    font-size: 2rem;  /* Adjust text size */
+    font-weight: bold;
+    color: #FFD700;  /* Gold text color */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);  /* Text shadow effect */
+    z-index: 2;  /* Above GIF */
+}
+
+/* 🎉 Winner Message (You Won! / You Lost!) */
+#winner-message {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.6);  /* Background effect */
+    border-radius: 5px;
+    z-index: 2;  /* Above GIF */
+}
+
+/* 🪙 Coin Image Styling */
+#result-coin {
+    max-width: 120px;  /* Default size */
+    max-height: 120px;
+    z-index: 2;  /* Ensure it's above GIF */
+}
+
+/* 📱 Mobile Adjustments */
+@media (max-width: 768px) {
+    #result-coin {
+        max-width: 90px;  /* Reduce size for mobile */
+        max-height: 90px;
+    }
+}
+
+/* ✨ Fade-in Effect when the Result Appears */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 🔥 Fade-out Effect for GIFs */
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Apply Animation to Result Section */
+#result-section {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Apply Animation to Winner/Loser GIF */
+#result-gif.fade-out {
+    animation: fadeOut 1s ease-in-out;
+}
+
+/* 🏆 Flexbox for Centering All Elements */
+#result-section > * {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;  /* Ensures full width */
+}
+
+/* 🌍 Ensure Result Section Scales Correctly */
+@media (min-width: 1200px) {
+    #result-section {
+        max-width: 1000px;
+        height: 650px;
+    }
+}
+
+@media (max-width: 480px) {
+    #result-section {
+        width: 90%;
+        height: 350px;
+    }
+}
