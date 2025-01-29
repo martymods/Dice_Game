@@ -222,29 +222,30 @@ button {
 
 .ht-button {
     position: relative;
-    background: none;
+    width: 150px; /* Adjust as needed */
+    height: 60px; /* Adjust as needed */
     border: none;
-    cursor: pointer;
+    background: none;
     padding: 0;
+    cursor: pointer;
     display: flex;
-    align-items: center;
     justify-content: center;
-    flex-direction: column;
+    align-items: center;
 }
 
-.ht-button img {
-    width: 150px;  /* Adjust size as needed */
-    height: auto;
-    transition: transform 0.2s ease-in-out;
+.button-img {
+    position: absolute;
+    width: 100%; /* Cover entire button */
+    height: 100%;
+    object-fit: cover; /* Ensures image fills button without distortion */
 }
 
 .ht-text {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
     font-size: 1.5rem;
     font-weight: bold;
     color: white;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     pointer-events: none; /* Ensures clicking only affects the button */
 }
+
