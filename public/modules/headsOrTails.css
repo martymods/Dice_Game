@@ -234,8 +234,8 @@ button {
     text-align: center;
     margin: 5px auto;
     width: 180px;
-    height: 33px;
-    font-size: 1.3rem;
+    height: 30px;
+    font-size: 1.2rem;
     font-weight: bold;
     color: white;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
@@ -271,7 +271,7 @@ button {
     justify-content: center;
     align-items: center;
     text-align: center;
-    width: 150px;  /* Same size as other buttons */
+    width: 200px;  /* Same size as other buttons */
     height: 30px;  /* Bigger for better visibility */
     font-size: 1.2rem;
     font-weight: bold;
@@ -330,29 +330,5 @@ button {
     background: url('/images/HT_Button1.png') no-repeat center center;
     background-size: cover;
     border: none;
-}
-
-/* 🎯 Heads & Tails Buttons - Default State */
-#heads-button, #tails-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    width: 200px;  /* Make it fit */
-    height: 80px;  
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: white;
-    cursor: pointer;
-    border: none;
-    background: url('/images/HT_Button1.png') no-repeat center center;
-    background-size: contain;  /* Make sure image fits */
-    transition: all 0.3s ease-in-out;
-}
-
-/* 🔄 Change Button Image When Clicked */
-#heads-button.clicked,
-#tails-button.clicked {
-    background-image: url('/images/HT_Button2.png'); /* Changes when pressed */
 }
 
