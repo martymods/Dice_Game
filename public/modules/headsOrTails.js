@@ -109,15 +109,20 @@ function startCountdown(seconds) {
 startCountdown(3);
 
 document.getElementById('heads-button').addEventListener('click', function () {
-    document.getElementById('heads-img').src = "/images/HT_Button2.png";
+    let headsImg = document.getElementById('heads-img');
+    headsImg.src = "/images/HT_Button2.png";  // Change to selected state
+
     setTimeout(() => {
-        document.getElementById('heads-img').src = "/images/HT_Button1.png";
-    }, 2000); // Change back after 2 seconds
+        headsImg.src = "/images/HT_Button1.png"; // Reset back
+    }, 2000);
 });
 
 document.getElementById('tails-button').addEventListener('click', function () {
-    document.getElementById('tails-img').src = "/images/HT_Button2.png";
+    let tailsImg = document.getElementById('tails-img');
+    tailsImg.src = "/images/HT_Button2.png";  // Change to selected state
+
     setTimeout(() => {
-        document.getElementById('tails-img').src = "/images/HT_Button1.png";
-    }, 2000); // Change back after 2 seconds
+        tailsImg.src = "/images/HT_Button1.png"; // Reset back
+    }, 2000);
 });
+
