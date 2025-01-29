@@ -223,7 +223,7 @@ button {
 
 
 
-/* General Button Styling - Excluding Heads & Tails */
+/* 🔥 General Button Styling - Excluding Heads & Tails */
 #betting-section button,
 #flip-section button,
 #history-section button,
@@ -234,7 +234,7 @@ button {
     text-align: center;
     margin: 5px auto;
     width: 180px;
-    height: 30px;
+    height: 40px;
     font-size: 1.2rem;
     font-weight: bold;
     color: white;
@@ -246,55 +246,62 @@ button {
     transition: all 0.3s ease-in-out;
 }
 
-/* Hover Effect */
-#betting-section button:hover,
-#flip-section button:hover,
-#history-section button:hover,
-#leaderboard-section button:hover {
-    background-image: url('/images/HT_Button1.png'); /* Keep image same on hover */
-    transform: scale(1.06);
-}
-
-/* 🔥 Heads & Tails Button Styling */
+/* 🔥 Heads & Tails Buttons */
 #selection {
     display: flex;
-    justify-content: center; /* Keep centered */
+    justify-content: center;
     align-items: center;
-    gap: 20px; /* Space between buttons */
+    gap: 20px;
     width: 100%;
     margin-top: 10px;
 }
 
 #heads-button,
 #tails-button {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    width: 200px;  /* Same size as other buttons */
-    height: 30px;  /* Bigger for better visibility */
+    width: 150px;
+    height: 30px;
     font-size: 1.2rem;
     font-weight: bold;
     color: white;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     cursor: pointer;
     border: none;
-    background: url('/images/HT_Button1.png') no-repeat center center;
-    background-size: contain;  /* Adjusted to fit fully */
-    background-repeat: no-repeat;
-    transition: all 0.3s ease-in-out;
+    background: none; /* Remove background to use an image */
+}
+
+/* 🔥 Heads & Tails Button Image */
+#heads-button img,
+#tails-button img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image covers the button */
+    z-index: -1; /* Moves image behind the text */
 }
 
 /* 🔄 Change Button Image When Clicked */
-#heads-button.clicked {
-    background-image: url('/images/HT_Button2.png');
+#heads-button.clicked img {
+    content: url('/images/HT_Button2.png');
 }
 
-#tails-button.clicked {
-    background-image: url('/images/HT_Button2.png');
+#tails-button.clicked img {
+    content: url('/images/HT_Button2.png');
 }
 
-/* Centering the Sections */
+/* 🔄 Button Hover Effect */
+#betting-section button:hover,
+#flip-section button:hover,
+#history-section button:hover,
+#leaderboard-section button:hover {
+    transform: scale(1.06);
+}
+
+/* 🔥 Centering the Sections */
 #betting-section,
 #flip-section,
 #history-section,
@@ -306,7 +313,7 @@ button {
     width: 100%;
 }
 
-/* Ensure Flip Coin Button is Centered */
+/* 🔄 Ensure Flip Coin Button is Centered */
 #flip-coin-button {
     display: flex;
     justify-content: center;
@@ -319,7 +326,7 @@ button {
     border: none;
 }
 
-/* Ensure Toggle Buttons are Centered */
+/* 🔄 Ensure Toggle Buttons are Centered */
 .toggle-button {
     display: flex;
     justify-content: center;
@@ -331,4 +338,3 @@ button {
     background-size: cover;
     border: none;
 }
-
