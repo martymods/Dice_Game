@@ -107,3 +107,17 @@ function startCountdown(seconds) {
 
 // Call in Result Logic
 startCountdown(3);
+
+document.getElementById('heads-button').addEventListener('click', function () {
+    document.getElementById('heads-img').src = "/images/HT_Button2.png";
+    setTimeout(() => {
+        document.getElementById('heads-img').src = "/images/HT_Button1.png";
+    }, 2000); // Change back after 2 seconds
+});
+
+document.getElementById('tails-button').addEventListener('click', function () {
+    document.getElementById('tails-img').src = "/images/HT_Button2.png";
+    setTimeout(() => {
+        document.getElementById('tails-img').src = "/images/HT_Button1.png";
+    }, 2000); // Change back after 2 seconds
+});
