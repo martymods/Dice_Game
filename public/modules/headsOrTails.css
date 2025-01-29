@@ -35,7 +35,7 @@
     max-width: 500px;
     margin: 3px auto;
     padding: 10px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 5px;
     background-color: rgba(0, 0, 0, 0.2);
     box-shadow: 0px 4px 10px rgba(240, 235, 235, 0.28);
@@ -62,13 +62,13 @@
     border-radius: 5px;
     cursor: pointer;
     color: white;
-    background: linear-gradient(to bottom, #34ba3a, #357a38);
+    background: linear-gradient(to bottom, #000000, #ffffff);
     transition: all 0.3s ease;
     text-shadow: 1px 1px 2px black;
 }
 
 #heads-or-tails button:hover {
-    background: linear-gradient(to bottom, #357a38, #4caf50);
+    background: linear-gradient(to bottom, #000000, #ffffff);
     transform: scale(1.1);
 }
 
@@ -110,7 +110,7 @@
 /* Flip Coin Button */
 #heads-or-tails #flip-coin-button {
     padding: 20px 20px;
-    background-color: #4CAF50;
+    background-color: #ffffff;
     color: white;
     border: none;
     border-radius: 5px;
@@ -119,7 +119,7 @@
 }
 
 #heads-or-tails #flip-coin-button:hover {
-    background-color: #45a049;
+    background-color: #ffffff;
 }
 
 /* Result Section Styling */
@@ -194,23 +194,89 @@
 }
 
 /* 🔥 Result Section - General Styling */
+/* 🎯 RESULT SECTION - Fully Adjustable */
 #result-section {
-    display: flex;  /* Controls overall layout */
-    flex-direction: column;  /* Stacks items vertically */
-    justify-content: center;  /* Centers items vertically */
-    align-items: center;  /* Centers items horizontally */
-    text-align: center;
-    gap: 20px;  /* Space between elements inside */
-    width: 90%;  /* Adjust width as needed */
-    max-width: 800px;  /* Prevents section from stretching too wide */
-    height: 500px;  /* Default height - increase or decrease */
-    padding: 20px;  /* Inner spacing */
-    border: 2px solid rgba(255, 255, 255, 0.5); /* Border effect */
-    border-radius: 10px;  /* Rounded corners */
-    background-color: rgba(0, 0, 0, 0.7);  /* Semi-transparent background */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);  /* Adds shadow effect */
-    overflow: hidden;  /* Ensures contents don't overflow */
+    position: relative;
+    display: flex;
+    flex-direction: column; /* Stack contents */
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    animation: fadeIn 1s ease-in-out;
+    
+    /* 🔥 Fully Scalable Dimensions */
+    min-height: 400px; /* Ensures section is always visible */
+    width: 100%;
+    max-width: 90vw; /* Adjust based on viewport */
+    margin: auto;
+    padding: 20px;
+    
+    /* 🔄 Borders & Shadows */
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    
+    /* Enable scroll if content overflows */
+    overflow: auto;
 }
+
+/* 🎯 Result Coin Image - Fully Scalable */
+#result-coin {
+    max-width: 150px; /* Default size */
+    max-height: 150px;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* 🔄 Make Coin Expand Slightly on Win/Loss */
+#result-coin.winner {
+    transform: scale(1.2); /* Slightly expand */
+}
+
+#result-coin.loser {
+    transform: scale(1.1);
+}
+
+/* 🎥 GIF Background for Wins/Losses */
+#result-gif {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    z-index: 10;
+}
+
+/* 🎯 Winner/Loser Message */
+#winner-message {
+    font-size: 1.3rem;
+    text-align: center;
+    color: #FFD700;
+    font-weight: bold;
+    z-index: 2;
+}
+
+/* ✅ Responsive Adjustments */
+@media (max-width: 768px) {
+    #result-section {
+        min-height: 300px;
+        padding: 15px;
+    }
+
+    #result-coin {
+        max-width: 100px;
+        max-height: 100px;
+    }
+
+    #winner-message {
+        font-size: 1rem;
+    }
+}
+
 
 /* 🖥️ Desktop Version - Larger Screens */
 @media (min-width: 1024px) {
