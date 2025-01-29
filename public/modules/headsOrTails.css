@@ -221,10 +221,15 @@ button {
 }
 
 .ht-button {
+    position: relative;
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .ht-button img {
@@ -233,7 +238,13 @@ button {
     transition: transform 0.2s ease-in-out;
 }
 
-.ht-button:active img {
-    transform: scale(0.95);
+.ht-text {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    pointer-events: none; /* Ensures clicking only affects the button */
 }
-
