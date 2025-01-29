@@ -243,7 +243,15 @@ button {
     border: none;
     background: url('/images/HT_Button1.png') no-repeat center center;
     background-size: cover;
-    transition: all 0.3s ease-in-out;
+    transition: filter 0.3s ease-in-out; /* Ensures smooth hover effect */
+}
+
+/* 🔄 Button Hover Effect - Slightly Brighten Instead of Changing Color */
+#betting-section button:hover,
+#flip-section button:hover,
+#history-section button:hover,
+#leaderboard-section button:hover {
+    filter: brightness(1.2); /* Slightly brightens the image instead of turning green */
 }
 
 /* 🔥 Heads & Tails Buttons */
@@ -263,7 +271,7 @@ button {
     justify-content: center;
     align-items: center;
     text-align: center;
-    width: 150px;
+    width: 150px; /* Kept the correct size */
     height: 30px;
     font-size: 1.2rem;
     font-weight: bold;
@@ -271,7 +279,7 @@ button {
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     cursor: pointer;
     border: none;
-    background: none; /* Remove background to use an image */
+    background: none; /* Ensures only the image is visible */
 }
 
 /* 🔥 Heads & Tails Button Image */
@@ -282,6 +290,13 @@ button {
     height: 100%;
     object-fit: cover; /* Ensures the image covers the button */
     z-index: -1; /* Moves image behind the text */
+    transition: filter 0.3s ease-in-out; /* Smooth hover transition */
+}
+
+/* 🔄 Heads & Tails Hover Effect - Slight Brightness Instead of Green */
+#heads-button:hover img,
+#tails-button:hover img {
+    filter: brightness(1.2); /* Slightly brightens instead of turning green */
 }
 
 /* 🔄 Change Button Image When Clicked */
@@ -291,14 +306,6 @@ button {
 
 #tails-button.clicked img {
     content: url('/images/HT_Button2.png');
-}
-
-/* 🔄 Button Hover Effect */
-#betting-section button:hover,
-#flip-section button:hover,
-#history-section button:hover,
-#leaderboard-section button:hover {
-    transform: scale(1.06);
 }
 
 /* 🔥 Centering the Sections */
@@ -324,6 +331,12 @@ button {
     background: url('/images/HT_Button1.png') no-repeat center center;
     background-size: cover;
     border: none;
+    transition: filter 0.3s ease-in-out;
+}
+
+/* 🔄 Flip Coin Button Hover Effect */
+#flip-coin-button:hover {
+    filter: brightness(1.2);
 }
 
 /* 🔄 Ensure Toggle Buttons are Centered */
@@ -337,4 +350,11 @@ button {
     background: url('/images/HT_Button1.png') no-repeat center center;
     background-size: cover;
     border: none;
+    transition: filter 0.3s ease-in-out;
 }
+
+/* 🔄 Toggle Buttons Hover Effect */
+.toggle-button:hover {
+    filter: brightness(1.2);
+}
+
