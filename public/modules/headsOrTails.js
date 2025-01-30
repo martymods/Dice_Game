@@ -133,7 +133,7 @@ async function placeETHBet() {
         return;
     }
 
-    if (!userSelection) { // ✅ Check that Heads or Tails was selected before betting
+    if (!userSelection || (userSelection !== 'heads' && userSelection !== 'tails')) { 
         alert("Please select Heads or Tails before placing a bet.");
         return;
     }
@@ -148,7 +148,7 @@ async function placeETHBet() {
         const signer = provider.getSigner();
         const playerAddress = await signer.getAddress();
 
-        console.log(`Placing bet: ${betAmount} ETH by ${playerAddress}`);
+        console.log(`Placing bet: ${betAmount} ETH by ${playerAddress} on ${userSelection}`);
 
         const transaction = await signer.sendTransaction({
             to: playerAddress, // Replace with smart contract address if needed
@@ -170,6 +170,7 @@ async function placeETHBet() {
 
 // Ensure function is globally accessible
 window.placeETHBet = placeETHBet;
+
 
 
 
@@ -199,3 +200,12 @@ function startBestOfThreeFlip() {
         displayFinalResult(isWinner);
     }, 2000);
 }
+
+headsButton.addEventListener('click', () => {
+    setSelection('heads');
+});
+
+tailsButton.addEventListener('click', () => {
+    setSelection('tails');
+});
+
