@@ -164,6 +164,9 @@ async function placeETHBet() {
     }
 }
 
+// Ensure function is globally accessible
+window.placeETHBet = placeETHBet;
+
 function startBestOfThreeFlip() {
     let flips = 0;
     let wins = 0;
