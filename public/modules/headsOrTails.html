@@ -244,73 +244,77 @@
     // 🔄 Show "..." while spinning
     resultText.textContent = 'Result: ...'; 
     winnerMessage.textContent = '...';
-    
+
     // Show spinning coin gif
     resultCoinImage.src = '/images/Coin_Spinning.gif';
     resultGif.style.display = 'none'; // Hide the winner/loser GIF initially
 
-            coinImage.src = '/images/CoinToss_Quarter.gif';
+    coinImage.src = '/images/CoinToss_Quarter.gif';
 
-            const flipSound = new Audio('/sounds/CoinToss.mp3');
-            flipSound.play();
+    const flipSound = new Audio('/sounds/CoinToss.mp3');
+    flipSound.play();
 
+    setTimeout(() => {
+        const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
+        const isWinner = userSelection === flipResult;
+
+        // 🔄 Reset GIF before displaying to prevent fading issue
+        resultGif.style.opacity = '1';
+        resultGif.style.transition = 'none'; // Remove transition temporarily
+        resultGif.src = ''; // Clear previous GIF to force reload
+        setTimeout(() => {
+            resultGif.src = isWinner
+                ? '/images/CoinToss_Winner.gif'
+                : '/images/CoinToss_Loser.gif';
+            resultGif.style.display = 'block';
+        }, 50); // Small delay ensures proper reloading
+
+        // 🔄 Now Update Result and Winner Message
+        resultText.textContent = `Result: ${flipResult.toUpperCase()}`;
+        resultCoinImage.src = flipResult === 'heads'
+            ? '/images/Coin_Quarter_Float_Heads.gif'
+            : '/images/Coin_Quarter_Float_Tails.gif';
+
+        winnerMessage.textContent = isWinner ? 'You won!' : 'You lost!';
+
+        setTimeout(() => {
+            resultGif.style.opacity = '0';
+            resultGif.style.transition = 'opacity 1s ease-in-out';
             setTimeout(() => {
-    const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
-    const isWinner = userSelection === flipResult;
+                resultGif.style.display = 'none';
+            }, 1000);
+        }, 3000);
 
-    // 🔄 Now Update Result and Winner Message
-    resultText.textContent = `Result: ${flipResult.toUpperCase()}`;
-    winnerMessage.textContent = isWinner ? 'You won!' : 'You lost!';
+        coinImage.src = flipResult === 'heads'
+            ? '/images/CoinToss_Quarter_Heads.gif'
+            : '/images/CoinToss_Quarter_Tails.gif';
 
-    resultCoinImage.src = flipResult === 'heads'
-        ? '/images/Coin_Quarter_Float_Heads.gif'
-        : '/images/Coin_Quarter_Float_Tails.gif';
+        setTimeout(() => {
+            coinImage.src = flipResult === 'heads'
+                ? '/images/CoinToss_Quarter_Heads_loop.gif'
+                : '/images/CoinToss_Quarter_Tails_loop.gif';
+        }, 2000);
 
+        const resultSound = new Audio(isWinner ? '/sounds/CoinToss_Win.mp3' : '/sounds/CoinToss_Lose.mp3');
+        resultSound.play();
 
-                resultGif.src = isWinner
-                    ? '/images/CoinToss_Winner.gif'
-                    : '/images/CoinToss_Loser.gif';
-                resultGif.style.display = 'block';
+        document.getElementById('result-section').style.display = 'flex';
 
-                setTimeout(() => {
-                    resultGif.style.opacity = '1';
-                    resultGif.style.transition = 'opacity 1s';
-                    resultGif.style.opacity = '0';
-                    setTimeout(() => {
-                        resultGif.style.display = 'none';
-                    }, 1000);
-                }, 3000);
+        headsButton.disabled = false;
+        tailsButton.disabled = false;
+        flipCoinButton.disabled = false;
 
-                coinImage.src = flipResult === 'heads'
-                    ? '/images/CoinToss_Quarter_Heads.gif'
-                    : '/images/CoinToss_Quarter_Tails.gif';
+        resultHistory.unshift({ flipResult, isWinner });
+        if (resultHistory.length > 3) resultHistory.pop();
+        updateHistoryUI();
 
-                setTimeout(() => {
-                    coinImage.src = flipResult === 'heads'
-                        ? '/images/CoinToss_Quarter_Heads_loop.gif'
-                        : '/images/CoinToss_Quarter_Tails_loop.gif';
-                }, 2000);
+        if (isWinner) {
+            leaderboard.push({ user: 'You', winnings: '2x your bet' });
+            updateLeaderboardUI();
+        }
+    }, 5900);
+});
 
-                const resultSound = new Audio(isWinner ? '/sounds/CoinToss_Win.mp3' : '/sounds/CoinToss_Lose.mp3');
-                resultSound.play();
-
-                winnerMessage.textContent = isWinner ? 'You won!' : 'You lost!';
-                document.getElementById('result-section').style.display = 'flex';
-
-                headsButton.disabled = false;
-                tailsButton.disabled = false;
-                flipCoinButton.disabled = false;
-
-                resultHistory.unshift({ flipResult, isWinner });
-                if (resultHistory.length > 3) resultHistory.pop();
-                updateHistoryUI();
-
-                if (isWinner) {
-                    leaderboard.push({ user: 'You', winnings: '2x your bet' });
-                    updateLeaderboardUI();
-                }
-            }, 5900);
-        });
 
         function playAmbience() {
             const delay = Math.random() * 100000;
