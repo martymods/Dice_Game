@@ -108,13 +108,17 @@ function startCountdown(seconds) {
 // Call in Result Logic
 startCountdown(3);
 
-document.getElementById('heads-button').addEventListener('click', function () {
-    this.classList.add('clicked'); // Apply class to change background image
-    document.getElementById('tails-button').classList.remove('clicked'); // Reset Tails button
+const headsButton = document.getElementById('heads-button');
+const tailsButton = document.getElementById('tails-button');
+const headsImg = document.getElementById('heads-img');
+const tailsImg = document.getElementById('tails-img');
+
+headsButton.addEventListener('click', function () {
+    headsImg.src = "/images/HT_Button2.png"; // Change to clicked image
+    tailsImg.src = "/images/HT_Button1.png"; // Reset tails
 });
 
-document.getElementById('tails-button').addEventListener('click', function () {
-    this.classList.add('clicked'); // Apply class to change background image
-    document.getElementById('heads-button').classList.remove('clicked'); // Reset Heads button
+tailsButton.addEventListener('click', function () {
+    tailsImg.src = "/images/HT_Button2.png"; // Change to clicked image
+    headsImg.src = "/images/HT_Button1.png"; // Reset heads
 });
-
