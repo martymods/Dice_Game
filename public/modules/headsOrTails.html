@@ -223,16 +223,24 @@
             historySection.style.display = 'block';
         });
 
-        headsButton.addEventListener('click', () => setSelection('heads'));
-        tailsButton.addEventListener('click', () => setSelection('tails'));
+        headsButton.addEventListener('click', function () {
+    setSelection('heads');
+    console.log("✅ Heads selected, userSelection updated:", window.userSelection);
+});
+
+tailsButton.addEventListener('click', function () {
+    setSelection('tails');
+    console.log("✅ Tails selected, userSelection updated:", window.userSelection);
+});
+
 
         function setSelection(selection) {
-    userSelection = selection; // ✅ Store user choice globally
+    window.userSelection = selection; // ✅ Ensure global scope
+    console.log(`User selected: ${window.userSelection}`); // Debugging: Check selection is stored
 
-    console.log(`User selected: ${userSelection}`); // Debugging: Check selection is stored
-
-    headsButton.disabled = true;
-    tailsButton.disabled = true;
+    // Highlight the selected button
+    headsButton.classList.toggle("selected", selection === "heads");
+    tailsButton.classList.toggle("selected", selection === "tails");
 
     coinImage.src = selection === 'heads'
         ? '/images/Coin_Quarter_Float_Heads.gif'
@@ -369,4 +377,3 @@
     </script>
 </body>
 </html>
-
