@@ -503,7 +503,7 @@ button {
     text-align: center;
     color: white;
     padding: 10px;
-    background-color: rgba(0, 0, 0, 0.6);  /* Background effect */
+    background-color: rgba(0, 0, 0, 0.0);  /* Background effect */
     border-radius: 5px;
     z-index: 2;  /* Above GIF */
 }
