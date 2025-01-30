@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -228,7 +227,9 @@
         tailsButton.addEventListener('click', () => setSelection('tails'));
 
         function setSelection(selection) {
-    userSelection = selection; // Store user selection globally
+    userSelection = selection; // ✅ Store user choice globally
+
+    console.log(`User selected: ${userSelection}`); // Debugging: Check selection is stored
 
     headsButton.disabled = true;
     tailsButton.disabled = true;
@@ -239,6 +240,7 @@
 
     document.getElementById('flip-section').style.display = 'block';
 }
+
 
 
         flipCoinButton.addEventListener('click', () => {
@@ -367,3 +369,4 @@
     </script>
 </body>
 </html>
+
