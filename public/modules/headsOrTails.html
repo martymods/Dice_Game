@@ -252,10 +252,10 @@ tailsButton.addEventListener('click', function () {
 
 
         flipCoinButton.addEventListener('click', () => {
-    if (!userSelection) {
-        alert('Please select Heads or Tails.');
-        return;
-    }
+            if (!window.userSelection) {
+    alert('Please select Heads or Tails.');
+    return;
+}
 
     flipCoinButton.disabled = true;
 
