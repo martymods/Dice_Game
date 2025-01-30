@@ -131,6 +131,11 @@ async function placeETHBet() {
         return;
     }
 
+    if (!userSelection) { // ✅ Ensure the player has selected Heads or Tails before betting
+        alert("Please select Heads or Tails before placing a bet.");
+        return;
+    }
+
     if (typeof window.ethereum === "undefined") {
         alert("MetaMask is required to place bets.");
         return;
@@ -144,20 +149,17 @@ async function placeETHBet() {
         console.log(`Placing bet: ${betAmount} ETH by ${playerAddress}`);
 
         const transaction = await signer.sendTransaction({
-            to: playerAddress, // **Replace this with a smart contract address if needed**
+            to: playerAddress, // Replace with smart contract address if needed
             value: ethers.utils.parseEther(betAmount.toString())
         });
 
         console.log("Transaction sent:", transaction.hash);
-
-        // **Wait for the transaction to be confirmed**
         await transaction.wait();
 
         console.log("Bet placed successfully!");
 
-        // **Start the best-of-3 coin flip**
+        // ✅ Start the best-of-three flip only if the bet was placed successfully
         startBestOfThreeFlip();
-
     } catch (error) {
         console.error("Error placing ETH bet:", error);
         alert("Transaction failed. Check console for details.");
@@ -167,36 +169,30 @@ async function placeETHBet() {
 // Ensure function is globally accessible
 window.placeETHBet = placeETHBet;
 
+
 function startBestOfThreeFlip() {
-    let flips = 0;
-    let wins = 0;
-    let losses = 0;
+    if (!userSelection) {
+        alert("Error: No selection made.");
+        return;
+    }
 
-    function flipCoin() {
-        const flipResult = Math.random() < 0.0833 ? "heads" : "tails"; // ~1/12 chance of winning
-        const isWinner = userSelection === flipResult;
+    let winCount = 0;
+    let lossCount = 0;
 
-        if (isWinner) {
-            wins++;
+    for (let i = 0; i < 3; i++) {
+        const flipResult = flipCoin(userSelection);
+        if (flipResult === userSelection) {
+            winCount++;
         } else {
-            losses++;
-        }
-
-        flips++;
-
-        console.log(`Flip ${flips}: ${flipResult} (${isWinner ? "Win" : "Lose"})`);
-
-        // **If 3 flips are done, determine final outcome**
-        if (flips === 3) {
-            if (wins > losses) {
-                alert("Congratulations! You won the best-of-3 flip!");
-            } else {
-                alert("You lost the best-of-3 flip. Better luck next time!");
-            }
-        } else {
-            setTimeout(flipCoin, 2000); // Flip again after 2 seconds
+            lossCount++;
         }
     }
 
-    flipCoin();
+    console.log(`Final Best of 3 Results: Wins - ${winCount}, Losses - ${lossCount}`);
+
+    // If user wins at least once, grant win, else loss
+    setTimeout(() => {
+        const isWinner = winCount >= 1; // Ensures at least one win
+        displayFinalResult(isWinner);
+    }, 2000);
 }
