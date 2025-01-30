@@ -594,45 +594,6 @@ if (skipIntroButton) {
     });
 });
 
-window.placeBetForHeadsOrTails = async function (betAmountETH) {
-    try {
-        if (!window.signer) {
-            alert("Please connect your MetaMask wallet first.");
-            return;
-        }
-
-        const betAmount = parseFloat(betAmountETH);
-        if (isNaN(betAmount) || betAmount <= 0) {
-            alert("Invalid bet amount.");
-            return;
-        }
-
-        const playerAddress = await signer.getAddress();
-        console.log(`Placing bet of ${betAmount} ETH for Heads or Tails from ${playerAddress}`);
-
-        // Send transaction using MetaMask
-        const transaction = await signer.sendTransaction({
-            to: "0x5638c9f84361a7430b29a63216f0af0914399eA2", // Use the correct address
-            value: ethers.utils.parseEther(betAmount.toString()),
-        });
-
-        console.log("Transaction successful:", transaction);
-
-        // Notify the server about the bet
-        await fetch('/placeBetHeadsOrTails', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ playerAddress, betAmount }),
-        });
-
-        alert("Heads or Tails Bet placed successfully!");
-    } catch (error) {
-        console.error("Error placing bet:", error);
-        alert("Bet placement failed. Please try again.");
-    }
-};
-
-
 
 function animateDice(dice1, dice2, callback) {
     const dice1Element = document.getElementById('dice1');
@@ -2141,7 +2102,6 @@ socket.on('connect_error', (error) => {
 socket.on('disconnect', () => {
     console.log('Disconnected from the server');
 });
-
 
 
 // Make it accessible globally
