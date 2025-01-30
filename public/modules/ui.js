@@ -1392,7 +1392,7 @@ export function playCoinTossCutscene() {
     document.body.appendChild(cutsceneContainer);
 
     // Load and play audio
-    const audio = new Audio("sounds/CoinToss.mp3");
+    const audio = new Audio("sounds/CoinToss_Scenes.mp3");
     audio.play();
 
     // Array of cutscene GIFs
@@ -1428,7 +1428,7 @@ export function playCoinTossCutscene() {
 
 function startHeadsOrTailsGame() {
     // Redirect to Heads or Tails gameplay
-    window.location.href = "modules/headsOrTails.html"
+    window.location.href = "modules/headsOrTails.html";
 }
 
 
@@ -1443,29 +1443,5 @@ document.addEventListener('DOMContentLoaded', () => {
         headsOrTailsImage.addEventListener('click', () => selectMode(1));
     } else {
         console.warn("Heads or Tails image not found in the DOM.");
-    }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const placeBetForHeadsOrTailsButton = document.getElementById('place-bet-button');
-    
-    if (placeBetForHeadsOrTailsButton) {
-        placeBetForHeadsOrTailsButton.addEventListener('click', async () => {
-            const betAmountETH = document.getElementById('bet-amount')?.value;
-            if (betAmountETH) {
-                await window.placeBetForHeadsOrTails(betAmountETH);
-            } else {
-                alert("Please enter a valid bet amount.");
-            }
-        });
-    } else {
-        console.warn("Heads or Tails Place Bet button not found in the DOM.");
-    }
-});
-
-socket.on('headsOrTailsBetPlaced', ({ playerAddress, betAmount }) => {
-    const bettingStatus = document.getElementById('betting-status');
-    if (bettingStatus) {
-        bettingStatus.innerHTML += `<br>🔹 ${playerAddress} placed ${betAmount} ETH bet on Heads or Tails!`;
     }
 });
