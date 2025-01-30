@@ -1,4 +1,6 @@
 let pollVotes = { heads: 0, tails: 0 };
+let userSelection = ""; // Global variable for tracking selection
+
 
 function updatePollBar() {
     const headsBar = document.getElementById('heads-bar');
@@ -131,7 +133,7 @@ async function placeETHBet() {
         return;
     }
 
-    if (!userSelection) { // ✅ Ensure the player has selected Heads or Tails before betting
+    if (!userSelection) { // ✅ Check that Heads or Tails was selected before betting
         alert("Please select Heads or Tails before placing a bet.");
         return;
     }
@@ -168,6 +170,7 @@ async function placeETHBet() {
 
 // Ensure function is globally accessible
 window.placeETHBet = placeETHBet;
+
 
 
 function startBestOfThreeFlip() {
