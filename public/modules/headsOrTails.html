@@ -151,9 +151,13 @@
 
         <div id="betting-section">
             <label for="bet-amount">Place Your Bet (ETH):</label>
-            <input type="number" id="bet-amount" placeholder="e.g., 0.01" min="0.01">
-            <button id="place-bet-button">Place Bet</button>
+            <input type="number" id="bet-amount" placeholder="e.g., 0.01" min="0.0001" step="0.0001">
+            <button id="place-bet-button" onclick="placeETHBet()">
+                <img src="/images/ETH_Logo.png" alt="ETH" style="width: 20px; vertical-align: middle; margin-right: 8px;">
+                Place Bet (ETH)
+            </button>       
         </div>
+        
 
         <div id="flip-section" style="display: none;">
             <div id="coin-display">
