@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -227,16 +228,18 @@
         tailsButton.addEventListener('click', () => setSelection('tails'));
 
         function setSelection(selection) {
-            userSelection = selection;
-            headsButton.disabled = true;
-            tailsButton.disabled = true;
+    userSelection = selection; // Store user selection globally
 
-            coinImage.src = selection === 'heads'
-                ? '/images/Coin_Quarter_Float_Heads.gif'
-                : '/images/Coin_Quarter_Float_Tails.gif';
+    headsButton.disabled = true;
+    tailsButton.disabled = true;
 
-            document.getElementById('flip-section').style.display = 'block';
-        }
+    coinImage.src = selection === 'heads'
+        ? '/images/Coin_Quarter_Float_Heads.gif'
+        : '/images/Coin_Quarter_Float_Tails.gif';
+
+    document.getElementById('flip-section').style.display = 'block';
+}
+
 
         flipCoinButton.addEventListener('click', () => {
     if (!userSelection) {
