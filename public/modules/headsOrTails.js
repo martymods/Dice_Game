@@ -173,35 +173,44 @@ async function placeETHBet() {
 // Ensure function is globally accessible
 window.placeETHBet = placeETHBet;
 
+function flipCoin(selectedChoice) {
+    const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
+    console.log(`🎲 Coin Flip Result: ${flipResult.toUpperCase()} | Player Choice: ${selectedChoice}`);
+
+    return flipResult;
+}
 
 
 
 function startBestOfThreeFlip() {
-    if (!userSelection) {
+    if (!window.userSelection || (window.userSelection !== 'heads' && window.userSelection !== 'tails')) {
         alert("Error: No selection made.");
         return;
     }
+    
+    console.log(`🔄 Starting best-of-three with selection: ${window.userSelection}`); // Debugging
 
     let winCount = 0;
     let lossCount = 0;
 
     for (let i = 0; i < 3; i++) {
-        const flipResult = flipCoin(userSelection);
-        if (flipResult === userSelection) {
+        const flipResult = flipCoin(window.userSelection); // ✅ Pass userSelection
+        if (flipResult === window.userSelection) {
             winCount++;
         } else {
             lossCount++;
         }
     }
 
-    console.log(`Final Best of 3 Results: Wins - ${winCount}, Losses - ${lossCount}`);
+    console.log(`✅ Final Best of 3 Results: Wins - ${winCount}, Losses - ${lossCount}`);
 
-    // If user wins at least once, grant win, else loss
+    // ✅ Ensure a user gets at least one win
     setTimeout(() => {
-        const isWinner = winCount >= 1; // Ensures at least one win
+        const isWinner = winCount >= 1; 
         displayFinalResult(isWinner);
     }, 2000);
 }
+
 
 headsButton.addEventListener('click', () => {
     setSelection('heads');
@@ -210,5 +219,3 @@ headsButton.addEventListener('click', () => {
 tailsButton.addEventListener('click', () => {
     setSelection('tails');
 });
-
-
