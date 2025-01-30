@@ -1,3 +1,8 @@
+// Force CommonJS mode
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
