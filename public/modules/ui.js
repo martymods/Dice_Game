@@ -1332,6 +1332,7 @@ export function openHighRoller() {
         <div id="game-mode-selection" style="display: flex; gap: 20px; justify-content: center;">
             <img src="/images/GameSelect0.png" alt="Mode 0" style="width: 150px; cursor: pointer;" data-mode="0" />
             <img src="/images/GameSelect1.png" alt="Heads or Tails" style="width: 150px; cursor: pointer;" data-mode="1" />
+            <img src="/SocialGameImages/RR_Cards_ LOGO.gif" alt="TikTok Game" style="width: 150px; cursor: pointer;" data-mode="2" />
         </div>
         <button onclick="closeModal()" style="margin-top: 20px;">Close</button>
     `;
@@ -1348,21 +1349,29 @@ export function openHighRoller() {
     });
 }
 
-
-export function closeModal() {
-    const modal = document.getElementById('high-roller-modal');
-    if (modal) modal.remove();
-}
-
-export function selectMode(mode) {
-    if (mode === 1) {
-        // Play the cutscene before starting Heads or Tails
-        playCoinTossCutscene();
-    } else {
-        alert("This mode is under development.");
+// Handle Game Mode Selection
+function selectMode(mode) {
+    if (mode === 0) {
+        console.log("Mode 0 selected");
+        // Add logic for Mode 0
+    } else if (mode === 1) {
+        console.log("Heads or Tails selected");
+        // Add logic for Heads or Tails
+    } else if (mode === 2) {
+        console.log("TikTok Game selected");
+        // Redirect to TikTok Game
+        window.location.href = '/tiktok_game.html';
     }
-    closeModal();
 }
+
+// Close the modal
+function closeModal() {
+    const modal = document.getElementById('high-roller-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
 
 
 export function playCoinTossCutscene() {
