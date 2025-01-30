@@ -173,12 +173,13 @@ async function placeETHBet() {
 // Ensure function is globally accessible
 window.placeETHBet = placeETHBet;
 
-function flipCoin(selectedChoice) {
+function flipCoin() {
     const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
-    console.log(`🎲 Coin Flip Result: ${flipResult.toUpperCase()} | Player Choice: ${selectedChoice}`);
+    console.log(`🎲 Coin Flip Result: ${flipResult.toUpperCase()} | Player Choice: ${window.userSelection}`);
 
     return flipResult;
 }
+
 
 
 
