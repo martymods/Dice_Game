@@ -1332,7 +1332,8 @@ export function openHighRoller() {
         <div id="game-mode-selection" style="display: flex; gap: 20px; justify-content: center;">
             <img src="/images/GameSelect0.png" alt="Mode 0" style="width: 150px; cursor: pointer;" data-mode="0" />
             <img src="/images/GameSelect1.png" alt="Heads or Tails" style="width: 150px; cursor: pointer;" data-mode="1" />
-            <img src="/SocialGameImages/RR_Cards_ LOGO.gif" alt="TikTok Game" style="width: 150px; cursor: pointer;" data-mode="2" />
+            <img src="/images/SocialGameImages/RR_Cards_ LOGO.gif" alt="TikTok Game" style="width: 150px; cursor: pointer;" data-mode="2" />
+
         </div>
         <button onclick="closeModal()" style="margin-top: 20px;">Close</button>
     `;
@@ -1360,9 +1361,10 @@ function selectMode(mode) {
     } else if (mode === 2) {
         console.log("TikTok Game selected");
         // Redirect to TikTok Game
-        window.location.href = '/tiktok_game.html';
+        window.location.href = '/modules/tiktok_game.html';
     }
 }
+
 
 // Close the modal
 function closeModal() {
