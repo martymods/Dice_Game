@@ -133,10 +133,12 @@ async function placeETHBet() {
         return;
     }
 
-    if (!userSelection || (userSelection !== 'heads' && userSelection !== 'tails')) { 
+    if (!window.userSelection || (window.userSelection !== 'heads' && window.userSelection !== 'tails')) { 
         alert("Please select Heads or Tails before placing a bet.");
         return;
     }
+    console.log(`Placing bet on: ${window.userSelection}`); // ✅ Debugging
+    
 
     if (typeof window.ethereum === "undefined") {
         alert("MetaMask is required to place bets.");
@@ -208,4 +210,5 @@ headsButton.addEventListener('click', () => {
 tailsButton.addEventListener('click', () => {
     setSelection('tails');
 });
+
 
