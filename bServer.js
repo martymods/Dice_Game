@@ -36,6 +36,11 @@ app.get('/terms', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/terms.html'));
 });
 
+// Catch-all route for the TikTok game
+app.get('/modules/tiktok_game.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/modules/tiktok_game.html'));
+});
+
 // Leaderboard
 const leaderboardFile = path.resolve(__dirname, 'leaderboard.json');
 let leaderboard = [];
