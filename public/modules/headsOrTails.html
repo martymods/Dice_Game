@@ -234,17 +234,20 @@
         }
 
         flipCoinButton.addEventListener('click', () => {
-            if (!userSelection) {
-                alert('Please select Heads or Tails.');
-                return;
-            }
+    if (!userSelection) {
+        alert('Please select Heads or Tails.');
+        return;
+    }
 
-            flipCoinButton.disabled = true;
+    flipCoinButton.disabled = true;
 
-            resultText.textContent = 'Result:';
-            resultCoinImage.src = '/images/Coin_Spinning.gif';
-            resultGif.style.display = 'none';
-            resultGif.src = '';
+    // 🔄 Show "..." while spinning
+    resultText.textContent = 'Result: ...'; 
+    winnerMessage.textContent = '...';
+    
+    // Show spinning coin gif
+    resultCoinImage.src = '/images/Coin_Spinning.gif';
+    resultGif.style.display = 'none'; // Hide the winner/loser GIF initially
 
             coinImage.src = '/images/CoinToss_Quarter.gif';
 
@@ -252,13 +255,17 @@
             flipSound.play();
 
             setTimeout(() => {
-                const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
-                const isWinner = userSelection === flipResult;
+    const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
+    const isWinner = userSelection === flipResult;
 
-                resultText.textContent = `Result: ${flipResult.toUpperCase()}`;
-                resultCoinImage.src = flipResult === 'heads'
-                    ? '/images/Coin_Quarter_Float_Heads.gif'
-                    : '/images/Coin_Quarter_Float_Tails.gif';
+    // 🔄 Now Update Result and Winner Message
+    resultText.textContent = `Result: ${flipResult.toUpperCase()}`;
+    winnerMessage.textContent = isWinner ? 'You won!' : 'You lost!';
+
+    resultCoinImage.src = flipResult === 'heads'
+        ? '/images/Coin_Quarter_Float_Heads.gif'
+        : '/images/Coin_Quarter_Float_Tails.gif';
+
 
                 resultGif.src = isWinner
                     ? '/images/CoinToss_Winner.gif'
@@ -302,7 +309,7 @@
                     leaderboard.push({ user: 'You', winnings: '2x your bet' });
                     updateLeaderboardUI();
                 }
-            }, 5800);
+            }, 5900);
         });
 
         function playAmbience() {
