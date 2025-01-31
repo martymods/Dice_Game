@@ -211,7 +211,7 @@ function startBestOfThreeFlip() {
     let lossCount = 0;
 
     for (let i = 0; i < 3; i++) {
-        const flipResult = flipCoin(window.userSelection); // ✅ Pass userSelection
+        const flipResult = flipCoin(); // ✅ Remove extra parameter
         if (flipResult === window.userSelection) {
             winCount++;
         } else {
@@ -219,18 +219,24 @@ function startBestOfThreeFlip() {
         }
     }
 
+    // ✅ Ensure at least one win if no bet was placed
+    if (!betPlaced && winCount === 0) {
+        console.log("🛠 Adjusting odds to ensure at least one win for free players.");
+        winCount = 1;
+        lossCount = 2;
+    }
+
     console.log(`✅ Final Best of 3 Results: Wins - ${winCount}, Losses - ${lossCount}`);
 
-    // ✅ Ensure a user gets at least one win
     setTimeout(() => {
-        const isWinner = winCount >= 1; 
+        const isWinner = winCount >= 1; // Ensures at least one win
         displayFinalResult(isWinner);
     
         betPlaced = false; // ✅ Reset bet status after best-of-3
         console.log("🔄 Bet reset, odds back to 50/50 for free plays.");
     }, 2000);
-    
 }
+
 
 
 headsButton.addEventListener('click', () => {
