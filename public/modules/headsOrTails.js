@@ -181,10 +181,10 @@ let betPlaced = false; // ✅ Track if a bet has been placed
 
 function flipCoin() {
     let flipResult;
-    
+
     if (betPlaced) {
-        // 🎯 Adjusted odds when ETH bet is placed (1 in 12 chance of winning)
-        flipResult = Math.random() < (1 / 2) ? window.userSelection : (window.userSelection === 'heads' ? 'tails' : 'heads');
+        // 🎯 Adjusted odds when ETH bet is placed (1 in 4 chance of winning)
+        flipResult = Math.random() < (1 / 4) ? window.userSelection : (window.userSelection === 'heads' ? 'tails' : 'heads');
     } else {
         // 🚀 50/50 odds when no ETH bet is placed
         flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
@@ -211,7 +211,7 @@ function startBestOfThreeFlip() {
     let lossCount = 0;
 
     for (let i = 0; i < 3; i++) {
-        const flipResult = flipCoin(); // ✅ Remove extra parameter
+        const flipResult = flipCoin(); // ✅ Removed unnecessary parameter
         if (flipResult === window.userSelection) {
             winCount++;
         } else {
@@ -236,6 +236,7 @@ function startBestOfThreeFlip() {
         console.log("🔄 Bet reset, odds back to 50/50 for free plays.");
     }, 2000);
 }
+
 
 
 
