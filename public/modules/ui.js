@@ -1350,20 +1350,22 @@ export function openHighRoller() {
     });
 }
 
-// Handle Game Mode Selection
+// Handle Game Mode Selection (Game Mode URL/HTML load)
 function selectMode(mode) {
     if (mode === 0) {
         console.log("Mode 0 selected");
         // Add logic for Mode 0
     } else if (mode === 1) {
         console.log("Heads or Tails selected");
-        // Add logic for Heads or Tails
+        // Redirect to Heads or Tails game
+        window.location.href = '/modules/headsOrTails.html';
     } else if (mode === 2) {
         console.log("TikTok Game selected");
         // Redirect to TikTok Game
         window.location.href = '/modules/tiktok_game.html';
     }
 }
+
 
 
 // Close the modal
