@@ -128,10 +128,6 @@ tailsButton.addEventListener('click', function () {
 async function placeETHBet() {
     const betAmount = document.getElementById('bet-amount').value;
 
-    betPlaced = true; // ✅ Mark that a bet has been placed
-console.log("💰 ETH bet placed, odds adjusted.");
-
-
     if (!betAmount || betAmount <= 0) {
         alert("Please enter a valid bet amount.");
         return;
@@ -177,24 +173,12 @@ console.log("💰 ETH bet placed, odds adjusted.");
 // Ensure function is globally accessible
 window.placeETHBet = placeETHBet;
 
-let betPlaced = false; // ✅ Track if a bet has been placed
-
 function flipCoin() {
-    let flipResult;
-
-    if (betPlaced) {
-        // 🎯 Adjusted odds when ETH bet is placed (1 in 4 chance of winning)
-        flipResult = Math.random() < (1 / 4) ? window.userSelection : (window.userSelection === 'heads' ? 'tails' : 'heads');
-    } else {
-        // 🚀 50/50 odds when no ETH bet is placed
-        flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
-    }
-
-    console.log(`🎲 Coin Flip Result: ${flipResult.toUpperCase()} | Player Choice: ${window.userSelection} | Bet Placed: ${betPlaced}`);
+    const flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
+    console.log(`🎲 Coin Flip Result: ${flipResult.toUpperCase()} | Player Choice: ${window.userSelection}`);
 
     return flipResult;
 }
-
 
 
 
@@ -211,7 +195,7 @@ function startBestOfThreeFlip() {
     let lossCount = 0;
 
     for (let i = 0; i < 3; i++) {
-        const flipResult = flipCoin(); // ✅ Removed unnecessary parameter
+        const flipResult = flipCoin(window.userSelection); // ✅ Pass userSelection
         if (flipResult === window.userSelection) {
             winCount++;
         } else {
@@ -219,25 +203,14 @@ function startBestOfThreeFlip() {
         }
     }
 
-    // ✅ Ensure at least one win if no bet was placed
-    if (!betPlaced && winCount === 0) {
-        console.log("🛠 Adjusting odds to ensure at least one win for free players.");
-        winCount = 1;
-        lossCount = 2;
-    }
-
     console.log(`✅ Final Best of 3 Results: Wins - ${winCount}, Losses - ${lossCount}`);
 
+    // ✅ Ensure a user gets at least one win
     setTimeout(() => {
-        const isWinner = winCount >= 1; // Ensures at least one win
+        const isWinner = winCount >= 1; 
         displayFinalResult(isWinner);
-    
-        betPlaced = false; // ✅ Reset bet status after best-of-3
-        console.log("🔄 Bet reset, odds back to 50/50 for free plays.");
     }, 2000);
 }
-
-
 
 
 headsButton.addEventListener('click', () => {
