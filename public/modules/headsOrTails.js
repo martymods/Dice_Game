@@ -184,7 +184,7 @@ function flipCoin() {
     
     if (betPlaced) {
         // 🎯 Adjusted odds when ETH bet is placed (1 in 12 chance of winning)
-        flipResult = Math.random() < (1 / 12) ? window.userSelection : (window.userSelection === 'heads' ? 'tails' : 'heads');
+        flipResult = Math.random() < (1 / 2) ? window.userSelection : (window.userSelection === 'heads' ? 'tails' : 'heads');
     } else {
         // 🚀 50/50 odds when no ETH bet is placed
         flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
