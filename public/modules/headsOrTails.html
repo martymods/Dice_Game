@@ -11,8 +11,7 @@
     <script src="/app.js" type="module"></script>
     <script src="/modules/ui.js" type="module"></script>
     <script src="/modules/tiktok-integration.js"></script>
-    <script src="/modules/headsOrTails.js"></script>
-
+    <script src="/modules/headsOrTails.js" type="module"></script>
 
 
     <style>
@@ -223,39 +222,26 @@
             historySection.style.display = 'block';
         });
 
-        headsButton.addEventListener('click', function () {
-    setSelection('heads');
-    console.log("✅ Heads selected, userSelection updated:", window.userSelection);
-});
-
-tailsButton.addEventListener('click', function () {
-    setSelection('tails');
-    console.log("✅ Tails selected, userSelection updated:", window.userSelection);
-});
-
+        headsButton.addEventListener('click', () => setSelection('heads'));
+        tailsButton.addEventListener('click', () => setSelection('tails'));
 
         function setSelection(selection) {
-    window.userSelection = selection; // ✅ Ensure global scope
-    console.log(`User selected: ${window.userSelection}`); // Debugging: Check selection is stored
+            userSelection = selection;
+            headsButton.disabled = true;
+            tailsButton.disabled = true;
 
-    // Highlight the selected button
-    headsButton.classList.toggle("selected", selection === "heads");
-    tailsButton.classList.toggle("selected", selection === "tails");
+            coinImage.src = selection === 'heads'
+                ? '/images/Coin_Quarter_Float_Heads.gif'
+                : '/images/Coin_Quarter_Float_Tails.gif';
 
-    coinImage.src = selection === 'heads'
-        ? '/images/Coin_Quarter_Float_Heads.gif'
-        : '/images/Coin_Quarter_Float_Tails.gif';
-
-    document.getElementById('flip-section').style.display = 'block';
-}
-
-
+            document.getElementById('flip-section').style.display = 'block';
+        }
 
         flipCoinButton.addEventListener('click', () => {
-            if (!window.userSelection) {
-    alert('Please select Heads or Tails.');
-    return;
-}
+    if (!userSelection) {
+        alert('Please select Heads or Tails.');
+        return;
+    }
 
     flipCoinButton.disabled = true;
 
