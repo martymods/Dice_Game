@@ -1,44 +1,73 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const cardTitle = document.getElementById('card-title');
-    const cardText = document.getElementById('card-text');
-  
-    const challenges = [
-      { category: 'Take a Shot', text: "Take a shot if you've ever texted your ex while drunk!" },
-      { category: 'I Dare You', text: 'I dare you to post an embarrassing TikTok, or take a shot!' },
-      { category: 'Wild Card', text: 'Call your crush and confess your feelings, or take three shots!' }
+// Adding the animated card interactions for the game
+// Ensure these cards are styled and function dynamically
+
+// Load the cards and define their behavior
+document.addEventListener("DOMContentLoaded", () => {
+    const cardContainer = document.querySelector(".card-container"); // Add this div in your HTML
+    
+    const cardData = [
+        {
+            type: "TAKE A SHOT!",
+            image: "public/images/SocialGameImages/RR_Cards_0.gif",
+            backImage: "public/images/SocialGameImages/RR_Cards_Back.gif",
+            questions: ["Take a shot with the person next to you!", "Take two shots and name your favorite drink."]
+        },
+        {
+            type: "WILD CARD!",
+            image: "public/images/SocialGameImages/RR_Cards_1.gif",
+            backImage: "public/images/SocialGameImages/RR_Cards_Back.gif",
+            questions: ["Wild Card: Sing a song of your choice.", "Wild Card: Switch seats with anyone in the group."]
+        },
+        {
+            type: "I DARE YOU!",
+            image: "public/images/SocialGameImages/RR_Cards_0.gif",
+            backImage: "public/images/SocialGameImages/RR_Cards_Back.gif",
+            questions: ["I Dare You to dance for 1 minute!", "I Dare You to call a random friend."]
+        }
     ];
-  
-    const buttons = {
-      takeShot: document.getElementById('take-shot-btn'),
-      iDareYou: document.getElementById('i-dare-you-btn'),
-      wildCard: document.getElementById('wild-card-btn')
-    };
-  
-    // Change card content based on button clicked
-    buttons.takeShot.addEventListener('click', () => showRandomChallenge('Take a Shot'));
-    buttons.iDareYou.addEventListener('click', () => showRandomChallenge('I Dare You'));
-    buttons.wildCard.addEventListener('click', () => showRandomChallenge('Wild Card'));
-  
-    function showRandomChallenge(category) {
-      const filteredChallenges = challenges.filter(ch => ch.category === category);
-      const randomChallenge = filteredChallenges[Math.floor(Math.random() * filteredChallenges.length)];
-      cardTitle.textContent = randomChallenge.category;
-      cardText.textContent = randomChallenge.text;
-    }
-  
-    // Chat functionality placeholder
-    const chatMessages = document.getElementById('chat-messages');
-    const chatInput = document.getElementById('message-input');
-    const sendMessageBtn = document.getElementById('send-message');
-  
-    sendMessageBtn.addEventListener('click', () => {
-      const message = chatInput.value.trim();
-      if (message) {
-        const newMessage = document.createElement('p');
-        newMessage.textContent = `Player: ${message}`;
-        chatMessages.appendChild(newMessage);
-        chatInput.value = '';
-      }
+
+    cardData.forEach((card, index) => {
+        const cardElement = document.createElement("div");
+        cardElement.classList.add("card");
+        cardElement.innerHTML = `
+            <div class="card-inner">
+                <div class="card-front">
+                    <img src="${card.backImage}" alt="Card Back">
+                </div>
+                <div class="card-back">
+                    <img src="${card.image}" alt="${card.type}">
+                    <div class="card-text">${card.questions[Math.floor(Math.random() * card.questions.length)]}</div>
+                </div>
+            </div>
+        `;
+
+        cardElement.addEventListener("click", () => {
+            cardElement.classList.toggle("flipped");
+        });
+
+        cardContainer.appendChild(cardElement);
     });
-  });
+
+    // Add animations using CSS and JS based on main.js's dynamic animations
+    const cards = document.querySelectorAll(".card");
+    cards.forEach((card) => {
+        card.addEventListener("mouseover", () => {
+            card.style.transform = "scale(1.05)";
+            card.style.transition = "transform 0.3s ease";
+        });
+
+        card.addEventListener("mouseout", () => {
+            card.style.transform = "scale(1)";
+        });
+    });
+
+    // Responsive animation inspired from main.js
+    window.addEventListener("resize", () => {
+        const cardWidth = Math.min(window.innerWidth / 5, 150); // Resizing dynamically
+        cards.forEach((card) => {
+            card.style.width = `${cardWidth}px`;
+        });
+    });
+});
+
   
