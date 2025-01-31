@@ -8,23 +8,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const cardData = [
         {
             type: "TAKE A SHOT!",
-            image: "public/images/SocialGameImages/RR_Cards_0.gif",
-            backImage: "public/images/SocialGameImages/RR_Cards_Back.gif",
+            image: "/images/SocialGameImages/RR_Cards_0.gif",
+            backImage: "/images/SocialGameImages/RR_Cards_Back.gif",
             questions: ["Take a shot with the person next to you!", "Take two shots and name your favorite drink."]
         },
         {
             type: "WILD CARD!",
-            image: "public/images/SocialGameImages/RR_Cards_1.gif",
-            backImage: "public/images/SocialGameImages/RR_Cards_Back.gif",
+            image: "/images/SocialGameImages/RR_Cards_1.gif",
+            backImage: "/images/SocialGameImages/RR_Cards_Back.gif",
             questions: ["Wild Card: Sing a song of your choice.", "Wild Card: Switch seats with anyone in the group."]
         },
         {
             type: "I DARE YOU!",
-            image: "public/images/SocialGameImages/RR_Cards_0.gif",
-            backImage: "public/images/SocialGameImages/RR_Cards_Back.gif",
+            image: "/images/SocialGameImages/RR_Cards_0.gif",
+            backImage: "/images/SocialGameImages/RR_Cards_Back.gif",
             questions: ["I Dare You to dance for 1 minute!", "I Dare You to call a random friend."]
         }
     ];
+    
 
     cardData.forEach((card, index) => {
         const cardElement = document.createElement("div");
