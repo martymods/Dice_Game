@@ -137,8 +137,8 @@ async function placeETHBet() {
         alert("Please select Heads or Tails before placing a bet.");
         return;
     }
-
     console.log(`Placing bet on: ${window.userSelection}`); // ✅ Debugging
+    
 
     if (typeof window.ethereum === "undefined") {
         alert("MetaMask is required to place bets.");
@@ -150,9 +150,7 @@ async function placeETHBet() {
         const signer = provider.getSigner();
         const playerAddress = await signer.getAddress();
 
-        console.log(`💰 ETH Bet Placed: ${betAmount} ETH by ${playerAddress} on ${window.userSelection}`);
-        
-        betPlaced = true; // ✅ Ensure `betPlaced` updates before sending the transaction.
+        console.log(`Placing bet: ${betAmount} ETH by ${playerAddress} on ${userSelection}`);
 
         const transaction = await signer.sendTransaction({
             to: playerAddress, // Replace with smart contract address if needed
@@ -162,14 +160,13 @@ async function placeETHBet() {
         console.log("Transaction sent:", transaction.hash);
         await transaction.wait();
 
-        console.log("✅ Bet placed successfully!");
+        console.log("Bet placed successfully!");
 
         // ✅ Start the best-of-three flip only if the bet was placed successfully
         startBestOfThreeFlip();
     } catch (error) {
-        console.error("❌ Error placing ETH bet:", error);
+        console.error("Error placing ETH bet:", error);
         alert("Transaction failed. Check console for details.");
-        betPlaced = false; // ✅ If the transaction fails, reset the bet status
     }
 }
 
@@ -177,69 +174,34 @@ async function placeETHBet() {
 window.placeETHBet = placeETHBet;
 
 
-let betPlaced = false; // ✅ Track if a bet has been placed
-
-function flipCoin() {
-    let flipResult;
-
-    if (betPlaced) {
-        // 🎯 Adjusted odds when ETH bet is placed (1 in 4 chance of winning)
-        flipResult = Math.random() < (1 / 4) ? window.userSelection : (window.userSelection === 'heads' ? 'tails' : 'heads');
-    } else {
-        // 🚀 50/50 odds when no ETH bet is placed
-        flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
-    }
-
-    console.log(`🎲 Coin Flip Result: ${flipResult.toUpperCase()} | Player Choice: ${window.userSelection} | Bet Placed: ${betPlaced}`);
-
-    return flipResult;
-}
-
-
-
 
 
 function startBestOfThreeFlip() {
-    if (!window.userSelection || (window.userSelection !== 'heads' && window.userSelection !== 'tails')) {
+    if (!userSelection) {
         alert("Error: No selection made.");
         return;
     }
-    
-    console.log(`🔄 Starting best-of-three with selection: ${window.userSelection}`);
 
     let winCount = 0;
     let lossCount = 0;
 
     for (let i = 0; i < 3; i++) {
-        const flipResult = flipCoin();
-        if (flipResult === window.userSelection) {
+        const flipResult = flipCoin(userSelection);
+        if (flipResult === userSelection) {
             winCount++;
         } else {
             lossCount++;
         }
     }
 
-    // ✅ Ensure at least one win if no bet was placed
-    if (!betPlaced && winCount === 0) {
-        console.log("🛠 Adjusting odds to ensure at least one win for free players.");
-        winCount = 1;
-        lossCount = 2;
-    }
+    console.log(`Final Best of 3 Results: Wins - ${winCount}, Losses - ${lossCount}`);
 
-    console.log(`✅ Final Best of 3 Results: Wins - ${winCount}, Losses - ${lossCount}`);
-
+    // If user wins at least once, grant win, else loss
     setTimeout(() => {
-        const isWinner = winCount >= 1;
+        const isWinner = winCount >= 1; // Ensures at least one win
         displayFinalResult(isWinner);
-    
-        betPlaced = false; // ✅ Reset bet status after best-of-3
-        console.log("🔄 Bet reset, odds back to 50/50 for free plays.");
     }, 2000);
 }
-
-
-
-
 
 headsButton.addEventListener('click', () => {
     setSelection('heads');
@@ -248,3 +210,4 @@ headsButton.addEventListener('click', () => {
 tailsButton.addEventListener('click', () => {
     setSelection('tails');
 });
+
