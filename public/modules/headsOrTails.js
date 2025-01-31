@@ -176,38 +176,3 @@ window.placeETHBet = placeETHBet;
 
 
 
-function startBestOfThreeFlip() {
-    if (!userSelection) {
-        alert("Error: No selection made.");
-        return;
-    }
-
-    let winCount = 0;
-    let lossCount = 0;
-
-    for (let i = 0; i < 3; i++) {
-        const flipResult = flipCoin(userSelection);
-        if (flipResult === userSelection) {
-            winCount++;
-        } else {
-            lossCount++;
-        }
-    }
-
-    console.log(`Final Best of 3 Results: Wins - ${winCount}, Losses - ${lossCount}`);
-
-    // If user wins at least once, grant win, else loss
-    setTimeout(() => {
-        const isWinner = winCount >= 1; // Ensures at least one win
-        displayFinalResult(isWinner);
-    }, 2000);
-}
-
-headsButton.addEventListener('click', () => {
-    setSelection('heads');
-});
-
-tailsButton.addEventListener('click', () => {
-    setSelection('tails');
-});
-
