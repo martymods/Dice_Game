@@ -20,15 +20,26 @@
         <source src="/sounds/eShopSFX.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Chat Feature -->
-    <div id="chat-container" class="chat-box">
-        <div id="chat-header">Chat</div>
-        <div id="message-list" class="message-list"></div>
-        <input id="message-input" class="message-input" type="text" placeholder="Type a message...">
-        <button id="send-message" class="send-button">Send</button>
+    <!-- Chat -->
+    <div id="chat-container" class="chat-minimized">
+        <div id="chat-header">
+            <span>Chat</span>
+            <button id="toggle-chat">☰</button>
+        </div>
+        <div id="chat-body">
+            <div id="player-list">
+                <strong>Online Players:</strong>
+                <ul id="player-names"></ul>
+            </div>
+            <div id="message-list"></div>
+        </div>
+        <div id="chat-footer">
+            <input id="message-input" type="text" placeholder="Type your message...">
+            <button id="send-message">Send</button>
+        </div>
     </div>
 
+    <script src="/shop.js"></script>
     <script src="/index_chat.js"></script>
-    <script src="shop.js"></script>
 </body>
 </html>
