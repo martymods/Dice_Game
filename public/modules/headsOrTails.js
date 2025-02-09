@@ -44,10 +44,22 @@ let bets = []; // Store all active bets
 let userSelection = ""; // Global variable for tracking selection
 
 socket.onmessage = (event) => {
+    console.log("📩 Received WebSocket Message:", event.data);
     const data = JSON.parse(event.data);
-    console.log("🎁 New Bet:", data);
-    placeViewerBet(data.username, data.choice, data.value, data.profilePic);
+
+    if (data.error) {
+        console.error("⚠️ Server Error:", data.error);
+        return;
+    }
+
+    if (data.command === "bet") {
+        console.log("🎁 New Bet:", data);
+        placeViewerBet(data.username, data.choice, data.value, data.profilePic);
+    } else {
+        console.warn("⚠️ Unrecognized command:", data.command);
+    }
 };
+
 
 // ✅ Function to Place Viewer Bets
 function placeViewerBet(username, choice, value, profilePic) {
@@ -196,4 +208,3 @@ tailsButton.addEventListener('click', function () {
     tailsImg.src = "/images/HT_Button2.png"; // Change to clicked image
     headsImg.src = "/images/HT_Button1.png"; // Reset heads
 });
-
