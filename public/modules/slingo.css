@@ -23,14 +23,18 @@ body {
 
 #bingo-card {
     position: absolute;
-    top: 20%;
+    top: 0%;
     left: 50%;
     transform: translateX(-50%);
+    width: auto;
+    height: auto;
+    max-width: 90%; /* Allow resizing */
+    max-height: 90vh; /* Maintain proportional height */
 }
 
 #slot-machine {
     position: absolute;
-    bottom: 20%;
+    bottom: 10%;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -38,19 +42,52 @@ body {
 }
 
 .wheel {
-    width: 50px;
-    height: 50px;
-    margin: 5px;
-    background-color: white;
     display: inline-block;
-    font-size: 24px;
     text-align: center;
+    background-color: white;
+    font-size: 24px;
     line-height: 50px;
+    position: absolute;
+}
+
+.wheel-1 {
+    width: 140px;
+    height: 50px;
+    top: 25%;
+    left: 20%;
+}
+
+.wheel-2 {
+    width: 150px;
+    height: 50px;
+    top: 35%;
+    left: 40%;
+}
+
+.wheel-3 {
+    width: 130px;
+    height: 50px;
+    top: 45%;
+    left: 60%;
+}
+
+.wheel-4 {
+    width: 160px;
+    height: 50px;
+    top: 55%;
+    left: 80%;
+}
+
+.wheel-5 {
+    width: 145px;
+    height: 50px;
+    top: 65%;
+    left: 50%;
 }
 
 #spin-button {
     position: absolute;
-    bottom: 5%;
+    bottom: 50%; 
     right: 5%;
     background: none;
     border: none;
