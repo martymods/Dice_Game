@@ -4,7 +4,20 @@ window.socket = new WebSocket("ws://localhost:8181");
 socket.onopen = () => {
     console.log("WebSocket connected!");
     setTimeout(() => {
-        socket.send(JSON.stringify({ username: "TestUser", gift: "coins", value: 100, choice: "HEADS" }));
+        const message = {
+            type: "bet",  // Ensure there is a type field if required by the server
+            username: "TestUser",
+            gift: "coins",
+            value: 100,
+            choice: "HEADS"
+        };
+        
+        if (typeof socket !== "undefined" && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(message));
+        } else {
+            console.error("WebSocket is not connected.");
+        }
+        
     }, 1000);
 };
 
@@ -183,3 +196,4 @@ tailsButton.addEventListener('click', function () {
     tailsImg.src = "/images/HT_Button2.png"; // Change to clicked image
     headsImg.src = "/images/HT_Button1.png"; // Reset heads
 });
+
