@@ -1,4 +1,29 @@
-const socket = new WebSocket("ws://localhost:8181"); // Connect to WebSocket server
+// Initialize WebSocket connection
+window.socket = new WebSocket("ws://localhost:8181");
+
+socket.onopen = () => {
+    console.log("WebSocket connected!");
+    setTimeout(() => {
+        socket.send(JSON.stringify({ username: "TestUser", gift: "coins", value: 100, choice: "HEADS" }));
+    }, 1000);
+};
+
+socket.onerror = (error) => {
+    console.error("WebSocket error:", error);
+};
+
+socket.onclose = () => {
+    console.log("WebSocket closed!");
+};
+
+// Function to check if WebSocket is initialized before sending data
+function sendBetData(username, gift, value, choice) {
+    if (typeof socket === "undefined") {
+        console.error("WebSocket is not initialized.");
+    } else {
+        socket.send(JSON.stringify({ username, gift, value, choice }));
+    }
+}
 
 let pollVotes = { heads: 0, tails: 0 };
 let leaderboard = [];
@@ -158,6 +183,3 @@ tailsButton.addEventListener('click', function () {
     tailsImg.src = "/images/HT_Button2.png"; // Change to clicked image
     headsImg.src = "/images/HT_Button1.png"; // Reset heads
 });
-
-
-
