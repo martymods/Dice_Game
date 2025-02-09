@@ -1,90 +1,121 @@
+const socket = new WebSocket("ws://localhost:8181"); // Connect to WebSocket server
+
 let pollVotes = { heads: 0, tails: 0 };
+let leaderboard = [];
+let bets = []; // Store all active bets
 let userSelection = ""; // Global variable for tracking selection
 
+socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    console.log("🎁 New Bet:", data);
+    placeViewerBet(data.username, data.choice, data.value, data.profilePic);
+};
 
+// ✅ Function to Place Viewer Bets
+function placeViewerBet(username, choice, value, profilePic) {
+    // Update Poll Votes
+    pollVotes[choice]++;
+    updatePollBar();
+
+    // Store Bet
+    bets.push({ username, choice, value, profilePic });
+
+    console.log(`📊 ${username} bet ${value} points on ${choice}!`);
+
+    // Update Leaderboard
+    updateLeaderboard();
+}
+
+// ✅ Function to Update Live Poll Bar
 function updatePollBar() {
-    const headsBar = document.getElementById('heads-bar');
-    const tailsBar = document.getElementById('tails-bar');
     const totalVotes = pollVotes.heads + pollVotes.tails;
-
     if (totalVotes > 0) {
-        headsBar.style.width = `${(pollVotes.heads / totalVotes) * 100}%`;
-        tailsBar.style.width = `${(pollVotes.tails / totalVotes) * 100}%`;
+        document.getElementById('heads-bar').style.width = `${(pollVotes.heads / totalVotes) * 100}%`;
+        document.getElementById('tails-bar').style.width = `${(pollVotes.tails / totalVotes) * 100}%`;
     }
 }
 
-function triggerBackground(isWinner) {
-    const body = document.body;
-    body.style.backgroundImage = `url('${isWinner ? '/images/CoinToss_Winner.gif' : '/images/CoinToss_Loser.gif'}')`;
-    setTimeout(() => {
-        body.style.backgroundImage = "url('/images/Background_Loop.gif')";
-    }, 3000); // Reset background after 3 seconds
+// ✅ Function to Determine the Winner and Process Bets
+function processBets() {
+    const result = Math.random() < 0.5 ? "heads" : "tails";
+    console.log(`🎲 Coin Flip Result: ${result.toUpperCase()}`);
+
+    triggerBackground(result);
+
+    // Process Viewer Bets
+    bets.forEach(bet => {
+        if (bet.choice === result) {
+            updatePlayerScore(bet.username, bet.value, bet.profilePic);
+            console.log(`🎉 ${bet.username} won ${bet.value} points!`);
+            displayShoutout(bet.username, bet.value);
+        } else {
+            console.log(`❌ ${bet.username} lost.`);
+        }
+    });
+
+    // Reset Bets for Next Round
+    bets = [];
 }
 
-// Call in Result Logic
-triggerBackground(isWinner);
+// ✅ Function to Trigger Background Animation Based on Result
+function triggerBackground(result) {
+    const body = document.body;
+    body.style.backgroundImage = `url('${result === "heads" ? '/images/CoinToss_Winner.gif' : '/images/CoinToss_Loser.gif'}')`;
 
-
-function displayShoutout(username) {
-    const shoutout = document.createElement('div');
-    shoutout.textContent = `Shoutout to @${username} for guessing correctly!`;
-    shoutout.style.position = 'fixed';
-    shoutout.style.top = '10px';
-    shoutout.style.right = '10px';
-    shoutout.style.backgroundColor = 'rgba(0,0,0,0.8)';
-    shoutout.style.color = 'white';
-    shoutout.style.padding = '10px';
-    shoutout.style.borderRadius = '5px';
-    document.body.appendChild(shoutout);
     setTimeout(() => {
-        shoutout.remove();
+        body.style.backgroundImage = "url('/images/Background_Loop.gif')";
     }, 3000);
 }
 
-// Example call
-if (message.includes("Heads") && isWinner) {
-    displayShoutout(message.username);
+// ✅ Function to Update Leaderboard
+function updateLeaderboard() {
+    leaderboard.sort((a, b) => b.totalPoints - a.totalPoints);
+    const top5 = leaderboard.slice(0, 5);
+
+    const leaderboardList = document.getElementById("leaderboard");
+    leaderboardList.innerHTML = "";
+
+    top5.forEach((player) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            <img src="${player.profilePic}" alt="${player.username}" style="width: 40px; border-radius: 50%;">
+            <strong>${player.username}</strong> - ${player.totalPoints} pts
+        `;
+        leaderboardList.appendChild(li);
+    });
 }
 
-let winStreak = 0;
+// ✅ Function to Update Player Score
+function updatePlayerScore(username, points, profilePic) {
+    let player = leaderboard.find(p => p.username === username);
 
-function checkForUnlocks(isWinner) {
-    if (isWinner) winStreak++;
-    else winStreak = 0;
-
-    if (winStreak === 5) {
-        console.log("Unlock Hidden Background!");
-        document.body.style.filter = "hue-rotate(180deg)"; // Example effect
+    if (player) {
+        player.totalPoints += points;
+    } else {
+        leaderboard.push({ username, totalPoints: points, profilePic });
     }
+
+    updateLeaderboard();
 }
 
-// Call in Result Logic
-checkForUnlocks(isWinner);
+// ✅ Function to Display Shoutouts for Big Wins
+function displayShoutout(username, points) {
+    const shoutout = document.createElement("div");
+    shoutout.innerHTML = `🔥 @${username} won ${points} points!`;
+    shoutout.style.position = "fixed";
+    shoutout.style.top = "10px";
+    shoutout.style.left = "50%";
+    shoutout.style.transform = "translateX(-50%)";
+    shoutout.style.padding = "10px";
+    shoutout.style.background = "gold";
+    shoutout.style.color = "black";
+    shoutout.style.borderRadius = "5px";
+    document.body.appendChild(shoutout);
 
-let flipCount = 0;
-
-function celebrateMilestone() {
-    if (flipCount % 100 === 0) {
-        const milestone = document.createElement('div');
-        milestone.textContent = `100 flips reached! 🎉`;
-        milestone.style.position = 'fixed';
-        milestone.style.top = '50%';
-        milestone.style.left = '50%';
-        milestone.style.transform = 'translate(-50%, -50%)';
-        milestone.style.backgroundColor = 'gold';
-        milestone.style.color = 'black';
-        milestone.style.padding = '20px';
-        milestone.style.borderRadius = '10px';
-        document.body.appendChild(milestone);
-        setTimeout(() => milestone.remove(), 3000);
-    }
+    setTimeout(() => shoutout.remove(), 3000);
 }
 
-// Increment flip count in Result Logic
-flipCount++;
-celebrateMilestone();
-
-
+// ✅ Function to Start a Countdown Before Processing Bets
 function startCountdown(seconds) {
     const overlay = document.createElement('div');
     overlay.textContent = seconds;
@@ -102,77 +133,31 @@ function startCountdown(seconds) {
         if (seconds <= 0) {
             clearInterval(interval);
             overlay.remove();
-            flipCoin(); // Trigger coin flip
+            processBets(); // Process bets after countdown
         }
     }, 1000);
 }
 
-// Call in Result Logic
+// ✅ Start the Countdown Automatically on Load
 startCountdown(3);
 
+// ✅ Event Listeners for Player Selection
 const headsButton = document.getElementById('heads-button');
 const tailsButton = document.getElementById('tails-button');
 const headsImg = document.getElementById('heads-img');
 const tailsImg = document.getElementById('tails-img');
 
 headsButton.addEventListener('click', function () {
+    userSelection = "heads";
     headsImg.src = "/images/HT_Button2.png"; // Change to clicked image
     tailsImg.src = "/images/HT_Button1.png"; // Reset tails
 });
 
 tailsButton.addEventListener('click', function () {
+    userSelection = "tails";
     tailsImg.src = "/images/HT_Button2.png"; // Change to clicked image
     headsImg.src = "/images/HT_Button1.png"; // Reset heads
 });
-
-async function placeETHBet() {
-    const betAmount = document.getElementById('bet-amount').value;
-
-    if (!betAmount || betAmount <= 0) {
-        alert("Please enter a valid bet amount.");
-        return;
-    }
-
-    if (!window.userSelection || (window.userSelection !== 'heads' && window.userSelection !== 'tails')) { 
-        alert("Please select Heads or Tails before placing a bet.");
-        return;
-    }
-    console.log(`Placing bet on: ${window.userSelection}`); // ✅ Debugging
-    
-
-    if (typeof window.ethereum === "undefined") {
-        alert("MetaMask is required to place bets.");
-        return;
-    }
-
-    try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        const playerAddress = await signer.getAddress();
-
-        console.log(`Placing bet: ${betAmount} ETH by ${playerAddress} on ${userSelection}`);
-
-        const transaction = await signer.sendTransaction({
-            to: playerAddress, // Replace with smart contract address if needed
-            value: ethers.utils.parseEther(betAmount.toString())
-        });
-
-        console.log("Transaction sent:", transaction.hash);
-        await transaction.wait();
-
-        console.log("Bet placed successfully!");
-
-        // ✅ Start the best-of-three flip only if the bet was placed successfully
-        startBestOfThreeFlip();
-    } catch (error) {
-        console.error("Error placing ETH bet:", error);
-        alert("Transaction failed. Check console for details.");
-    }
-}
-
-// Ensure function is globally accessible
-window.placeETHBet = placeETHBet;
-
 
 
 
