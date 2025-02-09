@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let score = 0;
 
     spinButton.addEventListener("click", () => {
-        playSound("sounds/Button_Spin_Sfx.mp3");
+        playSound("/sounds/Button_Spin_Sfx.mp3");
         spinSlots();
     });
 
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (parseInt(cell.textContent) === number) {
                 cell.style.backgroundColor = "yellow";
                 score += 200;
-                playSound("sounds/Score_Sfx_0.mp3");
+                playSound("/sounds/Score_Sfx_0.mp3");
                 updateScore();
             }
         });
