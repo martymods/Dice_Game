@@ -3,26 +3,7 @@ window.socket = new WebSocket("ws://localhost:8181");
 
 socket.onopen = () => {
     console.log("WebSocket connected!");
-    setTimeout(() => {
-        const message = {
-            action: "bet",  // Replace "command" with "action" if server expects it
-            username: "TestUser",
-            gift: "coins",
-            amount: 100,     // Use "amount" instead of "value" if required by server
-            option: "HEADS"  // Use "option" instead of "choice" if required by server
-        };
-
-        if (socket.readyState === WebSocket.OPEN) {
-            console.log("📨 Sending WebSocket Message:", JSON.stringify(message, null, 2));
-            socket.send(JSON.stringify(message));
-        } else {
-            console.error("WebSocket is not connected.");
-        }
-
-    }, 1000);
 };
-
-
 
 socket.onerror = (error) => {
     console.error("WebSocket error:", error);
@@ -40,18 +21,16 @@ function sendBetData(username, gift, amount, option) {
     }
 
     const message = {
-        action: "bet",  // Ensure field names match server expectations
+        action: "bet",  // Ensure the server expects this format
         username: username,
         gift: gift,
-        amount: amount,   // Change "value" to "amount"
-        option: option    // Change "choice" to "option"
+        amount: amount,
+        option: option
     };
 
     console.log("📨 Sending WebSocket Message:", JSON.stringify(message, null, 2));
     socket.send(JSON.stringify(message));
 }
-
-
 
 let pollVotes = { heads: 0, tails: 0 };
 let leaderboard = [];
@@ -69,33 +48,30 @@ socket.onmessage = (event) => {
             return;
         }
 
-        console.log("🖥️ Received from Server:", JSON.stringify(data, null, 2)); // Log the received message
+        console.log("🖥️ Received from Server:", JSON.stringify(data, null, 2));
 
-        if (!data.action) {
-            console.warn(`⚠️ Unrecognized action: ${data.action}`);
+        if (!data.response || data.response !== "bet_acknowledged") {
+            console.warn(`⚠️ Unrecognized response: ${data.response}`);
             return;
         }
-        
 
         console.log("🎁 New Bet:", data);
         placeViewerBet(data.username, data.option, data.amount, data.profilePic);
-        
     } catch (error) {
         console.error("❌ Error parsing WebSocket message:", error);
     }
 };
 
-
 // ✅ Function to Place Viewer Bets
-function placeViewerBet(username, choice, value, profilePic) {
+function placeViewerBet(username, option, amount, profilePic) {
     // Update Poll Votes
-    pollVotes[choice]++;
+    pollVotes[option]++;
     updatePollBar();
 
     // Store Bet
-    bets.push({ username, choice, value, profilePic });
+    bets.push({ username, option, amount, profilePic });
 
-    console.log(`📊 ${username} bet ${value} points on ${choice}!`);
+    console.log(`📊 ${username} bet ${amount} points on ${option}!`);
 
     // Update Leaderboard
     updateLeaderboard();
@@ -119,10 +95,10 @@ function processBets() {
 
     // Process Viewer Bets
     bets.forEach(bet => {
-        if (bet.choice === result) {
-            updatePlayerScore(bet.username, bet.value, bet.profilePic);
-            console.log(`🎉 ${bet.username} won ${bet.value} points!`);
-            displayShoutout(bet.username, bet.value);
+        if (bet.option === result) {
+            updatePlayerScore(bet.username, bet.amount, bet.profilePic);
+            console.log(`🎉 ${bet.username} won ${bet.amount} points!`);
+            displayShoutout(bet.username, bet.amount);
         } else {
             console.log(`❌ ${bet.username} lost.`);
         }
@@ -213,23 +189,20 @@ function startCountdown(seconds) {
     }, 1000);
 }
 
-// ✅ Start the Countdown Automatically on Load
-startCountdown(3);
-
-// ✅ Event Listeners for Player Selection
-const headsButton = document.getElementById('heads-button');
-const tailsButton = document.getElementById('tails-button');
-const headsImg = document.getElementById('heads-img');
-const tailsImg = document.getElementById('tails-img');
-
-headsButton.addEventListener('click', function () {
-    userSelection = "heads";
-    headsImg.src = "/images/HT_Button2.png"; // Change to clicked image
-    tailsImg.src = "/images/HT_Button1.png"; // Reset tails
+// ✅ Key Bindings to Select Heads or Tails and Start Game
+document.addEventListener('keydown', (event) => {
+    if (event.key.toUpperCase() === 'H') {
+        userSelection = "heads";
+        document.getElementById('heads-img').src = "/images/HT_Button2.png";
+        document.getElementById('tails-img').src = "/images/HT_Button1.png";
+        startCountdown(3);
+    } else if (event.key.toUpperCase() === 'T') {
+        userSelection = "tails";
+        document.getElementById('tails-img').src = "/images/HT_Button2.png";
+        document.getElementById('heads-img').src = "/images/HT_Button1.png";
+        startCountdown(3);
+    }
 });
 
-tailsButton.addEventListener('click', function () {
-    userSelection = "tails";
-    tailsImg.src = "/images/HT_Button2.png"; // Change to clicked image
-    headsImg.src = "/images/HT_Button1.png"; // Reset heads
-});
+console.log("🟢 headsOrTails.js Loaded Successfully!");
+
