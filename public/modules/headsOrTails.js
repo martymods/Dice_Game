@@ -5,21 +5,23 @@ socket.onopen = () => {
     console.log("WebSocket connected!");
     setTimeout(() => {
         const message = {
-            command: "bet",  // Ensure command field matches server expectation
+            action: "bet",  // Replace "command" with "action" if server expects it
             username: "TestUser",
             gift: "coins",
-            value: 100,
-            choice: "HEADS"
+            amount: 100,     // Use "amount" instead of "value" if required by server
+            option: "HEADS"  // Use "option" instead of "choice" if required by server
         };
-        
-        if (typeof socket !== "undefined" && socket.readyState === WebSocket.OPEN) {
+
+        if (socket.readyState === WebSocket.OPEN) {
+            console.log("📨 Sending WebSocket Message:", JSON.stringify(message, null, 2));
             socket.send(JSON.stringify(message));
         } else {
             console.error("WebSocket is not connected.");
         }
-        
+
     }, 1000);
 };
+
 
 
 socket.onerror = (error) => {
@@ -31,23 +33,24 @@ socket.onclose = () => {
 };
 
 // Function to check if WebSocket is initialized before sending data
-function sendBetData(username, gift, value, choice) {
+function sendBetData(username, gift, amount, option) {
     if (!socket || socket.readyState !== WebSocket.OPEN) {
         console.error("WebSocket is not connected.");
         return;
     }
 
     const message = {
-        command: "bet",  // Ensure "command" field matches server expectation
+        action: "bet",  // Ensure field names match server expectations
         username: username,
         gift: gift,
-        value: value,
-        choice: choice
+        amount: amount,   // Change "value" to "amount"
+        option: option    // Change "choice" to "option"
     };
 
-    console.log("📨 Sending WebSocket Message:", JSON.stringify(message, null, 2)); // Log the actual message sent
+    console.log("📨 Sending WebSocket Message:", JSON.stringify(message, null, 2));
     socket.send(JSON.stringify(message));
 }
+
 
 
 let pollVotes = { heads: 0, tails: 0 };
@@ -68,13 +71,15 @@ socket.onmessage = (event) => {
 
         console.log("🖥️ Received from Server:", JSON.stringify(data, null, 2)); // Log the received message
 
-        if (!data.command) {
-            console.warn(`⚠️ Unrecognized command: ${data.command}`);
+        if (!data.action) {
+            console.warn(`⚠️ Unrecognized action: ${data.action}`);
             return;
         }
+        
 
         console.log("🎁 New Bet:", data);
-        placeViewerBet(data.username, data.choice, data.value, data.profilePic);
+        placeViewerBet(data.username, data.option, data.amount, data.profilePic);
+        
     } catch (error) {
         console.error("❌ Error parsing WebSocket message:", error);
     }
@@ -228,4 +233,3 @@ tailsButton.addEventListener('click', function () {
     tailsImg.src = "/images/HT_Button2.png"; // Change to clicked image
     headsImg.src = "/images/HT_Button1.png"; // Reset heads
 });
-
