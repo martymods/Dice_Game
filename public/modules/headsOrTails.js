@@ -45,20 +45,26 @@ let userSelection = ""; // Global variable for tracking selection
 
 socket.onmessage = (event) => {
     console.log("📩 Received WebSocket Message:", event.data);
-    const data = JSON.parse(event.data);
 
-    if (data.error) {
-        console.error("⚠️ Server Error:", data.error);
-        return;
-    }
+    try {
+        const data = JSON.parse(event.data);
+        if (data.error) {
+            console.error("⚠️ Server Error:", data.error);
+            return;
+        }
 
-    if (data.command === "bet") {
+        if (data.command !== "bet") {
+            console.warn(`⚠️ Unrecognized command: ${data.command}`);
+            return;
+        }
+
         console.log("🎁 New Bet:", data);
         placeViewerBet(data.username, data.choice, data.value, data.profilePic);
-    } else {
-        console.warn("⚠️ Unrecognized command:", data.command);
+    } catch (error) {
+        console.error("❌ Error parsing WebSocket message:", error);
     }
 };
+
 
 
 // ✅ Function to Place Viewer Bets
