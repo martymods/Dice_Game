@@ -39,16 +39,16 @@ function sendBetData(username, gift, value, choice) {
 
     const message = {
         command: "bet",  // Ensure "command" field matches server expectation
-        type: "bet",      // Keep "type" in case the server uses it
         username: username,
         gift: gift,
         value: value,
         choice: choice
     };
 
-    console.log("📨 Sending WebSocket Message:", message);
+    console.log("📨 Sending WebSocket Message:", JSON.stringify(message, null, 2)); // Log the actual message sent
     socket.send(JSON.stringify(message));
 }
+
 
 let pollVotes = { heads: 0, tails: 0 };
 let leaderboard = [];
@@ -66,6 +66,8 @@ socket.onmessage = (event) => {
             return;
         }
 
+        console.log("🖥️ Received from Server:", JSON.stringify(data, null, 2)); // Log the received message
+
         if (!data.command) {
             console.warn(`⚠️ Unrecognized command: ${data.command}`);
             return;
@@ -77,8 +79,6 @@ socket.onmessage = (event) => {
         console.error("❌ Error parsing WebSocket message:", error);
     }
 };
-
-
 
 
 // ✅ Function to Place Viewer Bets
@@ -228,3 +228,4 @@ tailsButton.addEventListener('click', function () {
     tailsImg.src = "/images/HT_Button2.png"; // Change to clicked image
     headsImg.src = "/images/HT_Button1.png"; // Reset heads
 });
+
