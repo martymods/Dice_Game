@@ -32,11 +32,22 @@ socket.onclose = () => {
 
 // Function to check if WebSocket is initialized before sending data
 function sendBetData(username, gift, value, choice) {
-    if (typeof socket === "undefined") {
-        console.error("WebSocket is not initialized.");
-    } else {
-        socket.send(JSON.stringify({ username, gift, value, choice }));
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        console.error("WebSocket is not connected.");
+        return;
     }
+
+    const message = {
+        command: "bet",  // Ensure "command" field matches server expectation
+        type: "bet",      // Keep "type" in case the server uses it
+        username: username,
+        gift: gift,
+        value: value,
+        choice: choice
+    };
+
+    console.log("📨 Sending WebSocket Message:", message);
+    socket.send(JSON.stringify(message));
 }
 
 let pollVotes = { heads: 0, tails: 0 };
@@ -49,14 +60,14 @@ socket.onmessage = (event) => {
 
     try {
         const data = JSON.parse(event.data);
-        
+
         if (data.error) {
             console.error("⚠️ Server Error:", data.error);
             return;
         }
 
-        if (!data.command || data.command !== "bet") {
-            console.warn(`⚠️ Unrecognized command: ${data.command || "undefined"}`);
+        if (!data.command) {
+            console.warn(`⚠️ Unrecognized command: ${data.command}`);
             return;
         }
 
@@ -66,6 +77,7 @@ socket.onmessage = (event) => {
         console.error("❌ Error parsing WebSocket message:", error);
     }
 };
+
 
 
 
