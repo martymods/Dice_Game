@@ -5,7 +5,7 @@ socket.onopen = () => {
     console.log("WebSocket connected!");
     setTimeout(() => {
         const message = {
-            type: "bet",  // Ensure there is a type field if required by the server
+            command: "bet",  // Ensure command field matches server expectation
             username: "TestUser",
             gift: "coins",
             value: 100,
@@ -20,6 +20,7 @@ socket.onopen = () => {
         
     }, 1000);
 };
+
 
 socket.onerror = (error) => {
     console.error("WebSocket error:", error);
@@ -48,13 +49,14 @@ socket.onmessage = (event) => {
 
     try {
         const data = JSON.parse(event.data);
+        
         if (data.error) {
             console.error("⚠️ Server Error:", data.error);
             return;
         }
 
-        if (data.command !== "bet") {
-            console.warn(`⚠️ Unrecognized command: ${data.command}`);
+        if (!data.command || data.command !== "bet") {
+            console.warn(`⚠️ Unrecognized command: ${data.command || "undefined"}`);
             return;
         }
 
