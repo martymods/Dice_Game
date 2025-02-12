@@ -7,12 +7,12 @@ overlay.style.position = 'fixed';
 overlay.style.top = '0';
 overlay.style.left = '50%';
 overlay.style.transform = 'translateX(-50%)';
-overlay.style.width = '100%';
+overlay.style.width = '50%';
 overlay.style.zIndex = '1000';
 document.body.appendChild(overlay);
 
 // Initialize Cesium Google Earth Viewer
-Cesium.Ion.defaultAccessToken = "YOUR_CESIUM_ACCESS_TOKEN";
+Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxMDA4ODE2OS0zNDIwLTQ4YWMtOTM5OC0xZWViNzAwMWRlMzAiLCJpZCI6Mjc1MjkxLCJpYXQiOjE3MzkzMzAwMDZ9.DEwXlpfOsVmRxid3ujkTcvhX8MJHCcdX4Zr6AWo1G7I";
 const viewer = new Cesium.Viewer('game-container', {
     terrainProvider: Cesium.createWorldTerrain()
 });
