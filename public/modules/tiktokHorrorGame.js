@@ -20,7 +20,7 @@ const viewer = new Cesium.Viewer('game-container', {
 // Start Zoomed Out (Global View)
 viewer.camera.flyHome(0);
 
-// Predefined Land Coordinates to Avoid Ocean Zoom
+// Expanded List of Residential Land Coordinates to Avoid Ocean Zoom
 const landCoordinates = [
     { lat: 40.7128, lng: -74.0060 }, // New York
     { lat: 34.0522, lng: -118.2437 }, // Los Angeles
@@ -28,7 +28,30 @@ const landCoordinates = [
     { lat: 35.6895, lng: 139.6917 }, // Tokyo
     { lat: -33.8688, lng: 151.2093 }, // Sydney
     { lat: 48.8566, lng: 2.3522 }, // Paris
-    { lat: 37.7749, lng: -122.4194 } // San Francisco
+    { lat: 37.7749, lng: -122.4194 }, // San Francisco
+    { lat: 41.9028, lng: 12.4964 }, // Rome
+    { lat: 52.5200, lng: 13.4050 }, // Berlin
+    { lat: 55.7558, lng: 37.6173 }, // Moscow
+    { lat: 39.9042, lng: 116.4074 }, // Beijing
+    { lat: 31.2304, lng: 121.4737 }, // Shanghai
+    { lat: 19.4326, lng: -99.1332 }, // Mexico City
+    { lat: -23.5505, lng: -46.6333 }, // São Paulo
+    { lat: 1.3521, lng: 103.8198 }, // Singapore
+    { lat: 45.5017, lng: -73.5673 }, // Montreal
+    { lat: 51.0447, lng: -114.0719 }, // Calgary
+    { lat: 53.3498, lng: -6.2603 }, // Dublin
+    { lat: -36.8485, lng: 174.7633 }, // Auckland
+    { lat: -37.8136, lng: 144.9631 }, // Melbourne
+    { lat: 35.2271, lng: -80.8431 }, // Charlotte
+    { lat: 29.7604, lng: -95.3698 }, // Houston
+    { lat: 47.6062, lng: -122.3321 }, // Seattle
+    { lat: 25.7617, lng: -80.1918 }, // Miami
+    { lat: 32.7767, lng: -96.7970 }, // Dallas
+    { lat: 33.4484, lng: -112.0740 }, // Phoenix
+    { lat: 39.7392, lng: -104.9903 }, // Denver
+    { lat: 44.9778, lng: -93.2650 }, // Minneapolis
+    { lat: 42.3601, lng: -71.0589 }, // Boston
+    { lat: 38.9072, lng: -77.0369 } // Washington DC
 ];
 
 // List of Dead Body Images
@@ -70,10 +93,10 @@ function announceGift(user, amount) {
 function zoomToRandomLocation() {
     const { lat, lng } = landCoordinates[Math.floor(Math.random() * landCoordinates.length)];
     viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(lng, lat, 50),
+        destination: Cesium.Cartesian3.fromDegrees(lng, lat, 150), // Adjusted height to prevent excessive zoom-in
         orientation: {
             heading: Cesium.Math.toRadians(Math.random() * 360),
-            pitch: Cesium.Math.toRadians(-90),
+            pitch: Cesium.Math.toRadians(-45), // Adjusted to prevent full downward pitch
             roll: 0.0
         },
         duration: 5
