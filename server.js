@@ -1,4 +1,5 @@
 const express = require('express');
+const fetch = require('node-fetch'); 
 const http = require('http');
 const socketIo = require('socket.io');
 const app = express();
@@ -81,6 +82,21 @@ io.on('connection', (socket) => {
     });
 });
 
+// Face Fetch
+app.get('/proxy-face', async (req, res) => {
+    try {
+        const response = await fetch('https://thispersondoesnotexist.com/image');
+        if (!response.ok) throw new Error('Failed to fetch image');
+        
+        // Stream the image directly to the client
+        res.setHeader('Content-Type', 'image/jpeg');
+        response.body.pipe(res);
+    } catch (error) {
+        console.error('Error fetching face image:', error);
+        res.status(500).sendFile(__dirname + '/public/images/MissingPerson/default_face.png'); // Fallback image
+    }
+});
+
 // Serve the Socket.IO client library
 app.get('/socket.io/socket.io.js', (req, res) => {
     const filePath = require.resolve('socket.io-client/dist/socket.io.js');
@@ -92,3 +108,4 @@ const port = process.env.PORT || 10000;
 server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
