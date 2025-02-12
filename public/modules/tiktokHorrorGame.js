@@ -20,6 +20,9 @@ const viewer = new Cesium.Viewer('game-container', {
 // Start Zoomed Out (Global View)
 viewer.camera.flyHome(0);
 
+// Ensure bgMusicStarted is defined
+let bgMusicStarted = false;
+
 // Expanded List of Residential Land Coordinates to Avoid Ocean Zoom
 const landCoordinates = [
     { lat: 40.7128, lng: -74.0060 }, // New York
@@ -177,3 +180,4 @@ document.addEventListener('click', () => {
         bgMusicStarted = true;
     }
 }, { once: true });
+
