@@ -54,6 +54,46 @@ const landCoordinates = [
     { lat: 38.9072, lng: -77.0369 } // Washington DC
 ];
 
+// List of Sounds
+const horrorMusic = ['/sounds/TikTokHorrorMusic.mp3', '/sounds/TikTokHorrorMusic1.mp3'];
+const caveAmbience = '/sounds/Cave_Loop_0.mp3';
+const beepSound = '/sounds/Beep_0.mp3';
+const crowdSounds = ['/sounds/Crowd_0.mp3', '/sounds/Crowd_1.mp3', '/sounds/Crowd_2.mp3', '/sounds/Crowd_3.mp3', '/sounds/Crowd_4.mp3', '/sounds/Crowd_5.mp3'];
+const gunSounds = ['/sounds/Gun_0.mp3', '/sounds/Gun_1.mp3'];
+const tireSounds = ['/sounds/Car_Tires_0.mp3', '/sounds/Car_Tires_1.mp3', '/sounds/Car_Tires_2.mp3'];
+const copSounds = ['/sounds/Cops_0.mp3', '/sounds/Cops_1.mp3'];
+
+// Function to Play Audio
+function playSound(src, delay = 0) {
+    setTimeout(() => {
+        const audio = new Audio(src);
+        audio.play().catch(err => console.error('Audio Play Error:', err));
+    }, delay);
+}
+
+// Function to Loop Horror Music
+function loopHorrorMusic() {
+    let index = 0;
+    function playNextSong() {
+        const audio = new Audio(horrorMusic[index]);
+        audio.play().catch(err => console.error('Audio Play Error:', err));
+        audio.onended = () => {
+            setTimeout(() => {
+                index = (index + 1) % horrorMusic.length;
+                playNextSong();
+            }, 10000); // 10-second pause before switching
+        };
+    }
+    playNextSong();
+}
+
+// Function to Loop Cave Ambience
+function loopCaveAmbience() {
+    const caveAudio = new Audio(caveAmbience);
+    caveAudio.loop = true;
+    caveAudio.play().catch(err => console.error('Audio Play Error:', err));
+}
+
 // List of Dead Body Images
 const deadBodyImages = Array.from({ length: 18 }, (_, i) => `/images/MissingPerson/Dead_Body_ (${i + 1}).png`);
 
@@ -63,22 +103,25 @@ async function spawnDeadBody() {
     bodyImage.src = deadBodyImages[Math.floor(Math.random() * deadBodyImages.length)];
     bodyImage.classList.add('death-image'); // Assign a CSS class for styling
     gameContainer.appendChild(bodyImage);
-
+    
+    // Play Gunshot
+    playSound(gunSounds[Math.floor(Math.random() * gunSounds.length)]);
+    
+    // 50% chance to play tire sounds 1 second after
+    if (Math.random() < 0.5) {
+        playSound(tireSounds[Math.floor(Math.random() * tireSounds.length)], 1000);
+    }
+    
+    // 50% chance to play cop sounds 2 seconds after
+    if (Math.random() < 0.5) {
+        playSound(copSounds[Math.floor(Math.random() * copSounds.length)], 2000);
+    }
+    
     // Use an iframe instead of fetching the image directly
     const fakeProfile = document.createElement('iframe');
     fakeProfile.src = 'https://thispersondoesnotexist.com';
-    fakeProfile.classList.add('fake-profile-iframe'); // Apply styles via CSS
+    fakeProfile.classList.add('fake-profile-iframe');
     gameContainer.appendChild(fakeProfile);
-    
-    // Wait for iframe to load, then adjust its view inside
-    fakeProfile.onload = function() {
-    fakeProfile.contentWindow.scrollTo(100, 200); // Scroll down to show full image
-    };
-    
-    setTimeout(() => {
-        gameContainer.removeChild(bodyImage);
-        gameContainer.removeChild(fakeProfile);
-    }, 10000);
 }
 
 // Function to Announce a Gift via Text-to-Speech
@@ -112,6 +155,10 @@ function zoomToRandomLocation() {
 function handleTikTokGift(event) {
     const { username, amount } = event;
     announceGift(username, amount);
+    playSound(beepSound);
+    setTimeout(() => {
+        playSound(crowdSounds[Math.floor(Math.random() * crowdSounds.length)]);
+    }, 3000); // Play crowd sound 3 seconds before iframe appears
     zoomToRandomLocation();
 }
 
@@ -122,13 +169,11 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
-// Background music loop (starts only after user interaction)
-let bgMusic;
+// Play background sounds only after user interacts with page
 document.addEventListener('click', () => {
-    if (!bgMusic) {
-        bgMusic = new Audio('/sounds/TikTokHorrorMusic.mp3');
-        bgMusic.loop = true;
-        bgMusic.volume = 0.5;
-        bgMusic.play().catch(err => console.error('Audio Play Error:', err));
+    if (!bgMusicStarted) {
+        loopHorrorMusic();
+        loopCaveAmbience();
+        bgMusicStarted = true;
     }
 }, { once: true });
