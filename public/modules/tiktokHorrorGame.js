@@ -34,6 +34,30 @@ const landCoordinates = [
 // List of Dead Body Images
 const deadBodyImages = Array.from({ length: 18 }, (_, i) => `/images/MissingPerson/Dead_Body_ (${i + 1}).png`);
 
+// Function to Fetch Gift Giver Location
+async function getGiftGiverLocation() {
+    const response = await fetch('/get-location'); // Calls your server
+    const data = await response.json();
+    if (data.lat && data.lng) {
+        return { lat: data.lat, lng: data.lng };
+    }
+    return null; // If location fails
+}
+
+// Function to Zoom to Gift Giver's Location
+async function zoomToGiftGiverLocation() {
+    const location = await getGiftGiverLocation();
+    if (location) {
+        viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(location.lng, location.lat, 100),
+            orientation: { heading: 0, pitch: Cesium.Math.toRadians(-90), roll: 0.0 },
+            duration: 5
+        });
+    } else {
+        console.log("Could not retrieve gift giver's location.");
+    }
+}
+
 // Function to Spawn a Dead Body and Fake Profile
 async function spawnDeadBody() {
     const bodyImage = document.createElement('img');
@@ -47,7 +71,7 @@ async function spawnDeadBody() {
     fakeProfile.style.position = 'absolute';
     fakeProfile.style.left = '50%';
     fakeProfile.style.bottom = '220px';
-    fakeProfile.style.transform = 'translateX(-50%)';
+    fakeProfile.style.transform = 'translateX(-50%) scale(0.6)'; // Zoom out inside iframe
     fakeProfile.style.width = '250px';
     fakeProfile.style.height = '250px';
     fakeProfile.style.border = '2px solid white';
@@ -60,38 +84,11 @@ async function spawnDeadBody() {
     }, 10000);
 }
 
-// Function to Announce a Gift via Text-to-Speech
-function announceGift(user, amount) {
-    const audio = new SpeechSynthesisUtterance(`${user} has sent ${amount} coins`);
-    speechSynthesis.speak(audio);
-}
-
-// Function to Zoom to Random Land Location and Enter Street View
-function zoomToRandomLocation() {
-    const { lat, lng } = landCoordinates[Math.floor(Math.random() * landCoordinates.length)];
-    viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(lng, lat, 50),
-        orientation: {
-            heading: Cesium.Math.toRadians(Math.random() * 360),
-            pitch: Cesium.Math.toRadians(-90),
-            roll: 0.0
-        },
-        duration: 5
-    });
-
-    setTimeout(() => {
-        spawnDeadBody();
-        setTimeout(() => {
-            viewer.camera.flyHome(3);
-        }, 5000);
-    }, 6000);
-}
-
 // Function to Handle TikTok Gift
 function handleTikTokGift(event) {
     const { username, amount } = event;
     announceGift(username, amount);
-    zoomToRandomLocation();
+    zoomToGiftGiverLocation();
 }
 
 window.addEventListener('keydown', (e) => {
