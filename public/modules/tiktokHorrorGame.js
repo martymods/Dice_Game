@@ -46,30 +46,17 @@ async function fetchRandomFace() {
     }
 }
 
-// Function to Spawn a Dead Body and Fake Profile at the Bottom Center
+// Function to Spawn a Dead Body and Fake Profile
 async function spawnDeadBody() {
     const bodyImage = document.createElement('img');
     bodyImage.src = deadBodyImages[Math.floor(Math.random() * deadBodyImages.length)];
-    bodyImage.style.position = 'absolute';
-    bodyImage.style.left = '50%';
-    bodyImage.style.bottom = '10px';
-    bodyImage.style.transform = 'translateX(-50%)';
-    bodyImage.style.width = '300px';
-    bodyImage.style.height = 'auto';
-    bodyImage.style.zIndex = '999';
+    bodyImage.classList.add('death-image'); // Assign a CSS class for styling
     gameContainer.appendChild(bodyImage);
 
     const faceImageSrc = await fetchRandomFace();
     const faceImage = document.createElement('img');
     faceImage.src = faceImageSrc;
-    faceImage.style.position = 'absolute';
-    faceImage.style.left = '50%';
-    faceImage.style.bottom = '320px';
-    faceImage.style.transform = 'translateX(-50%)';
-    faceImage.style.width = '250px';
-    faceImage.style.height = 'auto';
-    faceImage.style.border = '2px solid white';
-    faceImage.style.zIndex = '1001';
+    faceImage.classList.add('fake-profile-image'); // Assign a CSS class for styling
     gameContainer.appendChild(faceImage);
 
     setTimeout(() => {
@@ -129,4 +116,3 @@ document.addEventListener('click', () => {
         bgMusic.play().catch(err => console.error('Audio Play Error:', err));
     }
 }, { once: true });
-
