@@ -74,5 +74,18 @@ iframe {
     height: 250px; /* Adjustable height */
     border: 2px solid white;
     z-index: 1001;
+    
+    /* Allow full customization */
+    resize: both;
+    overflow: hidden;
+}
+
+/* Additional positioning options */
+@media screen and (max-width: 768px) {
+    .fake-profile-iframe {
+        width: 200px; /* Smaller screens */
+        height: 200px;
+        bottom: 180px;
+    }
 }
 
