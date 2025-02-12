@@ -1,21 +1,24 @@
 const express = require('express');
-const fetch = require('node-fetch'); 
+const fetch = require('node-fetch');
 const http = require('http');
 const socketIo = require('socket.io');
+const path = require('path'); // Required for serving files
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
 const games = {};
 const onlinePlayers = {}; // To track players and their names
-const express = require('express');
-app.use(express.static('public'));
-app.listen(3000, () => {
-    console.log('Server running on http://localhost:3000');
-});
 
+// Ensure the correct static file path
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.static('public'));
+// Ensure this is **not duplicated**
+// REMOVE or COMMENT OUT this line if already declared at the bottom:
+// app.listen(3000, () => {
+//    console.log('Server running on http://localhost:3000');
+// });
 
 // When a new socket connects
 io.on('connection', (socket) => {
@@ -82,30 +85,23 @@ io.on('connection', (socket) => {
     });
 });
 
-// Face Fetch
+// ✅ Fix `/proxy-face` Not Found Issue
 app.get('/proxy-face', async (req, res) => {
     try {
         const response = await fetch('https://thispersondoesnotexist.com/image');
         if (!response.ok) throw new Error('Failed to fetch image');
-        
+
         // Stream the image directly to the client
         res.setHeader('Content-Type', 'image/jpeg');
         response.body.pipe(res);
     } catch (error) {
         console.error('Error fetching face image:', error);
-        res.status(500).sendFile(__dirname + '/public/images/MissingPerson/default_face.png'); // Fallback image
+        res.status(500).sendFile(path.join(__dirname, 'public', 'images', 'MissingPerson', 'default_face.png')); // Fallback image
     }
 });
 
-// Serve the Socket.IO client library
-app.get('/socket.io/socket.io.js', (req, res) => {
-    const filePath = require.resolve('socket.io-client/dist/socket.io.js');
-    res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
-    res.sendFile(filePath);
-});
-
+// ✅ Ensure `/proxy-face` route is registered before starting the server
 const port = process.env.PORT || 10000;
 server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
-
