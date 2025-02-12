@@ -37,7 +37,7 @@ const deadBodyImages = Array.from({ length: 18 }, (_, i) => `/images/MissingPers
 // Function to Fetch a Random Face from ThisPersonDoesNotExist
 async function fetchRandomFace() {
     try {
-        const response = await fetch('/proxy-face'); // Request image via your own backend
+        const response = await fetch('https://dice-game-1-6iwc.onrender.com/proxy-face');
         if (!response.ok) throw new Error('Failed to fetch image');
         return URL.createObjectURL(await response.blob()); // Convert response to an image blob
     } catch (error) {
@@ -137,5 +137,3 @@ document.addEventListener('click', () => {
         bgMusic.play().catch(err => console.error('Audio Play Error:', err));
     }
 }, { once: true });
-
-
