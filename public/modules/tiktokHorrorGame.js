@@ -36,9 +36,16 @@ const deadBodyImages = Array.from({ length: 18 }, (_, i) => `/images/MissingPers
 
 // Function to Fetch a Random Face from ThisPersonDoesNotExist
 async function fetchRandomFace() {
-    const response = await fetch('https://thispersondoesnotexist.com/image');
-    return response.url;
+    try {
+        const response = await fetch('https://api.allorigins.win/raw?url=https://thispersondoesnotexist.com/image');
+        if (!response.ok) throw new Error('Failed to fetch image');
+        return response.url;
+    } catch (error) {
+        console.error('Error fetching face image:', error);
+        return '/images/MissingPerson/default_face.png'; // Fallback image
+    }
 }
+
 
 // Function to Spawn a Dead Body and Fake Profile at the Bottom Center
 async function spawnDeadBody() {
@@ -101,8 +108,8 @@ function zoomToRandomLocation() {
         // After 5 seconds, zoom back out to the global view
         setTimeout(() => {
             viewer.camera.flyHome(3);
-        }, 5000);
-    }, 6000);
+        }, 15000);
+    }, 16000);
 }
 
 // Function to Handle TikTok Gift
