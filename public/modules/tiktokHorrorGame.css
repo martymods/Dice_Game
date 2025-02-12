@@ -64,4 +64,15 @@ iframe {
     z-index: 1001;
 }
 
+/* Adjustable iframe settings */
+.fake-profile-iframe {
+    position: absolute;
+    left: 50%;
+    bottom: 220px;
+    transform: translateX(-50%) scale(0.6); /* Zoom out by 60% */
+    width: 250px; /* Adjustable width */
+    height: 250px; /* Adjustable height */
+    border: 2px solid white;
+    z-index: 1001;
+}
 
