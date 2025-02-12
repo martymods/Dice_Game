@@ -92,7 +92,25 @@ app.get('/proxy-face', async (req, res) => {
     }
 });
 
-// Ensure `/proxy-face` is registered before starting the server
+// ✅ Add this route to get user location based on IP
+app.get('/get-location', async (req, res) => {
+    try {
+        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        const geoResponse = await fetch(`http://ip-api.com/json/${ip}`);
+        const geoData = await geoResponse.json();
+
+        if (geoData.status === "success") {
+            res.json({ lat: geoData.lat, lng: geoData.lon, city: geoData.city, country: geoData.country });
+        } else {
+            res.json({ error: "Location not found" });
+        }
+    } catch (error) {
+        console.error('Error fetching location:', error);
+        res.status(500).json({ error: "Failed to get location" });
+    }
+});
+
+// ✅ Ensure `/get-location` is registered before starting the server
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
