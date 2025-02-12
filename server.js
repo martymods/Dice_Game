@@ -7,32 +7,6 @@ const server = http.createServer(app);
 const socketIo = require('socket.io');
 const io = socketIo(server);
 
-// ✅ Add this route to get user location based on IP
-app.get('/get-location', async (req, res) => {
-    try {
-        let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        
-        // If multiple IPs exist (common with proxies), use the first one
-        if (ip.includes(',')) {
-            ip = ip.split(',')[0].trim();
-        }
-
-        console.log(`Fetching location for IP: ${ip}`);
-
-        const geoResponse = await fetch(`http://ip-api.com/json/${ip}`);
-        const geoData = await geoResponse.json();
-
-        if (geoData.status === "success") {
-            res.json({ lat: geoData.lat, lng: geoData.lon, city: geoData.city, country: geoData.country });
-        } else {
-            res.status(404).json({ error: "Location not found" });
-        }
-    } catch (error) {
-        console.error('Error fetching location:', error);
-        res.status(500).json({ error: "Failed to get location" });
-    }
-});
-
 app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
 
 const games = {};
@@ -118,9 +92,7 @@ app.get('/proxy-face', async (req, res) => {
     }
 });
 
-
-
-// ✅ Ensure `/get-location` is registered before starting the server
+// Ensure `/proxy-face` is registered before starting the server
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
