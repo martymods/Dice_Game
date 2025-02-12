@@ -7,7 +7,7 @@ overlay.style.position = 'fixed';
 overlay.style.top = '0';
 overlay.style.left = '50%';
 overlay.style.transform = 'translateX(-50%)';
-overlay.style.width = '50%';
+overlay.style.width = '25%';
 overlay.style.zIndex = '1000';
 document.body.appendChild(overlay);
 
