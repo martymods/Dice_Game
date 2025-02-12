@@ -34,18 +34,6 @@ const landCoordinates = [
 // List of Dead Body Images
 const deadBodyImages = Array.from({ length: 18 }, (_, i) => `/images/MissingPerson/Dead_Body_ (${i + 1}).png`);
 
-// Function to Fetch a Random Face from ThisPersonDoesNotExist
-async function fetchRandomFace() {
-    try {
-        const response = await fetch('/proxy-face');
-        if (!response.ok) throw new Error('Failed to fetch image');
-        return URL.createObjectURL(await response.blob());
-    } catch (error) {
-        console.error('Error fetching face image:', error);
-        return '/images/MissingPerson/default_face.png';
-    }
-}
-
 // Function to Spawn a Dead Body and Fake Profile
 async function spawnDeadBody() {
     const bodyImage = document.createElement('img');
@@ -53,15 +41,22 @@ async function spawnDeadBody() {
     bodyImage.classList.add('death-image'); // Assign a CSS class for styling
     gameContainer.appendChild(bodyImage);
 
-    const faceImageSrc = await fetchRandomFace();
-    const faceImage = document.createElement('img');
-    faceImage.src = faceImageSrc;
-    faceImage.classList.add('fake-profile-image'); // Assign a CSS class for styling
-    gameContainer.appendChild(faceImage);
+    // Use an iframe instead of fetching the image directly
+    const fakeProfile = document.createElement('iframe');
+    fakeProfile.src = 'https://thispersondoesnotexist.com';
+    fakeProfile.style.position = 'absolute';
+    fakeProfile.style.left = '50%';
+    fakeProfile.style.bottom = '220px';
+    fakeProfile.style.transform = 'translateX(-50%)';
+    fakeProfile.style.width = '250px';
+    fakeProfile.style.height = '250px';
+    fakeProfile.style.border = '2px solid white';
+    fakeProfile.style.zIndex = '1001';
+    gameContainer.appendChild(fakeProfile);
 
     setTimeout(() => {
         gameContainer.removeChild(bodyImage);
-        gameContainer.removeChild(faceImage);
+        gameContainer.removeChild(fakeProfile);
     }, 10000);
 }
 
