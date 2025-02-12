@@ -67,12 +67,12 @@ iframe {
 /* Adjustable iframe settings */
 .fake-profile-iframe {
     position: absolute;
-    left: 50%;
-    bottom: 220px;
+    left: 44%;
+    bottom: -68px;
     transform: translateX(-50%) scale(0.6); /* Zoom out by 60% */
-    width: 250px; /* Adjustable width */
-    height: 250px; /* Adjustable height */
-    border: 2px solid white;
+    width: 225px; /* Adjustable width */
+    height: 440px; /* Adjustable height */
+    border: 1px solid white;
     z-index: 1001;
     
     /* Allow full customization */
@@ -88,4 +88,5 @@ iframe {
         bottom: 180px;
     }
 }
+
 
