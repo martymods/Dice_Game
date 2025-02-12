@@ -1,0 +1,44 @@
+/* tiktokHorrorGame.css */
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#map-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 60%;
+    z-index: 0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#google-map {
+    width: 100%;
+    height: 100%;
+}
+
+img {
+    position: absolute;
+    transition: opacity 1s ease-in-out;
+}
+
+iframe {
+    position: absolute;
+    transition: transform 1s ease-in-out;
+}
