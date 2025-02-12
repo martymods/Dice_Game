@@ -108,8 +108,8 @@ function zoomToRandomLocation() {
         // After 5 seconds, zoom back out to the global view
         setTimeout(() => {
             viewer.camera.flyHome(3);
-        }, 15000);
-    }, 16000);
+        }, 5000);
+    }, 6000);
 }
 
 // Function to Handle TikTok Gift
