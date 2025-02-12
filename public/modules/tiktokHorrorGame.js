@@ -37,15 +37,14 @@ const deadBodyImages = Array.from({ length: 18 }, (_, i) => `/images/MissingPers
 // Function to Fetch a Random Face from ThisPersonDoesNotExist
 async function fetchRandomFace() {
     try {
-        const response = await fetch('https://dice-game-1-6iwc.onrender.com/proxy-face');
+        const response = await fetch('/proxy-face');
         if (!response.ok) throw new Error('Failed to fetch image');
-        return URL.createObjectURL(await response.blob()); // Convert response to an image blob
+        return URL.createObjectURL(await response.blob());
     } catch (error) {
         console.error('Error fetching face image:', error);
-        return '/images/MissingPerson/default_face.png'; // Fallback image
+        return '/images/MissingPerson/default_face.png';
     }
 }
-
 
 // Function to Spawn a Dead Body and Fake Profile at the Bottom Center
 async function spawnDeadBody() {
@@ -55,20 +54,19 @@ async function spawnDeadBody() {
     bodyImage.style.left = '50%';
     bodyImage.style.bottom = '10px';
     bodyImage.style.transform = 'translateX(-50%)';
-    bodyImage.style.width = '200px';
+    bodyImage.style.width = '300px';
     bodyImage.style.height = 'auto';
     bodyImage.style.zIndex = '999';
     gameContainer.appendChild(bodyImage);
 
-    // Fetch the actual image instead of embedding the site
     const faceImageSrc = await fetchRandomFace();
     const faceImage = document.createElement('img');
     faceImage.src = faceImageSrc;
     faceImage.style.position = 'absolute';
     faceImage.style.left = '50%';
-    faceImage.style.bottom = '220px';
+    faceImage.style.bottom = '320px';
     faceImage.style.transform = 'translateX(-50%)';
-    faceImage.style.width = '200px';
+    faceImage.style.width = '250px';
     faceImage.style.height = 'auto';
     faceImage.style.border = '2px solid white';
     faceImage.style.zIndex = '1001';
@@ -89,23 +87,18 @@ function announceGift(user, amount) {
 // Function to Zoom to Random Land Location and Enter Street View
 function zoomToRandomLocation() {
     const { lat, lng } = landCoordinates[Math.floor(Math.random() * landCoordinates.length)];
-
-    // Fly to a street-level location on land
     viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(lng, lat, 100), // Zoom down to street level
+        destination: Cesium.Cartesian3.fromDegrees(lng, lat, 50),
         orientation: {
-            heading: Cesium.Math.toRadians(Math.random() * 360), // Random rotation
-            pitch: Cesium.Math.toRadians(-90), // Directly looking downward
+            heading: Cesium.Math.toRadians(Math.random() * 360),
+            pitch: Cesium.Math.toRadians(-90),
             roll: 0.0
         },
-        duration: 5 // Takes 5 seconds to zoom in
+        duration: 5
     });
 
     setTimeout(() => {
-        // Spawn dead body and face at the bottom center
         spawnDeadBody();
-
-        // After 5 seconds, zoom back out to the global view
         setTimeout(() => {
             viewer.camera.flyHome(3);
         }, 5000);
@@ -116,12 +109,11 @@ function zoomToRandomLocation() {
 function handleTikTokGift(event) {
     const { username, amount } = event;
     announceGift(username, amount);
-    zoomToRandomLocation(); // Move to a new random land-based Earth location
+    zoomToRandomLocation();
 }
 
-// Simulate TikFinity integration (replace with actual TikFinity event listener)
 window.addEventListener('keydown', (e) => {
-    console.log('Key Pressed:', e.key); // Debugging output
+    console.log('Key Pressed:', e.key);
     if (e.key === 'G' || e.key === 'g') {
         handleTikTokGift({ username: 'User123', amount: 10 });
     }
@@ -137,3 +129,4 @@ document.addEventListener('click', () => {
         bgMusic.play().catch(err => console.error('Audio Play Error:', err));
     }
 }, { once: true });
+
