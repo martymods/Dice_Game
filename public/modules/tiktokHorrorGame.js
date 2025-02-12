@@ -46,10 +46,17 @@ function announceGift(user, amount) {
     speechSynthesis.speak(audio);
 }
 
+function randomizeLocation() {
+    const lat = (Math.random() * 180 - 90).toFixed(6);  // Random latitude
+    const lng = (Math.random() * 360 - 180).toFixed(6); // Random longitude
+    document.getElementById('google-map').src = `https://www.google.com/maps/embed/v1/view?key=AIzaSyAxQJKugSQrDayu1QNIvuNAFkYo9QCOj0A&center=${lat},${lng}&zoom=12`;
+}
+
 function handleTikTokGift(event) {
-    const { username, giftName, amount } = event;
+    const { username, amount } = event;
     announceGift(username, amount);
     spawnDeadBody();
+    randomizeLocation(); // Move the map to a new random location
 }
 
 // Simulate TikFinity integration (replace with actual TikFinity event listener)
