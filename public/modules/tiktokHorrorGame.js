@@ -70,6 +70,11 @@ async function spawnDeadBody() {
     fakeProfile.classList.add('fake-profile-iframe'); // Apply styles via CSS
     gameContainer.appendChild(fakeProfile);
     
+    // Wait for iframe to load, then adjust its view inside
+    fakeProfile.onload = function() {
+    fakeProfile.contentWindow.scrollTo(100, 200); // Scroll down to show full image
+    };
+    
     setTimeout(() => {
         gameContainer.removeChild(bodyImage);
         gameContainer.removeChild(fakeProfile);
