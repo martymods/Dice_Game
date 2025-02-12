@@ -94,8 +94,15 @@ function handleTikTokGift(event) {
 
 // Simulate TikFinity integration (replace with actual TikFinity event listener)
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'G') {
+    console.log('Key Pressed:', e.key); // Debugging output
+    if (e.key === 'G' || e.key === 'g') {
         handleTikTokGift({ username: 'User123', amount: 10 });
     }
 });
+
+// Background music loop
+const bgMusic = new Audio('/sounds/TikTokHorrorMusic.mp3');
+bgMusic.loop = true;
+bgMusic.volume = 0.5;
+bgMusic.play().catch(err => console.error('Audio Play Error:', err));
 
