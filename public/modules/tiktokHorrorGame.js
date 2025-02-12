@@ -7,7 +7,7 @@ overlay.style.position = 'fixed';
 overlay.style.top = '0';
 overlay.style.left = '50%';
 overlay.style.transform = 'translateX(-50%)';
-overlay.style.width = '25%';
+overlay.style.width = '33%';
 overlay.style.zIndex = '1000';
 document.body.appendChild(overlay);
 
@@ -37,9 +37,9 @@ const deadBodyImages = Array.from({ length: 18 }, (_, i) => `/images/MissingPers
 // Function to Fetch a Random Face from ThisPersonDoesNotExist
 async function fetchRandomFace() {
     try {
-        const response = await fetch('https://api.allorigins.win/raw?url=https://thispersondoesnotexist.com/image');
+        const response = await fetch('/proxy-face'); // Request image via your own backend
         if (!response.ok) throw new Error('Failed to fetch image');
-        return response.url;
+        return URL.createObjectURL(await response.blob()); // Convert response to an image blob
     } catch (error) {
         console.error('Error fetching face image:', error);
         return '/images/MissingPerson/default_face.png'; // Fallback image
@@ -137,4 +137,5 @@ document.addEventListener('click', () => {
         bgMusic.play().catch(err => console.error('Audio Play Error:', err));
     }
 }, { once: true });
+
 
