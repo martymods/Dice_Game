@@ -67,16 +67,9 @@ async function spawnDeadBody() {
     // Use an iframe instead of fetching the image directly
     const fakeProfile = document.createElement('iframe');
     fakeProfile.src = 'https://thispersondoesnotexist.com';
-    fakeProfile.style.position = 'absolute';
-    fakeProfile.style.left = '50%';
-    fakeProfile.style.bottom = '220px';
-    fakeProfile.style.transform = 'translateX(-50%)';
-    fakeProfile.style.width = '250px';
-    fakeProfile.style.height = '250px';
-    fakeProfile.style.border = '2px solid white';
-    fakeProfile.style.zIndex = '1001';
+    fakeProfile.classList.add('fake-profile-iframe'); // Apply styles via CSS
     gameContainer.appendChild(fakeProfile);
-
+    
     setTimeout(() => {
         gameContainer.removeChild(bodyImage);
         gameContainer.removeChild(fakeProfile);
