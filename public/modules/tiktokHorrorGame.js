@@ -100,9 +100,14 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
-// Background music loop
-const bgMusic = new Audio('/sounds/TikTokHorrorMusic.mp3');
-bgMusic.loop = true;
-bgMusic.volume = 0.5;
-bgMusic.play().catch(err => console.error('Audio Play Error:', err));
+// Background music loop (starts only after user interaction)
+let bgMusic;
+document.addEventListener('click', () => {
+    if (!bgMusic) {
+        bgMusic = new Audio('/sounds/TikTokHorrorMusic.mp3');
+        bgMusic.loop = true;
+        bgMusic.volume = 0.5;
+        bgMusic.play().catch(err => console.error('Audio Play Error:', err));
+    }
+}, { once: true });
 
