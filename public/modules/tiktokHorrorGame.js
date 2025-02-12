@@ -34,6 +34,12 @@ const landCoordinates = [
 // List of Dead Body Images
 const deadBodyImages = Array.from({ length: 18 }, (_, i) => `/images/MissingPerson/Dead_Body_ (${i + 1}).png`);
 
+// Function to Announce a Gift via Text-to-Speech
+function announceGift(user, amount) {
+    const audio = new SpeechSynthesisUtterance(`${user} has sent ${amount} coins`);
+    speechSynthesis.speak(audio);
+}
+
 // Function to Fetch Gift Giver Location
 async function getGiftGiverLocation() {
     const response = await fetch('/get-location'); // Calls your server
