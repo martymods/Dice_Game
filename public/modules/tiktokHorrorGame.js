@@ -35,6 +35,13 @@ statsContainer.id = 'stats-container';
 statsContainer.innerHTML = "<p>Murders: <span id='murder-count'>0</span></p><p>Shootings: <span id='shooting-count'>0</span></p>";
 document.body.appendChild(statsContainer);
 
+// Leaderboard Container
+const leaderboardContainer = document.createElement('div');
+leaderboardContainer.id = 'leaderboard-container';
+leaderboardContainer.innerHTML = "<h3>Top Players</h3><ul id='leaderboard'></ul>";
+document.body.appendChild(leaderboardContainer);
+
+let players = {};
 let murderCount = 0;
 let shootingCount = 0;
 
@@ -42,6 +49,33 @@ function updateStats() {
     document.getElementById('murder-count').innerText = murderCount;
     document.getElementById('shooting-count').innerText = shootingCount;
 }
+
+function updateLeaderboard() {
+    const leaderboard = document.getElementById('leaderboard');
+    leaderboard.innerHTML = '';
+    const sortedPlayers = Object.entries(players).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    sortedPlayers.forEach(([player, score]) => {
+        const li = document.createElement('li');
+        li.innerText = `${player}: ${score} pts`;
+        leaderboard.appendChild(li);
+    });
+}
+
+function registerPlayer(username) {
+    if (!players[username]) {
+        players[username] = 0;
+    }
+}
+
+function attemptMurder(attacker, victim) {
+    if (players[victim]) {
+        const pointsStolen = Math.floor(players[victim] * 0.2);
+        players[attacker] += pointsStolen;
+        players[victim] -= pointsStolen;
+    }
+    updateLeaderboard();
+}
+
 
 // Function to Change Mission GIF
 function updateMissionImage(newSrc, duration = null, callback = null) {
@@ -240,9 +274,12 @@ window.addEventListener('keydown', (e) => {
     if (e.key === 'G' || e.key === 'g') {
         const tiktokEvent = { username: 'RandomTikTokUser', amount: 10 }; // Replace with actual event data
         const tiktokUsername = tiktokEvent.username || 'Unknown_Contractor';
+        registerPlayer(tiktokUsername);
         handleTikTokGift({ username: tiktokUsername, amount: 10 });
         murderCount++;
+        players[tiktokUsername] += 10;
         updateStats();
+        updateLeaderboard();
     }
     if (e.key === 'B' || e.key === 'b') {
         playSound(gunSounds[Math.floor(Math.random() * gunSounds.length)]);
@@ -260,3 +297,4 @@ document.addEventListener('click', () => {
         bgMusicStarted = true;
     }
 }, { once: true });
+
