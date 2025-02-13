@@ -59,10 +59,6 @@ statsContainer.id = 'stats-container';
 statsContainer.innerHTML = "<p>Murders: <span id='murder-count'>0</span></p><p>Shootings: <span id='shooting-count'>0</span></p>";
 document.body.appendChild(statsContainer);
 
-// Leaderboard Container
-leaderboardContainer.id = 'leaderboard-container';
-leaderboardContainer.innerHTML = "<h3>Top Players</h3><ul id='leaderboard'></ul>";
-document.body.appendChild(leaderboardContainer);
 
 const bountyContainer = document.createElement('div');
 bountyContainer.id = 'bounty-container';
@@ -397,5 +393,4 @@ document.addEventListener('click', () => {
         bgMusicStarted = true;
     }
 }, { once: true });
-
 
