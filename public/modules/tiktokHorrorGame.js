@@ -65,7 +65,6 @@ statsContainer.innerHTML = "<p>Murders: <span id='murder-count'>0</span></p><p>S
 document.body.appendChild(statsContainer);
 
 // Leaderboard Container
-const leaderboardContainer = document.createElement('div');
 leaderboardContainer.id = 'leaderboard-container';
 leaderboardContainer.innerHTML = "<h3>Top Players</h3><ul id='leaderboard'></ul>";
 document.body.appendChild(leaderboardContainer);
@@ -386,4 +385,5 @@ document.addEventListener('click', () => {
         bgMusicStarted = true;
     }
 }, { once: true });
+
 
