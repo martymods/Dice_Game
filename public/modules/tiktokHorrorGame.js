@@ -203,9 +203,14 @@ function handleCopsAudio() {
 window.addEventListener('keydown', (e) => {
     console.log('Key Pressed:', e.key);
     if (e.key === 'G' || e.key === 'g') {
-        handleTikTokGift({ username: 'Contractor123', amount: 10 });
+        // Assume event data is coming from TikTok (you may need to modify this based on actual event structure)
+        const tiktokEvent = { username: 'RandomTikTokUser', amount: 10 }; // Replace this with actual event data
+
+        const tiktokUsername = tiktokEvent.username || 'Unknown_Contractor';
+        handleTikTokGift({ username: tiktokUsername, amount: 10 });
     }
 });
+
 
 // Play background sounds only after user interacts with page
 document.addEventListener('click', () => {
