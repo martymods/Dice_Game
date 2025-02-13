@@ -129,8 +129,8 @@ iframe {
 /* Leaderboard Container */
 #leaderboard-container {
     position: absolute;
-    top: 150px;
-    right: 10px;
+    top: 30px;
+    right: 640px;
     width: 250px;
     height: auto;
     border: 2px solid white;
@@ -139,6 +139,6 @@ iframe {
     text-align: center;
     font-family: 'Digital7', Arial, sans-serif;
     font-size: 18px;
-    color: yellow;
+    color: #ffffff;
     padding: 10px;
 }
