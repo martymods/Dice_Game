@@ -20,6 +20,7 @@ const viewer = new Cesium.Viewer('game-container', {
 // Start Zoomed Out (Global View)
 viewer.camera.flyHome(0);
 
+// Leaderboard, Stats, and Bounty Containers
 // Check if containers already exist before creating them
 if (!document.getElementById('leaderboard-container')) {
     const leaderboardContainer = document.createElement('div');
@@ -42,12 +43,6 @@ if (!document.getElementById('bounty-container')) {
     document.body.appendChild(bountyContainer);
 }
 
-
-// Leaderboard, Stats, and Bounty Containers
-const leaderboardContainer = document.createElement('div');
-leaderboardContainer.id = 'leaderboard-container';
-leaderboardContainer.innerHTML = "<h3>Top Players</h3><ul id='leaderboard'></ul>";
-document.body.appendChild(leaderboardContainer);
 
 // Mission GIF Container
 const missionContainer = document.createElement('div');
@@ -356,6 +351,23 @@ window.addEventListener('keydown', (e) => {
         players[tiktokUsername] += 10;
         updateStats();
         updateLeaderboard();
+        
+        // 🔹 FIX: Now actions happen when G is pressed
+        announceGift(tiktokUsername, 10);
+        playSound(beepSound);
+        updateMissionImage('/images/MissingPerson/Paid.gif', 1000, () => {
+            updateMissionImage('/images/MissingPerson/Searching.gif');
+        });
+        setTimeout(() => {
+            const randomTarget = `/images/MissingPerson/Target_Located_${Math.floor(Math.random() * 7) + 1}.gif`;
+            playSound(crowdSounds[Math.floor(Math.random() * crowdSounds.length)]);
+            updateMissionImage(randomTarget, 4000, () => {
+                updateMissionImage('/images/MissingPerson/BreakingNew_0.gif', 4000, () => {
+                    updateMissionImage('/images/MissingPerson/Mission_Select_0.gif');
+                });
+            });
+        }, 3000);
+        zoomToRandomLocation();
     }
     if (e.key === 'B' || e.key === 'b') {
         playSound(gunSounds[Math.floor(Math.random() * gunSounds.length)]);
