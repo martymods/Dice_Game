@@ -29,6 +29,20 @@ missionImage.src = '/images/MissingPerson/Mission_Select_0.gif';
 missionContainer.appendChild(missionImage);
 document.body.appendChild(missionContainer);
 
+// Stats Container
+const statsContainer = document.createElement('div');
+statsContainer.id = 'stats-container';
+statsContainer.innerHTML = "<p>Murders: <span id='murder-count'>0</span></p><p>Shootings: <span id='shooting-count'>0</span></p>";
+document.body.appendChild(statsContainer);
+
+let murderCount = 0;
+let shootingCount = 0;
+
+function updateStats() {
+    document.getElementById('murder-count').innerText = murderCount;
+    document.getElementById('shooting-count').innerText = shootingCount;
+}
+
 // Function to Change Mission GIF
 function updateMissionImage(newSrc, duration = null, callback = null) {
     missionImage.src = newSrc;
@@ -208,14 +222,18 @@ function handleCopsAudio() {
 window.addEventListener('keydown', (e) => {
     console.log('Key Pressed:', e.key);
     if (e.key === 'G' || e.key === 'g') {
-        // Assume event data is coming from TikTok (you may need to modify this based on actual event structure)
-        const tiktokEvent = { username: 'UnknownContractor', amount: 10 }; // Replace this with actual event data
-
-        const tiktokUsername = tiktokEvent.username || 'Unknown_User';
+        const tiktokEvent = { username: 'RandomTikTokUser', amount: 10 }; // Replace with actual event data
+        const tiktokUsername = tiktokEvent.username || 'Unknown_Contractor';
         handleTikTokGift({ username: tiktokUsername, amount: 10 });
+        murderCount++;
+        updateStats();
+    }
+    if (e.key === 'B' || e.key === 'b') {
+        playSound(gunSounds[Math.floor(Math.random() * gunSounds.length)]);
+        shootingCount++;
+        updateStats();
     }
 });
-
 
 // Play background sounds only after user interacts with page
 document.addEventListener('click', () => {
