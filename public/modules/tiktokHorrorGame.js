@@ -20,6 +20,94 @@ const viewer = new Cesium.Viewer('game-container', {
 // Start Zoomed Out (Global View)
 viewer.camera.flyHome(0);
 
+// 🔥 Create Countdown Timer Display
+const countdownContainer = document.createElement('div');
+countdownContainer.id = 'countdown-container';
+countdownContainer.innerHTML = "<h3>Game Reset in: <span id='countdown-timer'>5:00</span></h3>";
+document.body.appendChild(countdownContainer);
+
+// 🎯 Timer Variables
+let countdownTime = 300; // 5 minutes (300 seconds)
+let countdownActive = false;
+let countdownInterval;
+
+// 🛑 Function to Reset Game
+function resetGame() {
+    countdownTime = 300;
+    clearInterval(countdownInterval);
+    document.getElementById('countdown-timer').innerText = "5:00";
+    console.log("⏳ Time ran out! Resetting game...");
+    alert("⏳ Time's up! The game has reset due to inactivity.");
+    startCountdown();
+}
+
+// 🔄 Function to Update Timer
+function updateCountdown() {
+    if (countdownTime <= 0) {
+        resetGame();
+    } else {
+        countdownTime--;
+        let minutes = Math.floor(countdownTime / 60);
+        let seconds = countdownTime % 60;
+        document.getElementById('countdown-timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+}
+
+// 🚀 Function to Start Timer
+function startCountdown() {
+    if (!countdownActive) {
+        countdownActive = true;
+        countdownInterval = setInterval(updateCountdown, 1000);
+        console.log("⏳ Countdown started.");
+    }
+}
+
+// 🛡 Function to "Save" Progress
+function saveGame() {
+    console.log("🎯 You just saved the game!");
+    alert("🎯 You just saved the game! Progress continues.");
+    countdownTime = 300; // Reset timer to 5 minutes
+}
+
+// ✅ Start Timer Immediately
+startCountdown();
+
+// 🎮 Add Key Event for "Save Us" Feature (e.g., `S` Key)
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'S' || e.key === 's') {
+        saveGame();
+    }
+});
+
+// Leaderboard, Stats, and Bounty Containers
+// Check if containers already exist before creating them
+if (!document.getElementById('leaderboard-container')) {
+    const leaderboardContainer = document.createElement('div');
+    leaderboardContainer.id = 'leaderboard-container';
+    leaderboardContainer.innerHTML = "<h3>Top Players</h3><ul id='leaderboard'></ul>";
+    document.body.appendChild(leaderboardContainer);
+}
+
+if (!document.getElementById('stats-container')) {
+    const statsContainer = document.createElement('div');
+    statsContainer.id = 'stats-container';
+    statsContainer.innerHTML = "<p>Murders: <span id='murder-count'>0</span></p><p>Shootings: <span id='shooting-count'>0</span></p>";
+    document.body.appendChild(statsContainer);
+}
+
+if (!document.getElementById('bounty-container')) {
+    const bountyContainer = document.createElement('div');
+    bountyContainer.id = 'bounty-container';
+    bountyContainer.innerHTML = "<h3>Bounty: <span id='bounty-info'>None</span></h3>";
+    document.body.appendChild(bountyContainer);
+}
+
+// Ensure murder and shooting counts update correctly
+function updateStats() {
+    document.getElementById('murder-count').innerText = murderCount;
+    document.getElementById('shooting-count').innerText = shootingCount;
+}
+
 // Mission GIF Container
 const missionContainer = document.createElement('div');
 missionContainer.id = 'mission-container';
@@ -35,21 +123,27 @@ statsContainer.id = 'stats-container';
 statsContainer.innerHTML = "<p>Murders: <span id='murder-count'>0</span></p><p>Shootings: <span id='shooting-count'>0</span></p>";
 document.body.appendChild(statsContainer);
 
-// Leaderboard Container
-const leaderboardContainer = document.createElement('div');
-leaderboardContainer.id = 'leaderboard-container';
-leaderboardContainer.innerHTML = "<h3>Top Players</h3><ul id='leaderboard'></ul>";
-document.body.appendChild(leaderboardContainer);
+
+const bountyContainer = document.createElement('div');
+bountyContainer.id = 'bounty-container';
+bountyContainer.innerHTML = "<h3>Bounty: <span id='bounty-info'>None</span></h3>";
+document.body.appendChild(bountyContainer);
 
 let players = {};
 let murderCount = 0;
 let shootingCount = 0;
+let topKillerBonusActive = false;
+let cheatCodeAvailable = true;
+let countdownTimer = 300;
+let hitmanTimer = 180;
 
+// Ensure murder and shooting counts update correctly
 function updateStats() {
     document.getElementById('murder-count').innerText = murderCount;
     document.getElementById('shooting-count').innerText = shootingCount;
 }
 
+// Function to Update Leaderboard
 function updateLeaderboard() {
     const leaderboard = document.getElementById('leaderboard');
     leaderboard.innerHTML = '';
@@ -61,6 +155,7 @@ function updateLeaderboard() {
     });
 }
 
+// Function to Register a Player
 function registerPlayer(username) {
     if (!players[username]) {
         players[username] = 0;
@@ -74,6 +169,46 @@ function attemptMurder(attacker, victim) {
         players[victim] -= pointsStolen;
     }
     updateLeaderboard();
+}
+
+function startCountdown() {
+    const countdownInterval = setInterval(() => {
+        countdownTimer--;
+        if (countdownTimer <= 0) {
+            resetGame();
+            clearInterval(countdownInterval);
+        }
+    }, 1000);
+}
+
+function resetGame() {
+    players = {};
+    murderCount = 0;
+    shootingCount = 0;
+    updateStats();
+    updateLeaderboard();
+    console.log("Game Reset: No interaction detected.");
+}
+
+function activateCheatCode(username) {
+    if (cheatCodeAvailable) {
+        players[username] += 10;
+        cheatCodeAvailable = false;
+        setTimeout(() => { cheatCodeAvailable = true; }, 600000);
+    }
+}
+
+function applyTopKillerBonus() {
+    if (!topKillerBonusActive) {
+        topKillerBonusActive = true;
+        setTimeout(() => {
+            const topPlayer = Object.entries(players).sort((a, b) => b[1] - a[1])[0];
+            if (topPlayer) {
+                players[topPlayer[0]] += 20;
+            }
+            topKillerBonusActive = false;
+        }, 300000);
+    }
 }
 
 
@@ -253,6 +388,43 @@ function handleCopsAudio() {
 }
 
 
+// Function to Process a Murder (G Key)
+function processMurder(username) {
+    registerPlayer(username);
+    murderCount++;
+    players[username] += 10; // Increase player points
+    updateStats();
+    updateLeaderboard();
+
+    // Visual and audio effects
+    announceGift(username, 10);
+    playSound(beepSound);
+    updateMissionImage('/images/MissingPerson/Paid.gif', 1000, () => {
+        updateMissionImage('/images/MissingPerson/Searching.gif');
+    });
+
+    setTimeout(() => {
+        const randomTarget = `/images/MissingPerson/Target_Located_${Math.floor(Math.random() * 7) + 1}.gif`;
+        playSound(crowdSounds[Math.floor(Math.random() * crowdSounds.length)]);
+        updateMissionImage(randomTarget, 4000, () => {
+            updateMissionImage('/images/MissingPerson/BreakingNew_0.gif', 4000, () => {
+                updateMissionImage('/images/MissingPerson/Mission_Select_0.gif');
+            });
+        });
+    }, 3000);
+
+    zoomToRandomLocation();
+}
+
+// Function to Process a Shooting (B Key)
+function processShooting() {
+    shootingCount++;
+    updateStats();
+    flashScreen();
+    playSound(gunSounds[Math.floor(Math.random() * gunSounds.length)]);
+}
+
+// Function to Flash Screen on Shooting
 function flashScreen() {
     const flash = document.createElement('div');
     flash.style.position = 'fixed';
@@ -269,25 +441,30 @@ function flashScreen() {
     }, 50); // Flash duration in milliseconds
 }
 
+// Function to Handle Key Press Events
 window.addEventListener('keydown', (e) => {
     console.log('Key Pressed:', e.key);
     if (e.key === 'G' || e.key === 'g') {
         const tiktokEvent = { username: 'RandomTikTokUser', amount: 10 }; // Replace with actual event data
-        const tiktokUsername = tiktokEvent.username || 'Unknown_Contractor';
-        registerPlayer(tiktokUsername);
-        handleTikTokGift({ username: tiktokUsername, amount: 10 });
-        murderCount++;
-        players[tiktokUsername] += 10;
-        updateStats();
-        updateLeaderboard();
+        processMurder(tiktokEvent.username);
     }
     if (e.key === 'B' || e.key === 'b') {
-        playSound(gunSounds[Math.floor(Math.random() * gunSounds.length)]);
-        shootingCount++;
-        updateStats();
-        flashScreen();
+        processShooting();
+    }
+
+    if (e.key === 'C' || e.key === 'c') {
+        handleBounty();
+    }
+    if (e.key === 'X' || e.key === 'x') {
+        applyTopKillerBonus();
+    }
+    if (e.key === 'V' || e.key === 'v') {
+        activateCheatCode('RandomTikTokUser');
     }
 });
+
+// Start countdown and hitman challenge
+startCountdown();
 
 // Play background sounds only after user interacts with page
 document.addEventListener('click', () => {
@@ -297,3 +474,4 @@ document.addEventListener('click', () => {
         bgMusicStarted = true;
     }
 }, { once: true });
+
