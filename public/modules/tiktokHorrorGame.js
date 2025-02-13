@@ -219,6 +219,22 @@ function handleCopsAudio() {
 }
 
 
+function flashScreen() {
+    const flash = document.createElement('div');
+    flash.style.position = 'fixed';
+    flash.style.top = '0';
+    flash.style.left = '0';
+    flash.style.width = '100vw';
+    flash.style.height = '100vh';
+    flash.style.backgroundColor = 'white';
+    flash.style.opacity = '0.8';
+    flash.style.zIndex = '2000';
+    document.body.appendChild(flash);
+    setTimeout(() => {
+        document.body.removeChild(flash);
+    }, 50); // Flash duration in milliseconds
+}
+
 window.addEventListener('keydown', (e) => {
     console.log('Key Pressed:', e.key);
     if (e.key === 'G' || e.key === 'g') {
@@ -232,6 +248,7 @@ window.addEventListener('keydown', (e) => {
         playSound(gunSounds[Math.floor(Math.random() * gunSounds.length)]);
         shootingCount++;
         updateStats();
+        flashScreen();
     }
 });
 
