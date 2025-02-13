@@ -186,7 +186,7 @@ function handleTikTokGift(event) {
         updateMissionImage('/images/MissingPerson/Searching.gif');
     });
     setTimeout(() => {
-        const randomTarget = `/images/MissingPerson/Target_Located_ (${Math.floor(Math.random() * 7) + 1}).gif`;
+        const randomTarget = `/images/MissingPerson/Target_Located_(${Math.floor(Math.random() * 7) + 1}).gif`;
         playSound(crowdSounds[Math.floor(Math.random() * crowdSounds.length)]);
         updateMissionImage(randomTarget);
     }, 3000);
@@ -196,7 +196,11 @@ function handleTikTokGift(event) {
 // Function to Handle Cops Audio
 function handleCopsAudio() {
     updateMissionImage('/images/MissingPerson/Homicide_0.gif', 4000, () => {
-        updateMissionImage('/images/MissingPerson/BreakingNew_0.gif', 2000);
+        updateMissionImage('/images/MissingPerson/BreakingNew_0.gif', 2000, () => {
+            setTimeout(() => {
+                updateMissionImage('/images/MissingPerson/Mission_Select_0.gif');
+            }, 6000);
+        });
     });
 }
 
