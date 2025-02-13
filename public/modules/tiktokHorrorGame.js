@@ -186,7 +186,7 @@ function handleTikTokGift(event) {
         updateMissionImage('/images/MissingPerson/Searching.gif');
     });
     setTimeout(() => {
-        const randomTarget = `/images/MissingPerson/Target_Located_${Math.floor(Math.random() * 7) + 1}.gif`;
+       const randomTarget = `/images/MissingPerson/Target_Located_${Math.floor(Math.random() * 7) + 1}.gif`;
         playSound(crowdSounds[Math.floor(Math.random() * crowdSounds.length)]);
         updateMissionImage(randomTarget);
     }, 3000);
