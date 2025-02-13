@@ -20,6 +20,12 @@ const viewer = new Cesium.Viewer('game-container', {
 // Start Zoomed Out (Global View)
 viewer.camera.flyHome(0);
 
+// Leaderboard, Stats, and Bounty Containers
+const leaderboardContainer = document.createElement('div');
+leaderboardContainer.id = 'leaderboard-container';
+leaderboardContainer.innerHTML = "<h3>Top Players</h3><ul id='leaderboard'></ul>";
+document.body.appendChild(leaderboardContainer);
+
 // Mission GIF Container
 const missionContainer = document.createElement('div');
 missionContainer.id = 'mission-container';
@@ -41,9 +47,18 @@ leaderboardContainer.id = 'leaderboard-container';
 leaderboardContainer.innerHTML = "<h3>Top Players</h3><ul id='leaderboard'></ul>";
 document.body.appendChild(leaderboardContainer);
 
+const bountyContainer = document.createElement('div');
+bountyContainer.id = 'bounty-container';
+bountyContainer.innerHTML = "<h3>Bounty: <span id='bounty-info'>None</span></h3>";
+document.body.appendChild(bountyContainer);
+
 let players = {};
 let murderCount = 0;
 let shootingCount = 0;
+let topKillerBonusActive = false;
+let cheatCodeAvailable = true;
+let countdownTimer = 300;
+let hitmanTimer = 180;
 
 function updateStats() {
     document.getElementById('murder-count').innerText = murderCount;
@@ -74,6 +89,46 @@ function attemptMurder(attacker, victim) {
         players[victim] -= pointsStolen;
     }
     updateLeaderboard();
+}
+
+function startCountdown() {
+    const countdownInterval = setInterval(() => {
+        countdownTimer--;
+        if (countdownTimer <= 0) {
+            resetGame();
+            clearInterval(countdownInterval);
+        }
+    }, 1000);
+}
+
+function resetGame() {
+    players = {};
+    murderCount = 0;
+    shootingCount = 0;
+    updateStats();
+    updateLeaderboard();
+    console.log("Game Reset: No interaction detected.");
+}
+
+function activateCheatCode(username) {
+    if (cheatCodeAvailable) {
+        players[username] += 10;
+        cheatCodeAvailable = false;
+        setTimeout(() => { cheatCodeAvailable = true; }, 600000);
+    }
+}
+
+function applyTopKillerBonus() {
+    if (!topKillerBonusActive) {
+        topKillerBonusActive = true;
+        setTimeout(() => {
+            const topPlayer = Object.entries(players).sort((a, b) => b[1] - a[1])[0];
+            if (topPlayer) {
+                players[topPlayer[0]] += 20;
+            }
+            topKillerBonusActive = false;
+        }, 300000);
+    }
 }
 
 
@@ -275,7 +330,6 @@ window.addEventListener('keydown', (e) => {
         const tiktokEvent = { username: 'RandomTikTokUser', amount: 10 }; // Replace with actual event data
         const tiktokUsername = tiktokEvent.username || 'Unknown_Contractor';
         registerPlayer(tiktokUsername);
-        handleTikTokGift({ username: tiktokUsername, amount: 10 });
         murderCount++;
         players[tiktokUsername] += 10;
         updateStats();
@@ -287,7 +341,19 @@ window.addEventListener('keydown', (e) => {
         updateStats();
         flashScreen();
     }
+    if (e.key === 'C' || e.key === 'c') {
+        handleBounty();
+    }
+    if (e.key === 'X' || e.key === 'x') {
+        applyTopKillerBonus();
+    }
+    if (e.key === 'V' || e.key === 'v') {
+        activateCheatCode('RandomTikTokUser');
+    }
 });
+
+// Start countdown and hitman challenge
+startCountdown();
 
 // Play background sounds only after user interacts with page
 document.addEventListener('click', () => {
