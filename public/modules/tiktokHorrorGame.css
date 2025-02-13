@@ -1,14 +1,23 @@
 /* tiktokHorrorGame.css */
 
+/* Import Digital-7 Font */
 @font-face {
     font-family: 'Digital7';
-    src: url('./fonts/digital-7.ttf') format('truetype');
-    font-display: swap; /* Ensures font loads properly */
+    src: url('/fonts/digital-7.ttf') format('truetype');
 }
 
-/* Apply Digital7 Globally */
-body, * {
-    font-family: 'Digital7', Arial, sans-serif !important;
+/* Set Global Font */
+* {
+    font-family: 'Digital7', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: white;
+}
+
+body {
+    background-color: black;
+    text-align: center;
 }
 
 /* Game Container */
