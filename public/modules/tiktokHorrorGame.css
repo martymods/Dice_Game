@@ -84,17 +84,25 @@ iframe {
 #mission-container {
     position: absolute;
     bottom: 10px;
-    left: 900px;
-    width: 400px;
-    height: 150px;
+    left: 10px;
+    width: 300px;
+    height: 200px;
     border: 2px solid white;
     overflow: hidden;
     z-index: 1002;
     background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #mission-image {
-    width: 50%;
-    height: 50%;
-    object-fit: ;
+    width: 100%; /* Ensures the image covers the entire container */
+    height: 100%;
+    object-fit: cover; /* Ensures the image fills the container while maintaining aspect ratio */
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
