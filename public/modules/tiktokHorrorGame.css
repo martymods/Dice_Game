@@ -5,7 +5,6 @@
     src: url('/fonts/digital-7.ttf') format('truetype');
 }
 
-
 body {
     margin: 0;
     padding: 0;
@@ -54,7 +53,7 @@ iframe {
     left: 50%;
     bottom: 10px;
     transform: translateX(-50%);
-    width: 512px; /* Adjust size as needed */
+    width: 512px;
     height: auto;
     z-index: 999;
 }
@@ -64,7 +63,7 @@ iframe {
     left: 39%;
     bottom: 205px;
     transform: translateX(-50%);
-    width: 70px; /* Adjust size as needed */
+    width: 70px;
     height: auto;
     border: 2px solid white;
     z-index: 1001;
@@ -75,13 +74,11 @@ iframe {
     position: absolute;
     left: 44%;
     bottom: -68px;
-    transform: translateX(-50%) scale(0.6); /* Zoom out by 60% */
-    width: 225px; /* Adjustable width */
-    height: 440px; /* Adjustable height */
+    transform: translateX(-50%) scale(0.6);
+    width: 225px;
+    height: 440px;
     border: 1px solid white;
     z-index: 1001;
-    
-    /* Allow full customization */
     resize: both;
     overflow: hidden;
 }
@@ -89,10 +86,10 @@ iframe {
 /* Mission GIF Container */
 #mission-container {
     position: absolute;
-    bottom: 600px;
-    left: 800px;
+    bottom: 10px;
+    left: 10px;
     width: 300px;
-    height: 150px;
+    height: 200px;
     border: 2px solid white;
     overflow: hidden;
     z-index: 1002;
@@ -103,9 +100,9 @@ iframe {
 }
 
 #mission-image {
-    width: 100%; /* Ensures the image covers the entire container */
+    width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensures the image fills the container while maintaining aspect ratio */
+    object-fit: cover;
     display: block;
     position: absolute;
     top: 50%;
@@ -116,10 +113,10 @@ iframe {
 /* Stats Container */
 #stats-container {
     position: absolute;
-    top: 348px;
-    right: 608px;
-    width: 200px;
-    height: 110px;
+    top: 10px;
+    right: 10px;
+    width: 250px;
+    height: 100px;
     border: 2px solid white;
     background-color: black;
     z-index: 1002;
@@ -128,15 +125,15 @@ iframe {
     justify-content: center;
     align-items: center;
     font-family: 'Digital7', Arial, sans-serif;
-    font-size: 20px;
+    font-size: 24px;
     color: red;
 }
 
 /* Leaderboard Container */
 #leaderboard-container {
     position: absolute;
-    top: 30px;
-    right: 640px;
+    top: 150px;
+    right: 10px;
     width: 250px;
     height: auto;
     border: 2px solid white;
@@ -145,7 +142,7 @@ iframe {
     text-align: center;
     font-family: 'Digital7', Arial, sans-serif;
     font-size: 18px;
-    color: #ffffff;
+    color: yellow;
     padding: 10px;
 }
 
@@ -183,4 +180,3 @@ iframe {
     from { opacity: 0.8; }
     to { opacity: 0; }
 }
-
