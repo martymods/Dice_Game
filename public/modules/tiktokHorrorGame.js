@@ -43,6 +43,11 @@ if (!document.getElementById('bounty-container')) {
     document.body.appendChild(bountyContainer);
 }
 
+// Ensure murder and shooting counts update correctly
+function updateStats() {
+    document.getElementById('murder-count').innerText = murderCount;
+    document.getElementById('shooting-count').innerText = shootingCount;
+}
 
 // Mission GIF Container
 const missionContainer = document.createElement('div');
@@ -393,4 +398,5 @@ document.addEventListener('click', () => {
         bgMusicStarted = true;
     }
 }, { once: true });
+
 
