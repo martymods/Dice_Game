@@ -20,6 +20,29 @@ const viewer = new Cesium.Viewer('game-container', {
 // Start Zoomed Out (Global View)
 viewer.camera.flyHome(0);
 
+// Check if containers already exist before creating them
+if (!document.getElementById('leaderboard-container')) {
+    const leaderboardContainer = document.createElement('div');
+    leaderboardContainer.id = 'leaderboard-container';
+    leaderboardContainer.innerHTML = "<h3>Top Players</h3><ul id='leaderboard'></ul>";
+    document.body.appendChild(leaderboardContainer);
+}
+
+if (!document.getElementById('stats-container')) {
+    const statsContainer = document.createElement('div');
+    statsContainer.id = 'stats-container';
+    statsContainer.innerHTML = "<p>Murders: <span id='murder-count'>0</span></p><p>Shootings: <span id='shooting-count'>0</span></p>";
+    document.body.appendChild(statsContainer);
+}
+
+if (!document.getElementById('bounty-container')) {
+    const bountyContainer = document.createElement('div');
+    bountyContainer.id = 'bounty-container';
+    bountyContainer.innerHTML = "<h3>Bounty: <span id='bounty-info'>None</span></h3>";
+    document.body.appendChild(bountyContainer);
+}
+
+
 // Leaderboard, Stats, and Bounty Containers
 const leaderboardContainer = document.createElement('div');
 leaderboardContainer.id = 'leaderboard-container';
