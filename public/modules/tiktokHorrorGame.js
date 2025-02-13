@@ -20,6 +20,29 @@ const viewer = new Cesium.Viewer('game-container', {
 // Start Zoomed Out (Global View)
 viewer.camera.flyHome(0);
 
+// Mission GIF Container
+const missionContainer = document.createElement('div');
+missionContainer.id = 'mission-container';
+const missionImage = document.createElement('img');
+missionImage.id = 'mission-image';
+missionImage.src = '/images/MissingPerson/Mission_Select_0.gif';
+missionContainer.appendChild(missionImage);
+document.body.appendChild(missionContainer);
+
+// Function to Change Mission GIF
+function updateMissionImage(newSrc, duration = null, callback = null) {
+    missionImage.src = newSrc;
+    if (duration) {
+        setTimeout(() => {
+            if (callback) {
+                callback();
+            } else {
+                missionImage.src = '/images/MissingPerson/Mission_Select_0.gif';
+            }
+        }, duration);
+    }
+}
+
 // Ensure bgMusicStarted is defined
 let bgMusicStarted = false;
 
@@ -159,16 +182,28 @@ function handleTikTokGift(event) {
     const { username, amount } = event;
     announceGift(username, amount);
     playSound(beepSound);
+    updateMissionImage('/images/MissingPerson/Paid.gif', 1000, () => {
+        updateMissionImage('/images/MissingPerson/Searching.gif');
+    });
     setTimeout(() => {
+        const randomTarget = `/images/MissingPerson/Target_Located_ (${Math.floor(Math.random() * 7) + 1}).gif`;
         playSound(crowdSounds[Math.floor(Math.random() * crowdSounds.length)]);
-    }, 3000); // Play crowd sound 3 seconds before iframe appears
+        updateMissionImage(randomTarget);
+    }, 3000);
     zoomToRandomLocation();
+}
+
+// Function to Handle Cops Audio
+function handleCopsAudio() {
+    updateMissionImage('/images/MissingPerson/Homicide_0.gif', 4000, () => {
+        updateMissionImage('/images/MissingPerson/BreakingNew_0.gif', 2000);
+    });
 }
 
 window.addEventListener('keydown', (e) => {
     console.log('Key Pressed:', e.key);
     if (e.key === 'G' || e.key === 'g') {
-        handleTikTokGift({ username: 'User123', amount: 10 });
+        handleTikTokGift({ username: 'Contractor123', amount: 10 });
     }
 });
 
@@ -180,4 +215,3 @@ document.addEventListener('click', () => {
         bgMusicStarted = true;
     }
 }, { once: true });
-
