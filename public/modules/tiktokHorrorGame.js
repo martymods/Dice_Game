@@ -186,9 +186,13 @@ function handleTikTokGift(event) {
         updateMissionImage('/images/MissingPerson/Searching.gif');
     });
     setTimeout(() => {
-       const randomTarget = `/images/MissingPerson/Target_Located_${Math.floor(Math.random() * 7) + 1}.gif`;
+        const randomTarget = `/images/MissingPerson/Target_Located_${Math.floor(Math.random() * 7) + 1}.gif`;
         playSound(crowdSounds[Math.floor(Math.random() * crowdSounds.length)]);
-        updateMissionImage(randomTarget);
+        updateMissionImage(randomTarget, 4000, () => {
+            updateMissionImage('/images/MissingPerson/BreakingNew_0.gif', 4000, () => {
+                updateMissionImage('/images/MissingPerson/Mission_Select_0.gif');
+            });
+        });
     }, 3000);
     zoomToRandomLocation();
 }
@@ -196,21 +200,18 @@ function handleTikTokGift(event) {
 // Function to Handle Cops Audio
 function handleCopsAudio() {
     updateMissionImage('/images/MissingPerson/Homicide_0.gif', 4000, () => {
-        updateMissionImage('/images/MissingPerson/BreakingNew_0.gif', 2000, () => {
-            setTimeout(() => {
-                updateMissionImage('/images/MissingPerson/Mission_Select_0.gif');
-            }, 6000);
-        });
+        updateMissionImage('/images/MissingPerson/Mission_Select_0.gif');
     });
 }
+
 
 window.addEventListener('keydown', (e) => {
     console.log('Key Pressed:', e.key);
     if (e.key === 'G' || e.key === 'g') {
         // Assume event data is coming from TikTok (you may need to modify this based on actual event structure)
-        const tiktokEvent = { username: 'RandomTikTokUser', amount: 10 }; // Replace this with actual event data
+        const tiktokEvent = { username: 'UnknownContractor', amount: 10 }; // Replace this with actual event data
 
-        const tiktokUsername = tiktokEvent.username || 'Unknown_Contractor';
+        const tiktokUsername = tiktokEvent.username || 'Unknown_User';
         handleTikTokGift({ username: tiktokUsername, amount: 10 });
     }
 });
