@@ -20,6 +20,35 @@ const viewer = new Cesium.Viewer('game-container', {
 // Start Zoomed Out (Global View)
 viewer.camera.flyHome(0);
 
+// Function to Play Random Devil Sound
+function playDevilSound() {
+    const devilSounds = [
+        '/sounds/Devil_SFX_1.mp3',
+        '/sounds/Devil_SFX_2.mp3',
+        '/sounds/Devil_SFX_3.mp3',
+        '/sounds/Devil_SFX_4.mp3'
+    ];
+    const randomSound = devilSounds[Math.floor(Math.random() * devilSounds.length)];
+    playSound(randomSound);
+}
+
+// Function to Temporarily Change Overlay for New Players
+function newPlayerOverlayEffect() {
+    const currentOverlay = overlay.src; // Save the existing overlay
+    overlay.src = '/images/MissingPerson/Tiktok_horror_game_NEWPLAYER.gif';
+
+    setTimeout(() => {
+        overlay.src = currentOverlay; // Restore previous overlay after 2 seconds
+    }, 2000);
+}
+
+// Function to Play N Key Effects
+function handleNewPlayerEffect() {
+    playSound('/sounds/Warning_Sfx_1.mp3');
+    setTimeout(playDevilSound, 500); // Play random Devil SFX after 0.5s
+    newPlayerOverlayEffect();
+}
+
 // Function to Change Overlay Image with Delay
 function updateOverlayImage(newSrc, delay, sound = null) {
     setTimeout(() => {
@@ -311,6 +340,10 @@ window.addEventListener('keydown', (e) => {
         shootingCount++;
         updateStats();
         flashScreen();
+    }
+
+    if (e.key === 'N' || e.key === 'n') {
+        handleNewPlayerEffect();
     }
 });
 
