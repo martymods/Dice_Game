@@ -20,6 +20,27 @@ const viewer = new Cesium.Viewer('game-container', {
 // Start Zoomed Out (Global View)
 viewer.camera.flyHome(0);
 
+// Function to Change Overlay Image with Delay
+function updateOverlayImage(newSrc, delay, sound = null) {
+    setTimeout(() => {
+        overlay.src = newSrc;
+        if (sound) playSound(sound);
+    }, delay);
+}
+
+// Function to Change Overlay Sequence on G Key Press
+function startOverlaySequence() {
+    updateOverlayImage('/images/MissingPerson/TikTok_Overlay_1.gif', 0, '/sounds/TravelingSFX.mp3');
+    updateOverlayImage('/images/MissingPerson/TikTok_Overlay_2.gif', 3000, '/sounds/HitManActive.mp3');
+    updateOverlayImage('/images/MissingPerson/TikTok_Overlay_3.gif', 7000);
+}
+
+// Reset Overlay to Default After Camera Zooms Out
+function resetOverlayImage() {
+    overlay.src = '/images/MissingPerson/TikTok_Overlay_0.gif';
+}
+
+
 // Mission GIF Container
 const missionContainer = document.createElement('div');
 missionContainer.id = 'mission-container';
@@ -208,10 +229,10 @@ function announceGift(user, amount) {
 function zoomToRandomLocation() {
     const { lat, lng } = landCoordinates[Math.floor(Math.random() * landCoordinates.length)];
     viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(lng, lat, 150), // Adjusted height to prevent excessive zoom-in
+        destination: Cesium.Cartesian3.fromDegrees(lng, lat, 150),
         orientation: {
             heading: Cesium.Math.toRadians(Math.random() * 360),
-            pitch: Cesium.Math.toRadians(-45), // Adjusted to prevent full downward pitch
+            pitch: Cesium.Math.toRadians(-45),
             roll: 0.0
         },
         duration: 5
@@ -221,6 +242,7 @@ function zoomToRandomLocation() {
         spawnDeadBody();
         setTimeout(() => {
             viewer.camera.flyHome(3);
+            setTimeout(resetOverlayImage, 6000); // Reset Overlay after zooming out
         }, 5000);
     }, 6000);
 }
@@ -230,9 +252,11 @@ function handleTikTokGift(event) {
     const { username, amount } = event;
     announceGift(username, amount);
     playSound(beepSound);
+    startOverlaySequence();
     updateMissionImage('/images/MissingPerson/Paid.gif', 1000, () => {
         updateMissionImage('/images/MissingPerson/Searching.gif');
     });
+
     setTimeout(() => {
         const randomTarget = `/images/MissingPerson/Target_Located_${Math.floor(Math.random() * 7) + 1}.gif`;
         playSound(crowdSounds[Math.floor(Math.random() * crowdSounds.length)]);
@@ -269,17 +293,18 @@ function flashScreen() {
     }, 50); // Flash duration in milliseconds
 }
 
+// Key Events
 window.addEventListener('keydown', (e) => {
     console.log('Key Pressed:', e.key);
     if (e.key === 'G' || e.key === 'g') {
         const tiktokEvent = { username: 'RandomTikTokUser', amount: 10 }; // Replace with actual event data
         const tiktokUsername = tiktokEvent.username || 'Unknown_Contractor';
         registerPlayer(tiktokUsername);
-        handleTikTokGift({ username: tiktokUsername, amount: 10 });
         murderCount++;
         players[tiktokUsername] += 10;
         updateStats();
         updateLeaderboard();
+        handleTikTokGift({ username: tiktokUsername, amount: 10 });
     }
     if (e.key === 'B' || e.key === 'b') {
         playSound(gunSounds[Math.floor(Math.random() * gunSounds.length)]);
