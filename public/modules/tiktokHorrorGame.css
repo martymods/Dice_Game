@@ -3,14 +3,16 @@
 /* Import OPTI Times Roman font */
 @font-face {
     font-family: 'Digital7';
-    src: url('/fonts/digital-7.ttf') format('opentype'); /* Update the font file path */
+    src: url('./fonts/digital-7.ttf') format('truetype'); /* Ensure it's a TTF */
     font-weight: normal;
     font-style: normal;
+    font-display: swap; /* Ensures the font loads properly */
 }
+
 
 /* Global font settings */
 body {
-    font-family: 'Digital7', serif; /* Use OPTI Times Roman with serif fallback */
+    font-family: 'Digital7', Arial, sans-serif !important;
     font-size: 14px;
     line-height: 1.5;
 }
