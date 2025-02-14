@@ -166,7 +166,7 @@ iframe {
     top: 348px;
     right: 608px;
     width: 200px;
-    height: 140px;
+    height: 160px; /* Increased Height */
     border: 2px solid white;
     background-color: black;
     z-index: 1002;
@@ -177,7 +177,6 @@ iframe {
     font-size: 20px;
     color: red;
 }
-
 
 /* Leaderboard Container */
 #leaderboard-container {
