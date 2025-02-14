@@ -35,14 +35,23 @@ function updateStats() {
     document.getElementById('murder-count').innerText = murderCount;
     document.getElementById('shooting-count').innerText = shootingCount;
     document.getElementById('robbery-count').innerText = robberyCount;
+    
 }
 
 // Function to Handle Robbery
 function handleRobbery() {
     playSound('/sounds/Robbery.mp3');
+
+    // Change Mission and Overlay
     robberyMissionImage.src = '/images/MissingPerson/Robbery_0.gif';
     overlay.src = '/images/MissingPerson/TikTok_Overlay_4.gif';
-    
+
+    // Restore Mission Image After 4 Seconds
+    setTimeout(() => {
+        robberyMissionImage.src = '/images/MissingPerson/Mission_Select_1.gif';
+    }, 4000);
+
+    // Restore TikTok Overlay after 4 seconds
     setTimeout(() => {
         overlay.src = '/images/MissingPerson/TikTok_Overlay_0.gif';
     }, 4000);
@@ -53,10 +62,12 @@ function handleRobbery() {
     } else {
         console.log('Better luck next time!');
     }
-    
+
+    // Increase Robbery Count and Update Stats
     robberyCount++;
     updateStats();
 }
+
 
 // Function to Play Random Devil Sound
 function playDevilSound() {
