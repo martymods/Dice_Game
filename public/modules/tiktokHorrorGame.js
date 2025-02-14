@@ -20,6 +20,44 @@ const viewer = new Cesium.Viewer('game-container', {
 // Start Zoomed Out (Global View)
 viewer.camera.flyHome(0);
 
+// Robbery Mission Container
+const robberyMissionContainer = document.createElement('div');
+robberyMissionContainer.id = 'robbery-mission-container';
+const robberyMissionImage = document.createElement('img');
+robberyMissionImage.id = 'robbery-mission-image';
+robberyMissionImage.src = '/images/MissingPerson/Mission_Select_1.gif';
+robberyMissionContainer.appendChild(robberyMissionImage);
+document.body.appendChild(robberyMissionContainer);
+
+// Update Stats
+let robberyCount = 0;
+function updateStats() {
+    document.getElementById('murder-count').innerText = murderCount;
+    document.getElementById('shooting-count').innerText = shootingCount;
+    document.getElementById('robbery-count').innerText = robberyCount;
+}
+
+// Function to Handle Robbery
+function handleRobbery() {
+    playSound('/sounds/Robbery.mp3');
+    robberyMissionImage.src = '/images/MissingPerson/Robbery_0.gif';
+    overlay.src = '/images/MissingPerson/TikTok_Overlay_4.gif';
+    
+    setTimeout(() => {
+        overlay.src = '/images/MissingPerson/TikTok_Overlay_0.gif';
+    }, 4000);
+
+    // 1 in 50,000 chance to win a real prize
+    if (Math.random() < 1 / 50000) {
+        alert('CONGRATS! You won a real prize! Check your DMs.');
+    } else {
+        console.log('Better luck next time!');
+    }
+    
+    robberyCount++;
+    updateStats();
+}
+
 // Function to Play Random Devil Sound
 function playDevilSound() {
     const devilSounds = [
@@ -344,6 +382,10 @@ window.addEventListener('keydown', (e) => {
 
     if (e.key === 'N' || e.key === 'n') {
         handleNewPlayerEffect();
+    }
+
+    if (e.key === 'L' || e.key === 'l') {
+        handleRobbery();
     }
 });
 
