@@ -1,32 +1,20 @@
 /* tiktokHorrorGame.css */
 
-/* Import OPTI Times Roman font */
 @font-face {
     font-family: 'Digital7';
-    src: url('./fonts/digital-7.ttf') format('truetype'); /* Ensure it's a TTF */
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap; /* Ensures the font loads properly */
+    src: url('/fonts/digital-7.ttf') format('truetype');
 }
 
-
-/* Global font settings */
-body {
-    font-family: 'Digital7', Arial, sans-serif !important;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-* {
-    font-family: 'Digital7', serif !important; /* Ensure consistent usage */
-}
 
 body {
+    margin: 0;
+    padding: 0;
     background-color: black;
+    color: white;
+    font-family: 'Digital7', Arial, sans-serif;
     text-align: center;
 }
 
-/* Game Container */
 #game-container {
     position: relative;
     width: 100vw;
@@ -34,7 +22,6 @@ body {
     overflow: hidden;
 }
 
-/* Map Container */
 #map-container {
     position: absolute;
     top: 50%;
@@ -52,7 +39,6 @@ body {
     height: 100%;
 }
 
-/* Image Settings */
 img {
     position: absolute;
     transition: opacity 1s ease-in-out;
@@ -63,44 +49,44 @@ iframe {
     transition: transform 1s ease-in-out;
 }
 
-/* Death Image */
 .death-image {
     position: absolute;
     left: 50%;
     bottom: 10px;
     transform: translateX(-50%);
-    width: 512px; /* Adjustable */
+    width: 512px; /* Adjust size as needed */
     height: auto;
     z-index: 999;
 }
 
-/* Fake Profile Image */
 .fake-profile-image {
     position: absolute;
     left: 39%;
     bottom: 205px;
     transform: translateX(-50%);
-    width: 70px; /* Adjustable */
+    width: 70px; /* Adjust size as needed */
     height: auto;
     border: 2px solid white;
     z-index: 1001;
 }
 
-/* Adjustable Iframe */
+/* Adjustable iframe settings */
 .fake-profile-iframe {
     position: absolute;
     left: 44%;
     bottom: -68px;
     transform: translateX(-50%) scale(0.6); /* Zoom out by 60% */
-    width: 225px; /* Adjustable */
-    height: 440px; /* Adjustable */
+    width: 225px; /* Adjustable width */
+    height: 440px; /* Adjustable height */
     border: 1px solid white;
     z-index: 1001;
+    
+    /* Allow full customization */
     resize: both;
     overflow: hidden;
 }
 
-/* 🛑 Mission GIF Container */
+/* Mission GIF Container */
 #mission-container {
     position: absolute;
     bottom: 600px;
@@ -117,16 +103,17 @@ iframe {
 }
 
 #mission-image {
-    width: 100%;
+    width: 100%; /* Ensures the image covers the entire container */
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* Ensures the image fills the container while maintaining aspect ratio */
+    display: block;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
-/* 🏆 Stats Container */
+/* Stats Container */
 #stats-container {
     position: absolute;
     top: 348px;
@@ -140,11 +127,12 @@ iframe {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    font-family: 'Digital7', Arial, sans-serif;
     font-size: 20px;
     color: red;
 }
 
-/* 🏆 Leaderboard */
+/* Leaderboard Container */
 #leaderboard-container {
     position: absolute;
     top: 30px;
@@ -155,11 +143,13 @@ iframe {
     background-color: black;
     z-index: 1002;
     text-align: center;
+    font-family: 'Digital7', Arial, sans-serif;
     font-size: 18px;
+    color: #ffffff;
     padding: 10px;
 }
 
-/* 💰 Bounty Container */
+/* Bounty Container */
 #bounty-container {
     position: absolute;
     top: 280px;
@@ -170,23 +160,13 @@ iframe {
     background-color: black;
     z-index: 1002;
     text-align: center;
+    font-family: 'Digital7', Arial, sans-serif;
     font-size: 18px;
     color: orange;
     padding: 10px;
 }
 
-/* ⏳ Countdown Timer */
-#countdown-container {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.8);
-    font-size: 20px;
-    padding: 10px 15px;
-    border-radius: 5px;
-}
-
-/* ⚡ Flash Screen Effect */
+/* Flash Screen Effect */
 .flash-effect {
     position: fixed;
     top: 0;
@@ -204,42 +184,4 @@ iframe {
     to { opacity: 0; }
 }
 
-/* 🏆 Leaderboard Styling */
-#leaderboard {
-    list-style-type: none;
-    padding: 0;
-}
 
-#leaderboard li {
-    font-size: 16px;
-    padding: 5px;
-    border-bottom: 1px solid white;
-}
-
-/* 📱 Responsive Adjustments */
-@media screen and (max-width: 768px) {
-    #stats-container {
-        top: 50px;
-        right: 20px;
-        width: 150px;
-    }
-
-    #leaderboard-container {
-        top: 80px;
-        right: 20px;
-        width: 200px;
-    }
-
-    #bounty-container {
-        top: 150px;
-        right: 20px;
-        width: 200px;
-    }
-
-    #mission-container {
-        bottom: 50px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 250px;
-    }
-}
