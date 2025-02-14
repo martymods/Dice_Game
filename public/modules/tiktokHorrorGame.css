@@ -1,8 +1,28 @@
 /* tiktokHorrorGame.css */
 
+/* Import Digital-7 Font */
 @font-face {
     font-family: 'Digital7';
-    src: url('/fonts/digital-7.ttf') format('truetype');
+    src: url('/fonts/digital-7.ttf') format('truetype'); 
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Global Font Settings */
+* {
+    font-family: 'Digital7', sans-serif !important; /* Ensure consistent usage */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: white;
+}
+
+body {
+    font-family: 'Digital7', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, p, span, div, button, input, textarea {
+    font-family: 'Digital7', sans-serif !important;
 }
 
 
@@ -183,5 +203,3 @@ iframe {
     from { opacity: 0.8; }
     to { opacity: 0; }
 }
-
-
