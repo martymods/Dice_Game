@@ -14,7 +14,7 @@ function startSpin() {
     spinsLeft--;
     spinsDisplay.textContent = spinsLeft;
 
-    playSound("sounds/Button_Spin_Sfx.mp3");
+    playSound("/sounds/Activate_Button_Spin_Sfx.mp3");
     
     let results = [];
     slotReels.forEach((reel, index) => {
@@ -39,7 +39,7 @@ function checkMatches(results) {
         if (value === 7) {  // Example match condition
             matched = true;
             score += 200;
-            playSound("sounds/Score_Sfx_0.mp3");
+            playSound("/sounds/Score_High_Bingo_Sfx_0.mp3");
         }
     });
     
@@ -52,3 +52,4 @@ function playSound(soundFile) {
     const audio = new Audio(soundFile);
     audio.play().catch(err => console.error("Sound error:", err));
 }
+
