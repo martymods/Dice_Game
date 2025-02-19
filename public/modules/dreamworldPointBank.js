@@ -44,19 +44,41 @@ async function buyPoints() {
     }
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const ethAmount = '0.01'; // Adjust ETH amount per points
+    const ethAmount = '0.01'; // Adjust as needed
 
-    const tx = await signer.sendTransaction({
-        to: '0x5638c9f84361a7430b29a63216f0af0914399eA2', // Ethereum wallet
+    try {
+        const tx = await signer.sendTransaction({
+            to: '0xYourActualWalletAddressHere',
+            value: ethers.utils.parseEther(ethAmount)
+        });
 
-        value: ethers.utils.parseEther(ethAmount)
-    });
+        alert('Transaction sent! Waiting for confirmation...');
+        await tx.wait();
+        alert('Transaction confirmed! Points credited.');
 
-    alert('Transaction sent! Waiting for confirmation...');
-    await tx.wait();
-    alert('Transaction confirmed! Points credited.');
-    checkEnrollment();
+        // 🎯 Fetch updated ETH price
+        fetchEthPrice();
+        checkEnrollment();
+    } catch (error) {
+        console.error('Transaction error:', error);
+        alert('Transaction failed!');
+    }
 }
+
+// Fetch ETH price from CoinGecko
+async function fetchEthPrice() {
+    try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+        const data = await response.json();
+        document.getElementById('eth-price').textContent = `1 ETH = $${data.ethereum.usd.toFixed(2)}`;
+    } catch (error) {
+        console.error("Error fetching ETH price:", error);
+    }
+}
+
+// Load ETH price on page load
+document.addEventListener("DOMContentLoaded", fetchEthPrice);
+
 
 // Connect MetaMask
 async function connectMetaMask() {
@@ -73,3 +95,17 @@ async function connectMetaMask() {
 
 document.getElementById('connect-wallet').addEventListener('click', connectMetaMask);
 document.getElementById('buy-points').addEventListener('click', buyPoints);
+
+// leaderboard
+async function loadLeaderboard() {
+    const response = await fetch(`${API_BASE_URL}/leaderboard`);
+    const leaderboard = await response.json();
+    const leaderboardDiv = document.getElementById('leaderboard');
+    
+    leaderboardDiv.innerHTML = leaderboard
+        .map(entry => `<p>${entry.wallet}: ${entry.points} points</p>`)
+        .join('');
+}
+
+// Load leaderboard on page load
+document.addEventListener("DOMContentLoaded", loadLeaderboard);
