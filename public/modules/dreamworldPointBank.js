@@ -143,3 +143,4 @@ async function buyPointPack(points) {
 
 // Load leaderboard on page load
 document.addEventListener("DOMContentLoaded", loadLeaderboard);
+
