@@ -2,6 +2,20 @@
 
 const API_BASE_URL = 'https://dice-game-1-6iwc.onrender.com'; // Your actual backend URL
 
+//server-side authentication system
+const ADMIN_PASSWORD = "logon215"; // Change this to a secure password!
+
+function authenticateAdmin() {
+    const enteredPassword = prompt("Enter Admin Password:");
+    if (enteredPassword !== ADMIN_PASSWORD) {
+        alert("Access Denied!");
+        window.location.href = "/"; // Redirect to home if wrong password
+    }
+}
+
+// Ensure authentication on page load
+document.addEventListener("DOMContentLoaded", authenticateAdmin);
+
 
 // Function to update player points
 async function updatePlayerPoints() {
