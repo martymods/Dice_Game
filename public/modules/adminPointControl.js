@@ -1,6 +1,7 @@
 // adminPointControl.js
 
-const API_BASE_URL = '/modules'; // Adjust with your actual backend API path
+const API_BASE_URL = 'https://dice-game-1-6iwc.onrender.com'; // Your actual backend URL
+
 
 // Function to update player points
 async function updatePlayerPoints() {
