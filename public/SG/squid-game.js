@@ -13,8 +13,9 @@ let isGreenLight = true;
 let gameActive = true;
 
 function drawBackground() {
-    ctx.fillStyle = 'lightgreen';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    let bgImage = new Image();
+    bgImage.src = '/SG/game-background.jpg';
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
 }
 
 function drawPlayers() {
@@ -53,3 +54,22 @@ function gameLoop() {
 }
 
 gameLoop();
+
+// TikTok Gift Integration using TikFinity
+window.addEventListener("message", (event) => {
+    if (event.data?.event === "GiftReceived") {
+        addTikTokPlayer(event.data.username);
+    }
+});
+
+function addTikTokPlayer(username) {
+    players.push({ x: Math.random() * canvas.width, y: canvas.height - 40, alive: true, name: username });
+    updateLeaderboard(username);
+}
+
+function updateLeaderboard(username) {
+    const leaderboard = document.getElementById("leaderboard-list");
+    let listItem = document.createElement("li");
+    listItem.textContent = username;
+    leaderboard.appendChild(listItem);
+}
