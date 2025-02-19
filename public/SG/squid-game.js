@@ -1,54 +1,44 @@
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const dollMusic = document.getElementById('doll-music');
-const gunshotSound = document.getElementById('gunshot');
+/* squid-game.css */
 
-canvas.width = 800;
-canvas.height = 600;
-
-let players = [];
-let isGreenLight = true;
-let gameActive = true;
-
-// Cache background image to avoid reloading
-let bgImage = new Image();
-bgImage.src = '/SG/game-background.jpg';
-
-bgImage.onload = function () {
-    console.log("Background image loaded successfully.");
-};
-
-bgImage.onerror = function () {
-    console.error("Background image failed to load! Ensure '/SG/game-background.jpg' exists on the server.");
-};
-
-function drawBackground() {
-    if (bgImage.complete) {
-        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-    } else {
-        ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
+body {
+    text-align: center;
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
 }
 
-function drawPlayers() {
-    players.forEach(player => {
-        ctx.fillStyle = player.alive ? 'blue' : 'red';
-        ctx.fillRect(player.x, player.y, 20, 20);
-    });
+#game-container {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    margin: auto;
+    border: 2px solid white;
+    overflow: hidden;
 }
 
-function updateGame() {
-    if (!gameActive) return;
-
-    drawBackground();
-    drawPlayers();
+canvas {
+    background-image: url('/SG/game-background.jpg');
+    width: 100%;
+    height: 100%;
 }
 
-function gameLoop() {
-    updateGame();
-    requestAnimationFrame(gameLoop);
+#leaderboard {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 5px;
 }
 
-gameLoop();
+#leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#leaderboard-list li {
+    font-size: 16px;
+    padding: 5px;
+}
 
