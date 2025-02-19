@@ -2,7 +2,8 @@
 
 import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.esm.min.js';
 
-const API_BASE_URL = '/modules'; // Adjust with your actual backend API path
+const API_BASE_URL = 'https://dice-game-1-6iwc.onrender.com'; // Your actual backend URL
+
 
 let userAddress = null;
 
@@ -46,7 +47,8 @@ async function buyPoints() {
     const ethAmount = '0.01'; // Adjust ETH amount per points
 
     const tx = await signer.sendTransaction({
-        to: 'your-wallet-address', // Your receiving wallet address
+        to: '0x5638c9f84361a7430b29a63216f0af0914399eA2', // Ethereum wallet
+
         value: ethers.utils.parseEther(ethAmount)
     });
 
