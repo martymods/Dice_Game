@@ -168,6 +168,15 @@ io.on('connection', (socket) => {
     });
 });
 
+app.get('/vipStatus', (req, res) => {
+    const { wallet } = req.query;
+    if (!wallet) return res.json({ vip: false });
+
+    const points = playerProfiles[wallet]?.points || 0;
+    res.json({ vip: points > 5000 }); // 5000 points = VIP
+});
+
+
 // Leaderboard Endpoints
 app.get('/leaderboard', (req, res) => {
     res.status(200).json(leaderboard);
@@ -184,6 +193,26 @@ app.post('/leaderboard', (req, res) => {
     saveLeaderboard();
     res.status(201).json({ message: 'Leaderboard updated.', leaderboard });
 });
+
+app.post('/updatePoints', (req, res) => {
+    const { wallet, amount } = req.body;
+    if (!wallet) return res.status(400).json({ success: false });
+
+    if (!playerProfiles[wallet]) playerProfiles[wallet] = { points: 0 };
+    playerProfiles[wallet].points += amount;
+
+    // Save leaderboard update
+    leaderboard.push({ name: wallet, score: playerProfiles[wallet].points });
+    leaderboard.sort((a, b) => b.score - a.score);
+    leaderboard = leaderboard.slice(0, 100); // Keep top 100
+    saveLeaderboard();
+
+    // 🔄 Broadcast update to all clients
+    io.emit('leaderboardUpdate', leaderboard.slice(0, 10));
+
+    res.json({ success: true });
+});
+
 
 // Update ETH Prices
 async function updateEthPrices() {
