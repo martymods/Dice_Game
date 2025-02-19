@@ -1,3 +1,5 @@
+/* squid-game.js */
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const dollMusic = document.getElementById('doll-music');
@@ -13,15 +15,16 @@ let gameActive = true;
 function drawBackground() {
     let bgImage = new Image();
     bgImage.src = '/SG/game-background.jpg';
-    
-    // Handle Image Loading Error
-    bgImage.onerror = function() {
-        console.error("Background image failed to load. Ensure '/SG/game-background.jpg' exists.");
-        ctx.fillStyle = 'black'; // Default fallback
+
+    console.log("Loading background image:", bgImage.src);
+
+    bgImage.onerror = function () {
+        console.error("Background image failed to load! Ensure '/SG/game-background.jpg' exists on the server.");
+        ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
-    
-    bgImage.onload = function() {
+
+    bgImage.onload = function () {
         ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     };
 }
@@ -46,4 +49,5 @@ function gameLoop() {
 }
 
 gameLoop();
+
 
