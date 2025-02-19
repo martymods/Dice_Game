@@ -42,7 +42,8 @@ function drawPlayers() {
         img.src = player.moving ? sprite.walking : sprite.idle;
         ctx.drawImage(img, player.x, player.y, 40, 40);
         ctx.fillStyle = 'white';
-        ctx.fillText(player.name, player.x, player.y - 5);
+        ctx.font = '16px Arial';
+        ctx.fillText(`${player.name} (${player.number})`, player.x, player.y - 5);
     });
 }
 
@@ -54,8 +55,21 @@ function updateGame() {
 
 function addTikTokPlayer(username) {
     const index = players.length % characterSprites.length;
-    players.push({ x: Math.random() * canvas.width, y: canvas.height - 40, spriteIndex: index, name: username, moving: true });
+    const randomNumber = Math.floor(Math.random() * 99999) + 1;
+    players.push({ x: Math.random() * canvas.width, y: canvas.height - 40, spriteIndex: index, name: username, number: randomNumber, moving: true });
 }
+
+function addManualPlayer() {
+    const index = players.length % characterSprites.length;
+    const randomNumber = Math.floor(Math.random() * 99999) + 1;
+    players.push({ x: Math.random() * canvas.width, y: canvas.height - 40, spriteIndex: index, name: 'Player', number: randomNumber, moving: true });
+}
+
+window.addEventListener('keydown', (event) => {
+    if (event.key === '1') {
+        addManualPlayer();
+    }
+});
 
 function gameLoop() {
     updateGame();
@@ -63,4 +77,5 @@ function gameLoop() {
 }
 
 gameLoop();
+
 
