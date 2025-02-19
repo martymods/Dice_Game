@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Squid Game Clone</title>
+    <title>Squid Game - TikTok</title>
     <link rel="stylesheet" href="/SG/squid-game.css">
 </head>
 <body>
@@ -17,23 +17,21 @@
     </div>
     
     <audio id="doll-music" src="/SG/squid-game-doll-music.mp3"></audio>
-    <audio id="gunshot" src="/SG/gunshot.mp3"></audio>
+    <audio id="gunshot" src="/sounds/Gun_0.mp3"></audio>
 
-    <!-- TikFinity Integration (MUST BE FIRST) -->
+    <!-- TikFinity Integration -->
     <script src="https://www.tikfinity.com/integration.js"></script>
     <script>
         window.addEventListener("message", (event) => {
             if (event.data?.event === "GiftReceived") {
+                console.log("Gift received from:", event.data.username);
                 addTikTokPlayer(event.data.username);
             }
         });
     </script>
 
-<!-- Game Scripts (AFTER TikFinity Integration) -->
-<script src="/SG/squid-game.js"></script>
-<script type="module" src="/modules/tiktok-integration.js"></script>
-
-
+    <!-- Game Scripts -->
+    <script src="/SG/squid-game.js"></script>
+    <script src="/modules/tiktok-integration.js"></script>
 </body>
-
 </html>
