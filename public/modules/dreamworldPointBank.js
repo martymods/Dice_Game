@@ -140,6 +140,23 @@ async function buyPointPack(points) {
     checkEnrollment();
 }
 
+function loadLeaderboard() {
+    fetch(`${API_BASE_URL}/leaderboard`)
+        .then(response => response.json())
+        .then(leaderboard => {
+            const leaderboardDiv = document.getElementById('leaderboard');
+            leaderboardDiv.innerHTML = leaderboard
+                .map((entry, index) => `<div class="leaderboard-entry">
+                    <span class="leaderboard-rank">#${index + 1}</span>
+                    <span class="leaderboard-wallet">${entry.wallet}</span>
+                    <span class="leaderboard-points">${entry.points} pts</span>
+                </div>`)
+                .join('');
+        })
+        .catch(error => console.error("Error loading leaderboard:", error));
+}
+
+
 
 // Load leaderboard on page load
 document.addEventListener("DOMContentLoaded", loadLeaderboard);
