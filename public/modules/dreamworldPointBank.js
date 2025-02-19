@@ -48,7 +48,7 @@ async function buyPoints() {
 
     try {
         const tx = await signer.sendTransaction({
-            to: '0xYourActualWalletAddressHere',
+            to: '0x5638c9f84361a7430b29a63216f0af0914399eA2',
             value: ethers.utils.parseEther(ethAmount)
         });
 
@@ -97,15 +97,49 @@ document.getElementById('connect-wallet').addEventListener('click', connectMetaM
 document.getElementById('buy-points').addEventListener('click', buyPoints);
 
 // leaderboard
-async function loadLeaderboard() {
-    const response = await fetch(`${API_BASE_URL}/leaderboard`);
-    const leaderboard = await response.json();
+const socket = io.connect(API_BASE_URL);
+
+socket.on('leaderboardUpdate', (leaderboard) => {
     const leaderboardDiv = document.getElementById('leaderboard');
-    
     leaderboardDiv.innerHTML = leaderboard
-        .map(entry => `<p>${entry.wallet}: ${entry.points} points</p>`)
+        .map((entry, index) => `<div class="leaderboard-entry">
+            <span class="leaderboard-rank">#${index + 1}</span>
+            <span class="leaderboard-wallet">${entry.wallet}</span>
+            <span class="leaderboard-points">${entry.points} pts</span>
+        </div>`)
         .join('');
+});
+
+async function checkVIPStatus(wallet) {
+    const response = await fetch(`${API_BASE_URL}/vipStatus?wallet=${wallet}`);
+    const data = await response.json();
+    if (data.vip) {
+        document.getElementById('vip-status').textContent = "🌟 VIP Member 🌟";
+    }
 }
+
+// Run this after wallet connects
+document.addEventListener("DOMContentLoaded", () => {
+    if (userAddress) checkVIPStatus(userAddress);
+});
+
+
+async function buyPointPack(points) {
+    const ethPrices = { 10: "0.002", 50: "0.01", 100: "0.02" };
+    const ethAmount = ethPrices[points];
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    const tx = await signer.sendTransaction({
+        to: "0x5638c9f84361a7430b29a63216f0af0914399eA2", 
+        value: ethers.utils.parseEther(ethAmount)
+    });
+
+    alert(`Purchased ${points} points!`);
+    checkEnrollment();
+}
+
 
 // Load leaderboard on page load
 document.addEventListener("DOMContentLoaded", loadLeaderboard);
