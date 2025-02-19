@@ -199,6 +199,25 @@ async function updateEthPrices() {
 }
 setInterval(updateEthPrices, 60000); // Update every minute
 
+// Enrollment
+app.post('/enroll', async (req, res) => {
+    const { wallet } = req.body;
+    if (!wallet) {
+        return res.status(400).json({ success: false, message: "Wallet address required" });
+    }
+    // Store the wallet in a database (or in-memory for now)
+    playerProfiles[wallet] = { points: 0 }; // Default points to 0
+    res.json({ success: true, message: "Enrollment successful" });
+});
+
+app.get('/checkEnrollment', async (req, res) => {
+    const { wallet } = req.query;
+    if (!wallet || !playerProfiles[wallet]) {
+        return res.json({ enrolled: false, points: 0 });
+    }
+    res.json({ enrolled: true, points: playerProfiles[wallet].points });
+});
+
 // Start Server
 server.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
