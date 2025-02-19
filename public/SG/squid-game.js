@@ -1,5 +1,3 @@
-/* squid-game.js */
-
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const dollMusic = document.getElementById('doll-music');
@@ -15,7 +13,17 @@ let gameActive = true;
 function drawBackground() {
     let bgImage = new Image();
     bgImage.src = '/SG/game-background.jpg';
-    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    
+    // Handle Image Loading Error
+    bgImage.onerror = function() {
+        console.error("Background image failed to load. Ensure '/SG/game-background.jpg' exists.");
+        ctx.fillStyle = 'black'; // Default fallback
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    };
+    
+    bgImage.onload = function() {
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    };
 }
 
 function drawPlayers() {
@@ -32,22 +40,6 @@ function updateGame() {
     drawPlayers();
 }
 
-function toggleGreenLight() {
-    isGreenLight = !isGreenLight;
-    if (!isGreenLight) {
-        detectMovers();
-    }
-}
-
-function detectMovers() {
-    players.forEach(player => {
-        if (Math.random() > 0.5) { // Simulating random movement
-            player.alive = false;
-            gunshotSound.play();
-        }
-    });
-}
-
 function gameLoop() {
     updateGame();
     requestAnimationFrame(gameLoop);
@@ -55,21 +47,3 @@ function gameLoop() {
 
 gameLoop();
 
-// TikTok Gift Integration using TikFinity
-window.addEventListener("message", (event) => {
-    if (event.data?.event === "GiftReceived") {
-        addTikTokPlayer(event.data.username);
-    }
-});
-
-function addTikTokPlayer(username) {
-    players.push({ x: Math.random() * canvas.width, y: canvas.height - 40, alive: true, name: username });
-    updateLeaderboard(username);
-}
-
-function updateLeaderboard(username) {
-    const leaderboard = document.getElementById("leaderboard-list");
-    let listItem = document.createElement("li");
-    listItem.textContent = username;
-    leaderboard.appendChild(listItem);
-}
