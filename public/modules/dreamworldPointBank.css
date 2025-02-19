@@ -38,3 +38,49 @@ button {
 button:hover {
     background-color: #ffdb4d;
 }
+
+/* Leaderboard Styling */
+#leaderboard-container {
+    margin: 20px auto;
+    padding: 15px;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    background-color: #333;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+#leaderboard h2 {
+    color: #ffcc00;
+    margin-bottom: 10px;
+}
+
+.leaderboard-entry {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.leaderboard-entry:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.leaderboard-rank {
+    font-weight: bold;
+    color: #ffcc00;
+}
+
+.leaderboard-wallet {
+    flex-grow: 1;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.leaderboard-points {
+    font-weight: bold;
+    color: #00ffcc;
+}
