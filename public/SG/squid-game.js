@@ -1,44 +1,66 @@
-/* squid-game.css */
+/* squid-game.js */
 
-body {
-    text-align: center;
-    background-color: black;
-    color: white;
-    font-family: Arial, sans-serif;
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const dollMusic = document.getElementById('doll-music');
+const gunshotSound = document.getElementById('gunshot');
+
+canvas.width = 800;
+canvas.height = 600;
+
+let players = [];
+let isGreenLight = true;
+let gameActive = true;
+const dollImage = new Image();
+dollImage.src = '/SG/Doll_Attack.gif';
+
+// Character Sprites
+const characterSprites = [
+    { idle: '/SG/FourPlayers2-Char_0_0.gif', walking: '/SG/FourPlayers2-Char_0_1.gif' },
+    { idle: '/SG/FourPlayers2-Char_1_0.gif', walking: '/SG/FourPlayers2-Char_1_1.gif' },
+    { idle: '/SG/FourPlayers2-Char_2_0.gif', walking: '/SG/FourPlayers2-Char_2_1.gif' },
+    { idle: '/SG/FourPlayers2-Char_3_0.gif', walking: '/SG/FourPlayers2-Char_3_1.gif' },
+    { idle: '/SG/FourPlayers2-Char_4_0.gif', walking: '/SG/FourPlayers2-Char_4_1.gif' },
+    { idle: '/SG/FourPlayers2-Char_5_0.gif', walking: '/SG/FourPlayers2-Char_5_1.gif' },
+    { idle: '/SG/FourPlayers2-Char_6_0.gif', walking: '/SG/FourPlayers2-Char_6_1.gif' },
+    { idle: '/SG/FourPlayers2-Char_7_0.gif', walking: '/SG/FourPlayers2-Char_7_1.gif' }
+];
+
+function drawBackground() {
+    let bgImage = new Image();
+    bgImage.src = '/SG/game-background.jpg';
+    bgImage.onload = function () {
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(dollImage, canvas.width / 2 - 50, 20, 100, 100);
+    };
 }
 
-#game-container {
-    position: relative;
-    width: 800px;
-    height: 600px;
-    margin: auto;
-    border: 2px solid white;
-    overflow: hidden;
+function drawPlayers() {
+    players.forEach(player => {
+        const sprite = characterSprites[player.spriteIndex];
+        const img = new Image();
+        img.src = player.moving ? sprite.walking : sprite.idle;
+        ctx.drawImage(img, player.x, player.y, 40, 40);
+        ctx.fillStyle = 'white';
+        ctx.fillText(player.name, player.x, player.y - 5);
+    });
 }
 
-canvas {
-    background-image: url('/SG/game-background.jpg');
-    width: 100%;
-    height: 100%;
+function updateGame() {
+    if (!gameActive) return;
+    drawBackground();
+    drawPlayers();
 }
 
-#leaderboard {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 10px;
-    border-radius: 5px;
+function addTikTokPlayer(username) {
+    const index = players.length % characterSprites.length;
+    players.push({ x: Math.random() * canvas.width, y: canvas.height - 40, spriteIndex: index, name: username, moving: true });
 }
 
-#leaderboard-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+function gameLoop() {
+    updateGame();
+    requestAnimationFrame(gameLoop);
 }
 
-#leaderboard-list li {
-    font-size: 16px;
-    padding: 5px;
-}
+gameLoop();
 
