@@ -218,6 +218,15 @@ app.get('/checkEnrollment', async (req, res) => {
     res.json({ enrolled: true, points: playerProfiles[wallet].points });
 });
 
+app.get('/leaderboard', (req, res) => {
+    const sortedPlayers = Object.entries(playerProfiles)
+        .sort((a, b) => b[1].points - a[1].points) // Sort by highest points
+        .slice(0, 10); // Top 10 players
+
+    res.json(sortedPlayers.map(([wallet, data]) => ({ wallet, points: data.points })));
+});
+
+
 // Start Server
 server.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
