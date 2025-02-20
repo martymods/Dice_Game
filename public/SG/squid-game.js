@@ -9,7 +9,7 @@ canvas.width = 800;
 canvas.height = 600;
 
 let players = [];
-let isGreenLight = true;
+let isGreenLight = false;
 let gameActive = true;
 const dollImage = new Image();
 dollImage.src = '/SG/Doll_Attack.gif';
@@ -39,6 +39,9 @@ function drawPlayers() {
     
     players.forEach(player => {
         const sprite = characterSprites[player.spriteIndex];
+        player.y -= isGreenLight ? 1 : 0; // Move players up when green light is active
+        player.moving = isGreenLight; // Switch animation
+        
         const img = new Image();
         img.src = player.moving ? sprite.walking : sprite.idle;
         img.onload = () => {
@@ -58,7 +61,7 @@ function updateGame() {
 function addTikTokPlayer(username) {
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
-    players.push({ x: Math.random() * (canvas.width - 40), y: canvas.height - 60, spriteIndex: index, name: username, number: randomNumber, moving: true });
+    players.push({ x: Math.random() * (canvas.width - 40), y: canvas.height - 60, spriteIndex: index, name: username, number: randomNumber, moving: false });
     updateGame();
 }
 
@@ -66,7 +69,7 @@ function addManualPlayer() {
     console.log("Adding Manual Player");
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
-    players.push({ x: Math.random() * (canvas.width - 40), y: canvas.height - 60, spriteIndex: index, name: 'Player', number: randomNumber, moving: true });
+    players.push({ x: Math.random() * (canvas.width - 40), y: canvas.height - 60, spriteIndex: index, name: 'Player', number: randomNumber, moving: false });
     updateGame();
 }
 
@@ -75,6 +78,17 @@ window.addEventListener('keydown', (event) => {
         addManualPlayer();
     }
 });
+
+// Toggle Red Light / Green Light System
+function toggleGreenLight() {
+    isGreenLight = !isGreenLight;
+    console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
+}
+
+// Change Green Light / Red Light every 3-6 seconds randomly
+setInterval(() => {
+    toggleGreenLight();
+}, Math.random() * (6000 - 3000) + 3000);
 
 function gameLoop() {
     updateGame();
@@ -86,5 +100,3 @@ dollImage.onload = () => {
         gameLoop();
     };
 };
-
-
