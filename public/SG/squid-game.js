@@ -36,33 +36,40 @@ function drawBackground() {
 }
 
 function drawPlayers() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before redrawing
+    drawBackground();
+    
     players.forEach(player => {
         const sprite = characterSprites[player.spriteIndex];
         const img = new Image();
         img.src = player.moving ? sprite.walking : sprite.idle;
-        ctx.drawImage(img, player.x, player.y, 40, 40);
-        ctx.fillStyle = 'white';
-        ctx.font = '16px Arial';
-        ctx.fillText(`${player.name} (${player.number})`, player.x, player.y - 5);
+        img.onload = () => {
+            ctx.drawImage(img, player.x, player.y, 40, 40);
+            ctx.fillStyle = 'white';
+            ctx.font = '16px Arial';
+            ctx.fillText(`${player.name} (${player.number})`, player.x, player.y - 5);
+        };
     });
 }
 
 function updateGame() {
     if (!gameActive) return;
-    drawBackground();
     drawPlayers();
 }
 
 function addTikTokPlayer(username) {
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
-    players.push({ x: Math.random() * canvas.width, y: canvas.height - 40, spriteIndex: index, name: username, number: randomNumber, moving: true });
+    players.push({ x: Math.random() * (canvas.width - 40), y: canvas.height - 60, spriteIndex: index, name: username, number: randomNumber, moving: true });
+    updateGame();
 }
 
 function addManualPlayer() {
+    console.log("Adding Manual Player");
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
-    players.push({ x: Math.random() * canvas.width, y: canvas.height - 40, spriteIndex: index, name: 'Player', number: randomNumber, moving: true });
+    players.push({ x: Math.random() * (canvas.width - 40), y: canvas.height - 60, spriteIndex: index, name: 'Player', number: randomNumber, moving: true });
+    updateGame();
 }
 
 window.addEventListener('keydown', (event) => {
