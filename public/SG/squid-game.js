@@ -49,7 +49,6 @@ function drawPlayers() {
         const img = new Image();
         img.src = player.moving ? sprite.walking : sprite.idle;
         img.onload = () => {
-            ctx.clearRect(player.x, player.y, 40, 40); // Clear previous frame to avoid overlapping
             ctx.drawImage(img, player.x, player.y, 40, 40);
             ctx.fillStyle = 'white';
             ctx.font = '16px Arial';
@@ -64,6 +63,7 @@ function updateGame() {
 }
 
 function addTikTokPlayer(username) {
+    console.log("Adding TikTok Player:", username);
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
     players.push({ x: Math.random() * (canvas.width - 40), y: canvas.height - 60, spriteIndex: index, name: username, number: randomNumber, moving: false });
@@ -74,7 +74,7 @@ function addManualPlayer() {
     console.log("Adding Manual Player");
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
-    players.push({ x: Math.random() * (canvas.width - 40), y: canvas.height - 60, spriteIndex: index, name: 'Player', number: randomNumber, moving: false });
+    players.push({ x: Math.random() * (canvas.width - 40), y: canvas.height - 60, spriteIndex: index, name: `Player${players.length + 1}`, number: randomNumber, moving: false });
     updateGame();
 }
 
@@ -88,11 +88,6 @@ window.addEventListener('keydown', (event) => {
 function toggleGreenLight() {
     isGreenLight = !isGreenLight;
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
-    if (!isGreenLight) {
-        dollImage.src = '/SG/Doll_Attack.gif'; // Pause Doll Animation
-    } else {
-        dollImage.src = '/SG/Doll_Attack.gif'; // Ensure it's animated during green light
-    }
     updateGame(); // Ensure game updates when switching light states
 }
 
@@ -111,3 +106,4 @@ dollImage.onload = () => {
         gameLoop();
     };
 };
+
