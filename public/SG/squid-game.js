@@ -154,3 +154,4 @@ function gameLoop() {
 
 // Start game
 gameLoop();
+
