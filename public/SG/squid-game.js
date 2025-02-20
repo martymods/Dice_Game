@@ -50,16 +50,17 @@ function drawPlayers() {
         img.src = player.moving ? sprite.walking : sprite.idle;
         img.onload = () => {
             ctx.drawImage(img, player.x, player.y, 40, 40);
-            ctx.fillStyle = 'white';
-            ctx.font = '16px Arial';
-            ctx.fillText(`${player.name} (${player.number})`, player.x, player.y - 5);
         };
+        ctx.fillStyle = 'white';
+        ctx.font = '16px Arial';
+        ctx.fillText(`${player.name} (${player.number})`, player.x, player.y - 5);
     });
 }
 
 function updateGame() {
     if (!gameActive) return;
     drawPlayers();
+    requestAnimationFrame(updateGame); // Ensure continuous updating
 }
 
 function addTikTokPlayer(username) {
@@ -98,7 +99,6 @@ setInterval(() => {
 
 function gameLoop() {
     updateGame();
-    requestAnimationFrame(gameLoop);
 }
 
 dollImage.onload = () => {
@@ -106,4 +106,3 @@ dollImage.onload = () => {
         gameLoop();
     };
 };
-
