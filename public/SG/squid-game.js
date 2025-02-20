@@ -29,59 +29,56 @@ const characterSprites = [
 ];
 
 function drawBackground() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     ctx.drawImage(dollImage, canvas.width / 2 - 50, 20, 100, 100);
 }
 
-function drawPlayers() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before redrawing
-    drawBackground();
-    
+function updatePlayers() {
     players.forEach(player => {
         if (isGreenLight) {
-            player.y -= 0.05; // Restore reduced movement speed
-            player.moving = true; // Switch to walking animation
+            player.y -= 1; // Slow movement upwards
+            player.element.src = characterSprites[player.spriteIndex].walking; // Change to walking GIF
         } else {
-            player.moving = false; // Switch to idle animation
+            player.element.src = characterSprites[player.spriteIndex].idle; // Change to idle GIF
         }
-        
-        const sprite = characterSprites[player.spriteIndex];
-        const img = new Image();
-        img.src = player.moving ? sprite.walking : sprite.idle;
-        img.onload = () => {
-            ctx.drawImage(img, player.x, player.y, 40, 40);
-        };
-        ctx.fillStyle = 'white';
-        ctx.font = '16px Arial';
-        ctx.fillText(`${player.name} (${player.number})`, player.x, player.y - 5);
+
+        // Update position in DOM
+        player.element.style.top = `${player.y}px`;
     });
 }
 
-function updateGame() {
-    if (!gameActive) return;
-    drawPlayers();
-    requestAnimationFrame(updateGame); // Ensure continuous updating
-}
-
-function addTikTokPlayer(username) {
-    console.log("Adding TikTok Player:", username);
+function addPlayer(name) {
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
-    players.push({ x: Math.random() * (canvas.width - 40), y: canvas.height - 60, spriteIndex: index, name: username, number: randomNumber, moving: false });
-    updateGame();
+
+    // Create player image
+    const playerElement = document.createElement('img');
+    playerElement.src = characterSprites[index].idle; // Start with idle state
+    playerElement.className = 'player';
+    playerElement.style.left = `${Math.random() * (canvas.width - 40)}px`;
+    playerElement.style.top = `${canvas.height - 60}px`;
+    playerElement.style.position = 'absolute';
+    playerElement.style.width = '40px';
+    playerElement.style.height = '40px';
+
+    document.body.appendChild(playerElement);
+
+    players.push({
+        x: parseInt(playerElement.style.left),
+        y: canvas.height - 60,
+        spriteIndex: index,
+        name: name,
+        number: randomNumber,
+        element: playerElement,
+        moving: false
+    });
 }
 
-function addManualPlayer() {
-    console.log("Adding Manual Player");
-    const index = players.length % characterSprites.length;
-    const randomNumber = Math.floor(Math.random() * 99999) + 1;
-    players.push({ x: Math.random() * (canvas.width - 40), y: canvas.height - 60, spriteIndex: index, name: `Player${players.length + 1}`, number: randomNumber, moving: false });
-    updateGame();
-}
-
+// Manual Player Spawn (Key Press "1")
 window.addEventListener('keydown', (event) => {
     if (event.key === '1') {
-        addManualPlayer();
+        addPlayer(`Player${players.length + 1}`);
     }
 });
 
@@ -89,7 +86,6 @@ window.addEventListener('keydown', (event) => {
 function toggleGreenLight() {
     isGreenLight = !isGreenLight;
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
-    updateGame(); // Ensure game updates when switching light states
 }
 
 // Change Green Light / Red Light every 3-6 seconds randomly
@@ -98,13 +94,10 @@ setInterval(() => {
 }, Math.random() * (6000 - 3000) + 3000);
 
 function gameLoop() {
-    updateGame();
+    drawBackground();
+    updatePlayers();
+    requestAnimationFrame(gameLoop);
 }
 
-dollImage.onload = () => {
-    bgImage.onload = () => {
-        gameLoop();
-    };
-};
-
-
+// Start game
+gameLoop();
