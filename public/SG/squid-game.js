@@ -39,7 +39,7 @@ function drawPlayers() {
     
     players.forEach(player => {
         if (isGreenLight) {
-            player.y -= 0.3; // Move players up slower when green light is active
+            player.y -= 0.1; // Reduced movement speed
             player.moving = true; // Switch to walking animation
         } else {
             player.moving = false; // Switch to idle animation
