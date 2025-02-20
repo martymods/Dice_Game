@@ -69,7 +69,7 @@ function updatePlayers() {
 
         // Check if player crossed the winner line
         if (player.y <= winnerLineY) {
-            addToLeaderboard(player.name);
+            addToLeaderboard(player.nameTag.innerText); // Use nameTag text to match the floating name
             player.element.remove();
             player.nameTag.remove();
             players = players.filter(p => p !== player); // Remove from players array
@@ -154,4 +154,3 @@ function gameLoop() {
 
 // Start game
 gameLoop();
-
