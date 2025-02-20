@@ -48,12 +48,10 @@ function drawPlayers() {
         const sprite = characterSprites[player.spriteIndex];
         const img = new Image();
         img.src = player.moving ? sprite.walking : sprite.idle;
-        img.onload = () => {
-            ctx.drawImage(img, player.x, player.y, 40, 40);
-            ctx.fillStyle = 'white';
-            ctx.font = '16px Arial';
-            ctx.fillText(`${player.name} (${player.number})`, player.x, player.y - 5);
-        };
+        ctx.drawImage(img, player.x, player.y, 40, 40);
+        ctx.fillStyle = 'white';
+        ctx.font = '16px Arial';
+        ctx.fillText(`${player.name} (${player.number})`, player.x, player.y - 5);
     });
 }
 
@@ -87,6 +85,11 @@ window.addEventListener('keydown', (event) => {
 function toggleGreenLight() {
     isGreenLight = !isGreenLight;
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
+    if (!isGreenLight) {
+        dollImage.src = '/SG/Doll_Attack.gif'; // Pause Doll Animation
+    } else {
+        dollImage.src = '/SG/Doll_Attack.gif'; // Ensure it's animated during green light
+    }
     updateGame(); // Ensure game updates when switching light states
 }
 
