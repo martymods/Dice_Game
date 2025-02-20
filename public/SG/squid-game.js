@@ -74,6 +74,19 @@ function playSound(soundArray) {
     sound.play();
 }
 
+function updatePlayers() {
+    players.forEach(player => {
+        if (isGreenLight) {
+            player.y -= 0.5; // Move players towards the goal
+            player.element.src = characterSprites[player.spriteIndex].walking;
+        } else {
+            player.element.src = characterSprites[player.spriteIndex].idle;
+        }
+
+        player.element.style.top = `${player.y}px`;
+    });
+}
+
 function addPlayer(name) {
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
@@ -122,6 +135,7 @@ window.addEventListener('keydown', (event) => {
 
 function gameLoop() {
     drawBackground();
+    updatePlayers();
     requestAnimationFrame(gameLoop);
 }
 
@@ -129,3 +143,4 @@ dollMusic.loop = true;
 dollMusic.play();
 
 requestAnimationFrame(gameLoop);
+
