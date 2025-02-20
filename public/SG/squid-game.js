@@ -14,16 +14,16 @@ let gameActive = true;
 const dollImage = new Image();
 dollImage.src = '/SG/Doll_Attack.gif';
 
-// Character Sprites
+// Updated Character Sprites with Correct Paths
 const characterSprites = [
-    { idle: '/SG/FourPlayers2-Char_0_0.gif', walking: '/SG/FourPlayers2-Char_0_1.gif' },
-    { idle: '/SG/FourPlayers2-Char_1_0.gif', walking: '/SG/FourPlayers2-Char_1_1.gif' },
-    { idle: '/SG/FourPlayers2-Char_2_0.gif', walking: '/SG/FourPlayers2-Char_2_1.gif' },
-    { idle: '/SG/FourPlayers2-Char_3_0.gif', walking: '/SG/FourPlayers2-Char_3_1.gif' },
-    { idle: '/SG/FourPlayers2-Char_4_0.gif', walking: '/SG/FourPlayers2-Char_4_1.gif' },
-    { idle: '/SG/FourPlayers2-Char_5_0.gif', walking: '/SG/FourPlayers2-Char_5_1.gif' },
-    { idle: '/SG/FourPlayers2-Char_6_0.gif', walking: '/SG/FourPlayers2-Char_6_1.gif' },
-    { idle: '/SG/FourPlayers2-Char_7_0.gif', walking: '/SG/FourPlayers2-Char_7_1.gif' }
+    { idle: '/SG/char_0_0.gif', walking: '/SG/char_0_1.gif' },
+    { idle: '/SG/char_1_0.gif', walking: '/SG/char_1_1.gif' },
+    { idle: '/SG/char_2_0.gif', walking: '/SG/char_2_1.gif' },
+    { idle: '/SG/char_3_0.gif', walking: '/SG/char_3_1.gif' },
+    { idle: '/SG/char_4_0.gif', walking: '/SG/char_4_1.gif' },
+    { idle: '/SG/char_5_0.gif', walking: '/SG/char_5_1.gif' },
+    { idle: '/SG/char_6_0.gif', walking: '/SG/char_6_1.gif' },
+    { idle: '/SG/char_7_0.gif', walking: '/SG/char_7_1.gif' }
 ];
 
 function drawBackground() {
@@ -77,5 +77,4 @@ function gameLoop() {
 }
 
 gameLoop();
-
 
