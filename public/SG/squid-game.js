@@ -39,7 +39,7 @@ function drawPlayers() {
     
     players.forEach(player => {
         if (isGreenLight) {
-            player.y -= 0.1; // Reduced movement speed
+            player.y -= 0.05; // Further reduced movement speed
             player.moving = true; // Switch to walking animation
         } else {
             player.moving = false; // Switch to idle animation
@@ -106,3 +106,4 @@ dollImage.onload = () => {
         gameLoop();
     };
 };
+
