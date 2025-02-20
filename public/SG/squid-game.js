@@ -60,6 +60,21 @@ function drawBackground() {
     ctx.shadowBlur = 0;
 }
 
+function startCountdown() {
+    let timeLeft = 20;
+    buzzerSound.play();
+    countdownTimer = setInterval(() => {
+        if (timeLeft === 10) countdownSound.play();
+        if (timeLeft <= 10) playSound(['/SG/CountDown.mp3']);
+        if (timeLeft === 0) {
+            countdownEndSound.play();
+            clearInterval(countdownTimer);
+        }
+        console.log(`Countdown: ${timeLeft}`);
+        timeLeft--;
+    }, 1000);
+}
+
 function toggleGreenLight() {
     isGreenLight = !isGreenLight;
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
@@ -79,6 +94,7 @@ function updatePlayers() {
         if (isGreenLight) {
             player.y -= 0.5; // Move players towards the goal
             player.element.src = characterSprites[player.spriteIndex].walking;
+            if (Math.random() < 0.1) playSound(footstepSounds);
         } else {
             player.element.src = characterSprites[player.spriteIndex].idle;
         }
@@ -88,6 +104,10 @@ function updatePlayers() {
 
         // Check if player crossed the winner line
         if (player.y <= winnerLineY) {
+            if (!firstWinnerTime) {
+                firstWinnerTime = Date.now();
+                startCountdown();
+            }
             addToLeaderboard(player.nameTag.innerText);
             player.element.remove();
             player.nameTag.remove();
@@ -95,59 +115,6 @@ function updatePlayers() {
         }
     });
 }
-
-function addToLeaderboard(name) {
-    const leaderboard = document.getElementById('leaderboard-list');
-    const entry = document.createElement('li');
-    entry.innerText = `${name} - Winner!`;
-    leaderboard.appendChild(entry);
-}
-
-function addPlayer(name) {
-    const index = players.length % characterSprites.length;
-    const randomNumber = Math.floor(Math.random() * 99999) + 1;
-    const spawnX = Math.random() * (canvas.width - 50) + 10;
-
-    const playerElement = document.createElement('img');
-    playerElement.src = characterSprites[index].idle;
-    playerElement.className = 'player';
-    playerElement.style.left = `${spawnX}px`;
-    playerElement.style.top = `${canvas.height - 60}px`;
-    playerElement.style.position = 'absolute';
-    playerElement.style.width = '40px';
-    playerElement.style.height = '40px';
-
-    const nameTag = document.createElement('span');
-    nameTag.className = 'player-name';
-    nameTag.innerText = `${name} (${randomNumber})`;
-    nameTag.style.left = `${spawnX}px`;
-    nameTag.style.top = `${canvas.height - 80}px`;
-    nameTag.style.position = 'absolute';
-    nameTag.style.color = 'black';
-    nameTag.style.background = 'rgba(255,255,255,0.7)';
-    nameTag.style.padding = '2px 5px';
-    nameTag.style.borderRadius = '3px';
-
-    document.getElementById('game-container').appendChild(playerElement);
-    document.getElementById('game-container').appendChild(nameTag);
-
-    players.push({
-        x: spawnX,
-        y: canvas.height - 60,
-        spriteIndex: index,
-        name: name,
-        number: randomNumber,
-        element: playerElement,
-        nameTag: nameTag,
-        moving: false
-    });
-}
-
-window.addEventListener('keydown', (event) => {
-    if (event.key === '1') {
-        addPlayer(`Player${players.length + 1}`);
-    }
-});
 
 dollMusic.loop = true;
 dollMusic.play();
@@ -159,3 +126,4 @@ function gameLoop() {
     updatePlayers();
     requestAnimationFrame(gameLoop);
 }
+
