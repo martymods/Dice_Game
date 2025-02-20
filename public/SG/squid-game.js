@@ -13,6 +13,8 @@ let isGreenLight = true;
 let gameActive = true;
 const dollImage = new Image();
 dollImage.src = '/SG/Doll_Attack.gif';
+let bgImage = new Image();
+bgImage.src = '/SG/game-background.jpg';
 
 // Updated Character Sprites with Correct Paths
 const characterSprites = [
@@ -27,12 +29,8 @@ const characterSprites = [
 ];
 
 function drawBackground() {
-    let bgImage = new Image();
-    bgImage.src = '/SG/game-background.jpg';
-    bgImage.onload = function () {
-        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-        ctx.drawImage(dollImage, canvas.width / 2 - 50, 20, 100, 100);
-    };
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(dollImage, canvas.width / 2 - 50, 20, 100, 100);
 }
 
 function drawPlayers() {
@@ -83,5 +81,10 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-gameLoop();
+dollImage.onload = () => {
+    bgImage.onload = () => {
+        gameLoop();
+    };
+};
+
 
