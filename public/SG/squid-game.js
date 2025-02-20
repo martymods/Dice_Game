@@ -85,6 +85,12 @@ function updatePlayers() {
     });
 }
 
+function gameLoop() {
+    drawBackground();
+    updatePlayers();
+    requestAnimationFrame(gameLoop);
+}
+
 function startCountdown() {
     let timeLeft = 20;
     buzzerSound.play();
@@ -100,31 +106,9 @@ function startCountdown() {
     }, 1000);
 }
 
-function eliminatePlayers() {
-    let numToKill = Math.floor(Math.random() * (players.length / 2)) + 1;
-    let killed = 0;
-    let eliminationInterval = setInterval(() => {
-        if (killed >= numToKill || players.length === 0) {
-            clearInterval(eliminationInterval);
-            return;
-        }
-        let victim = players[Math.floor(Math.random() * players.length)];
-        playSound(gunshotSounds);
-        setTimeout(() => playSound(hitSounds), 200);
-        setTimeout(() => playSound(deathSounds), 300);
-        setTimeout(() => {
-            victim.element.remove();
-            victim.nameTag.remove();
-            players = players.filter(p => p !== victim);
-        }, 2000);
-        killed++;
-    }, 2000);
-}
-
 function toggleGreenLight() {
     isGreenLight = !isGreenLight;
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
-    if (!isGreenLight) eliminatePlayers();
 }
 
 setInterval(() => {
@@ -134,5 +118,6 @@ setInterval(() => {
 dollMusic.loop = true;
 dollMusic.play();
 
-gameLoop();
+// Start game
+requestAnimationFrame(gameLoop);
 
