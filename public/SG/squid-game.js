@@ -39,7 +39,7 @@ function drawPlayers() {
     
     players.forEach(player => {
         if (isGreenLight) {
-            player.y -= 1; // Move players up when green light is active
+            player.y -= 0.3; // Move players up slower when green light is active
             player.moving = true; // Switch to walking animation
         } else {
             player.moving = false; // Switch to idle animation
@@ -48,10 +48,13 @@ function drawPlayers() {
         const sprite = characterSprites[player.spriteIndex];
         const img = new Image();
         img.src = player.moving ? sprite.walking : sprite.idle;
-        ctx.drawImage(img, player.x, player.y, 40, 40);
-        ctx.fillStyle = 'white';
-        ctx.font = '16px Arial';
-        ctx.fillText(`${player.name} (${player.number})`, player.x, player.y - 5);
+        img.onload = () => {
+            ctx.clearRect(player.x, player.y, 40, 40); // Clear previous frame to avoid overlapping
+            ctx.drawImage(img, player.x, player.y, 40, 40);
+            ctx.fillStyle = 'white';
+            ctx.font = '16px Arial';
+            ctx.fillText(`${player.name} (${player.number})`, player.x, player.y - 5);
+        };
     });
 }
 
@@ -108,4 +111,3 @@ dollImage.onload = () => {
         gameLoop();
     };
 };
-
