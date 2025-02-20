@@ -116,14 +116,13 @@ function updatePlayers() {
     });
 }
 
-dollMusic.loop = true;
-dollMusic.play();
-
-requestAnimationFrame(gameLoop);
-
 function gameLoop() {
     drawBackground();
     updatePlayers();
     requestAnimationFrame(gameLoop);
 }
 
+dollMusic.loop = true;
+dollMusic.play();
+
+requestAnimationFrame(gameLoop);
