@@ -60,59 +60,23 @@ function drawBackground() {
     ctx.shadowBlur = 0;
 }
 
-function startCountdown() {
-    let timeLeft = 20;
-    buzzerSound.play();
-    countdownTimer = setInterval(() => {
-        if (timeLeft === 10) countdownSound.play();
-        if (timeLeft <= 10) playSound(['/SG/CountDown.mp3']);
-        if (timeLeft === 0) {
-            countdownEndSound.play();
-            clearInterval(countdownTimer);
-        }
-        console.log(`Countdown: ${timeLeft}`);
-        timeLeft--;
-    }, 1000);
-}
-
-function toggleGreenLight() {
-    isGreenLight = !isGreenLight;
-    console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
-}
-
-setInterval(() => {
-    toggleGreenLight();
-}, Math.random() * (6000 - 3000) + 3000);
-
-function playSound(soundArray) {
-    const sound = new Audio(soundArray[Math.floor(Math.random() * soundArray.length)]);
-    sound.play();
-}
-
 function updatePlayers() {
     players.forEach(player => {
         if (isGreenLight) {
-            player.y -= 0.5; // Move players towards the goal
+            player.y -= 0.5;
             player.element.src = characterSprites[player.spriteIndex].walking;
-            if (Math.random() < 0.1) playSound(footstepSounds);
+            if (Math.random() < 0.15) {
+                let footstep = new Audio(footstepSounds[Math.floor(Math.random() * footstepSounds.length)]);
+                footstep.volume = 0.5;
+                let stereoPan = (player.x / canvas.width) * 2 - 1; // Convert x position to stereo pan (-1 to 1)
+                if (footstep.pan) footstep.pan.value = stereoPan;
+                footstep.play();
+            }
         } else {
             player.element.src = characterSprites[player.spriteIndex].idle;
         }
-
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`; // Keep name above player
-
-        // Check if player crossed the winner line
-        if (player.y <= winnerLineY) {
-            if (!firstWinnerTime) {
-                firstWinnerTime = Date.now();
-                startCountdown();
-            }
-            addToLeaderboard(player.nameTag.innerText);
-            player.element.remove();
-            player.nameTag.remove();
-            players = players.filter(p => p !== player);
-        }
     });
 }
 
