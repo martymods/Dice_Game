@@ -39,7 +39,7 @@ function drawPlayers() {
     
     players.forEach(player => {
         if (isGreenLight) {
-            player.y -= 0.3; // Restore movement speed
+            player.y -= 0.05; // Restore reduced movement speed
             player.moving = true; // Switch to walking animation
         } else {
             player.moving = false; // Switch to idle animation
@@ -48,9 +48,7 @@ function drawPlayers() {
         const sprite = characterSprites[player.spriteIndex];
         const img = new Image();
         img.src = player.moving ? sprite.walking : sprite.idle;
-        img.style.animation = "none"; // Ensure GIFs animate properly
         img.onload = () => {
-            ctx.clearRect(player.x, player.y, 40, 40);
             ctx.drawImage(img, player.x, player.y, 40, 40);
         };
         ctx.fillStyle = 'white';
@@ -108,4 +106,5 @@ dollImage.onload = () => {
         gameLoop();
     };
 };
+
 
