@@ -2,8 +2,10 @@
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const dollMusic = document.getElementById('doll-music');
-const gunshotSound = document.getElementById('gunshot');
+const dollMusic = new Audio('/SG/SG_Background_Ambience_0.mp3');
+const buzzerSound = new Audio('/SG/Buzzer.mp3');
+const countdownSound = new Audio('/SG/CountDown.mp3');
+const countdownEndSound = new Audio('/SG/CountDown_END.mp3');
 
 canvas.width = 800;
 canvas.height = 600;
@@ -11,6 +13,8 @@ canvas.height = 600;
 let players = [];
 let isGreenLight = false;
 let gameActive = true;
+let firstWinnerTime = null;
+let countdownTimer = null;
 const dollImage = new Image();
 dollImage.src = '/SG/Doll_Attack.gif';
 let bgImage = new Image();
@@ -19,17 +23,13 @@ bgImage.src = '/SG/game-background.jpg';
 // Winner Line Position
 const winnerLineY = 100;
 
-// Updated Character Sprites with Correct Paths
-const characterSprites = [
-    { idle: '/SG/char_0_0.gif', walking: '/SG/char_0_1.gif' },
-    { idle: '/SG/char_1_0.gif', walking: '/SG/char_1_1.gif' },
-    { idle: '/SG/char_2_0.gif', walking: '/SG/char_2_1.gif' },
-    { idle: '/SG/char_3_0.gif', walking: '/SG/char_3_1.gif' },
-    { idle: '/SG/char_4_0.gif', walking: '/SG/char_4_1.gif' },
-    { idle: '/SG/char_5_0.gif', walking: '/SG/char_5_1.gif' },
-    { idle: '/SG/char_6_0.gif', walking: '/SG/char_6_1.gif' },
-    { idle: '/SG/char_7_0.gif', walking: '/SG/char_7_1.gif' }
-];
+// Footstep sounds
+const footstepSounds = ['/SG/walk_0.mp3', '/SG/walk_1.mp3', '/SG/walk_2.mp3'];
+
+// Gunshot and Death Sounds
+const gunshotSounds = ['/SG/Doll_Shooting_0.mp3', '/SG/Doll_Shooting_1.mp3', '/SG/Doll_Shooting_2.mp3', '/SG/Doll_Shooting_3.mp3'];
+const hitSounds = ['/SG/C_Hit_0.mp3', '/SG/C_Hit_1.mp3', '/SG/C_Hit_2.mp3'];
+const deathSounds = ['/SG/C_Death_0.mp3', '/SG/C_Death_1.mp3', '/SG/C_Death_2.mp3', '/SG/C_Death_3.mp3', '/SG/C_Death_4.mp3'];
 
 function drawBackground() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -48,109 +48,91 @@ function drawBackground() {
     ctx.shadowBlur = 0; // Reset shadow
 }
 
+function playSound(soundArray) {
+    const sound = new Audio(soundArray[Math.floor(Math.random() * soundArray.length)]);
+    sound.play();
+}
+
 function updatePlayers() {
     players.forEach(player => {
         if (isGreenLight) {
-            player.y -= 1; // Slow movement upwards
+            player.y -= 0.5; // Slower movement upwards
             player.element.src = characterSprites[player.spriteIndex].walking; // Change to walking GIF
+            if (Math.random() < 0.1) playSound(footstepSounds); // Randomized footsteps
         } else {
             player.element.src = characterSprites[player.spriteIndex].idle; // Change to idle GIF
         }
 
-        // Keep players inside canvas boundaries
         player.y = Math.max(0, Math.min(canvas.height - 40, player.y));
         player.x = Math.max(10, Math.min(canvas.width - 50, player.x));
 
-        // Update player position
         player.element.style.top = `${player.y}px`;
         player.element.style.left = `${player.x}px`;
-        player.nameTag.style.top = `${player.y - 20}px`; // Position name above player
+        player.nameTag.style.top = `${player.y - 20}px`;
         player.nameTag.style.left = `${player.x}px`;
 
         // Check if player crossed the winner line
         if (player.y <= winnerLineY) {
-            addToLeaderboard(player.nameTag.innerText); // Use nameTag text to match the floating name
+            if (!firstWinnerTime) {
+                firstWinnerTime = Date.now();
+                startCountdown();
+            }
+            addToLeaderboard(player.nameTag.innerText);
             player.element.remove();
             player.nameTag.remove();
-            players = players.filter(p => p !== player); // Remove from players array
+            players = players.filter(p => p !== player);
         }
     });
 }
 
-function addToLeaderboard(name) {
-    const leaderboard = document.getElementById('leaderboard-list');
-    const entry = document.createElement('li');
-    entry.innerText = `${name} - Winner!`;
-    leaderboard.appendChild(entry);
+function startCountdown() {
+    let timeLeft = 20;
+    buzzerSound.play();
+    countdownTimer = setInterval(() => {
+        if (timeLeft === 10) countdownSound.play();
+        if (timeLeft <= 10) playSound(['/SG/CountDown.mp3']);
+        if (timeLeft === 0) {
+            countdownEndSound.play();
+            clearInterval(countdownTimer);
+        }
+        console.log(`Countdown: ${timeLeft}`);
+        timeLeft--;
+    }, 1000);
 }
 
-function addPlayer(name) {
-    const index = players.length % characterSprites.length;
-    const randomNumber = Math.floor(Math.random() * 99999) + 1;
-
-    // Ensure players spawn inside canvas only
-    const spawnX = Math.random() * (canvas.width - 50) + 10;
-
-    // Create player image
-    const playerElement = document.createElement('img');
-    playerElement.src = characterSprites[index].idle; // Start with idle state
-    playerElement.className = 'player';
-    playerElement.style.left = `${spawnX}px`;
-    playerElement.style.top = `${canvas.height - 60}px`;
-    playerElement.style.position = 'absolute';
-    playerElement.style.width = '40px';
-    playerElement.style.height = '40px';
-
-    // Create name tag
-    const nameTag = document.createElement('span');
-    nameTag.className = 'player-name';
-    nameTag.innerText = `${name} (${randomNumber})`;
-    nameTag.style.left = `${spawnX}px`;
-    nameTag.style.top = `${canvas.height - 80}px`;
-    nameTag.style.position = 'absolute';
-    nameTag.style.color = 'black';
-    nameTag.style.background = 'rgba(255,255,255,0.7)';
-    nameTag.style.padding = '2px 5px';
-    nameTag.style.borderRadius = '3px';
-
-    document.getElementById('game-container').appendChild(playerElement);
-    document.getElementById('game-container').appendChild(nameTag);
-
-    players.push({
-        x: spawnX,
-        y: canvas.height - 60,
-        spriteIndex: index,
-        name: name,
-        number: randomNumber,
-        element: playerElement,
-        nameTag: nameTag,
-        moving: false
-    });
+function eliminatePlayers() {
+    let numToKill = Math.floor(Math.random() * (players.length / 2)) + 1;
+    let killed = 0;
+    let eliminationInterval = setInterval(() => {
+        if (killed >= numToKill || players.length === 0) {
+            clearInterval(eliminationInterval);
+            return;
+        }
+        let victim = players[Math.floor(Math.random() * players.length)];
+        playSound(gunshotSounds);
+        setTimeout(() => playSound(hitSounds), 200);
+        setTimeout(() => playSound(deathSounds), 300);
+        setTimeout(() => {
+            victim.element.remove();
+            victim.nameTag.remove();
+            players = players.filter(p => p !== victim);
+        }, 2000);
+        killed++;
+    }, 2000);
 }
 
-// Manual Player Spawn (Key Press "1")
-window.addEventListener('keydown', (event) => {
-    if (event.key === '1') {
-        addPlayer(`Player${players.length + 1}`);
-    }
-});
-
-// Toggle Red Light / Green Light System
 function toggleGreenLight() {
     isGreenLight = !isGreenLight;
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
+    if (!isGreenLight) eliminatePlayers();
 }
 
-// Change Green Light / Red Light every 3-6 seconds randomly
 setInterval(() => {
     toggleGreenLight();
 }, Math.random() * (6000 - 3000) + 3000);
 
-function gameLoop() {
-    drawBackground();
-    updatePlayers();
-    requestAnimationFrame(gameLoop);
-}
+dollMusic.loop = true;
+dollMusic.play();
 
-// Start game
 gameLoop();
+
