@@ -38,10 +38,14 @@ function drawPlayers() {
     drawBackground();
     
     players.forEach(player => {
-        const sprite = characterSprites[player.spriteIndex];
-        player.y -= isGreenLight ? 1 : 0; // Move players up when green light is active
-        player.moving = isGreenLight; // Switch animation
+        if (isGreenLight) {
+            player.y -= 1; // Move players up when green light is active
+            player.moving = true; // Switch to walking animation
+        } else {
+            player.moving = false; // Switch to idle animation
+        }
         
+        const sprite = characterSprites[player.spriteIndex];
         const img = new Image();
         img.src = player.moving ? sprite.walking : sprite.idle;
         img.onload = () => {
@@ -83,6 +87,7 @@ window.addEventListener('keydown', (event) => {
 function toggleGreenLight() {
     isGreenLight = !isGreenLight;
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
+    updateGame(); // Ensure game updates when switching light states
 }
 
 // Change Green Light / Red Light every 3-6 seconds randomly
@@ -100,3 +105,4 @@ dollImage.onload = () => {
         gameLoop();
     };
 };
+
