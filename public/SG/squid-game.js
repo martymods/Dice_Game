@@ -66,6 +66,25 @@ function updatePlayers() {
             player.y -= 0.5;
             player.element.src = characterSprites[player.spriteIndex].walking;
             
+            // Play footstep sounds at regular intervals
+            if (!player.footstepCooldown) {
+                let footstep = new Audio(footstepSounds[Math.floor(Math.random() * footstepSounds.length)]);
+                footstep.volume = 0.5;
+                footstep.play();
+                player.footstepCooldown = true;
+                setTimeout(() => player.footstepCooldown = false, 500); // Ensures footsteps don't play too fast
+            }
+        } else {
+            player.element.src = characterSprites[player.spriteIndex].idle;
+        }
+        player.element.style.top = `${player.y}px`;
+        player.nameTag.style.top = `${player.y - 20}px`; // Keep name above player
+    });
+    players.forEach(player => {
+        if (isGreenLight) {
+            player.y -= 0.5;
+            player.element.src = characterSprites[player.spriteIndex].walking;
+            
             // Play footstep sounds at random intervals
             if (Math.random() < 0.15) {
                 let footstep = new Audio(footstepSounds[Math.floor(Math.random() * footstepSounds.length)]);
