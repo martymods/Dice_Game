@@ -60,7 +60,6 @@ function drawPlayers() {
 function updateGame() {
     if (!gameActive) return;
     drawPlayers();
-    requestAnimationFrame(updateGame); // Ensure continuous updating
 }
 
 function addTikTokPlayer(username) {
@@ -99,6 +98,7 @@ setInterval(() => {
 
 function gameLoop() {
     updateGame();
+    requestAnimationFrame(gameLoop);
 }
 
 dollImage.onload = () => {
@@ -106,4 +106,3 @@ dollImage.onload = () => {
         gameLoop();
     };
 };
-
