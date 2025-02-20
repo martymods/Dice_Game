@@ -1,5 +1,12 @@
 /* squid-game.css */
 
+.player {
+    position: absolute;
+    transition: top 0.5s linear;
+    image-rendering: pixelated; /* Prevents blurry GIFs */
+}
+
+
 body {
     text-align: center;
     background-color: black;
