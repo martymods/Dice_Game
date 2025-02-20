@@ -84,7 +84,23 @@ function updatePlayers() {
         }
 
         player.element.style.top = `${player.y}px`;
+        player.nameTag.style.top = `${player.y - 20}px`; // Keep name above player
+
+        // Check if player crossed the winner line
+        if (player.y <= winnerLineY) {
+            addToLeaderboard(player.nameTag.innerText);
+            player.element.remove();
+            player.nameTag.remove();
+            players = players.filter(p => p !== player);
+        }
     });
+}
+
+function addToLeaderboard(name) {
+    const leaderboard = document.getElementById('leaderboard-list');
+    const entry = document.createElement('li');
+    entry.innerText = `${name} - Winner!`;
+    leaderboard.appendChild(entry);
 }
 
 function addPlayer(name) {
@@ -133,14 +149,9 @@ window.addEventListener('keydown', (event) => {
     }
 });
 
-function gameLoop() {
-    drawBackground();
-    updatePlayers();
-    requestAnimationFrame(gameLoop);
-}
-
 dollMusic.loop = true;
 dollMusic.play();
 
 requestAnimationFrame(gameLoop);
+
 
