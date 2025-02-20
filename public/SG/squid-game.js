@@ -174,13 +174,32 @@ function updatePlayers() {
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`; // Keep name above player
     });
-
+}
 
 function gameLoop() {
     drawBackground();
     updatePlayers();
     requestAnimationFrame(gameLoop);
 }
+
+// Ensure pressing '1' still spawns players
+window.addEventListener('keydown', (event) => {
+    if (event.key === '1') {
+        addPlayer(`Player${players.length + 1}`);
+    }
+});
+
+// Footstep sounds play while moving
+setInterval(() => {
+    players.forEach(player => {
+        if (isGreenLight && Math.random() < 0.3) {
+            let footstep = new Audio(footstepSounds[Math.floor(Math.random() * footstepSounds.length)]);
+            footstep.volume = 0.5;
+            footstep.play();
+        }
+    });
+}, 500);
+
 
 dollMusic.loop = true;
 dollMusic.play();
