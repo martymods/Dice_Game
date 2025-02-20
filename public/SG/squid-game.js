@@ -43,8 +43,9 @@ function updatePlayers() {
             player.element.src = characterSprites[player.spriteIndex].idle; // Change to idle GIF
         }
 
-        // Update position in DOM
+        // Update player position
         player.element.style.top = `${player.y}px`;
+        player.nameTag.style.top = `${player.y - 20}px`; // Position name above player
     });
 }
 
@@ -52,25 +53,38 @@ function addPlayer(name) {
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
 
+    // Ensure players spawn within the canvas (prevent out-of-bounds spawning)
+    const spawnX = Math.max(10, Math.random() * (canvas.width - 50));
+
     // Create player image
     const playerElement = document.createElement('img');
     playerElement.src = characterSprites[index].idle; // Start with idle state
     playerElement.className = 'player';
-    playerElement.style.left = `${Math.random() * (canvas.width - 40)}px`;
+    playerElement.style.left = `${spawnX}px`;
     playerElement.style.top = `${canvas.height - 60}px`;
     playerElement.style.position = 'absolute';
     playerElement.style.width = '40px';
     playerElement.style.height = '40px';
 
+    // Create name tag
+    const nameTag = document.createElement('span');
+    nameTag.className = 'player-name';
+    nameTag.innerText = `${name} (${randomNumber})`;
+    nameTag.style.left = `${spawnX}px`;
+    nameTag.style.top = `${canvas.height - 80}px`;
+    nameTag.style.position = 'absolute';
+
     document.body.appendChild(playerElement);
+    document.body.appendChild(nameTag);
 
     players.push({
-        x: parseInt(playerElement.style.left),
+        x: spawnX,
         y: canvas.height - 60,
         spriteIndex: index,
         name: name,
         number: randomNumber,
         element: playerElement,
+        nameTag: nameTag,
         moving: false
     });
 }
