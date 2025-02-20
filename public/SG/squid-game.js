@@ -16,6 +16,9 @@ dollImage.src = '/SG/Doll_Attack.gif';
 let bgImage = new Image();
 bgImage.src = '/SG/game-background.jpg';
 
+// Winner Line Position
+const winnerLineY = 100;
+
 // Updated Character Sprites with Correct Paths
 const characterSprites = [
     { idle: '/SG/char_0_0.gif', walking: '/SG/char_0_1.gif' },
@@ -32,6 +35,17 @@ function drawBackground() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     ctx.drawImage(dollImage, canvas.width / 2 - 50, 20, 100, 100);
+
+    // Draw Winner Line
+    ctx.beginPath();
+    ctx.moveTo(0, winnerLineY);
+    ctx.lineTo(canvas.width, winnerLineY);
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 5;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = 'red';
+    ctx.stroke();
+    ctx.shadowBlur = 0; // Reset shadow
 }
 
 function updatePlayers() {
@@ -52,7 +66,22 @@ function updatePlayers() {
         player.element.style.left = `${player.x}px`;
         player.nameTag.style.top = `${player.y - 20}px`; // Position name above player
         player.nameTag.style.left = `${player.x}px`;
+
+        // Check if player crossed the winner line
+        if (player.y <= winnerLineY) {
+            addToLeaderboard(player.name);
+            player.element.remove();
+            player.nameTag.remove();
+            players = players.filter(p => p !== player); // Remove from players array
+        }
     });
+}
+
+function addToLeaderboard(name) {
+    const leaderboard = document.getElementById('leaderboard-list');
+    const entry = document.createElement('li');
+    entry.innerText = `${name} - Winner!`;
+    leaderboard.appendChild(entry);
 }
 
 function addPlayer(name) {
