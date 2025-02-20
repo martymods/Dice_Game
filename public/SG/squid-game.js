@@ -6,6 +6,7 @@ const dollMusic = new Audio('/SG/SG_Background_Ambience_0.mp3');
 const buzzerSound = new Audio('/SG/Buzzer.mp3');
 const countdownSound = new Audio('/SG/CountDown.mp3');
 const countdownEndSound = new Audio('/SG/CountDown_END.mp3');
+const soundAl = new Audio('/SG/SoundAl.mp3');
 
 canvas.width = 800;
 canvas.height = 600;
@@ -31,6 +32,17 @@ const gunshotSounds = ['/SG/Doll_Shooting_0.mp3', '/SG/Doll_Shooting_1.mp3', '/S
 const hitSounds = ['/SG/C_Hit_0.mp3', '/SG/C_Hit_1.mp3', '/SG/C_Hit_2.mp3'];
 const deathSounds = ['/SG/C_Death_0.mp3', '/SG/C_Death_1.mp3', '/SG/C_Death_2.mp3', '/SG/C_Death_3.mp3', '/SG/C_Death_4.mp3'];
 
+const characterSprites = [
+    { idle: '/SG/char_0_0.gif', walking: '/SG/char_0_1.gif' },
+    { idle: '/SG/char_1_0.gif', walking: '/SG/char_1_1.gif' },
+    { idle: '/SG/char_2_0.gif', walking: '/SG/char_2_1.gif' },
+    { idle: '/SG/char_3_0.gif', walking: '/SG/char_3_1.gif' },
+    { idle: '/SG/char_4_0.gif', walking: '/SG/char_4_1.gif' },
+    { idle: '/SG/char_5_0.gif', walking: '/SG/char_5_1.gif' },
+    { idle: '/SG/char_6_0.gif', walking: '/SG/char_6_1.gif' },
+    { idle: '/SG/char_7_0.gif', walking: '/SG/char_7_1.gif' }
+];
+
 function drawBackground() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
@@ -45,7 +57,7 @@ function drawBackground() {
     ctx.shadowBlur = 10;
     ctx.shadowColor = 'red';
     ctx.stroke();
-    ctx.shadowBlur = 0; // Reset shadow
+    ctx.shadowBlur = 0;
 }
 
 function playSound(soundArray) {
