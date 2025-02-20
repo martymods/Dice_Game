@@ -174,7 +174,7 @@ function updatePlayers() {
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`; // Keep name above player
     });
-}
+
 
 function gameLoop() {
     drawBackground();
@@ -205,3 +205,4 @@ dollMusic.loop = true;
 dollMusic.play();
 
 requestAnimationFrame(gameLoop);
+
