@@ -43,9 +43,15 @@ function updatePlayers() {
             player.element.src = characterSprites[player.spriteIndex].idle; // Change to idle GIF
         }
 
+        // Keep players inside canvas boundaries
+        player.y = Math.max(0, Math.min(canvas.height - 40, player.y));
+        player.x = Math.max(10, Math.min(canvas.width - 50, player.x));
+
         // Update player position
         player.element.style.top = `${player.y}px`;
+        player.element.style.left = `${player.x}px`;
         player.nameTag.style.top = `${player.y - 20}px`; // Position name above player
+        player.nameTag.style.left = `${player.x}px`;
     });
 }
 
@@ -53,8 +59,8 @@ function addPlayer(name) {
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
 
-    // Ensure players spawn within the canvas (prevent out-of-bounds spawning)
-    const spawnX = Math.max(10, Math.random() * (canvas.width - 50));
+    // Ensure players spawn inside canvas only
+    const spawnX = Math.random() * (canvas.width - 50) + 10;
 
     // Create player image
     const playerElement = document.createElement('img');
@@ -73,9 +79,13 @@ function addPlayer(name) {
     nameTag.style.left = `${spawnX}px`;
     nameTag.style.top = `${canvas.height - 80}px`;
     nameTag.style.position = 'absolute';
+    nameTag.style.color = 'black';
+    nameTag.style.background = 'rgba(255,255,255,0.7)';
+    nameTag.style.padding = '2px 5px';
+    nameTag.style.borderRadius = '3px';
 
-    document.body.appendChild(playerElement);
-    document.body.appendChild(nameTag);
+    document.getElementById('game-container').appendChild(playerElement);
+    document.getElementById('game-container').appendChild(nameTag);
 
     players.push({
         x: spawnX,
