@@ -43,7 +43,66 @@ const characterSprites = [
     { idle: '/SG/char_7_0.gif', walking: '/SG/char_7_1.gif' }
 ];
 
-// ✅ Function to Add Players
+function drawBackground() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(dollImage, canvas.width / 2 - 50, 20, 100, 100);
+
+    // Draw Winner Line
+    ctx.beginPath();
+    ctx.moveTo(0, winnerLineY);
+    ctx.lineTo(canvas.width, winnerLineY);
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 5;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = 'red';
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+}
+
+function toggleGreenLight() {
+    isGreenLight = !isGreenLight;
+    console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
+}
+
+setInterval(() => {
+    toggleGreenLight();
+}, Math.random() * (6000 - 3000) + 3000);
+
+function playSound(soundArray) {
+    const sound = new Audio(soundArray[Math.floor(Math.random() * soundArray.length)]);
+    sound.play();
+}
+
+function updatePlayers() {
+    players.forEach(player => {
+        if (isGreenLight) {
+            player.y -= 0.5; // Move players towards the goal
+            player.element.src = characterSprites[player.spriteIndex].walking;
+        } else {
+            player.element.src = characterSprites[player.spriteIndex].idle;
+        }
+
+        player.element.style.top = `${player.y}px`;
+        player.nameTag.style.top = `${player.y - 20}px`; // Keep name above player
+
+        // Check if player crossed the winner line
+        if (player.y <= winnerLineY) {
+            addToLeaderboard(player.nameTag.innerText);
+            player.element.remove();
+            player.nameTag.remove();
+            players = players.filter(p => p !== player);
+        }
+    });
+}
+
+function addToLeaderboard(name) {
+    const leaderboard = document.getElementById('leaderboard-list');
+    const entry = document.createElement('li');
+    entry.innerText = `${name} - Winner!`;
+    leaderboard.appendChild(entry);
+}
+
 function addPlayer(name) {
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
@@ -80,97 +139,23 @@ function addPlayer(name) {
         number: randomNumber,
         element: playerElement,
         nameTag: nameTag,
-        footstepCooldown: false,
         moving: false
     });
 }
 
-// ✅ Update Players with Footstep Sounds & Leaderboard
-function updatePlayers() {
-    players.forEach(player => {
-        if (isGreenLight) {
-            player.y -= 0.5;
-            player.element.src = characterSprites[player.spriteIndex].walking;
-
-            // Play footstep sounds at random intervals while moving
-            if (!player.footstepCooldown) {
-                let footstep = new Audio(footstepSounds[Math.floor(Math.random() * footstepSounds.length)]);
-                footstep.volume = 0.5;
-                footstep.play();
-                player.footstepCooldown = true;
-                setTimeout(() => player.footstepCooldown = false, 500); // Prevents overlapping sounds
-            }
-        } else {
-            player.element.src = characterSprites[player.spriteIndex].idle;
-        }
-
-        player.element.style.top = `${player.y}px`;
-        player.nameTag.style.top = `${player.y - 20}px`; // Keep name above player
-
-        // ✅ Check if player crossed the winner line
-        if (player.y <= winnerLineY) {
-            if (!firstWinnerTime) {
-                firstWinnerTime = Date.now();
-                startCountdown();
-            }
-            addToLeaderboard(player.nameTag.innerText);
-            player.element.remove();
-            player.nameTag.remove();
-            players = players.filter(p => p !== player);
-        }
-    });
-}
-
-// ✅ Start Countdown Timer
-function startCountdown() {
-    let timeLeft = 20;
-    buzzerSound.play();
-    countdownTimer = setInterval(() => {
-        if (timeLeft === 10) countdownSound.play();
-        if (timeLeft <= 10) playSound(['/SG/CountDown.mp3']);
-        if (timeLeft === 0) {
-            countdownEndSound.play();
-            clearInterval(countdownTimer);
-        }
-        console.log(`Countdown: ${timeLeft}`);
-        timeLeft--;
-    }, 1000);
-}
-
-// ✅ Add Winners to Leaderboard
-function addToLeaderboard(name) {
-    const leaderboard = document.getElementById('leaderboard-list');
-    const entry = document.createElement('li');
-    entry.innerText = `${name} - Winner!`;
-    leaderboard.appendChild(entry);
-}
-
-// ✅ Toggle Green Light / Red Light
-function toggleGreenLight() {
-    isGreenLight = !isGreenLight;
-    console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
-}
-
-setInterval(() => {
-    toggleGreenLight();
-}, Math.random() * (6000 - 3000) + 3000);
-
-// ✅ Ensure pressing '1' still spawns players
 window.addEventListener('keydown', (event) => {
     if (event.key === '1') {
         addPlayer(`Player${players.length + 1}`);
     }
 });
 
-// ✅ Main Game Loop
-function gameLoop() {
-    drawBackground();
-    updatePlayers();
-    requestAnimationFrame(gameLoop);
-}
-
 dollMusic.loop = true;
 dollMusic.play();
 
 requestAnimationFrame(gameLoop);
 
+function gameLoop() {
+    drawBackground();
+    updatePlayers();
+    requestAnimationFrame(gameLoop);
+}
