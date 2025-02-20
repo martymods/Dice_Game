@@ -60,6 +60,15 @@ function drawBackground() {
     ctx.shadowBlur = 0;
 }
 
+function toggleGreenLight() {
+    isGreenLight = !isGreenLight;
+    console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
+}
+
+setInterval(() => {
+    toggleGreenLight();
+}, Math.random() * (6000 - 3000) + 3000);
+
 function playSound(soundArray) {
     const sound = new Audio(soundArray[Math.floor(Math.random() * soundArray.length)]);
     sound.play();
