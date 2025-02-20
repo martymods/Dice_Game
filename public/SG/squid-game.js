@@ -2,7 +2,7 @@
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const dollMusic = new Audio('/SG/SG_Background_Ambience_0.mp3');
+const dollMusic = new Audio('/SG_Background_Ambience_0.mp3');
 const buzzerSound = new Audio('/SG/Buzzer.mp3');
 const countdownSound = new Audio('/SG/CountDown.mp3');
 const countdownEndSound = new Audio('/SG/CountDown_END.mp3');
