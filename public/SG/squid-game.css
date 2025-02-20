@@ -5,6 +5,9 @@ body {
     background-color: black;
     color: white;
     font-family: Arial, sans-serif;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
 }
 
 #game-container {
@@ -13,13 +16,19 @@ body {
     height: 600px;
     margin: auto;
     border: 2px solid white;
+    background-color: #1a1a1a;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 canvas {
     background-image: url('/SG/game-background.jpg');
     width: 100%;
     height: 100%;
+    border-radius: 10px;
 }
 
 #leaderboard {
@@ -29,6 +38,7 @@ canvas {
     background: rgba(0, 0, 0, 0.7);
     padding: 10px;
     border-radius: 5px;
+    border: 1px solid white;
 }
 
 #leaderboard-list {
@@ -40,5 +50,62 @@ canvas {
 #leaderboard-list li {
     font-size: 16px;
     padding: 5px;
+    color: #FFD700;
+    font-weight: bold;
 }
 
+/* Player styling */
+.player-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 5px black;
+}
+
+/* Doll Styling */
+#doll {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 100px;
+    z-index: 10;
+}
+
+/* Game Controls */
+#game-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    background-color: #ff4747;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #d43f3f;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes moveUp {
+    from { transform: translateY(100px); }
+    to { transform: translateY(0); }
+}
