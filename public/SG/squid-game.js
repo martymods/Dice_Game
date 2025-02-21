@@ -152,12 +152,24 @@ function displayDeath(player) {
             deathIndex++;
         } else {
             clearInterval(deathAnimation);
-            player.element.src = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)]; // Show a random dead body
-            deadBodies.push(player.element);
+
+            // ✅ Create a new dead body element
+            const deadBodyElement = document.createElement("img");
+            deadBodyElement.src = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+            deadBodyElement.className = "dead-body";
+            deadBodyElement.style.position = "absolute";
+            deadBodyElement.style.left = player.element.style.left;
+            deadBodyElement.style.top = player.element.style.top;
+            deadBodyElement.style.width = "40px";
+            deadBodyElement.style.height = "40px";
+
+            document.getElementById("game-container").appendChild(deadBodyElement);
+            deadBodies.push(deadBodyElement);
         }
     }, 200);
 
     setTimeout(() => {
+        if (player.element) player.element.remove();
         if (player.nameTag) player.nameTag.remove();
         players = players.filter(p => p !== player);
     }, 2000);
