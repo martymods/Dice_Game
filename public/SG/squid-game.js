@@ -1,3 +1,4 @@
+
 /* squid-game.js */
 
 const canvas = document.getElementById("gameCanvas");
@@ -109,10 +110,10 @@ function updatePlayers() {
 }
 
 // ✅ Function to Add Players to Leaderboard
-function addToLeaderboard(name) {
+function addToLeaderboard(player) {
     const leaderboard = document.getElementById("leaderboard-list");
     const entry = document.createElement("li");
-    entry.innerText = `${name} - Winner!`;
+    entry.innerText = `${player.nameTag.innerText} - Winner!`; // Use nameTag text
     leaderboard.appendChild(entry);
 }
 
@@ -177,23 +178,37 @@ function displayDeath(player) {
 
 
 // ✅ Function to Display "Player X is Dead"
+let currentDeathMessage = null; // Track current death message
+
 function displayDeathMessage(player) {
-    ctx.fillStyle = "red";
-    ctx.font = "bold 30px Arial";
-    ctx.fillText(`${player.name} is Dead`, canvas.width / 2 - 100, canvas.height / 2);
+    if (currentDeathMessage) {
+        currentDeathMessage.remove(); // Remove previous message
+    }
+
+    currentDeathMessage = document.createElement("div");
+    currentDeathMessage.innerText = `${player.nameTag.innerText} is Dead`;
+    currentDeathMessage.style.position = "absolute";
+    currentDeathMessage.style.top = "50%";
+    currentDeathMessage.style.left = "50%";
+    currentDeathMessage.style.transform = "translate(-50%, -50%)";
+    currentDeathMessage.style.color = "red";
+    currentDeathMessage.style.fontSize = "30px";
+    currentDeathMessage.style.fontWeight = "bold";
+
+    document.getElementById("game-container").appendChild(currentDeathMessage);
 }
 
-// ✅ Add Winners to Leaderboard
-function addToLeaderboard(name) {
-    const leaderboard = document.getElementById('leaderboard-list');
-    const entry = document.createElement('li');
-    entry.innerText = `${name} - Winner!`;
-    leaderboard.appendChild(entry);
-}
 
 // ✅ Toggle Green Light / Red Light
 function toggleGreenLight() {
+    // ✅ Remove previous death message when green light resumes
+    if (currentDeathMessage) {
+        currentDeathMessage.remove();
+        currentDeathMessage = null;
+    }
+
     if (isDollShooting) return;
+
 
     isGreenLight = !isGreenLight;
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
