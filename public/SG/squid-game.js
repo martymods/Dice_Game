@@ -22,6 +22,7 @@ let countdownTimerElement = null;
 let countdownTimer = null;
 let leaderboardScores = {}; // Track player scores
 let roundActive = false; // Track if round is ongoing
+let dollTalkPlaying = false; // Track if Doll Talk Sound is playing
 
 const dollImage = new Image();
 dollImage.src = "/SG/Doll_Attack.gif";
@@ -296,6 +297,14 @@ function toggleGreenLight() {
 }
 
 setInterval(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);;
+
+// ✅ Function to Alternate Cyborg HUD
+function toggleCyborgHud() {
+    const hud = document.getElementById("cyborg-hud");
+    if (!hud) return;
+    hud.src = Math.random() < 0.5 ? "/SG/Cyborg_Hud_0.gif" : "/SG/Cyborg_Hud_1.gif";
+    setTimeout(toggleCyborgHud, Math.random() * (5000 - 2000) + 2000); // Switch between 2-5 seconds
+}
 
 // ✅ Function to Reset Game
 function resetGame() {
