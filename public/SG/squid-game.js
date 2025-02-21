@@ -1,12 +1,12 @@
 /* squid-game.js */
 
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const dollMusic = new Audio('/SG/SG_Background_Ambience_0.mp3');
-const buzzerSound = new Audio('/SG/Buzzer.mp3');
-const countdownSound = new Audio('/SG/CountDown.mp3');
-const countdownEndSound = new Audio('/SG/CountDown_END.mp3');
-const soundAl = new Audio('/SG/SoundAl.mp3');
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const dollMusic = new Audio("/SG/SG_Background_Ambience_0.mp3");
+const buzzerSound = new Audio("/SG/Buzzer.mp3");
+const countdownSound = new Audio("/SG/CountDown.mp3");
+const countdownEndSound = new Audio("/SG/CountDown_END.mp3");
+const soundAl = new Audio("/SG/SoundAl.mp3");
 
 canvas.width = 800;
 canvas.height = 600;
@@ -148,13 +148,6 @@ function updatePlayers() {
 
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`;
-
-        if (player.y <= winnerLineY) {
-            addToLeaderboard(player.nameTag.innerText);
-            player.element.remove();
-            player.nameTag.remove();
-            players = players.filter(p => p !== player);
-        }
     });
 }
 
@@ -173,7 +166,6 @@ setInterval(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
 // ✅ Function to Add Players
 function addPlayer(name) {
     const index = players.length % characterSprites.length;
-    const randomNumber = Math.floor(Math.random() * 99999) + 1;
     const spawnX = Math.random() * (canvas.width - 50) + 10;
 
     const playerElement = document.createElement("img");
@@ -182,8 +174,6 @@ function addPlayer(name) {
     playerElement.style.left = `${spawnX}px`;
     playerElement.style.top = `${canvas.height - 60}px`;
     playerElement.style.position = "absolute";
-    playerElement.style.width = "40px";
-    playerElement.style.height = "40px";
 
     document.getElementById("game-container").appendChild(playerElement);
 
@@ -192,10 +182,16 @@ function addPlayer(name) {
         y: canvas.height - 60,
         spriteIndex: index,
         name: name,
-        number: randomNumber,
         element: playerElement
     });
 }
+
+// ✅ Ensure pressing '1' spawns players
+window.addEventListener("keydown", event => {
+    if (event.key === "1") {
+        addPlayer(`Player${players.length + 1}`);
+    }
+});
 
 // ✅ Main Game Loop
 function gameLoop() {
@@ -208,3 +204,4 @@ function gameLoop() {
 dollMusic.loop = true;
 dollMusic.play();
 requestAnimationFrame(gameLoop);
+
