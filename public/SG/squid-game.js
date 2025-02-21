@@ -118,23 +118,17 @@ function addToLeaderboard(player) {
     leaderboard.appendChild(entry);
 }
 
-// ✅ Function to Eliminate Players One by One
+// ✅ Function to Eliminate Players Randomly (Ensures Some Players Survive)
 function eliminatePlayers() {
-    if (!isGreenLight && players.length > 0 && !isDollShooting) {
-        isDollShooting = true;
-        let targets = [...players];
-        let delay = 0;
+    if (!isGreenLight && players.length > 0) {
+        let numToEliminate = Math.floor(Math.random() * Math.max(1, players.length / 2)); // 🔹 Random number of eliminations
 
-        targets.forEach(player => {
-            setTimeout(() => {
+        for (let i = 0; i < numToEliminate; i++) {
+            let player = players[Math.floor(Math.random() * players.length)];
+            if (player) {
                 displayDeath(player);
-            }, delay);
-            delay += 1000;
-        });
-
-        setTimeout(() => {
-            isDollShooting = false;
-        }, delay + 1000);
+            }
+        }
     }
 }
 
