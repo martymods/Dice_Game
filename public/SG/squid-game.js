@@ -142,19 +142,17 @@ function displayDeath(player) {
 
     playSound(gunshotSounds);
     setTimeout(() => playSound(hitSounds), 200);
-    setTimeout(() => playSound(deathSounds), 300);
+    setTimeout(() => {
+        playSound(deathSounds);
+        displayDeathMessage(player);
+    }, 300);
 
-    let deathIndex = 0;
-    const deathAnimation = setInterval(() => {
-        if (deathIndex < bloodExplosionFrames.length) {
-            player.element.src = bloodExplosionFrames[deathIndex];
-            deathIndex++;
-        } else {
-            clearInterval(deathAnimation);
-            player.element.src = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
-            deadBodies.push(player.element);
-        }
-    }, 200);
+    setTimeout(() => {
+        if (player.element) player.element.remove();
+        if (player.nameTag) player.nameTag.remove();
+        players = players.filter(p => p !== player);
+    }, 2000);
+}
 
     setTimeout(() => {
         if (player.nameTag) player.nameTag.remove();
