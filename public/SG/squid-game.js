@@ -143,9 +143,9 @@ function eliminatePlayers() {
 function displayDeath(player) {
     if (!player || !player.element) return;
 
-    playSound(gunshotSounds);
+    playSound(gunshotSounds); // 🔹 Play gunshot immediately
     setTimeout(() => playSound(hitSounds), 200);
-    setTimeout(() => playSound(deathSounds), 300);
+    setTimeout(() => playSound(deathSounds), 500); // 🔹 Slight delay for dramatic effect
 
     // ✅ Play Blood Explosion Sequence before showing the dead body
     let deathIndex = 0;
@@ -171,12 +171,16 @@ function displayDeath(player) {
         }
     }, 200);
 
+    // ✅ Display death message immediately
+    displayDeathMessage(player);
+
     setTimeout(() => {
         if (player.element) player.element.remove();
         if (player.nameTag) player.nameTag.remove();
         players = players.filter(p => p !== player);
     }, 2000);
 }
+
 
 // ✅ Function to Display "Player X is Dead" Message
 let currentDeathMessage = null;
@@ -195,6 +199,7 @@ function displayDeathMessage(player) {
     currentDeathMessage.style.color = "red";
     currentDeathMessage.style.fontSize = "30px";
     currentDeathMessage.style.fontWeight = "bold";
+    currentDeathMessage.style.zIndex = "1000"; // Ensure it stays on top
 
     document.getElementById("game-container").appendChild(currentDeathMessage);
 }
@@ -213,10 +218,19 @@ function toggleGreenLight() {
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
 
     if (!isGreenLight) {
-        setTimeout(eliminatePlayers, 500);
+        setTimeout(() => {
+            eliminatePlayers();
+
+            // 🔹 After a random time (1-12 seconds), resume Green Light
+            let redLightDuration = Math.random() * (12000 - 1000) + 1000; // Between 1-12 seconds
+            setTimeout(() => {
+                isGreenLight = true;
+                console.log("🟢 Green Light Resumes!");
+            }, redLightDuration);
+
+        }, 500);
     }
 }
-
 
 setInterval(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
 
