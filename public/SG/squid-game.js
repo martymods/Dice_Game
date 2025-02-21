@@ -15,6 +15,10 @@ let players = [];
 let deadBodies = [];
 let isGreenLight = false;
 let isDollShooting = false;
+let firstWinnerTime = null;
+let countdownTimerElement = null;
+let countdownTimer = null;
+
 const dollImage = new Image();
 dollImage.src = "/SG/Doll_Attack.gif";
 let bgImage = new Image();
@@ -65,7 +69,7 @@ function playSound(soundArray) {
     sound.play();
 }
 
-// ✅ Function to Draw Background (Fixed)
+// ✅ Function to Draw Background
 function drawBackground() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
@@ -75,10 +79,10 @@ function drawBackground() {
     ctx.beginPath();
     ctx.moveTo(0, winnerLineY);
     ctx.lineTo(canvas.width, winnerLineY);
-    ctx.strokeStyle = 'red';
+    ctx.strokeStyle = "red";
     ctx.lineWidth = 5;
     ctx.shadowBlur = 10;
-    ctx.shadowColor = 'red';
+    ctx.shadowColor = "red";
     ctx.stroke();
     ctx.shadowBlur = 0;
 }
@@ -88,24 +92,35 @@ function updatePlayers() {
     players.forEach(player => {
         if (!player || !player.element || !player.nameTag) return;
 
-        if (isGreenLight && !isDollShooting) { // 🔹 Players ONLY move when NOT being shot
+        if (isGreenLight && !isDollShooting) {
             player.y -= 1.1;
             player.element.src = characterSprites[player.spriteIndex].walking;
-            player.element.src += "?t=" + new Date().getTime(); // 🔹 Force refresh for animated GIFs
+            player.element.src += "?t=" + new Date().getTime();
+            playFootstepSound(player);
         } else {
-            player.element.src = characterSprites[player.spriteIndex].idle; // 🔹 Freeze during Red Light
+            player.element.src = characterSprites[player.spriteIndex].idle;
         }
 
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`;
 
         if (player.y <= winnerLineY) {
+            if (!firstWinnerTime) {
+                firstWinnerTime = Date.now();
+                startRoundCountdown();
+            }
             addToLeaderboard(player);
-            player.element.remove();
-            player.nameTag.remove();
-            players = players.filter(p => p !== player);
         }
     });
+}
+
+// ✅ Function to Play Footstep Sound
+function playFootstepSound(player) {
+    if (Math.random() < 0.2) {
+        const footstep = new Audio(footstepSounds[Math.floor(Math.random() * footstepSounds.length)]);
+        footstep.volume = 0.5;
+        footstep.play();
+    }
 }
 
 // ✅ Function to Add Players to Leaderboard (Fix `innerText` issue)
@@ -171,6 +186,34 @@ function displayDeath(player) {
         if (player.nameTag) player.nameTag.remove();
         players = players.filter(p => p !== player);
     }, 2000);
+}
+
+// ✅ Function to Start Round Countdown
+function startRoundCountdown() {
+    countdownTimerElement = document.createElement("div");
+    countdownTimerElement.style.position = "absolute";
+    countdownTimerElement.style.top = "10px";
+    countdownTimerElement.style.left = "50%";
+    countdownTimerElement.style.transform = "translateX(-50%)";
+    countdownTimerElement.style.color = "white";
+    countdownTimerElement.style.fontSize = "30px";
+    countdownTimerElement.style.fontWeight = "bold";
+    document.getElementById("game-container").appendChild(countdownTimerElement);
+
+    let timeLeft = 20;
+    buzzerSound.play();
+    countdownTimer = setInterval(() => {
+        countdownTimerElement.innerText = `Time Left: ${timeLeft}`;
+        if (timeLeft <= 10) {
+            countdownSound.play();
+        }
+        if (timeLeft === 0) {
+            clearInterval(countdownTimer);
+            countdownEndSound.play();
+            countdownTimerElement.remove();
+        }
+        timeLeft--;
+    }, 1000);
 }
 
 // ✅ Function to Display "Player X is Dead" Message
