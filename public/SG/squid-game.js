@@ -21,16 +21,35 @@ dollImage.src = '/SG/Doll_Attack.gif';
 let bgImage = new Image();
 bgImage.src = '/SG/game-background.jpg';
 
-// Winner Line Position
-const winnerLineY = 100;
+// ✅ Character Sprites (Now Properly Defined)
+const characterSprites = [
+    { idle: '/SG/char_0_0.gif', walking: '/SG/char_0_1.gif' },
+    { idle: '/SG/char_1_0.gif', walking: '/SG/char_1_1.gif' },
+    { idle: '/SG/char_2_0.gif', walking: '/SG/char_2_1.gif' },
+    { idle: '/SG/char_3_0.gif', walking: '/SG/char_3_1.gif' },
+    { idle: '/SG/char_4_0.gif', walking: '/SG/char_4_1.gif' },
+    { idle: '/SG/char_5_0.gif', walking: '/SG/char_5_1.gif' },
+    { idle: '/SG/char_6_0.gif', walking: '/SG/char_6_1.gif' },
+    { idle: '/SG/char_7_0.gif', walking: '/SG/char_7_1.gif' }
+];
 
-// Footstep sounds
-const footstepSounds = ['/SG/walk_0.mp3', '/SG/walk_1.mp3', '/SG/walk_2.mp3'];
+// ✅ Function to Draw Background (RESTORED)
+function drawBackground() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(dollImage, canvas.width / 2 - 50, 20, 100, 100);
 
-// Gunshot and Death Sounds
-const gunshotSounds = ['/SG/Doll_Shooting_0.mp3', '/SG/Doll_Shooting_1.mp3', '/SG/Doll_Shooting_2.mp3', '/SG/Doll_Shooting_3.mp3'];
-const hitSounds = ['/SG/C_Hit_0.mp3', '/SG/C_Hit_1.mp3', '/SG/C_Hit_2.mp3'];
-const deathSounds = ['/SG/C_Death_0.mp3', '/SG/C_Death_1.mp3', '/SG/C_Death_2.mp3', '/SG/C_Death_3.mp3', '/SG/C_Death_4.mp3'];
+    // Draw Winner Line
+    ctx.beginPath();
+    ctx.moveTo(0, winnerLineY);
+    ctx.lineTo(canvas.width, winnerLineY);
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 5;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = 'red';
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+}
 
 // ✅ Function to Eliminate Players During Red Light
 function eliminatePlayers() {
@@ -125,8 +144,10 @@ setInterval(() => {
     toggleGreenLight();
 }, Math.random() * (6000 - 3000) + 3000);
 
-// ✅ Function to Add Players
+// ✅ Function to Add Players (FIXED CHARACTER SPRITES ISSUE)
 function addPlayer(name) {
+    if (!characterSprites || characterSprites.length === 0) return; // Prevent error
+
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
     const spawnX = Math.random() * (canvas.width - 50) + 10;
@@ -184,3 +205,4 @@ dollMusic.loop = true;
 dollMusic.play();
 
 requestAnimationFrame(gameLoop);
+
