@@ -102,6 +102,9 @@ function updatePlayers() {
         // ✅ Check if player crossed the winner line
         if (player.y <= winnerLineY) {
             addToLeaderboard(player.name);
+            player.element.remove();
+            player.nameTag.remove();
+            players = players.filter(p => p !== player);
         }
     });
 }
@@ -186,29 +189,17 @@ function addPlayer(name) {
     playerElement.style.top = `${canvas.height - 60}px`;
     playerElement.style.position = "absolute";
 
+    const nameTag = document.createElement("span");
+    nameTag.className = "player-name";
+    nameTag.innerText = `${name}`;
+    nameTag.style.left = `${spawnX}px`;
+    nameTag.style.top = `${canvas.height - 80}px`;
+    nameTag.style.position = "absolute";
+
     document.getElementById("game-container").appendChild(playerElement);
+    document.getElementById("game-container").appendChild(nameTag);
 
-    players.push({
-        x: spawnX,
-        y: canvas.height - 60,
-        spriteIndex: index,
-        name: name,
-        element: playerElement
-    });
-}
-
-// ✅ Ensure pressing '1' spawns players
-window.addEventListener("keydown", event => {
-    if (event.key === "1") {
-        addPlayer(`Player${players.length + 1}`);
-    }
-});
-
-// ✅ Main Game Loop
-function gameLoop() {
-    drawBackground();
-    updatePlayers();
-    requestAnimationFrame(gameLoop);
+    players.push({ x: spawnX, y: canvas.height - 60, spriteIndex: index, name: name, element: playerElement, nameTag: nameTag });
 }
 
 // ✅ Start Game
