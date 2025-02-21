@@ -7,6 +7,8 @@ const buzzerSound = new Audio("/SG/Buzzer.mp3");
 const countdownSound = new Audio("/SG/CountDown.mp3");
 const countdownEndSound = new Audio("/SG/CountDown_END.mp3");
 const soundAl = new Audio("/SG/SoundAl.mp3");
+const dollReloadSound = new Audio("/SG/Doll_Reload.mp3");
+const dollTalkSound = new Audio("/SG/Doll_Talk.mp3");
 
 canvas.width = 800;
 canvas.height = 600;
@@ -18,6 +20,7 @@ let isDollShooting = false;
 let firstWinnerTime = null;
 let countdownTimerElement = null;
 let countdownTimer = null;
+let leaderboardScores = {}; // Track player scores
 
 const dollImage = new Image();
 dollImage.src = "/SG/Doll_Attack.gif";
@@ -93,7 +96,7 @@ function updatePlayers() {
         if (!player || !player.element || !player.nameTag) return;
 
         if (isGreenLight && !isDollShooting) {
-            player.y -= 1.1;
+            player.y -= 0.8;
             player.element.src = characterSprites[player.spriteIndex].walking;
             player.element.src += "?t=" + new Date().getTime();
             playFootstepSound(player);
@@ -117,20 +120,30 @@ function updatePlayers() {
 // ✅ Function to Play Footstep Sound
 function playFootstepSound(player) {
     if (Math.random() < 0.2) {
+        playSound(footstepSounds, 0.25); // 🔹 Reduced volume by 50%
         const footstep = new Audio(footstepSounds[Math.floor(Math.random() * footstepSounds.length)]);
         footstep.volume = 0.5;
         footstep.play();
     }
 }
 
-// ✅ Function to Add Players to Leaderboard (Fix `innerText` issue)
+// ✅ Function to Add Players to Leaderboard
 function addToLeaderboard(player) {
-    if (!player || !player.nameTag) return; // Ensure nameTag exists
+    if (!player || !player.nameTag) return;
+
+    let playerName = player.nameTag.innerText;
+    if (!leaderboardScores[playerName]) {
+        leaderboardScores[playerName] = 0;
+    }
+    leaderboardScores[playerName]++;
 
     const leaderboard = document.getElementById("leaderboard-list");
-    const entry = document.createElement("li");
-    entry.innerText = `${player.nameTag.innerText} - Winner!`; // Use nameTag text
-    leaderboard.appendChild(entry);
+    leaderboard.innerHTML = "";
+    for (let name in leaderboardScores) {
+        const entry = document.createElement("li");
+        entry.innerText = `${name} - Score: ${leaderboardScores[name]}`;
+        leaderboard.appendChild(entry);
+    }
 }
 
 // ✅ Function to Eliminate Players Randomly (Ensures Some Players Survive)
@@ -203,14 +216,14 @@ function startRoundCountdown() {
     let timeLeft = 20;
     buzzerSound.play();
     countdownTimer = setInterval(() => {
-        countdownTimerElement.innerText = `Time Left: ${timeLeft}`;
         if (timeLeft <= 10) {
             countdownSound.play();
         }
         if (timeLeft === 0) {
             clearInterval(countdownTimer);
             countdownEndSound.play();
-            countdownTimerElement.remove();
+            eliminatePlayers();
+            resetGame();
         }
         timeLeft--;
     }, 1000);
@@ -250,21 +263,24 @@ function toggleGreenLight() {
     isGreenLight = !isGreenLight;
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
 
+    if (isGreenLight) {
+        playSound([dollReloadSound.src]);
+        dollTalkSound.playbackRate = (Math.random() * (1.5 - 0.5) + 0.5);
+        dollTalkSound.play();
+    } else {
+        dollTalkSound.pause();
+    }
+
     if (!isGreenLight) {
-        // 🔹 Ensure Players Stop Moving
         isDollShooting = true;
-
-        // 🔹 Random Red Light Duration (1-12 seconds)
         let redLightDuration = Math.random() * (12000 - 1000) + 1000;
-
-        // 🔹 Keep executing `eliminatePlayers()` until red light ends
         let shootInterval = setInterval(() => {
             if (!isGreenLight) {
                 eliminatePlayers();
             } else {
                 clearInterval(shootInterval);
             }
-        }, 1000); // 🔹 Execute `eliminatePlayers()` every 1s
+        }, 1000);
 
         setTimeout(() => {
             isDollShooting = false;
@@ -274,7 +290,15 @@ function toggleGreenLight() {
     }
 }
 
-setInterval(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
+setInterval(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);;
+
+// ✅ Function to Reset Game
+function resetGame() {
+    players = [];
+    deadBodies.forEach(body => body.remove());
+    deadBodies = [];
+    firstWinnerTime = null;
+}
 
 // ✅ Function to Add Players (Fixed)
 function addPlayer(name) {
