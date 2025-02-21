@@ -174,6 +174,29 @@ function toggleGreenLight() {
 
 setInterval(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
 
+// ✅ Function to Add Players (Restored Name Tags)
+function addPlayer(name) {
+    const index = players.length % characterSprites.length;
+    const spawnX = Math.random() * (canvas.width - 50) + 10;
+
+    const playerElement = document.createElement("img");
+    playerElement.src = characterSprites[index].idle;
+    playerElement.className = "player";
+    playerElement.style.left = `${spawnX}px`;
+    playerElement.style.top = `${canvas.height - 60}px`;
+    playerElement.style.position = "absolute";
+
+    document.getElementById("game-container").appendChild(playerElement);
+
+    players.push({
+        x: spawnX,
+        y: canvas.height - 60,
+        spriteIndex: index,
+        name: name,
+        element: playerElement
+    });
+}
+
 // ✅ Ensure pressing '1' spawns players
 window.addEventListener("keydown", event => {
     if (event.key === "1") {
@@ -192,4 +215,3 @@ function gameLoop() {
 dollMusic.loop = true;
 dollMusic.play();
 requestAnimationFrame(gameLoop);
-
