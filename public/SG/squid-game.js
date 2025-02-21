@@ -12,6 +12,7 @@ canvas.width = 800;
 canvas.height = 600;
 
 let players = [];
+let deadBodies = [];
 let isGreenLight = false;
 let gameActive = true;
 let firstWinnerTime = null;
@@ -109,6 +110,7 @@ function displayDeath(player) {
         } else {
             clearInterval(deathAnimation);
             player.element.src = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+            deadBodies.push(player.element);
         }
     }, 200);
 
@@ -130,6 +132,30 @@ function playSound(soundArray) {
     const sound = new Audio(soundArray[Math.floor(Math.random() * soundArray.length)]);
     sound.volume = 0.5;
     sound.play();
+}
+
+// ✅ Update Players
+function updatePlayers() {
+    players.forEach(player => {
+        if (!player || !player.element || !player.nameTag) return;
+
+        if (isGreenLight) {
+            player.y -= 0.5;
+            player.element.src = characterSprites[player.spriteIndex].walking;
+        } else {
+            player.element.src = characterSprites[player.spriteIndex].idle;
+        }
+
+        player.element.style.top = `${player.y}px`;
+        player.nameTag.style.top = `${player.y - 20}px`;
+
+        if (player.y <= winnerLineY) {
+            addToLeaderboard(player.nameTag.innerText);
+            player.element.remove();
+            player.nameTag.remove();
+            players = players.filter(p => p !== player);
+        }
+    });
 }
 
 // ✅ Toggle Green Light / Red Light
@@ -159,15 +185,7 @@ function addPlayer(name) {
     playerElement.style.width = "40px";
     playerElement.style.height = "40px";
 
-    const nameTag = document.createElement("span");
-    nameTag.className = "player-name";
-    nameTag.innerText = `${name} (${randomNumber})`;
-    nameTag.style.left = `${spawnX}px`;
-    nameTag.style.top = `${canvas.height - 80}px`;
-    nameTag.style.position = "absolute";
-
     document.getElementById("game-container").appendChild(playerElement);
-    document.getElementById("game-container").appendChild(nameTag);
 
     players.push({
         x: spawnX,
@@ -175,8 +193,7 @@ function addPlayer(name) {
         spriteIndex: index,
         name: name,
         number: randomNumber,
-        element: playerElement,
-        nameTag: nameTag
+        element: playerElement
     });
 }
 
