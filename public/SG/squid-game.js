@@ -21,7 +21,18 @@ dollImage.src = '/SG/Doll_Attack.gif';
 let bgImage = new Image();
 bgImage.src = '/SG/game-background.jpg';
 
-// ✅ Character Sprites (Now Properly Defined)
+// ✅ Winner Line Position (Fixed Issue)
+const winnerLineY = 100;
+
+// ✅ Footstep sounds
+const footstepSounds = ['/SG/walk_0.mp3', '/SG/walk_1.mp3', '/SG/walk_2.mp3'];
+
+// ✅ Gunshot and Death Sounds (Fixed Issue)
+const gunshotSounds = ['/SG/Doll_Shooting_0.mp3', '/SG/Doll_Shooting_1.mp3', '/SG/Doll_Shooting_2.mp3', '/SG/Doll_Shooting_3.mp3'];
+const hitSounds = ['/SG/C_Hit_0.mp3', '/SG/C_Hit_1.mp3', '/SG/C_Hit_2.mp3'];
+const deathSounds = ['/SG/C_Death_0.mp3', '/SG/C_Death_1.mp3', '/SG/C_Death_2.mp3', '/SG/C_Death_3.mp3', '/SG/C_Death_4.mp3'];
+
+// ✅ Character Sprites
 const characterSprites = [
     { idle: '/SG/char_0_0.gif', walking: '/SG/char_0_1.gif' },
     { idle: '/SG/char_1_0.gif', walking: '/SG/char_1_1.gif' },
@@ -33,13 +44,13 @@ const characterSprites = [
     { idle: '/SG/char_7_0.gif', walking: '/SG/char_7_1.gif' }
 ];
 
-// ✅ Function to Draw Background (RESTORED)
+// ✅ Function to Draw Background (Restored)
 function drawBackground() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     ctx.drawImage(dollImage, canvas.width / 2 - 50, 20, 100, 100);
 
-    // Draw Winner Line
+    // ✅ Draw Winner Line (Fixed Issue)
     ctx.beginPath();
     ctx.moveTo(0, winnerLineY);
     ctx.lineTo(canvas.width, winnerLineY);
@@ -110,7 +121,7 @@ function updatePlayers() {
         }
 
         player.element.style.top = `${player.y}px`;
-        player.nameTag.style.top = `${player.y - 20}px`; // Keep name above player
+        player.nameTag.style.top = `${player.y - 20}px`;
 
         // ✅ Check if player crossed the winner line
         if (player.y <= winnerLineY) {
@@ -144,10 +155,8 @@ setInterval(() => {
     toggleGreenLight();
 }, Math.random() * (6000 - 3000) + 3000);
 
-// ✅ Function to Add Players (FIXED CHARACTER SPRITES ISSUE)
+// ✅ Function to Add Players
 function addPlayer(name) {
-    if (!characterSprites || characterSprites.length === 0) return; // Prevent error
-
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
     const spawnX = Math.random() * (canvas.width - 50) + 10;
@@ -161,19 +170,7 @@ function addPlayer(name) {
     playerElement.style.width = '40px';
     playerElement.style.height = '40px';
 
-    const nameTag = document.createElement('span');
-    nameTag.className = 'player-name';
-    nameTag.innerText = `${name} (${randomNumber})`;
-    nameTag.style.left = `${spawnX}px`;
-    nameTag.style.top = `${canvas.height - 80}px`;
-    nameTag.style.position = 'absolute';
-    nameTag.style.color = 'black';
-    nameTag.style.background = 'rgba(255,255,255,0.7)';
-    nameTag.style.padding = '2px 5px';
-    nameTag.style.borderRadius = '3px';
-
     document.getElementById('game-container').appendChild(playerElement);
-    document.getElementById('game-container').appendChild(nameTag);
 
     players.push({
         x: spawnX,
@@ -181,9 +178,7 @@ function addPlayer(name) {
         spriteIndex: index,
         name: name,
         number: randomNumber,
-        element: playerElement,
-        nameTag: nameTag,
-        moving: false
+        element: playerElement
     });
 }
 
@@ -205,4 +200,3 @@ dollMusic.loop = true;
 dollMusic.play();
 
 requestAnimationFrame(gameLoop);
-
