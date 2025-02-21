@@ -93,7 +93,7 @@ function updatePlayers() {
             player.element.src = characterSprites[player.spriteIndex].walking;
             player.element.src += "?t=" + new Date().getTime(); // 🔹 Force refresh for animated GIFs
         } else {
-            player.element.src = characterSprites[player.spriteIndex].idle;
+            player.element.src = characterSprites[player.spriteIndex].idle; // 🔹 Freeze during Red Light
         }
 
         player.element.style.top = `${player.y}px`;
@@ -149,7 +149,7 @@ function displayDeath(player) {
     let deathIndex = 0;
     const deathAnimation = setInterval(() => {
         if (deathIndex < bloodExplosionFrames.length) {
-            player.element.src = bloodExplosionFrames[deathIndex];
+            player.element.src = bloodExplosionFrames[deathIndex]; // Show explosion frames
             deathIndex++;
         } else {
             clearInterval(deathAnimation);
@@ -178,7 +178,6 @@ function displayDeath(player) {
         players = players.filter(p => p !== player);
     }, 2000);
 }
-
 
 // ✅ Function to Display "Player X is Dead" Message
 let currentDeathMessage = null;
@@ -215,11 +214,18 @@ function toggleGreenLight() {
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
 
     if (!isGreenLight) {
+        // 🔹 Ensure Players Stop Moving
+        isDollShooting = true;
+
+        // 🔹 Start Shooting Phase
         setTimeout(() => {
             eliminatePlayers();
 
-            let redLightDuration = Math.random() * (12000 - 1000) + 1000; // 🔹 1-12 seconds
+            // 🔹 Randomize Red Light Duration (1-12 seconds)
+            let redLightDuration = Math.random() * (12000 - 1000) + 1000; 
+
             setTimeout(() => {
+                isDollShooting = false;
                 isGreenLight = true;
                 console.log("🟢 Green Light Resumes!");
             }, redLightDuration);
