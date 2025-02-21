@@ -52,7 +52,8 @@ function preloadImages(imagePaths) {
 preloadImages([
     "/SG/Blood_Explosion_0.png", "/SG/Blood_Explosion_1.png", "/SG/Blood_Explosion_2.png", "/SG/Blood_Explosion_3.png",
     "/SG/char_0_1.gif", "/SG/char_1_1.gif", "/SG/char_2_1.gif", "/SG/char_3_1.gif",
-    "/SG/char_4_1.gif", "/SG/char_5_1.gif", "/SG/char_6_1.gif", "/SG/char_7_1.gif"
+    "/SG/char_4_1.gif", "/SG/char_5_1.gif", "/SG/char_6_1.gif", "/SG/char_7_1.gif",
+    "/SG/Cyborg_Hud_0.gif", "/SG/Cyborg_Hud_1.gif"
 ]);
 
 
@@ -213,7 +214,6 @@ function displayDeath(player) {
     }, 2000);
 }
 
-
 // ✅ Function to Start Round Countdown
 function startRoundCountdown() {
     if (!countdownTimerElement) {
@@ -225,18 +225,27 @@ function startRoundCountdown() {
         countdownTimerElement.style.color = "white";
         countdownTimerElement.style.fontSize = "30px";
         countdownTimerElement.style.fontWeight = "bold";
+        countdownTimerElement.style.zIndex = "1000"; // Ensure it's on top
         document.getElementById("game-container").appendChild(countdownTimerElement);
     }
 
     let timeLeft = 20;
     buzzerSound.play();
     countdownTimer = setInterval(() => {
+        countdownTimerElement.innerText = `Time Left: ${timeLeft}`;
         if (timeLeft <= 10) countdownSound.play();
         if (timeLeft === 0) {
             clearInterval(countdownTimer);
             countdownEndSound.play();
             isGreenLight = false;
             eliminatePlayers();
+
+            // ✅ Remove the countdown timer after it reaches 0
+            if (countdownTimerElement) {
+                countdownTimerElement.remove();
+                countdownTimerElement = null;
+            }
+
             setTimeout(resetGame, 3000);
         }
         timeLeft--;
@@ -247,10 +256,14 @@ function startRoundCountdown() {
 let currentDeathMessage = null;
 
 function displayDeathMessage(player) {
+    if (!player || !player.nameTag) return;
+
+    // ✅ Remove previous death message
     if (currentDeathMessage) {
         currentDeathMessage.remove();
     }
 
+    // ✅ Create death message
     currentDeathMessage = document.createElement("div");
     currentDeathMessage.innerText = `${player.nameTag.innerText} is Dead`;
     currentDeathMessage.style.position = "absolute";
@@ -260,10 +273,20 @@ function displayDeathMessage(player) {
     currentDeathMessage.style.color = "red";
     currentDeathMessage.style.fontSize = "30px";
     currentDeathMessage.style.fontWeight = "bold";
-    currentDeathMessage.style.zIndex = "1000"; // 🔹 Ensure it stays on top
+    currentDeathMessage.style.textShadow = "2px 2px 4px black";
+    currentDeathMessage.style.zIndex = "1000"; // Ensure it stays on top
 
     document.getElementById("game-container").appendChild(currentDeathMessage);
+
+    // ✅ Make sure the message stays on screen for at least 3 seconds
+    setTimeout(() => {
+        if (currentDeathMessage) {
+            currentDeathMessage.remove();
+            currentDeathMessage = null;
+        }
+    }, 1000); // Show for 3 seconds
 }
+
 
 // ✅ Toggle Green Light / Red Light
 function toggleGreenLight() {
@@ -303,8 +326,6 @@ function toggleGreenLight() {
     }
 }
 
-setInterval(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);;
-
 // ✅ Function to Alternate Cyborg HUD
 function toggleCyborgHud() {
     const hud = document.getElementById("cyborg-hud");
@@ -312,6 +333,8 @@ function toggleCyborgHud() {
     hud.src = Math.random() < 0.5 ? "/SG/Cyborg_Hud_0.gif" : "/SG/Cyborg_Hud_1.gif";
     setTimeout(toggleCyborgHud, Math.random() * (5000 - 2000) + 2000); // Switch between 2-5 seconds
 }
+
+setInterval(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);;
 
 // ✅ Function to Reset Game
 function resetGame() {
