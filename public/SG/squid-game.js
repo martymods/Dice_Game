@@ -41,7 +41,7 @@ const hitSounds = ["/SG/C_Hit_0.mp3", "/SG/C_Hit_1.mp3", "/SG/C_Hit_2.mp3"];
 const deathSounds = ["/SG/C_Death_0.mp3", "/SG/C_Death_1.mp3", "/SG/C_Death_2.mp3", "/SG/C_Death_3.mp3", "/SG/C_Death_4.mp3"];
 
 
-// ✅ preload images before assigning them
+// ✅ Preload Images to Ensure Fast Animations
 function preloadImages(imagePaths) {
     imagePaths.forEach(path => {
         const img = new Image();
@@ -50,12 +50,9 @@ function preloadImages(imagePaths) {
 }
 
 preloadImages([
-    "/SG/Blood_Explosion_0.png",
-    "/SG/Blood_Explosion_1.png",
-    "/SG/Blood_Explosion_2.png",
-    "/SG/Blood_Explosion_3.png",
-    "/SG/char_0_1.gif",
-    "/SG/char_1_1.gif"
+    "/SG/Blood_Explosion_0.png", "/SG/Blood_Explosion_1.png", "/SG/Blood_Explosion_2.png", "/SG/Blood_Explosion_3.png",
+    "/SG/char_0_1.gif", "/SG/char_1_1.gif", "/SG/char_2_1.gif", "/SG/char_3_1.gif",
+    "/SG/char_4_1.gif", "/SG/char_5_1.gif", "/SG/char_6_1.gif", "/SG/char_7_1.gif"
 ]);
 
 
@@ -141,7 +138,7 @@ function updatePlayers() {
 // ✅ Function to Play Footstep Sound
 function playFootstepSound(player) {
     if (Math.random() < 0.2) {
-        playSound(footstepSounds, 0.25); // 🔹 Reduced volume by 50%
+        playSound(footstepSounds, 0.29); // 🔹 Reduced volume by 50%
         const footstep = new Audio(footstepSounds[Math.floor(Math.random() * footstepSounds.length)]);
         footstep.volume = 0.3;
         footstep.play();
@@ -181,7 +178,7 @@ function eliminatePlayers() {
     }
 }
 
-// ✅ Updated Function to Display Death Animation and Sounds
+// ✅ Function to Display Death Animation and Sounds
 function displayDeath(player) {
     if (!player || !player.element) return;
 
@@ -199,18 +196,13 @@ function displayDeath(player) {
 
             // ✅ Instantly replace with dead body
             const deadBodyElement = new Image();
-            deadBodyElement.onload = function () {
-                deadBodyElement.className = "dead-body";
-                deadBodyElement.style.position = "absolute";
-                deadBodyElement.style.left = player.element.style.left;
-                deadBodyElement.style.top = player.element.style.top;
-                deadBodyElement.style.width = "40px";
-                deadBodyElement.style.height = "40px";
-
-                document.getElementById("game-container").appendChild(deadBodyElement);
-                deadBodies.push(deadBodyElement);
-            };
             deadBodyElement.src = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+            deadBodyElement.className = "dead-body";
+            deadBodyElement.style.position = "absolute";
+            deadBodyElement.style.left = player.element.style.left;
+            deadBodyElement.style.top = player.element.style.top;
+            document.getElementById("game-container").appendChild(deadBodyElement);
+            deadBodies.push(deadBodyElement);
         }
     }, 100);
 
@@ -220,6 +212,7 @@ function displayDeath(player) {
         players = players.filter(p => p !== player);
     }, 2000);
 }
+
 
 // ✅ Function to Start Round Countdown
 function startRoundCountdown() {
@@ -238,16 +231,13 @@ function startRoundCountdown() {
     let timeLeft = 20;
     buzzerSound.play();
     countdownTimer = setInterval(() => {
-        countdownTimerElement.innerText = `Time Left: ${timeLeft}`;
-        if (timeLeft <= 10) {
-            countdownSound.play();
-        }
+        if (timeLeft <= 10) countdownSound.play();
         if (timeLeft === 0) {
             clearInterval(countdownTimer);
             countdownEndSound.play();
             isGreenLight = false;
             eliminatePlayers();
-            resetGame();
+            setTimeout(resetGame, 3000);
         }
         timeLeft--;
     }, 1000);
@@ -289,7 +279,7 @@ function toggleGreenLight() {
 
     if (isGreenLight) {
         playSound([dollReloadSound.src]);
-        dollTalkSound.playbackRate = 1 / Math.random() * (1.5 - 0.5) + 0.5;
+        dollTalkSound.playbackRate = Math.random() * (1.5 - 0.5) + 0.5;
         dollTalkSound.play();
     } else {
         dollTalkSound.pause();
@@ -309,7 +299,6 @@ function toggleGreenLight() {
         setTimeout(() => {
             isDollShooting = false;
             isGreenLight = true;
-            console.log("🟢 Green Light Resumes!");
         }, redLightDuration);
     }
 }
