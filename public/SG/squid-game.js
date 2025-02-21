@@ -1,4 +1,4 @@
-/* squid-game.js */ 
+/* squid-game.js */
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -21,13 +21,13 @@ dollImage.src = '/SG/Doll_Attack.gif';
 let bgImage = new Image();
 bgImage.src = '/SG/game-background.jpg';
 
-// ✅ Winner Line Position (Fixed Issue)
+// ✅ Winner Line Position
 const winnerLineY = 100;
 
-// ✅ Footstep sounds
+// ✅ Footstep Sounds
 const footstepSounds = ['/SG/walk_0.mp3', '/SG/walk_1.mp3', '/SG/walk_2.mp3'];
 
-// ✅ Gunshot and Death Sounds (Fixed Issue)
+// ✅ Gunshot and Death Sounds
 const gunshotSounds = ['/SG/Doll_Shooting_0.mp3', '/SG/Doll_Shooting_1.mp3', '/SG/Doll_Shooting_2.mp3', '/SG/Doll_Shooting_3.mp3'];
 const hitSounds = ['/SG/C_Hit_0.mp3', '/SG/C_Hit_1.mp3', '/SG/C_Hit_2.mp3'];
 const deathSounds = ['/SG/C_Death_0.mp3', '/SG/C_Death_1.mp3', '/SG/C_Death_2.mp3', '/SG/C_Death_3.mp3', '/SG/C_Death_4.mp3'];
@@ -44,13 +44,13 @@ const characterSprites = [
     { idle: '/SG/char_7_0.gif', walking: '/SG/char_7_1.gif' }
 ];
 
-// ✅ Function to Draw Background (Restored)
+// ✅ Function to Draw Background (Fixed)
 function drawBackground() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     ctx.drawImage(dollImage, canvas.width / 2 - 50, 20, 100, 100);
 
-    // ✅ Draw Winner Line (Fixed Issue)
+    // ✅ Draw Winner Line
     ctx.beginPath();
     ctx.moveTo(0, winnerLineY);
     ctx.lineTo(canvas.width, winnerLineY);
@@ -62,7 +62,7 @@ function drawBackground() {
     ctx.shadowBlur = 0;
 }
 
-// ✅ Function to Eliminate Players During Red Light
+// ✅ Function to Eliminate Players During Red Light (Fixed)
 function eliminatePlayers() {
     if (!isGreenLight && players.length > 0) {
         let numToEliminate = Math.floor(Math.random() * Math.max(1, players.length / 2)); // Random eliminations
@@ -78,14 +78,16 @@ function eliminatePlayers() {
 
 // ✅ Function to Display Death Animation and Sounds
 function displayDeath(player) {
-    playSound(gunshotSounds); // Play gunshot first
+    if (!player || !player.element) return;
+
+    playSound(gunshotSounds);
 
     setTimeout(() => {
-        playSound(hitSounds); // Play hit sound after 200ms
+        playSound(hitSounds);
     }, 200);
 
     setTimeout(() => {
-        playSound(deathSounds); // Play death sound after 300ms
+        playSound(deathSounds);
         displayDeathMessage(player);
     }, 300);
 
@@ -93,7 +95,7 @@ function displayDeath(player) {
         player.element.remove();
         player.nameTag.remove();
         players = players.filter(p => p !== player);
-    }, 2000); // Remove player after 2 seconds
+    }, 2000);
 }
 
 // ✅ Function to Display "Player X is Dead"
@@ -110,11 +112,13 @@ function playSound(soundArray) {
     sound.play();
 }
 
-// ✅ Update Players & Check Eliminations
+// ✅ Update Players (Fixed Moving)
 function updatePlayers() {
     players.forEach(player => {
+        if (!player || !player.element) return;
+
         if (isGreenLight) {
-            player.y -= 0.5; // Move players towards the goal
+            player.y -= 0.5;
             player.element.src = characterSprites[player.spriteIndex].walking;
         } else {
             player.element.src = characterSprites[player.spriteIndex].idle;
@@ -147,7 +151,7 @@ function toggleGreenLight() {
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
     
     if (!isGreenLight) {
-        setTimeout(eliminatePlayers, 500); // Delay eliminations slightly for effect
+        setTimeout(eliminatePlayers, 500);
     }
 }
 
@@ -155,8 +159,10 @@ setInterval(() => {
     toggleGreenLight();
 }, Math.random() * (6000 - 3000) + 3000);
 
-// ✅ Function to Add Players
+// ✅ Function to Add Players (Fixed Player Creation)
 function addPlayer(name) {
+    if (!characterSprites || characterSprites.length === 0) return;
+
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
     const spawnX = Math.random() * (canvas.width - 50) + 10;
@@ -200,3 +206,4 @@ dollMusic.loop = true;
 dollMusic.play();
 
 requestAnimationFrame(gameLoop);
+
