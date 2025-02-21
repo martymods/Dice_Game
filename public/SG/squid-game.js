@@ -32,72 +32,60 @@ const gunshotSounds = ['/SG/Doll_Shooting_0.mp3', '/SG/Doll_Shooting_1.mp3', '/S
 const hitSounds = ['/SG/C_Hit_0.mp3', '/SG/C_Hit_1.mp3', '/SG/C_Hit_2.mp3'];
 const deathSounds = ['/SG/C_Death_0.mp3', '/SG/C_Death_1.mp3', '/SG/C_Death_2.mp3', '/SG/C_Death_3.mp3', '/SG/C_Death_4.mp3'];
 
-const characterSprites = [
-    { idle: '/SG/char_0_0.gif', walking: '/SG/char_0_1.gif' },
-    { idle: '/SG/char_1_0.gif', walking: '/SG/char_1_1.gif' },
-    { idle: '/SG/char_2_0.gif', walking: '/SG/char_2_1.gif' },
-    { idle: '/SG/char_3_0.gif', walking: '/SG/char_3_1.gif' },
-    { idle: '/SG/char_4_0.gif', walking: '/SG/char_4_1.gif' },
-    { idle: '/SG/char_5_0.gif', walking: '/SG/char_5_1.gif' },
-    { idle: '/SG/char_6_0.gif', walking: '/SG/char_6_1.gif' },
-    { idle: '/SG/char_7_0.gif', walking: '/SG/char_7_1.gif' }
-];
+// ✅ Function to Eliminate Players During Red Light
+function eliminatePlayers() {
+    if (!isGreenLight && players.length > 0) {
+        let numToEliminate = Math.floor(Math.random() * Math.max(1, players.length / 2)); // Random eliminations
 
-// Draw Background
-function drawBackground() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-    ctx.drawImage(dollImage, canvas.width / 2 - 50, 20, 100, 100);
-
-    // Draw Winner Line
-    ctx.beginPath();
-    ctx.moveTo(0, winnerLineY);
-    ctx.lineTo(canvas.width, winnerLineY);
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 5;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = 'red';
-    ctx.stroke();
-    ctx.shadowBlur = 0;
+        for (let i = 0; i < numToEliminate; i++) {
+            let player = players[Math.floor(Math.random() * players.length)];
+            if (player) {
+                displayDeath(player);
+            }
+        }
+    }
 }
 
-// Toggle Green Light
-function toggleGreenLight() {
-    isGreenLight = !isGreenLight;
-    console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
+// ✅ Function to Display Death Animation and Sounds
+function displayDeath(player) {
+    playSound(gunshotSounds); // Play gunshot first
+
+    setTimeout(() => {
+        playSound(hitSounds); // Play hit sound after 200ms
+    }, 200);
+
+    setTimeout(() => {
+        playSound(deathSounds); // Play death sound after 300ms
+        displayDeathMessage(player);
+    }, 300);
+
+    setTimeout(() => {
+        player.element.remove();
+        player.nameTag.remove();
+        players = players.filter(p => p !== player);
+    }, 2000); // Remove player after 2 seconds
 }
 
-setInterval(() => {
-    toggleGreenLight();
-}, Math.random() * (6000 - 3000) + 3000);
+// ✅ Function to Display "Player X is Dead"
+function displayDeathMessage(player) {
+    ctx.fillStyle = "red";
+    ctx.font = "bold 30px Arial";
+    ctx.fillText(`${player.name} is Dead`, canvas.width / 2 - 100, canvas.height / 2);
+}
 
-// Play Sound Utility Function
-function playSound(soundArray, xPos = 0) {
+// ✅ Function to Play Random Sounds
+function playSound(soundArray) {
     const sound = new Audio(soundArray[Math.floor(Math.random() * soundArray.length)]);
     sound.volume = 0.5;
-    
-    // Stereo panning based on player's position
-    if ('pan' in sound) {
-        let stereoPan = (xPos / canvas.width) * 2 - 1; // Convert position to stereo range (-1 to 1)
-        sound.pan.value = stereoPan;
-    }
-
     sound.play();
 }
 
-// Update Players with Footstep Sounds
+// ✅ Update Players & Check Eliminations
 function updatePlayers() {
     players.forEach(player => {
         if (isGreenLight) {
             player.y -= 0.5; // Move players towards the goal
             player.element.src = characterSprites[player.spriteIndex].walking;
-            
-            // Play footstep sounds at random intervals while moving
-            if (!player.footstepCooldown) {
-                playSound(footstepSounds, player.x);
-                player.footstepCooldown = true;
-                setTimeout(() => player.footstepCooldown = false, 500);
-            }
         } else {
             player.element.src = characterSprites[player.spriteIndex].idle;
         }
@@ -105,7 +93,7 @@ function updatePlayers() {
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`; // Keep name above player
 
-        // Check if player crossed the winner line
+        // ✅ Check if player crossed the winner line
         if (player.y <= winnerLineY) {
             addToLeaderboard(player.nameTag.innerText);
             player.element.remove();
@@ -115,7 +103,29 @@ function updatePlayers() {
     });
 }
 
-// Add Players
+// ✅ Add Winners to Leaderboard
+function addToLeaderboard(name) {
+    const leaderboard = document.getElementById('leaderboard-list');
+    const entry = document.createElement('li');
+    entry.innerText = `${name} - Winner!`;
+    leaderboard.appendChild(entry);
+}
+
+// ✅ Toggle Green Light / Red Light
+function toggleGreenLight() {
+    isGreenLight = !isGreenLight;
+    console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
+    
+    if (!isGreenLight) {
+        setTimeout(eliminatePlayers, 500); // Delay eliminations slightly for effect
+    }
+}
+
+setInterval(() => {
+    toggleGreenLight();
+}, Math.random() * (6000 - 3000) + 3000);
+
+// ✅ Function to Add Players
 function addPlayer(name) {
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
@@ -152,19 +162,18 @@ function addPlayer(name) {
         number: randomNumber,
         element: playerElement,
         nameTag: nameTag,
-        footstepCooldown: false,
         moving: false
     });
 }
 
-// Ensure pressing '1' still spawns players
+// ✅ Ensure pressing '1' still spawns players
 window.addEventListener('keydown', (event) => {
     if (event.key === '1') {
         addPlayer(`Player${players.length + 1}`);
     }
 });
 
-// Main Game Loop
+// ✅ Main Game Loop
 function gameLoop() {
     drawBackground();
     updatePlayers();
