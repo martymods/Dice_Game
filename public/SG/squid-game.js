@@ -88,8 +88,8 @@ function updatePlayers() {
     players.forEach(player => {
         if (!player || !player.element || !player.nameTag) return;
 
-        if (isGreenLight) {
-            player.y -= 1.1; // Players move faster towards the red line
+        if (isGreenLight && !isDollShooting) { // 🔹 Players ONLY move when NOT being shot
+            player.y -= 1.1;
             player.element.src = characterSprites[player.spriteIndex].walking;
             player.element.src += "?t=" + new Date().getTime(); // 🔹 Force refresh for animated GIFs
         } else {
@@ -99,9 +99,8 @@ function updatePlayers() {
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`;
 
-        // ✅ Check if player crossed the winner line
         if (player.y <= winnerLineY) {
-            addToLeaderboard(player); // Pass full player object
+            addToLeaderboard(player);
             player.element.remove();
             player.nameTag.remove();
             players = players.filter(p => p !== player);
@@ -143,20 +142,19 @@ function eliminatePlayers() {
 function displayDeath(player) {
     if (!player || !player.element) return;
 
-    playSound(gunshotSounds); // 🔹 Play gunshot immediately
-    setTimeout(() => playSound(hitSounds), 200);
-    setTimeout(() => playSound(deathSounds), 500); // 🔹 Slight delay for dramatic effect
+    playSound(gunshotSounds);
+    setTimeout(() => playSound(hitSounds), 100); 
+    setTimeout(() => playSound(deathSounds), 300); 
 
-    // ✅ Play Blood Explosion Sequence before showing the dead body
     let deathIndex = 0;
     const deathAnimation = setInterval(() => {
         if (deathIndex < bloodExplosionFrames.length) {
-            player.element.src = bloodExplosionFrames[deathIndex]; // Show explosion frames
+            player.element.src = bloodExplosionFrames[deathIndex];
             deathIndex++;
         } else {
             clearInterval(deathAnimation);
 
-            // ✅ Create a new dead body element
+            // ✅ Instantly replace with dead body
             const deadBodyElement = document.createElement("img");
             deadBodyElement.src = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
             deadBodyElement.className = "dead-body";
@@ -169,7 +167,7 @@ function displayDeath(player) {
             document.getElementById("game-container").appendChild(deadBodyElement);
             deadBodies.push(deadBodyElement);
         }
-    }, 200);
+    }, 100); // 🔹 Blood Explosion appears every 0.1s
 
     // ✅ Display death message immediately
     displayDeathMessage(player);
@@ -191,7 +189,7 @@ function displayDeathMessage(player) {
     }
 
     currentDeathMessage = document.createElement("div");
-    currentDeathMessage.innerText = `${player.nameTag.innerText} is Dead`; // 🔹 Use nameTag for accuracy
+    currentDeathMessage.innerText = `${player.nameTag.innerText} is Dead`;
     currentDeathMessage.style.position = "absolute";
     currentDeathMessage.style.top = "50%";
     currentDeathMessage.style.left = "50%";
@@ -199,14 +197,13 @@ function displayDeathMessage(player) {
     currentDeathMessage.style.color = "red";
     currentDeathMessage.style.fontSize = "30px";
     currentDeathMessage.style.fontWeight = "bold";
-    currentDeathMessage.style.zIndex = "1000"; // Ensure it stays on top
+    currentDeathMessage.style.zIndex = "1000"; // 🔹 Ensure it stays on top
 
     document.getElementById("game-container").appendChild(currentDeathMessage);
 }
 
 // ✅ Toggle Green Light / Red Light
 function toggleGreenLight() {
-    // ✅ Remove previous death message when green light resumes
     if (currentDeathMessage) {
         currentDeathMessage.remove();
         currentDeathMessage = null;
@@ -221,8 +218,7 @@ function toggleGreenLight() {
         setTimeout(() => {
             eliminatePlayers();
 
-            // 🔹 After a random time (1-12 seconds), resume Green Light
-            let redLightDuration = Math.random() * (12000 - 1000) + 1000; // Between 1-12 seconds
+            let redLightDuration = Math.random() * (12000 - 1000) + 1000; // 🔹 1-12 seconds
             setTimeout(() => {
                 isGreenLight = true;
                 console.log("🟢 Green Light Resumes!");
