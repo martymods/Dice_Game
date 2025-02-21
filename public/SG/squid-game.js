@@ -17,6 +17,7 @@ let isGreenLight = false;
 let gameActive = true;
 let firstWinnerTime = null;
 let countdownTimer = null;
+let isDollShooting = false;
 const dollImage = new Image();
 dollImage.src = "/SG/Doll_Attack.gif";
 let bgImage = new Image();
@@ -78,9 +79,34 @@ function drawBackground() {
     ctx.shadowBlur = 0;
 }
 
-// ✅ Function to Eliminate Players One by One (1s delay each)
+// ✅ Function to Move Players Towards the Red Line
+function updatePlayers() {
+    players.forEach(player => {
+        if (!player || !player.element || !player.nameTag) return;
+
+        if (isGreenLight) {
+            player.y -= 0.5;
+            player.element.src = characterSprites[player.spriteIndex].walking;
+        } else {
+            player.element.src = characterSprites[player.spriteIndex].idle;
+        }
+
+        player.element.style.top = `${player.y}px`;
+        player.nameTag.style.top = `${player.y - 20}px`;
+
+        if (player.y <= winnerLineY) {
+            addToLeaderboard(player.nameTag.innerText);
+            player.element.remove();
+            player.nameTag.remove();
+            players = players.filter(p => p !== player);
+        }
+    });
+}
+
+// ✅ Function to Eliminate Players (Doll Shoots Players One by One)
 function eliminatePlayers() {
-    if (!isGreenLight && players.length > 0) {
+    if (!isGreenLight && players.length > 0 && !isDollShooting) {
+        isDollShooting = true; // Prevents multiple executions at the same time
         let targets = [...players];
         let delay = 0;
 
@@ -88,8 +114,12 @@ function eliminatePlayers() {
             setTimeout(() => {
                 displayDeath(player);
             }, delay);
-            delay += 1000; // Delay each execution by 1 second
+            delay += 1000; // Shoots each player one by one with 1s delay
         });
+
+        setTimeout(() => {
+            isDollShooting = false; // Allows Green Light to resume after all are killed
+        }, delay + 1000);
     }
 }
 
@@ -127,32 +157,10 @@ function displayDeathMessage(player) {
     ctx.fillText(`${player.name} is Dead`, canvas.width / 2 - 100, canvas.height / 2);
 }
 
-// ✅ Function to Play Random Sounds
-function playSound(soundArray) {
-    const sound = new Audio(soundArray[Math.floor(Math.random() * soundArray.length)]);
-    sound.volume = 0.5;
-    sound.play();
-}
-
-// ✅ Update Players
-function updatePlayers() {
-    players.forEach(player => {
-        if (!player || !player.element || !player.nameTag) return;
-
-        if (isGreenLight) {
-            player.y -= 0.5;
-            player.element.src = characterSprites[player.spriteIndex].walking;
-        } else {
-            player.element.src = characterSprites[player.spriteIndex].idle;
-        }
-
-        player.element.style.top = `${player.y}px`;
-        player.nameTag.style.top = `${player.y - 20}px`;
-    });
-}
-
-// ✅ Toggle Green Light / Red Light
+// ✅ Function to Toggle Green Light / Red Light
 function toggleGreenLight() {
+    if (isDollShooting) return; // Prevents toggling while doll is still shooting
+
     isGreenLight = !isGreenLight;
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
 
@@ -186,13 +194,6 @@ function addPlayer(name) {
     });
 }
 
-// ✅ Ensure pressing '1' spawns players
-window.addEventListener("keydown", event => {
-    if (event.key === "1") {
-        addPlayer(`Player${players.length + 1}`);
-    }
-});
-
 // ✅ Main Game Loop
 function gameLoop() {
     drawBackground();
@@ -200,8 +201,6 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// ✅ Start Game
 dollMusic.loop = true;
 dollMusic.play();
 requestAnimationFrame(gameLoop);
-
