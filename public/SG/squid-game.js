@@ -1,4 +1,4 @@
-/* squid-game.js */
+/* squid-game.js */ 
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -43,6 +43,7 @@ const characterSprites = [
     { idle: '/SG/char_7_0.gif', walking: '/SG/char_7_1.gif' }
 ];
 
+// Draw Background
 function drawBackground() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
@@ -60,6 +61,7 @@ function drawBackground() {
     ctx.shadowBlur = 0;
 }
 
+// Toggle Green Light
 function toggleGreenLight() {
     isGreenLight = !isGreenLight;
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
@@ -69,16 +71,33 @@ setInterval(() => {
     toggleGreenLight();
 }, Math.random() * (6000 - 3000) + 3000);
 
-function playSound(soundArray) {
+// Play Sound Utility Function
+function playSound(soundArray, xPos = 0) {
     const sound = new Audio(soundArray[Math.floor(Math.random() * soundArray.length)]);
+    sound.volume = 0.5;
+    
+    // Stereo panning based on player's position
+    if ('pan' in sound) {
+        let stereoPan = (xPos / canvas.width) * 2 - 1; // Convert position to stereo range (-1 to 1)
+        sound.pan.value = stereoPan;
+    }
+
     sound.play();
 }
 
+// Update Players with Footstep Sounds
 function updatePlayers() {
     players.forEach(player => {
         if (isGreenLight) {
             player.y -= 0.5; // Move players towards the goal
             player.element.src = characterSprites[player.spriteIndex].walking;
+            
+            // Play footstep sounds at random intervals while moving
+            if (!player.footstepCooldown) {
+                playSound(footstepSounds, player.x);
+                player.footstepCooldown = true;
+                setTimeout(() => player.footstepCooldown = false, 500);
+            }
         } else {
             player.element.src = characterSprites[player.spriteIndex].idle;
         }
@@ -96,13 +115,7 @@ function updatePlayers() {
     });
 }
 
-function addToLeaderboard(name) {
-    const leaderboard = document.getElementById('leaderboard-list');
-    const entry = document.createElement('li');
-    entry.innerText = `${name} - Winner!`;
-    leaderboard.appendChild(entry);
-}
-
+// Add Players
 function addPlayer(name) {
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
@@ -139,23 +152,26 @@ function addPlayer(name) {
         number: randomNumber,
         element: playerElement,
         nameTag: nameTag,
+        footstepCooldown: false,
         moving: false
     });
 }
 
+// Ensure pressing '1' still spawns players
 window.addEventListener('keydown', (event) => {
     if (event.key === '1') {
         addPlayer(`Player${players.length + 1}`);
     }
 });
 
-dollMusic.loop = true;
-dollMusic.play();
-
-requestAnimationFrame(gameLoop);
-
+// Main Game Loop
 function gameLoop() {
     drawBackground();
     updatePlayers();
     requestAnimationFrame(gameLoop);
 }
+
+dollMusic.loop = true;
+dollMusic.play();
+
+requestAnimationFrame(gameLoop);
