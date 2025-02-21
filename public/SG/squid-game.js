@@ -142,16 +142,13 @@ function displayDeath(player) {
 
     playSound(gunshotSounds);
     setTimeout(() => playSound(hitSounds), 200);
-    setTimeout(() => {
-        playSound(deathSounds);
-        displayDeathMessage(player);
-    }, 300);
+    setTimeout(() => playSound(deathSounds), 300);
 
-    // ✅ Play Blood Explosion Sequence
+    // ✅ Play Blood Explosion Sequence before showing the dead body
     let deathIndex = 0;
     const deathAnimation = setInterval(() => {
         if (deathIndex < bloodExplosionFrames.length) {
-            player.element.src = bloodExplosionFrames[deathIndex]; // Show blood explosion frames
+            player.element.src = bloodExplosionFrames[deathIndex]; // Show explosion frames
             deathIndex++;
         } else {
             clearInterval(deathAnimation);
