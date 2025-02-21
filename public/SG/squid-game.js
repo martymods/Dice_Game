@@ -21,6 +21,7 @@ let firstWinnerTime = null;
 let countdownTimerElement = null;
 let countdownTimer = null;
 let leaderboardScores = {}; // Track player scores
+let roundActive = false; // Track if round is ongoing
 
 const dollImage = new Image();
 dollImage.src = "/SG/Doll_Attack.gif";
@@ -122,7 +123,7 @@ function playFootstepSound(player) {
     if (Math.random() < 0.2) {
         playSound(footstepSounds, 0.25); // 🔹 Reduced volume by 50%
         const footstep = new Audio(footstepSounds[Math.floor(Math.random() * footstepSounds.length)]);
-        footstep.volume = 0.5;
+        footstep.volume = 0.3;
         footstep.play();
     }
 }
@@ -203,25 +204,29 @@ function displayDeath(player) {
 
 // ✅ Function to Start Round Countdown
 function startRoundCountdown() {
-    countdownTimerElement = document.createElement("div");
-    countdownTimerElement.style.position = "absolute";
-    countdownTimerElement.style.top = "10px";
-    countdownTimerElement.style.left = "50%";
-    countdownTimerElement.style.transform = "translateX(-50%)";
-    countdownTimerElement.style.color = "white";
-    countdownTimerElement.style.fontSize = "30px";
-    countdownTimerElement.style.fontWeight = "bold";
-    document.getElementById("game-container").appendChild(countdownTimerElement);
+    if (!countdownTimerElement) {
+        countdownTimerElement = document.createElement("div");
+        countdownTimerElement.style.position = "absolute";
+        countdownTimerElement.style.top = "10px";
+        countdownTimerElement.style.left = "50%";
+        countdownTimerElement.style.transform = "translateX(-50%)";
+        countdownTimerElement.style.color = "white";
+        countdownTimerElement.style.fontSize = "30px";
+        countdownTimerElement.style.fontWeight = "bold";
+        document.getElementById("game-container").appendChild(countdownTimerElement);
+    }
 
     let timeLeft = 20;
     buzzerSound.play();
     countdownTimer = setInterval(() => {
+        countdownTimerElement.innerText = `Time Left: ${timeLeft}`;
         if (timeLeft <= 10) {
             countdownSound.play();
         }
         if (timeLeft === 0) {
             clearInterval(countdownTimer);
             countdownEndSound.play();
+            isGreenLight = false;
             eliminatePlayers();
             resetGame();
         }
@@ -265,7 +270,7 @@ function toggleGreenLight() {
 
     if (isGreenLight) {
         playSound([dollReloadSound.src]);
-        dollTalkSound.playbackRate = (Math.random() * (1.5 - 0.5) + 0.5);
+        dollTalkSound.playbackRate = 1 / Math.random() * (1.5 - 0.5) + 0.5;
         dollTalkSound.play();
     } else {
         dollTalkSound.pause();
