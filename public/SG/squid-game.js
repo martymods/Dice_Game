@@ -92,8 +92,8 @@ function displayDeath(player) {
     }, 300);
 
     setTimeout(() => {
-        player.element.remove();
-        player.nameTag.remove();
+        if (player.element) player.element.remove();
+        if (player.nameTag) player.nameTag.remove();
         players = players.filter(p => p !== player);
     }, 2000);
 }
@@ -130,8 +130,8 @@ function updatePlayers() {
         // ✅ Check if player crossed the winner line
         if (player.y <= winnerLineY) {
             addToLeaderboard(player.nameTag.innerText);
-            player.element.remove();
-            player.nameTag.remove();
+            if (player.element) player.element.remove();
+            if (player.nameTag) player.nameTag.remove();
             players = players.filter(p => p !== player);
         }
     });
@@ -158,35 +158,6 @@ function toggleGreenLight() {
 setInterval(() => {
     toggleGreenLight();
 }, Math.random() * (6000 - 3000) + 3000);
-
-// ✅ Function to Add Players (Fixed Player Creation)
-function addPlayer(name) {
-    if (!characterSprites || characterSprites.length === 0) return;
-
-    const index = players.length % characterSprites.length;
-    const randomNumber = Math.floor(Math.random() * 99999) + 1;
-    const spawnX = Math.random() * (canvas.width - 50) + 10;
-
-    const playerElement = document.createElement('img');
-    playerElement.src = characterSprites[index].idle;
-    playerElement.className = 'player';
-    playerElement.style.left = `${spawnX}px`;
-    playerElement.style.top = `${canvas.height - 60}px`;
-    playerElement.style.position = 'absolute';
-    playerElement.style.width = '40px';
-    playerElement.style.height = '40px';
-
-    document.getElementById('game-container').appendChild(playerElement);
-
-    players.push({
-        x: spawnX,
-        y: canvas.height - 60,
-        spriteIndex: index,
-        name: name,
-        number: randomNumber,
-        element: playerElement
-    });
-}
 
 // ✅ Ensure pressing '1' still spawns players
 window.addEventListener('keydown', (event) => {
