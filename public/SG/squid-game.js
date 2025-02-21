@@ -59,6 +59,13 @@ const characterSprites = [
     { idle: "/SG/char_7_0.gif", walking: "/SG/char_7_1.gif" }
 ];
 
+// ✅ Function to Play Random Sounds
+function playSound(soundArray) {
+    const sound = new Audio(soundArray[Math.floor(Math.random() * soundArray.length)]);
+    sound.volume = 0.5;
+    sound.play();
+}
+
 // ✅ Function to Draw Background
 function drawBackground() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -91,10 +98,23 @@ function updatePlayers() {
 
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`;
+
+        // ✅ Check if player crossed the winner line
+        if (player.y <= winnerLineY) {
+            addToLeaderboard(player.name);
+        }
     });
 }
 
-// ✅ Function to Eliminate Players (Doll Shoots Players One by One)
+// ✅ Function to Add Players to Leaderboard
+function addToLeaderboard(name) {
+    const leaderboard = document.getElementById("leaderboard-list");
+    const entry = document.createElement("li");
+    entry.innerText = `${name} - Winner!`;
+    leaderboard.appendChild(entry);
+}
+
+// ✅ Function to Eliminate Players One by One
 function eliminatePlayers() {
     if (!isGreenLight && players.length > 0 && !isDollShooting) {
         isDollShooting = true;
@@ -121,7 +141,6 @@ function displayDeath(player) {
     playSound(gunshotSounds);
     setTimeout(() => playSound(hitSounds), 200);
     setTimeout(() => playSound(deathSounds), 300);
-    setTimeout(() => displayDeathMessage(player), 500);
 
     let deathIndex = 0;
     const deathAnimation = setInterval(() => {
@@ -141,13 +160,6 @@ function displayDeath(player) {
     }, 2000);
 }
 
-// ✅ Function to Display "Player X is Dead"
-function displayDeathMessage(player) {
-    ctx.fillStyle = "red";
-    ctx.font = "bold 30px Arial";
-    ctx.fillText(`${player.name} is Dead`, canvas.width / 2 - 100, canvas.height / 2);
-}
-
 // ✅ Toggle Green Light / Red Light
 function toggleGreenLight() {
     if (isDollShooting) return;
@@ -161,38 +173,6 @@ function toggleGreenLight() {
 }
 
 setInterval(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
-
-// ✅ Function to Add Players (Restored Name Tags)
-function addPlayer(name) {
-    const index = players.length % characterSprites.length;
-    const spawnX = Math.random() * (canvas.width - 50) + 10;
-
-    const playerElement = document.createElement("img");
-    playerElement.src = characterSprites[index].idle;
-    playerElement.className = "player";
-    playerElement.style.left = `${spawnX}px`;
-    playerElement.style.top = `${canvas.height - 60}px`;
-    playerElement.style.position = "absolute";
-
-    const nameTag = document.createElement("span");
-    nameTag.className = "player-name";
-    nameTag.innerText = `${name}`;
-    nameTag.style.left = `${spawnX}px`;
-    nameTag.style.top = `${canvas.height - 80}px`;
-    nameTag.style.position = "absolute";
-
-    document.getElementById("game-container").appendChild(playerElement);
-    document.getElementById("game-container").appendChild(nameTag);
-
-    players.push({
-        x: spawnX,
-        y: canvas.height - 60,
-        spriteIndex: index,
-        name: name,
-        element: playerElement,
-        nameTag: nameTag
-    });
-}
 
 // ✅ Ensure pressing '1' spawns players
 window.addEventListener("keydown", event => {
@@ -208,6 +188,7 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
+// ✅ Start Game
 dollMusic.loop = true;
 dollMusic.play();
 requestAnimationFrame(gameLoop);
