@@ -154,12 +154,6 @@ function displayDeath(player) {
     }, 2000);
 }
 
-    setTimeout(() => {
-        if (player.nameTag) player.nameTag.remove();
-        players = players.filter(p => p !== player);
-    }, 2000);
-
-
 // ✅ Function to Display "Player X is Dead"
 function displayDeathMessage(player) {
     ctx.fillStyle = "red";
