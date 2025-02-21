@@ -111,7 +111,7 @@ function playSound(soundArray) {
 // ✅ Update Players (Fixed Moving)
 function updatePlayers() {
     players.forEach(player => {
-        if (!player || !player.element) return;
+        if (!player || !player.element || !player.nameTag) return;
 
         if (isGreenLight) {
             player.y -= 0.5;
@@ -169,7 +169,15 @@ function addPlayer(name) {
     playerElement.style.width = '40px';
     playerElement.style.height = '40px';
 
+    const nameTag = document.createElement('span');
+    nameTag.className = 'player-name';
+    nameTag.innerText = `${name} (${randomNumber})`;
+    nameTag.style.left = `${spawnX}px`;
+    nameTag.style.top = `${canvas.height - 80}px`;
+    nameTag.style.position = 'absolute';
+
     document.getElementById('game-container').appendChild(playerElement);
+    document.getElementById('game-container').appendChild(nameTag);
 
     players.push({
         x: spawnX,
@@ -177,7 +185,8 @@ function addPlayer(name) {
         spriteIndex: index,
         name: name,
         number: randomNumber,
-        element: playerElement
+        element: playerElement,
+        nameTag: nameTag
     });
 }
 
