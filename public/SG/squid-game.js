@@ -136,7 +136,7 @@ function eliminatePlayers() {
     }
 }
 
-// ✅ Function to Display Death Animation and Sounds
+// ✅ Updated Function to Display Death Animation and Sounds
 function displayDeath(player) {
     if (!player || !player.element) return;
 
@@ -147,12 +147,25 @@ function displayDeath(player) {
         displayDeathMessage(player);
     }, 300);
 
+    // ✅ Play Blood Explosion Sequence
+    let deathIndex = 0;
+    const deathAnimation = setInterval(() => {
+        if (deathIndex < bloodExplosionFrames.length) {
+            player.element.src = bloodExplosionFrames[deathIndex]; // Show blood explosion frames
+            deathIndex++;
+        } else {
+            clearInterval(deathAnimation);
+            player.element.src = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)]; // Show a random dead body
+            deadBodies.push(player.element);
+        }
+    }, 200);
+
     setTimeout(() => {
-        if (player.element) player.element.remove();
         if (player.nameTag) player.nameTag.remove();
         players = players.filter(p => p !== player);
     }, 2000);
 }
+
 
 // ✅ Function to Display "Player X is Dead"
 function displayDeathMessage(player) {
