@@ -1,5 +1,22 @@
 /* squid-game.css */
 
+#cyborg-hud {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: auto;
+    z-index: 10;
+    opacity: 0.8;
+}
+
+/* Hide Game Title */
+h1 {
+    display: none;
+}
+
+
 .player {
     position: absolute;
     transition: top 0.5s linear;
@@ -117,6 +134,7 @@ button {
 button:hover {
     background-color: #d43f3f;
 }
+
 
 /* Animations */
 @keyframes fadeIn {
