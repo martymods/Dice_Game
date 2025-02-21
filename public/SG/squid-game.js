@@ -143,8 +143,8 @@ function displayDeath(player) {
     if (!player || !player.element) return;
 
     playSound(gunshotSounds);
-    setTimeout(() => playSound(hitSounds), 100); 
-    setTimeout(() => playSound(deathSounds), 300); 
+    setTimeout(() => playSound(hitSounds), 100);
+    setTimeout(() => playSound(deathSounds), 300);
 
     let deathIndex = 0;
     const deathAnimation = setInterval(() => {
@@ -167,7 +167,7 @@ function displayDeath(player) {
             document.getElementById("game-container").appendChild(deadBodyElement);
             deadBodies.push(deadBodyElement);
         }
-    }, 100); // 🔹 Blood Explosion appears every 0.1s
+    }, 100);
 
     // ✅ Display death message immediately
     displayDeathMessage(player);
@@ -217,20 +217,23 @@ function toggleGreenLight() {
         // 🔹 Ensure Players Stop Moving
         isDollShooting = true;
 
-        // 🔹 Start Shooting Phase
+        // 🔹 Random Red Light Duration (1-12 seconds)
+        let redLightDuration = Math.random() * (12000 - 1000) + 1000;
+
+        // 🔹 Keep executing `eliminatePlayers()` until red light ends
+        let shootInterval = setInterval(() => {
+            if (!isGreenLight) {
+                eliminatePlayers();
+            } else {
+                clearInterval(shootInterval);
+            }
+        }, 1000); // 🔹 Execute `eliminatePlayers()` every 1s
+
         setTimeout(() => {
-            eliminatePlayers();
-
-            // 🔹 Randomize Red Light Duration (1-12 seconds)
-            let redLightDuration = Math.random() * (12000 - 1000) + 1000; 
-
-            setTimeout(() => {
-                isDollShooting = false;
-                isGreenLight = true;
-                console.log("🟢 Green Light Resumes!");
-            }, redLightDuration);
-
-        }, 500);
+            isDollShooting = false;
+            isGreenLight = true;
+            console.log("🟢 Green Light Resumes!");
+        }, redLightDuration);
     }
 }
 
