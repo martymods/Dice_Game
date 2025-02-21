@@ -40,6 +40,25 @@ const gunshotSounds = ["/SG/Doll_Shooting_0.mp3", "/SG/Doll_Shooting_1.mp3", "/S
 const hitSounds = ["/SG/C_Hit_0.mp3", "/SG/C_Hit_1.mp3", "/SG/C_Hit_2.mp3"];
 const deathSounds = ["/SG/C_Death_0.mp3", "/SG/C_Death_1.mp3", "/SG/C_Death_2.mp3", "/SG/C_Death_3.mp3", "/SG/C_Death_4.mp3"];
 
+
+// ✅ preload images before assigning them
+function preloadImages(imagePaths) {
+    imagePaths.forEach(path => {
+        const img = new Image();
+        img.src = path;
+    });
+}
+
+preloadImages([
+    "/SG/Blood_Explosion_0.png",
+    "/SG/Blood_Explosion_1.png",
+    "/SG/Blood_Explosion_2.png",
+    "/SG/Blood_Explosion_3.png",
+    "/SG/char_0_1.gif",
+    "/SG/char_1_1.gif"
+]);
+
+
 // ✅ Death Animation Sequence
 const bloodExplosionFrames = [
     "/SG/Blood_Explosion_0.png",
@@ -173,28 +192,27 @@ function displayDeath(player) {
     let deathIndex = 0;
     const deathAnimation = setInterval(() => {
         if (deathIndex < bloodExplosionFrames.length) {
-            player.element.src = bloodExplosionFrames[deathIndex]; // Show explosion frames
+            player.element.src = bloodExplosionFrames[deathIndex];
             deathIndex++;
         } else {
             clearInterval(deathAnimation);
 
             // ✅ Instantly replace with dead body
-            const deadBodyElement = document.createElement("img");
-            deadBodyElement.src = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
-            deadBodyElement.className = "dead-body";
-            deadBodyElement.style.position = "absolute";
-            deadBodyElement.style.left = player.element.style.left;
-            deadBodyElement.style.top = player.element.style.top;
-            deadBodyElement.style.width = "40px";
-            deadBodyElement.style.height = "40px";
+            const deadBodyElement = new Image();
+            deadBodyElement.onload = function () {
+                deadBodyElement.className = "dead-body";
+                deadBodyElement.style.position = "absolute";
+                deadBodyElement.style.left = player.element.style.left;
+                deadBodyElement.style.top = player.element.style.top;
+                deadBodyElement.style.width = "40px";
+                deadBodyElement.style.height = "40px";
 
-            document.getElementById("game-container").appendChild(deadBodyElement);
-            deadBodies.push(deadBodyElement);
+                document.getElementById("game-container").appendChild(deadBodyElement);
+                deadBodies.push(deadBodyElement);
+            };
+            deadBodyElement.src = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
         }
     }, 100);
-
-    // ✅ Display death message immediately
-    displayDeathMessage(player);
 
     setTimeout(() => {
         if (player.element) player.element.remove();
