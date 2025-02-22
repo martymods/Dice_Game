@@ -392,7 +392,12 @@ function toggleDollImage() {
 addDollAttackImage();
 
 // ✅ Ensure Green & Red Lights Alternate Properly
+let greenLightTimeout;
+let redLightTimeout;
+
 function startGreenLight() {
+    if (isDollShooting) return; // Prevents issues where Red Light is still active
+
     isGreenLight = true;
     console.log("🟢 Green Light! Players Move.");
     toggleDollImage(); // Show doll when Green Light starts
@@ -400,19 +405,26 @@ function startGreenLight() {
     dollTalkSound.playbackRate = Math.random() * (1.5 - 0.5) + 0.5;
     dollTalkSound.play();
 
-    // ✅ Ensure Red Light starts after a random time (3-6 seconds)
-    setTimeout(startRedLight, Math.random() * (6000 - 3000) + 3000);
+    // ✅ Clear previous timeouts before setting a new one
+    clearTimeout(redLightTimeout);
+
+    // ✅ Ensure Red Light starts after a proper delay (3-6 seconds)
+    greenLightTimeout = setTimeout(startRedLight, Math.random() * (6000 - 3000) + 3000);
 }
 
 function startRedLight() {
+    if (!isGreenLight) return; // Prevents re-entry into Red Light
+
     isGreenLight = false;
     isDollShooting = true;
     console.log("🔴 Red Light! Players Stop.");
     toggleDollImage(); // Hide doll when Red Light starts
     dollTalkSound.pause();
 
-    // ✅ Keep eliminating players while Red Light is active
-    let redLightDuration = Math.random() * (12000 - 1000) + 1000;
+    // ✅ Clear previous timeouts before setting a new one
+    clearTimeout(greenLightTimeout);
+
+    let redLightDuration = Math.random() * (8000 - 3000) + 3000; // 3-8 seconds delay
     let shootInterval = setInterval(() => {
         if (!isGreenLight) {
             eliminatePlayers();
@@ -422,14 +434,15 @@ function startRedLight() {
     }, 1000);
 
     // ✅ Ensure Green Light starts after Red Light duration
-    setTimeout(() => {
+    redLightTimeout = setTimeout(() => {
         isDollShooting = false;
         startGreenLight();
     }, redLightDuration);
 }
 
-// ✅ Start the game by triggering the first Green Light
+// ✅ Start the game with the first Green Light
 setTimeout(startGreenLight, Math.random() * (6000 - 3000) + 3000);
+
 
 // ✅ Ensure Cyborg HUD is added properly after page load
 function addCyborgHud() {
@@ -543,3 +556,4 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
