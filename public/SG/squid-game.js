@@ -39,9 +39,13 @@ let bgImage = new Image();
 bgImage.src = "/SG/game-background.jpg";
 
 /* ✅ Optimize Performance by Preloading Assets & Ensuring Smooth Execution */
-let preloadedImages = {}; // ✅ Declare globally to prevent reference error
+let preloadedImages = {}; // ✅ Store images globally
+let assetsLoaded = 0;
+let totalAssets = 0;
+let assetsReady = false;
 
-function preloadAssets() {
+// ✅ Function to preload assets with a callback
+function preloadAssets(callback) {
     let soundPaths = [
         "/SG/SG_Background_Ambience_0.mp3",
         "/SG/Buzzer.mp3",
@@ -85,34 +89,53 @@ function preloadAssets() {
     ];
 
     let comboSounds = [
-        "/SG/Combo_0.mp3",
-        "/SG/Combo_1.mp3",
-        "/SG/Combo_2.mp3",
-        "/SG/Combo_3.mp3",
-        "/SG/Combo_4.mp3",
-        "/SG/Combo_5.mp3",
-        "/SG/Combo_6.mp3",
-        "/SG/Combo_7.mp3",
-        "/SG/Combo_8.mp3",
+        "/SG/Combo_0.mp3", "/SG/Combo_1.mp3", "/SG/Combo_2.mp3",
+        "/SG/Combo_3.mp3", "/SG/Combo_4.mp3", "/SG/Combo_5.mp3",
+        "/SG/Combo_6.mp3", "/SG/Combo_7.mp3", "/SG/Combo_8.mp3",
         "/SG/Combo_9.mp3"
     ];
 
     let comboEndSound = "/SG/Combo_over.mp3";
 
     let allAssets = [...soundPaths, ...imagePaths, ...characterSprites, ...comboSounds, comboEndSound];
+    totalAssets = allAssets.length;
 
     allAssets.forEach(asset => {
         if (asset.endsWith(".mp3")) {
             const audio = new Audio(asset);
             audio.load();
+            assetsLoaded++;
         } else {
             const img = new Image();
+            img.onload = () => {
+                assetsLoaded++;
+                if (assetsLoaded === totalAssets) {
+                    assetsReady = true;
+                    console.log("✅ All assets preloaded successfully.");
+                    if (callback) callback();
+                }
+            };
             img.src = asset;
-            preloadedImages[asset] = img; // ✅ Store preloaded image globally
+            preloadedImages[asset] = img;
         }
     });
+}
 
-    console.log("✅ All assets preloaded successfully.");
+// ✅ Call preload and start the game when assets are ready
+preloadAssets(() => {
+    console.log("✅ Game assets are fully loaded, starting game...");
+    startGame();
+});
+
+// ✅ Function to start game only after assets are ready
+function startGame() {
+    if (assetsReady) {
+        dollMusic.loop = true;
+        dollMusic.play();
+        requestAnimationFrame(gameLoop);
+    } else {
+        setTimeout(startGame, 500); // Wait until assets are fully loaded
+    }
 }
 
 // ✅ Call the function once
@@ -297,15 +320,23 @@ function displayDeath(player) {
     let deathIndex = 0;
     const deathAnimation = setInterval(() => {
         if (deathIndex < bloodExplosionFrames.length) {
-            // ✅ Use Preloaded Image Instead of Reloading Each Time
-            player.element.src = preloadedImages[bloodExplosionFrames[deathIndex]].src;
+            let explosionImage = preloadedImages[bloodExplosionFrames[deathIndex]];
+            if (explosionImage) {
+                player.element.src = explosionImage.src;
+            }
             deathIndex++;
         } else {
             clearInterval(deathAnimation);
 
             // ✅ Ensure Dead Body Spawns Exactly Where Player Died
             const deadBodyElement = new Image();
-            deadBodyElement.src = preloadedImages[deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)]].src;
+            let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+            if (preloadedImages[deadBodySprite]) {
+                deadBodyElement.src = preloadedImages[deadBodySprite].src;
+            } else {
+                console.error("❌ Dead body image not found in preloadedImages:", deadBodySprite);
+                return; // Prevent errors
+            }
             deadBodyElement.className = "dead-body";
 
             // ✅ Position Dead Body at Player's Last Known Position
@@ -701,4 +732,3 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
-
