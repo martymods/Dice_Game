@@ -389,21 +389,25 @@ function startRoundCountdown() {
         if (timeLeft === 0) {
             clearInterval(countdownTimer);
             countdownEndSound.play();
-            isGreenLight = false;
-
+            
+            isGreenLight = false; // ✅ Force stop Green Light
+            isDollShooting = true; // ✅ Ensure Red Light actions occur
+            startRedLight(); // ✅ Immediately start Red Light phase
+        
             eliminatePlayers(); // Ensure remaining players are eliminated
             removeAllPlayers(); // Remove all players who didn't die
-
+        
             // ✅ Remove ALL red death messages from the screen
             removeDeathMessages();
-
+        
             if (countdownTimerElement) {
                 countdownTimerElement.remove();
                 countdownTimerElement = null;
             }
-
+        
             setTimeout(resetGame, 3000);
         }
+        
         timeLeft--;
     }, 1000);
 }
@@ -730,3 +734,4 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
