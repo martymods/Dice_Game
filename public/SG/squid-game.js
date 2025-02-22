@@ -39,6 +39,8 @@ let bgImage = new Image();
 bgImage.src = "/SG/game-background.jpg";
 
 /* ✅ Optimize Performance by Preloading Assets & Ensuring Smooth Execution */
+let preloadedImages = {}; // ✅ Declare globally to prevent reference error
+
 function preloadAssets() {
     let soundPaths = [
         "/SG/SG_Background_Ambience_0.mp3",
@@ -99,9 +101,6 @@ function preloadAssets() {
 
     let allAssets = [...soundPaths, ...imagePaths, ...characterSprites, ...comboSounds, comboEndSound];
 
-    // ✅ Store Preloaded Images
-    preloadedImages = {};
-
     allAssets.forEach(asset => {
         if (asset.endsWith(".mp3")) {
             const audio = new Audio(asset);
@@ -109,7 +108,7 @@ function preloadAssets() {
         } else {
             const img = new Image();
             img.src = asset;
-            preloadedImages[asset] = img;
+            preloadedImages[asset] = img; // ✅ Store preloaded image globally
         }
     });
 
@@ -118,9 +117,6 @@ function preloadAssets() {
 
 // ✅ Call the function once
 preloadAssets();
-
-// ✅ Store Preloaded Images for Quick Access
-let preloadedImages = {};
 
 function preloadImages(imagePaths) {
     imagePaths.forEach(path => {
@@ -705,3 +701,4 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
