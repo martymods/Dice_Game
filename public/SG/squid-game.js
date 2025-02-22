@@ -339,7 +339,30 @@ function displayDeathMessage(player) {
     }, 3000);
 }
 
-// ✅ Toggle Green Light / Red Light (Fixed)
+// ✅ Ensure Doll Attack Image is in the DOM
+function addDollAttackImage() {
+    let dollImg = document.getElementById("doll-attack");
+    if (!dollImg) {
+        dollImg = document.createElement("img");
+        dollImg.id = "doll-attack";
+        dollImg.src = "/SG/Doll_Attack.gif";
+        document.body.appendChild(dollImg);
+    }
+}
+
+// ✅ Toggle Doll Visibility
+function toggleDollImage() {
+    let dollImg = document.getElementById("doll-attack");
+    if (!dollImg) addDollAttackImage();
+
+    if (isGreenLight) {
+        dollImg.classList.remove("doll-hidden"); // Show image
+    } else {
+        dollImg.classList.add("doll-hidden"); // Hide image
+    }
+}
+
+// ✅ Modify Green Light Function to Update Doll Image
 function toggleGreenLight() {
     if (currentDeathMessage) {
         currentDeathMessage.remove();
@@ -348,13 +371,14 @@ function toggleGreenLight() {
 
     if (isDollShooting) return;
 
-    // ✅ Ensure proper alternating between Green Light & Red Light
     isGreenLight = !isGreenLight;
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
 
+    toggleDollImage(); // ✅ Update Doll Attack image visibility
+
     if (isGreenLight) {
         playSound([dollReloadSound.src]);
-        dollTalkSound.currentTime = 0; // Reset playback
+        dollTalkSound.playbackRate = Math.random() * (1.5 - 0.5) + 0.5;
         dollTalkSound.play();
     } else {
         dollTalkSound.pause();
@@ -374,12 +398,15 @@ function toggleGreenLight() {
 
         setTimeout(() => {
             isDollShooting = false;
-            toggleGreenLight(); // Ensure proper alternation
+            isGreenLight = true;
         }, redLightDuration);
     } else {
         setTimeout(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
     }
 }
+
+// ✅ Ensure Doll Image is Created on Load
+addDollAttackImage();
 
 // ✅ Ensure HUD is added to the DOM
 function addCyborgHud() {
@@ -480,3 +507,7 @@ function gameLoop() {
 dollMusic.loop = true;
 dollMusic.play();
 requestAnimationFrame(gameLoop);
+
+document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
+document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
+document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
