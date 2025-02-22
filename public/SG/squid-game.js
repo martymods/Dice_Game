@@ -162,7 +162,7 @@ function updatePlayers() {
         if (!player || !player.element || !player.nameTag) return;
 
         if (isGreenLight && !isDollShooting) {
-            player.y -= 0.8;
+            player.y -= 0.3;
             
             // ✅ Use Preloaded Image Instead of Fetching New One
             if (player.element.src !== preloadedImages[characterSprites[player.spriteIndex].walking].src) {
