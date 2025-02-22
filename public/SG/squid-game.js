@@ -77,6 +77,13 @@ function preloadAssets(callback) {
         "/SG/Cyborg_Hud_1.gif"
     ];
 
+    let deadBodySprites = [
+        "/SG/Dead_Body_0.png", "/SG/Dead_Body_1.png", "/SG/Dead_Body_2.png",
+        "/SG/Dead_Body_3.png", "/SG/Dead_Body_4.png", "/SG/Dead_Body_5.png",
+        "/SG/Dead_Body_6.png", "/SG/Dead_Body_7.png", "/SG/Dead_Body_8.png",
+        "/SG/Dead_Body_9.png"
+    ];
+
     let characterSprites = [
         "/SG/char_0_0.gif", "/SG/char_0_1.gif",
         "/SG/char_1_0.gif", "/SG/char_1_1.gif",
@@ -97,7 +104,7 @@ function preloadAssets(callback) {
 
     let comboEndSound = "/SG/Combo_over.mp3";
 
-    let allAssets = [...soundPaths, ...imagePaths, ...characterSprites, ...comboSounds, comboEndSound];
+    let allAssets = [...soundPaths, ...imagePaths, ...characterSprites, ...deadBodySprites, ...comboSounds, comboEndSound];
     totalAssets = allAssets.length;
 
     allAssets.forEach(asset => {
@@ -116,7 +123,7 @@ function preloadAssets(callback) {
                 }
             };
             img.src = asset;
-            preloadedImages[asset] = img;
+            preloadedImages[asset] = img; // ✅ Store in preloadedImages correctly
         }
     });
 }
@@ -331,15 +338,16 @@ function displayDeath(player) {
             // ✅ Ensure Dead Body Spawns Exactly Where Player Died
             const deadBodyElement = new Image();
             let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+            
+            // ✅ Check if the image exists in `preloadedImages` before using it
             if (preloadedImages[deadBodySprite]) {
                 deadBodyElement.src = preloadedImages[deadBodySprite].src;
             } else {
                 console.error("❌ Dead body image not found in preloadedImages:", deadBodySprite);
                 return; // Prevent errors
             }
+            
             deadBodyElement.className = "dead-body";
-
-            // ✅ Position Dead Body at Player's Last Known Position
             deadBodyElement.style.position = "absolute";
             deadBodyElement.style.left = player.element.style.left;
             deadBodyElement.style.top = player.element.style.top;
