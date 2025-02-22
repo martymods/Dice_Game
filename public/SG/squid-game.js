@@ -307,15 +307,21 @@ function startRoundCountdown() {
 // ✅ Function to Display "Player X is Dead" Message
 let currentDeathMessage = null;
 
+// ✅ Ensure player name turns red when they die
 function displayDeathMessage(player) {
     if (!player || !player.nameTag) return;
 
-    // ✅ Remove previous message if exists
+    // ✅ Remove previous message
     if (currentDeathMessage) {
         currentDeathMessage.remove();
     }
 
-    // ✅ Create and display a new death message
+    // ✅ Change the player name color
+    player.nameTag.style.color = "red";
+    player.nameTag.style.fontWeight = "bold";
+    player.nameTag.style.textShadow = "2px 2px 5px black";
+
+    // ✅ Create death message
     currentDeathMessage = document.createElement("div");
     currentDeathMessage.innerText = `${player.nameTag.innerText} is Dead`;
     currentDeathMessage.style.position = "absolute";
@@ -330,7 +336,7 @@ function displayDeathMessage(player) {
 
     document.getElementById("game-container").appendChild(currentDeathMessage);
 
-    // ✅ Ensure message stays for 3 seconds
+    // ✅ Remove message after 3 seconds
     setTimeout(() => {
         if (currentDeathMessage) {
             currentDeathMessage.remove();
@@ -338,6 +344,7 @@ function displayDeathMessage(player) {
         }
     }, 3000);
 }
+
 
 // ✅ Ensure Doll Attack Image is in the DOM
 function addDollAttackImage() {
@@ -362,7 +369,7 @@ function toggleDollImage() {
     }
 }
 
-// ✅ Modify Green Light Function to Update Doll Image
+// ✅ Ensure Green & Red Lights Alternate Properly
 function toggleGreenLight() {
     if (currentDeathMessage) {
         currentDeathMessage.remove();
@@ -371,23 +378,26 @@ function toggleGreenLight() {
 
     if (isDollShooting) return;
 
-    isGreenLight = !isGreenLight;
+    isGreenLight = !isGreenLight; // ✅ Toggle state
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
 
-    toggleDollImage(); // ✅ Update Doll Attack image visibility
+    toggleDollImage(); // ✅ Show or hide doll image
 
     if (isGreenLight) {
         playSound([dollReloadSound.src]);
         dollTalkSound.playbackRate = Math.random() * (1.5 - 0.5) + 0.5;
         dollTalkSound.play();
+
+        // ✅ Schedule next RED light
+        setTimeout(() => {
+            isGreenLight = false;
+            toggleGreenLight();
+        }, Math.random() * (6000 - 3000) + 3000);
     } else {
         dollTalkSound.pause();
-    }
-
-    if (!isGreenLight) {
         isDollShooting = true;
-        let redLightDuration = Math.random() * (12000 - 1000) + 1000;
 
+        let redLightDuration = Math.random() * (12000 - 1000) + 1000;
         let shootInterval = setInterval(() => {
             if (!isGreenLight) {
                 eliminatePlayers();
@@ -399,21 +409,25 @@ function toggleGreenLight() {
         setTimeout(() => {
             isDollShooting = false;
             isGreenLight = true;
+            toggleGreenLight();
         }, redLightDuration);
-    } else {
-        setTimeout(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
     }
 }
+
+// ✅ Start Alternating Lights Properly
+setTimeout(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
 
 // ✅ Ensure Doll Image is Created on Load
 addDollAttackImage();
 
-// ✅ Ensure HUD is added to the DOM
+// ✅ Ensure HUD is added properly
 function addCyborgHud() {
     let hud = document.getElementById("cyborg-hud");
+    
     if (!hud) {
         hud = document.createElement("img");
         hud.id = "cyborg-hud";
+        hud.src = "/SG/Cyborg_Hud_0.gif"; // ✅ Start with default
         hud.style.position = "absolute";
         hud.style.bottom = "10px";
         hud.style.left = "50%";
@@ -425,13 +439,22 @@ function addCyborgHud() {
     }
 }
 
-// ✅ Function to Alternate HUD
+// ✅ Run AFTER window fully loads
+window.onload = function () {
+    addCyborgHud();
+    toggleCyborgHud(); // ✅ Start switching images after loading
+};
+
+// ✅ Properly alternate Cyborg HUD images
 function toggleCyborgHud() {
     let hud = document.getElementById("cyborg-hud");
     if (!hud) addCyborgHud();
 
+    // ✅ Randomly switch between two images
     hud.src = Math.random() < 0.5 ? "/SG/Cyborg_Hud_0.gif" : "/SG/Cyborg_Hud_1.gif";
-    setTimeout(toggleCyborgHud, Math.random() * (5000 - 2000) + 2000);
+
+    // ✅ Ensure a proper delay before switching again
+    setTimeout(toggleCyborgHud, Math.random() * (7000 - 3000) + 3000); // 🔹 3-7 seconds interval
 }
 
 // ✅ Call function to initialize HUD
