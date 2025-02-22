@@ -38,39 +38,84 @@ dollImage.src = "/SG/Doll_Attack.gif";
 let bgImage = new Image();
 bgImage.src = "/SG/game-background.jpg";
 
-// ✅ Winner Line Position
-const winnerLineY = 100;
+/* ✅ Optimize Performance by Preloading Assets & Ensuring Smooth Execution */
+function preloadAssets() {
+    let soundPaths = [
+        "/SG/SG_Background_Ambience_0.mp3",
+        "/SG/Buzzer.mp3",
+        "/SG/CountDown.mp3",
+        "/SG/CountDown_END.mp3",
+        "/SG/SoundAl.mp3",
+        "/SG/Doll_Reload.mp3",
+        "/SG/Doll_Talk.mp3",
+        "/SG/Doll_Shooting_0.mp3",
+        "/SG/Doll_Shooting_1.mp3",
+        "/SG/Doll_Shooting_2.mp3",
+        "/SG/Doll_Shooting_3.mp3",
+        "/SG/C_Hit_0.mp3",
+        "/SG/C_Hit_1.mp3",
+        "/SG/C_Hit_2.mp3",
+        "/SG/C_Death_0.mp3",
+        "/SG/C_Death_1.mp3",
+        "/SG/C_Death_2.mp3",
+        "/SG/C_Death_3.mp3",
+        "/SG/C_Death_4.mp3"
+    ];
 
-// ✅ Preload All Sounds to Prevent Loading Errors
-function preloadSounds(soundArray) {
-    soundArray.forEach(sound => {
-        const audio = new Audio(sound);
-        audio.load();
+    let imagePaths = [
+        "/SG/Blood_Explosion_0.png",
+        "/SG/Blood_Explosion_1.png",
+        "/SG/Blood_Explosion_2.png",
+        "/SG/Blood_Explosion_3.png",
+        "/SG/char_0_1.gif",
+        "/SG/char_1_1.gif",
+        "/SG/char_2_1.gif",
+        "/SG/char_3_1.gif",
+        "/SG/char_4_1.gif",
+        "/SG/char_5_1.gif",
+        "/SG/char_6_1.gif",
+        "/SG/char_7_1.gif",
+        "/SG/Cyborg_Hud_0.gif",
+        "/SG/Cyborg_Hud_1.gif"
+    ];
+
+    let comboSounds = [
+        "/SG/Combo_0.mp3",
+        "/SG/Combo_1.mp3",
+        "/SG/Combo_2.mp3",
+        "/SG/Combo_3.mp3",
+        "/SG/Combo_4.mp3",
+        "/SG/Combo_5.mp3",
+        "/SG/Combo_6.mp3",
+        "/SG/Combo_7.mp3",
+        "/SG/Combo_8.mp3",
+        "/SG/Combo_9.mp3"
+    ];
+
+    let comboEndSound = "/SG/Combo_over.mp3";
+
+    // ✅ Combine all assets
+    let allAssets = [...soundPaths, ...imagePaths, ...comboSounds, comboEndSound];
+
+    // ✅ Preload each asset
+    allAssets.forEach(asset => {
+        if (asset.endsWith(".mp3")) {
+            const audio = new Audio(asset);
+            audio.load();
+        } else {
+            const img = new Image();
+            img.src = asset;
+        }
     });
+
+    console.log("✅ All assets preloaded successfully.");
 }
 
-// ✅ Preload all game sounds
-preloadSounds([
-    "/SG/SG_Background_Ambience_0.mp3",
-    "/SG/Buzzer.mp3",
-    "/SG/CountDown.mp3",
-    "/SG/CountDown_END.mp3",
-    "/SG/SoundAl.mp3",
-    "/SG/Doll_Reload.mp3",
-    "/SG/Doll_Talk.mp3",
-    "/SG/Doll_Shooting_0.mp3",
-    "/SG/Doll_Shooting_1.mp3",
-    "/SG/Doll_Shooting_2.mp3",
-    "/SG/Doll_Shooting_3.mp3",
-    "/SG/C_Hit_0.mp3",
-    "/SG/C_Hit_1.mp3",
-    "/SG/C_Hit_2.mp3",
-    "/SG/C_Death_0.mp3",
-    "/SG/C_Death_1.mp3",
-    "/SG/C_Death_2.mp3",
-    "/SG/C_Death_3.mp3",
-    "/SG/C_Death_4.mp3"
-]);
+// ✅ Call the function once
+preloadAssets();
+
+// ✅ Winner Line Position
+const winnerLineY = 100;
 
 // ✅ Footstep Sounds
 const footstepSounds = ['/SG/walk_0.mp3', '/SG/walk_1.mp3', '/SG/walk_2.mp3'];
@@ -79,23 +124,6 @@ const footstepSounds = ['/SG/walk_0.mp3', '/SG/walk_1.mp3', '/SG/walk_2.mp3'];
 const gunshotSounds = ["/SG/Doll_Shooting_0.mp3", "/SG/Doll_Shooting_1.mp3", "/SG/Doll_Shooting_2.mp3", "/SG/Doll_Shooting_3.mp3"];
 const hitSounds = ["/SG/C_Hit_0.mp3", "/SG/C_Hit_1.mp3", "/SG/C_Hit_2.mp3"];
 const deathSounds = ["/SG/C_Death_0.mp3", "/SG/C_Death_1.mp3", "/SG/C_Death_2.mp3", "/SG/C_Death_3.mp3", "/SG/C_Death_4.mp3"];
-
-
-// ✅ Preload Images to Ensure Fast Animations
-function preloadImages(imagePaths) {
-    imagePaths.forEach(path => {
-        const img = new Image();
-        img.src = path;
-    });
-}
-
-preloadImages([
-    "/SG/Blood_Explosion_0.png", "/SG/Blood_Explosion_1.png", "/SG/Blood_Explosion_2.png", "/SG/Blood_Explosion_3.png",
-    "/SG/char_0_1.gif", "/SG/char_1_1.gif", "/SG/char_2_1.gif", "/SG/char_3_1.gif",
-    "/SG/char_4_1.gif", "/SG/char_5_1.gif", "/SG/char_6_1.gif", "/SG/char_7_1.gif",
-    "/SG/Cyborg_Hud_0.gif", "/SG/Cyborg_Hud_1.gif"
-]);
-
 
 // ✅ Death Animation Sequence
 const bloodExplosionFrames = [
@@ -631,16 +659,6 @@ window.addEventListener("keydown", (event) => {
     }
 });
 
-/* ✅ Optimize Performance by Preloading Assets & Ensuring Smooth Execution */
-function preloadAssets() {
-    let allAssets = [...preloadSounds, ...preloadImages, ...comboSounds, comboEndSound];
-    allAssets.forEach(asset => {
-        const audio = new Audio(asset);
-        audio.preload = "auto";
-    });
-}
-preloadAssets();
-
 // ✅ Start Game
 dollMusic.loop = true;
 dollMusic.play();
@@ -649,3 +667,4 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
