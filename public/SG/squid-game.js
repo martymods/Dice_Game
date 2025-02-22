@@ -235,20 +235,18 @@ let audioElements = {};
 function playSound(soundArray) {
     let soundPath = soundArray[Math.floor(Math.random() * soundArray.length)];
 
-    // ✅ Use existing audio element if available
     if (!audioElements[soundPath]) {
         audioElements[soundPath] = new Audio(soundPath);
     }
 
     let sound = audioElements[soundPath];
 
-    // ✅ Prevent overlapping by stopping and resetting before playing
-    sound.pause();
-    sound.currentTime = 0;
-    sound.volume = 0.5;
-    sound.play().catch(error => console.warn("🔇 Audio play prevented:", error));
+    if (sound.paused) {
+        sound.currentTime = 0;
+        sound.volume = 0.5;
+        sound.play().catch(error => console.warn("🔇 Audio play prevented:", error));
+    }
 }
-
 
 // ✅ Function to Draw Background
 function drawBackground() {
@@ -313,13 +311,15 @@ function eliminatePlayers() {
 
 // ✅ Modify Death Function to Ensure Dead Bodies Spawn at Correct Location
 function displayDeath(player) {
-    if (!player || !player.element) return;
+    if (!player || !player.element || player.isDead) return; // ✅ Prevent multiple deaths
+
+    player.isDead = true; // ✅ Mark player as dead to avoid multiple deaths
 
     playSound(gunshotSounds);
     setTimeout(() => playSound(hitSounds), 100);
     setTimeout(() => playSound(deathSounds), 300);
 
-    screenShake(); 
+    screenShake();
 
     player.nameTag.style.color = "red";
     player.nameTag.style.fontWeight = "bold";
@@ -336,11 +336,9 @@ function displayDeath(player) {
         } else {
             clearInterval(deathAnimation);
 
-            // ✅ Ensure Dead Body Spawns Correctly
             let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
             const deadBodyElement = new Image();
-            
-            // ✅ Prevent missing image errors
+
             if (preloadedImages[deadBodySprite]) {
                 deadBodyElement.src = preloadedImages[deadBodySprite].src;
             } else {
@@ -533,25 +531,24 @@ function startRedLight() {
     isDollShooting = true;
 
     console.log("🔴 Red Light! Players Stop.");
-    toggleDollImage(); 
+    toggleDollImage();
     dollTalkSound.pause();
 
     let redLightDuration = Math.random() * (6000 - 3000) + 3000; // 🔹 3 to 6 seconds
 
-    // ✅ Kill One Player Per Second (Instead of all at once)
-    let remainingTime = redLightDuration / 1000; // Convert to seconds
+    let remainingTime = redLightDuration / 1000;
     let killInterval = setInterval(() => {
         if (!isGreenLight && players.length > 0 && remainingTime > 0) {
             let randomPlayerIndex = Math.floor(Math.random() * players.length);
             let playerToKill = players[randomPlayerIndex];
 
-            if (playerToKill) {
+            if (playerToKill && !playerToKill.isDead) {
                 displayDeath(playerToKill);
             }
 
-            remainingTime--; // Reduce the timer
+            remainingTime--; // Reduce timer
         } else {
-            clearInterval(killInterval); // Stop killing when the time is up
+            clearInterval(killInterval); // ✅ Stop when time runs out
         }
     }, 1000); // ✅ Kill one player per second
 
