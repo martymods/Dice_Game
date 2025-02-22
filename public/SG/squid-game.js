@@ -230,6 +230,11 @@ function displayDeath(player) {
     setTimeout(() => playSound(hitSounds), 100);
     setTimeout(() => playSound(deathSounds), 300);
 
+    // ✅ Change player name to red
+    player.nameTag.style.color = "red";
+    player.nameTag.style.fontWeight = "bold";
+    player.nameTag.style.textShadow = "2px 2px 5px black";
+
     let deathIndex = 0;
     const deathAnimation = setInterval(() => {
         if (deathIndex < bloodExplosionFrames.length) {
@@ -252,7 +257,6 @@ function displayDeath(player) {
 
     setTimeout(() => {
         if (player.element) player.element.remove();
-        if (player.nameTag) player.nameTag.remove();
         players = players.filter(p => p !== player);
     }, 2000);
 }
@@ -360,14 +364,32 @@ function addDollAttackImage() {
 // ✅ Toggle Doll Visibility
 function toggleDollImage() {
     let dollImg = document.getElementById("doll-attack");
-    if (!dollImg) addDollAttackImage();
+    
+    if (!dollImg) {
+        dollImg = document.createElement("img");
+        dollImg.id = "doll-attack";
+        dollImg.src = "/SG/Doll_Attack.gif";
+        dollImg.style.position = "absolute";
+        dollImg.style.bottom = "855px";
+        dollImg.style.right = "650px";
+        dollImg.style.width = "110px";
+        dollImg.style.height = "auto";
+        dollImg.style.opacity = "1";
+        dollImg.style.zIndex = "999";
+        dollImg.style.transition = "opacity 0.3s ease, transform 0.5s ease";
+        document.body.appendChild(dollImg);
+    }
 
+    // ✅ Toggle visibility based on Green Light
     if (isGreenLight) {
-        dollImg.classList.remove("doll-hidden"); // Show image
+        dollImg.style.opacity = "1"; // Show image
     } else {
-        dollImg.classList.add("doll-hidden"); // Hide image
+        dollImg.style.opacity = "0"; // Hide image
     }
 }
+
+// ✅ Ensure Doll Image is Created on Load
+addDollAttackImage();
 
 // ✅ Ensure Green & Red Lights Alternate Properly
 function toggleGreenLight() {
@@ -378,7 +400,7 @@ function toggleGreenLight() {
 
     if (isDollShooting) return;
 
-    isGreenLight = !isGreenLight; // ✅ Toggle state
+    isGreenLight = !isGreenLight; // ✅ Toggle state properly
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
 
     toggleDollImage(); // ✅ Show or hide doll image
@@ -388,7 +410,7 @@ function toggleGreenLight() {
         dollTalkSound.playbackRate = Math.random() * (1.5 - 0.5) + 0.5;
         dollTalkSound.play();
 
-        // ✅ Schedule next RED light
+        // ✅ Schedule Red Light only ONCE
         setTimeout(() => {
             isGreenLight = false;
             toggleGreenLight();
@@ -414,16 +436,13 @@ function toggleGreenLight() {
     }
 }
 
-// ✅ Start Alternating Lights Properly
+// ✅ Start the game by triggering the first Green Light
 setTimeout(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
 
-// ✅ Ensure Doll Image is Created on Load
-addDollAttackImage();
-
-// ✅ Ensure HUD is added properly
+// ✅ Ensure Cyborg HUD is added properly after page load
 function addCyborgHud() {
     let hud = document.getElementById("cyborg-hud");
-    
+
     if (!hud) {
         hud = document.createElement("img");
         hud.id = "cyborg-hud";
@@ -439,7 +458,7 @@ function addCyborgHud() {
     }
 }
 
-// ✅ Run AFTER window fully loads
+// ✅ Run after window fully loads
 window.onload = function () {
     addCyborgHud();
     toggleCyborgHud(); // ✅ Start switching images after loading
@@ -450,10 +469,8 @@ function toggleCyborgHud() {
     let hud = document.getElementById("cyborg-hud");
     if (!hud) addCyborgHud();
 
-    // ✅ Randomly switch between two images
     hud.src = Math.random() < 0.5 ? "/SG/Cyborg_Hud_0.gif" : "/SG/Cyborg_Hud_1.gif";
 
-    // ✅ Ensure a proper delay before switching again
     setTimeout(toggleCyborgHud, Math.random() * (7000 - 3000) + 3000); // 🔹 3-7 seconds interval
 }
 
@@ -534,3 +551,4 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
