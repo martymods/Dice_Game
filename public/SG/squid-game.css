@@ -4,7 +4,7 @@
 #doll-attack {
     position: absolute;
     bottom: 850px; /* Controls distance from bottom */
-    right: 600px; /* Controls horizontal placement */
+    right: 903px; /* Controls horizontal placement */
     width: 107px; /* Adjustable width */
     height: auto; /* Maintain aspect ratio */
     opacity: 1; /* Fully visible */
