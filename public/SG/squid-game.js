@@ -159,7 +159,9 @@ function updatePlayers() {
 
         if (isGreenLight && !isDollShooting) {
             player.y -= 0.8;
-            player.element.src = characterSprites[player.spriteIndex].walking;
+            if (player.element.getAttribute("src") !== characterSprites[player.spriteIndex].walking) {
+                player.element.src = characterSprites[player.spriteIndex].walking;
+            }            
             player.element.src += "?t=" + new Date().getTime();
             playFootstepSound(player);
         } else {
@@ -313,7 +315,7 @@ function startRoundCountdown() {
 }
 
 function removeDeathMessages() {
-    let deathMessages = document.querySelectorAll(".death-message");
+    let deathMessages = document.querySelectorAll(".death-message, .player-name");
     deathMessages.forEach(msg => msg.remove());
     currentDeathMessage = null;
 }
@@ -406,35 +408,30 @@ let greenLightTimeout;
 let redLightTimeout;
 
 function startGreenLight() {
-    if (isDollShooting) return; // Prevents issues where Red Light is still active
-
+    if (isGreenLight) return; // ✅ Prevent multiple green light loops
     isGreenLight = true;
+
     console.log("🟢 Green Light! Players Move.");
     toggleDollImage(); // Show doll when Green Light starts
     playSound([dollReloadSound.src]);
     dollTalkSound.playbackRate = Math.random() * (1.5 - 0.5) + 0.5;
     dollTalkSound.play();
 
-    // ✅ Clear previous timeouts before setting a new one
-    clearTimeout(redLightTimeout);
-
-    // ✅ Ensure Red Light starts after a proper delay (3-6 seconds)
-    greenLightTimeout = setTimeout(startRedLight, Math.random() * (6000 - 3000) + 3000);
+    setTimeout(() => {
+        startRedLight(); // ✅ Transition to Red Light after time
+    }, Math.random() * (6000 - 3000) + 3000);
 }
 
 function startRedLight() {
-    if (!isGreenLight) return; // Prevents re-entry into Red Light
-
+    if (!isGreenLight) return; // ✅ Prevent multiple red light loops
     isGreenLight = false;
     isDollShooting = true;
+
     console.log("🔴 Red Light! Players Stop.");
     toggleDollImage(); // Hide doll when Red Light starts
     dollTalkSound.pause();
 
-    // ✅ Clear previous timeouts before setting a new one
-    clearTimeout(greenLightTimeout);
-
-    let redLightDuration = Math.random() * (8000 - 3000) + 3000; // 3-8 seconds delay
+    let redLightDuration = Math.random() * (12000 - 1000) + 1000;
     let shootInterval = setInterval(() => {
         if (!isGreenLight) {
             eliminatePlayers();
@@ -443,10 +440,9 @@ function startRedLight() {
         }
     }, 1000);
 
-    // ✅ Ensure Green Light starts after Red Light duration
-    redLightTimeout = setTimeout(() => {
+    setTimeout(() => {
         isDollShooting = false;
-        startGreenLight();
+        startGreenLight(); // ✅ Transition to Green Light after Red Light duration
     }, redLightDuration);
 }
 
