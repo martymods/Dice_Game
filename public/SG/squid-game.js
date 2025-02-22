@@ -472,7 +472,7 @@ toggleCyborgHud();
 
 
 // ✅ Ensure Green Light / Red Light properly alternates
-setInterval(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
+setTimeout(startGreenLight, Math.random() * (6000 - 3000) + 3000);
 
 // ✅ Function to Reset Game
 function resetGame() {
