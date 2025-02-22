@@ -114,6 +114,51 @@ function preloadAssets() {
 // ✅ Call the function once
 preloadAssets();
 
+// ✅ Store Preloaded Images for Quick Access
+let preloadedImages = {};
+
+function preloadImages(imagePaths) {
+    imagePaths.forEach(path => {
+        const img = new Image();
+        img.src = path;
+        preloadedImages[path] = img;
+    });
+}
+
+// ✅ Modify UpdatePlayers to Use Preloaded Images
+function updatePlayers() {
+    players.forEach(player => {
+        if (!player || !player.element || !player.nameTag) return;
+
+        if (isGreenLight && !isDollShooting) {
+            player.y -= 0.8;
+
+            // ✅ Use Preloaded Image Instead of Fetching New One
+            if (player.element.src !== preloadedImages[characterSprites[player.spriteIndex].walking].src) {
+                player.element.src = preloadedImages[characterSprites[player.spriteIndex].walking].src;
+            }
+
+            playFootstepSound(player);
+        } else {
+            if (player.element.src !== preloadedImages[characterSprites[player.spriteIndex].idle].src) {
+                player.element.src = preloadedImages[characterSprites[player.spriteIndex].idle].src;
+            }
+        }
+
+        player.element.style.top = `${player.y}px`;
+        player.nameTag.style.top = `${player.y - 20}px`;
+
+        if (player.y <= winnerLineY) {
+            if (!firstWinnerTime) {
+                firstWinnerTime = Date.now();
+                startRoundCountdown();
+            }
+            addToLeaderboard(player);
+        }
+    });
+}
+
+
 // ✅ Winner Line Position
 const winnerLineY = 100;
 
@@ -189,25 +234,31 @@ function drawBackground() {
     ctx.shadowBlur = 0;
 }
 
-// ✅ Function to Move Players Towards the Red Line
+// ✅ Optimize Player Updates to Prevent Unnecessary Image Reloads
 function updatePlayers() {
     players.forEach(player => {
         if (!player || !player.element || !player.nameTag) return;
 
         if (isGreenLight && !isDollShooting) {
             player.y -= 0.8;
-            if (player.element.getAttribute("src") !== characterSprites[player.spriteIndex].walking) {
+            
+            // ✅ Only Change Image When Necessary (Prevents Excessive Reloading)
+            if (!player.element.src.includes(characterSprites[player.spriteIndex].walking)) {
                 player.element.src = characterSprites[player.spriteIndex].walking;
-            }            
-            player.element.src += "?t=" + new Date().getTime();
+            }
+
             playFootstepSound(player);
         } else {
-            player.element.src = characterSprites[player.spriteIndex].idle;
+            if (!player.element.src.includes(characterSprites[player.spriteIndex].idle)) {
+                player.element.src = characterSprites[player.spriteIndex].idle;
+            }
         }
 
+        // ✅ Properly Update Position
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`;
 
+        // ✅ Handle Winner Line Detection
         if (player.y <= winnerLineY) {
             if (!firstWinnerTime) {
                 firstWinnerTime = Date.now();
@@ -261,14 +312,17 @@ function eliminatePlayers() {
     }
 }
 
-// ✅ Modify Death Function to Include Screen Shake
+// ✅ Modify Death Function to Ensure Dead Bodies Spawn at Correct Location
 function displayDeath(player) {
     if (!player || !player.element) return;
+    
     playSound(gunshotSounds);
     setTimeout(() => playSound(hitSounds), 100);
     setTimeout(() => playSound(deathSounds), 300);
-    
-    screenShake(); // Add screen shake effect on elimination
+
+    screenShake(); // ✅ Add screen shake effect on elimination
+
+    // ✅ Change Player Name to Red
     player.nameTag.style.color = "red";
     player.nameTag.style.fontWeight = "bold";
     player.nameTag.style.textShadow = "2px 2px 5px black";
@@ -280,9 +334,17 @@ function displayDeath(player) {
             deathIndex++;
         } else {
             clearInterval(deathAnimation);
+
+            // ✅ Ensure Dead Body Spawns Exactly Where Player Died
             const deadBodyElement = new Image();
             deadBodyElement.src = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
             deadBodyElement.className = "dead-body";
+            
+            // ✅ Position Dead Body at Player's Last Known Position
+            deadBodyElement.style.position = "absolute";
+            deadBodyElement.style.left = player.element.style.left;
+            deadBodyElement.style.top = player.element.style.top;
+            
             document.getElementById("game-container").appendChild(deadBodyElement);
             deadBodies.push(deadBodyElement);
         }
@@ -293,6 +355,7 @@ function displayDeath(player) {
         players = players.filter(p => p !== player);
     }, 2000);
 }
+
 
 function removeAllPlayers() {
     players.forEach(player => {
@@ -667,4 +730,3 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
-
