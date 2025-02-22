@@ -233,15 +233,14 @@ function eliminatePlayers() {
     }
 }
 
-// ✅ Function to Display Death Animation and Sounds
+// ✅ Modify Death Function to Include Screen Shake
 function displayDeath(player) {
     if (!player || !player.element) return;
-
     playSound(gunshotSounds);
     setTimeout(() => playSound(hitSounds), 100);
     setTimeout(() => playSound(deathSounds), 300);
-
-    // ✅ Change player name to red
+    
+    screenShake(); // Add screen shake effect on elimination
     player.nameTag.style.color = "red";
     player.nameTag.style.fontWeight = "bold";
     player.nameTag.style.textShadow = "2px 2px 5px black";
@@ -253,14 +252,9 @@ function displayDeath(player) {
             deathIndex++;
         } else {
             clearInterval(deathAnimation);
-
-            // ✅ Instantly replace with dead body
             const deadBodyElement = new Image();
             deadBodyElement.src = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
             deadBodyElement.className = "dead-body";
-            deadBodyElement.style.position = "absolute";
-            deadBodyElement.style.left = player.element.style.left;
-            deadBodyElement.style.top = player.element.style.top;
             document.getElementById("game-container").appendChild(deadBodyElement);
             deadBodies.push(deadBodyElement);
         }
@@ -459,21 +453,13 @@ function startRedLight() {
 setTimeout(startGreenLight, Math.random() * (6000 - 3000) + 3000);
 
 
-// ✅ Ensure Cyborg HUD is added properly after page load
+/* ✅ Cyborg HUD Improvements */
 function addCyborgHud() {
     let hud = document.getElementById("cyborg-hud");
-
     if (!hud) {
         hud = document.createElement("img");
         hud.id = "cyborg-hud";
-        hud.src = "/SG/Cyborg_Hud_0.gif"; // ✅ Start with default
-        hud.style.position = "absolute";
-        hud.style.bottom = "10px";
-        hud.style.left = "50%";
-        hud.style.transform = "translateX(-50%)";
-        hud.style.width = "200px";
-        hud.style.height = "auto";
-        hud.style.zIndex = "1000";
+        hud.src = "/SG/Cyborg_Hud_0.gif"; // Start with default
         document.body.appendChild(hud);
     }
 }
@@ -484,20 +470,24 @@ window.onload = function () {
     toggleCyborgHud(); // ✅ Start switching images after loading
 };
 
-// ✅ Properly alternate Cyborg HUD images
+// ✅ Function to Control Cyborg HUD in CSS
 function toggleCyborgHud() {
     let hud = document.getElementById("cyborg-hud");
     if (!hud) addCyborgHud();
-
     hud.src = Math.random() < 0.5 ? "/SG/Cyborg_Hud_0.gif" : "/SG/Cyborg_Hud_1.gif";
-
-    setTimeout(toggleCyborgHud, Math.random() * (7000 - 3000) + 3000); // 🔹 3-7 seconds interval
+    setTimeout(toggleCyborgHud, Math.random() * (7000 - 3000) + 3000);
 }
 
 // ✅ Call function to initialize HUD
 addCyborgHud();
 toggleCyborgHud();
 
+/* ✅ Red Light Death Visual Effect (Screen Shake) */
+function screenShake() {
+    const gameContainer = document.getElementById("game-container");
+    gameContainer.style.animation = "shake 0.3s";
+    setTimeout(() => { gameContainer.style.animation = ""; }, 300);
+}
 
 // ✅ Ensure Green Light / Red Light properly alternates
 setTimeout(startGreenLight, Math.random() * (6000 - 3000) + 3000);
@@ -597,12 +587,59 @@ function decreaseComboBar() {
     }, 100);
 }
 
-// ✅ LISTEN FOR "N" KEY PRESS
+/* ✅ Combo System Enhancements */
+const comboSounds = [
+    "/SG/Combo_0.mp3", "/SG/Combo_1.mp3", "/SG/Combo_2.mp3", "/SG/Combo_3.mp3", "/SG/Combo_4.mp3", "/SG/Combo_5.mp3", "/SG/Combo_6.mp3", "/SG/Combo_7.mp3", "/SG/Combo_8.mp3", "/SG/Combo_9.mp3"
+];
+const comboEndSound = "/SG/Combo_over.mp3";
+
+function increaseCombo() {
+    if (!comboActive) {
+        comboActive = true;
+        comboContainer.style.display = "block";
+        comboCount = 0;
+        comboBarWidth = 200;
+        decreaseComboBar();
+    }
+    comboCount++;
+    comboText.innerText = `Combo: ${comboCount}`;
+    comboBarWidth = Math.min(comboBarWidth + 10, 200);
+    playSound([comboSounds[Math.min(comboCount, comboSounds.length - 1)]]);
+    comboContainer.classList.add("flash-effect");
+    setTimeout(() => comboContainer.classList.remove("flash-effect"), 200);
+}
+
+function decreaseComboBar() {
+    clearInterval(comboInterval);
+    comboInterval = setInterval(() => {
+        let depletionSpeed = Math.max(1, comboCount * 0.5);
+        comboBarWidth -= depletionSpeed;
+        comboBar.style.width = `${Math.max(0, comboBarWidth)}px`;
+        if (comboBarWidth <= 0) {
+            clearInterval(comboInterval);
+            comboActive = false;
+            comboContainer.style.display = "none";
+            playSound([comboEndSound]);
+            comboCount = 0;
+        }
+    }, 100);
+}
+
 window.addEventListener("keydown", (event) => {
     if (event.key.toLowerCase() === "n") {
         increaseCombo();
     }
 });
+
+/* ✅ Optimize Performance by Preloading Assets & Ensuring Smooth Execution */
+function preloadAssets() {
+    let allAssets = [...preloadSounds, ...preloadImages, ...comboSounds, comboEndSound];
+    allAssets.forEach(asset => {
+        const audio = new Audio(asset);
+        audio.preload = "auto";
+    });
+}
+preloadAssets();
 
 // ✅ Start Game
 dollMusic.loop = true;
@@ -612,4 +649,3 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
-
