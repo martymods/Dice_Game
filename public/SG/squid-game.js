@@ -735,13 +735,30 @@ function increaseCombo() {
         comboBarWidth = 200;
         decreaseComboBar();
     }
+
     comboCount++;
     comboText.innerText = `Combo: ${comboCount}`;
     comboBarWidth = Math.min(comboBarWidth + 10, 200);
-    playSound([comboSounds[Math.min(comboCount, comboSounds.length - 1)]]);
+
+    // 🎵 Get volume based on combo count (increases every 5 points)
+    let volumeIncrease = Math.min(1, 0.2 + (Math.floor(comboCount / 5) * 0.1)); // Max volume capped at 1
+
+    let soundIndex = Math.min(comboCount, comboSounds.length - 1);
+    let selectedSound = comboSounds[soundIndex];
+
+    playSoundWithVolume(selectedSound, volumeIncrease);
+
     comboContainer.classList.add("flash-effect");
     setTimeout(() => comboContainer.classList.remove("flash-effect"), 200);
 }
+
+// ✅ New function to play sound with volume control
+function playSoundWithVolume(soundPath, volume) {
+    let audio = new Audio(soundPath);
+    audio.volume = volume;
+    audio.play();
+}
+
 
 function decreaseComboBar() {
     clearInterval(comboInterval);
@@ -773,3 +790,5 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
+
