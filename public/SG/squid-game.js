@@ -233,19 +233,24 @@ const characterSprites = [
 let audioElements = {};
 
 function playSound(soundArray) {
+    if (!Array.isArray(soundArray) || soundArray.length === 0) return;
+
     let soundPath = soundArray[Math.floor(Math.random() * soundArray.length)];
 
     if (!audioElements[soundPath]) {
         audioElements[soundPath] = new Audio(soundPath);
+        audioElements[soundPath].volume = 0.5;
     }
 
     let sound = audioElements[soundPath];
 
-    if (sound.paused) {
-        sound.currentTime = 0;
-        sound.volume = 0.5;
-        sound.play().catch(error => console.warn("🔇 Audio play prevented:", error));
-    }
+    // ✅ Only play if not already playing
+    if (!sound.paused) return;
+
+    sound.currentTime = 0;
+    sound.play().catch(error => {
+        console.warn("🔇 Audio play prevented:", error);
+    });
 }
 
 // ✅ Function to Draw Background
@@ -298,29 +303,39 @@ function addToLeaderboard(player) {
 // ✅ Function to Eliminate Players Randomly (Ensures Some Players Survive)
 function eliminatePlayers() {
     if (!isGreenLight && players.length > 0) {
-        let numToEliminate = Math.floor(Math.random() * Math.max(1, players.length / 2)); // 🔹 Random number of eliminations
+        let playersToKill = [...players]; // Make a copy to avoid modifying array while looping
 
-        for (let i = 0; i < numToEliminate; i++) {
-            let player = players[Math.floor(Math.random() * players.length)];
+        function killNextPlayer() {
+            if (playersToKill.length === 0 || isGreenLight) return; // Stop if all killed or game changes
+
+            let randomIndex = Math.floor(Math.random() * playersToKill.length);
+            let player = playersToKill.splice(randomIndex, 1)[0]; // Remove from list
+
             if (player) {
                 displayDeath(player);
             }
+
+            // ✅ Wait 1 second before killing another player
+            setTimeout(killNextPlayer, 1000);
         }
+
+        // ✅ Start first kill
+        killNextPlayer();
     }
 }
 
 // ✅ Modify Death Function to Ensure Dead Bodies Spawn at Correct Location
 function displayDeath(player) {
-    if (!player || !player.element || player.isDead) return; // ✅ Prevent multiple deaths
+    if (!player || !player.element) return;
 
-    player.isDead = true; // ✅ Mark player as dead to avoid multiple deaths
-
+    // ✅ Play gunshot sound once
     playSound(gunshotSounds);
     setTimeout(() => playSound(hitSounds), 100);
-    setTimeout(() => playSound(deathSounds), 300);
+    setTimeout(() => playSound(deathSounds), 500); // 🔹 Slight delay prevents overload
 
-    screenShake();
+    screenShake(); // ✅ Add screen shake effect on elimination
 
+    // ✅ Change Player Name to Red
     player.nameTag.style.color = "red";
     player.nameTag.style.fontWeight = "bold";
     player.nameTag.style.textShadow = "2px 2px 5px black";
@@ -336,14 +351,16 @@ function displayDeath(player) {
         } else {
             clearInterval(deathAnimation);
 
-            let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+            // ✅ Ensure Dead Body Spawns Exactly Where Player Died
             const deadBodyElement = new Image();
+            let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
 
+            // ✅ Check if the image exists in `preloadedImages` before using it
             if (preloadedImages[deadBodySprite]) {
                 deadBodyElement.src = preloadedImages[deadBodySprite].src;
             } else {
-                console.error("❌ Dead body image not found:", deadBodySprite);
-                return;
+                console.error("❌ Dead body image not found in preloadedImages:", deadBodySprite);
+                return; // Prevent errors
             }
 
             deadBodyElement.className = "dead-body";
