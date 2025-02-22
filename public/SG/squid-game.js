@@ -9,6 +9,10 @@ const countdownEndSound = new Audio("/SG/CountDown_END.mp3");
 const soundAl = new Audio("/SG/SoundAl.mp3");
 const dollReloadSound = new Audio("/SG/Doll_Reload.mp3");
 const dollTalkSound = new Audio("/SG/Doll_Talk.mp3");
+// ✅ GET ELEMENTS
+const comboContainer = document.getElementById("combo-container");
+const comboText = document.getElementById("combo-text");
+const comboBar = document.getElementById("combo-bar");
 
 canvas.width = 800;
 canvas.height = 600;
@@ -23,6 +27,11 @@ let countdownTimer = null;
 let leaderboardScores = {}; // Track player scores
 let roundActive = false; // Track if round is ongoing
 let dollTalkPlaying = false; // Track if Doll Talk Sound is playing
+// ✅ COMBO METER VARIABLES
+let comboCount = 0;
+let comboActive = false;
+let comboBarWidth = 200; // Starts full
+let comboInterval;
 
 const dollImage = new Image();
 dollImage.src = "/SG/Doll_Attack.gif";
@@ -553,6 +562,47 @@ function gameLoop() {
     updatePlayers();
     requestAnimationFrame(gameLoop);
 }
+
+// ✅ FUNCTION TO START OR INCREASE COMBO
+function increaseCombo() {
+    if (!comboActive) {
+        comboActive = true;
+        comboContainer.style.display = "block"; // Show combo meter
+        comboCount = 0;
+        comboBarWidth = 200;
+        decreaseComboBar(); // Start decreasing
+    }
+
+    comboCount++;
+    comboText.innerText = `Combo: ${comboCount}`;
+    comboBarWidth = Math.min(comboBarWidth + 10, 200); // Refill a little
+}
+
+// ✅ FUNCTION TO DECREASE COMBO BAR
+function decreaseComboBar() {
+    clearInterval(comboInterval);
+    
+    comboInterval = setInterval(() => {
+        let depletionSpeed = Math.max(1, comboCount * 0.5); // Higher combo = faster depletion
+        comboBarWidth -= depletionSpeed;
+        comboBar.style.width = `${Math.max(0, comboBarWidth)}px`;
+
+        // RESET COMBO IF BAR REACHES ZERO
+        if (comboBarWidth <= 0) {
+            clearInterval(comboInterval);
+            comboActive = false;
+            comboContainer.style.display = "none"; // Hide combo meter
+            comboCount = 0;
+        }
+    }, 100);
+}
+
+// ✅ LISTEN FOR "N" KEY PRESS
+window.addEventListener("keydown", (event) => {
+    if (event.key.toLowerCase() === "n") {
+        increaseCombo();
+    }
+});
 
 // ✅ Start Game
 dollMusic.loop = true;
