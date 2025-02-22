@@ -67,16 +67,19 @@ function preloadAssets() {
         "/SG/Blood_Explosion_1.png",
         "/SG/Blood_Explosion_2.png",
         "/SG/Blood_Explosion_3.png",
-        "/SG/char_0_1.gif",
-        "/SG/char_1_1.gif",
-        "/SG/char_2_1.gif",
-        "/SG/char_3_1.gif",
-        "/SG/char_4_1.gif",
-        "/SG/char_5_1.gif",
-        "/SG/char_6_1.gif",
-        "/SG/char_7_1.gif",
         "/SG/Cyborg_Hud_0.gif",
         "/SG/Cyborg_Hud_1.gif"
+    ];
+
+    let characterSprites = [
+        "/SG/char_0_0.gif", "/SG/char_0_1.gif",
+        "/SG/char_1_0.gif", "/SG/char_1_1.gif",
+        "/SG/char_2_0.gif", "/SG/char_2_1.gif",
+        "/SG/char_3_0.gif", "/SG/char_3_1.gif",
+        "/SG/char_4_0.gif", "/SG/char_4_1.gif",
+        "/SG/char_5_0.gif", "/SG/char_5_1.gif",
+        "/SG/char_6_0.gif", "/SG/char_6_1.gif",
+        "/SG/char_7_0.gif", "/SG/char_7_1.gif"
     ];
 
     let comboSounds = [
@@ -94,10 +97,11 @@ function preloadAssets() {
 
     let comboEndSound = "/SG/Combo_over.mp3";
 
-    // ✅ Combine all assets
-    let allAssets = [...soundPaths, ...imagePaths, ...comboSounds, comboEndSound];
+    let allAssets = [...soundPaths, ...imagePaths, ...characterSprites, ...comboSounds, comboEndSound];
 
-    // ✅ Preload each asset
+    // ✅ Store Preloaded Images
+    preloadedImages = {};
+
     allAssets.forEach(asset => {
         if (asset.endsWith(".mp3")) {
             const audio = new Audio(asset);
@@ -105,6 +109,7 @@ function preloadAssets() {
         } else {
             const img = new Image();
             img.src = asset;
+            preloadedImages[asset] = img;
         }
     });
 
@@ -132,7 +137,7 @@ function updatePlayers() {
 
         if (isGreenLight && !isDollShooting) {
             player.y -= 0.8;
-
+            
             // ✅ Use Preloaded Image Instead of Fetching New One
             if (player.element.src !== preloadedImages[characterSprites[player.spriteIndex].walking].src) {
                 player.element.src = preloadedImages[characterSprites[player.spriteIndex].walking].src;
@@ -145,9 +150,11 @@ function updatePlayers() {
             }
         }
 
+        // ✅ Properly Update Position
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`;
 
+        // ✅ Handle Winner Line Detection
         if (player.y <= winnerLineY) {
             if (!firstWinnerTime) {
                 firstWinnerTime = Date.now();
@@ -157,7 +164,6 @@ function updatePlayers() {
         }
     });
 }
-
 
 // ✅ Winner Line Position
 const winnerLineY = 100;
@@ -234,41 +240,6 @@ function drawBackground() {
     ctx.shadowBlur = 0;
 }
 
-// ✅ Optimize Player Updates to Prevent Unnecessary Image Reloads
-function updatePlayers() {
-    players.forEach(player => {
-        if (!player || !player.element || !player.nameTag) return;
-
-        if (isGreenLight && !isDollShooting) {
-            player.y -= 0.8;
-            
-            // ✅ Only Change Image When Necessary (Prevents Excessive Reloading)
-            if (!player.element.src.includes(characterSprites[player.spriteIndex].walking)) {
-                player.element.src = characterSprites[player.spriteIndex].walking;
-            }
-
-            playFootstepSound(player);
-        } else {
-            if (!player.element.src.includes(characterSprites[player.spriteIndex].idle)) {
-                player.element.src = characterSprites[player.spriteIndex].idle;
-            }
-        }
-
-        // ✅ Properly Update Position
-        player.element.style.top = `${player.y}px`;
-        player.nameTag.style.top = `${player.y - 20}px`;
-
-        // ✅ Handle Winner Line Detection
-        if (player.y <= winnerLineY) {
-            if (!firstWinnerTime) {
-                firstWinnerTime = Date.now();
-                startRoundCountdown();
-            }
-            addToLeaderboard(player);
-        }
-    });
-}
-
 // ✅ Function to Play Footstep Sound
 function playFootstepSound(player) {
     if (Math.random() < 0.2) {
@@ -315,11 +286,11 @@ function eliminatePlayers() {
 // ✅ Modify Death Function to Ensure Dead Bodies Spawn at Correct Location
 function displayDeath(player) {
     if (!player || !player.element) return;
-    
+
     playSound(gunshotSounds);
     setTimeout(() => playSound(hitSounds), 100);
     setTimeout(() => playSound(deathSounds), 300);
-
+    
     screenShake(); // ✅ Add screen shake effect on elimination
 
     // ✅ Change Player Name to Red
@@ -330,21 +301,22 @@ function displayDeath(player) {
     let deathIndex = 0;
     const deathAnimation = setInterval(() => {
         if (deathIndex < bloodExplosionFrames.length) {
-            player.element.src = bloodExplosionFrames[deathIndex];
+            // ✅ Use Preloaded Image Instead of Reloading Each Time
+            player.element.src = preloadedImages[bloodExplosionFrames[deathIndex]].src;
             deathIndex++;
         } else {
             clearInterval(deathAnimation);
 
             // ✅ Ensure Dead Body Spawns Exactly Where Player Died
             const deadBodyElement = new Image();
-            deadBodyElement.src = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+            deadBodyElement.src = preloadedImages[deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)]].src;
             deadBodyElement.className = "dead-body";
-            
+
             // ✅ Position Dead Body at Player's Last Known Position
             deadBodyElement.style.position = "absolute";
             deadBodyElement.style.left = player.element.style.left;
             deadBodyElement.style.top = player.element.style.top;
-            
+
             document.getElementById("game-container").appendChild(deadBodyElement);
             deadBodies.push(deadBodyElement);
         }
@@ -355,7 +327,6 @@ function displayDeath(player) {
         players = players.filter(p => p !== player);
     }, 2000);
 }
-
 
 function removeAllPlayers() {
     players.forEach(player => {
@@ -734,4 +705,3 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
-
