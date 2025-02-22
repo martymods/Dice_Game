@@ -318,9 +318,9 @@ function displayDeathMessage(player) {
     }, 1000); // Show for 3 seconds
 }
 
-
 // ✅ Toggle Green Light / Red Light (Fixed)
 function toggleGreenLight() {
+    // ✅ Ensure previous death message is removed when switching light
     if (currentDeathMessage) {
         currentDeathMessage.remove();
         currentDeathMessage = null;
@@ -328,9 +328,8 @@ function toggleGreenLight() {
 
     if (isDollShooting) return;
 
-    // ✅ Flip Green Light/Red Light properly
+    // ✅ Properly alternate between Green Light and Red Light
     isGreenLight = !isGreenLight;
-    
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
 
     if (isGreenLight) {
@@ -343,7 +342,7 @@ function toggleGreenLight() {
 
     if (!isGreenLight) {
         isDollShooting = true;
-        let redLightDuration = Math.random() * (12000 - 1000) + 1000;
+        let redLightDuration = Math.random() * (12000 - 1000) + 1000; // 🔹 Random Red Light duration
 
         let shootInterval = setInterval(() => {
             if (!isGreenLight) {
@@ -358,13 +357,10 @@ function toggleGreenLight() {
             isGreenLight = true;
         }, redLightDuration);
     } else {
-        // ✅ Ensure the game doesn't keep calling Green Light back-to-back
-        setTimeout(() => {
-            toggleGreenLight();
-        }, Math.random() * (6000 - 3000) + 3000);
+        // ✅ Ensures the game doesn't loop Green Light indefinitely
+        setTimeout(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
     }
 }
-
 
 // ✅ Function to Alternate Cyborg HUD
 function toggleCyborgHud() {
@@ -374,10 +370,12 @@ function toggleCyborgHud() {
     setTimeout(toggleCyborgHud, Math.random() * (5000 - 2000) + 2000); // Switch between 2-5 seconds
 }
 
-setInterval(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);;
+// ✅ Ensure Green Light / Red Light properly alternates
+setInterval(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
 
 // ✅ Function to Reset Game
 function resetGame() {
+    players.forEach(player => player.element.remove());
     players = [];
     deadBodies.forEach(body => body.remove());
     deadBodies = [];
