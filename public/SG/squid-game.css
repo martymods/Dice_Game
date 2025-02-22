@@ -1,11 +1,48 @@
 /* squid-game.css */
 
+/* ✅ "SAVE US" Text */
+#save-us {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 40px;
+    font-weight: bold;
+    color: red;
+    text-shadow: 2px 2px 5px black;
+    z-index: 1000;
+}
+
+/* ✅ Combo Meter Container */
+#combo-container {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    z-index: 1000;
+    display: none; /* Hidden initially */
+}
+
+/* ✅ Combo Bar */
+#combo-bar {
+    width: 200px;
+    height: 20px;
+    background: green;
+    border: 2px solid white;
+    transition: width 0.1s linear;
+}
+
+
 /* ✅ Doll Attack Image Settings */
 #doll-attack {
     position: absolute;
-    bottom: 850px; /* Controls distance from bottom */
-    right: 903px; /* Controls horizontal placement */
-    width: 107px; /* Adjustable width */
+    bottom: 855px; /* Controls distance from bottom */
+    right: 650px; /* Controls horizontal placement */
+    width: 110px; /* Adjustable width */
     height: auto; /* Maintain aspect ratio */
     opacity: 1; /* Fully visible */
     z-index: 999; /* Below Cyborg HUD but above other elements */
