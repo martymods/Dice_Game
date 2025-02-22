@@ -392,49 +392,44 @@ function toggleDollImage() {
 addDollAttackImage();
 
 // ✅ Ensure Green & Red Lights Alternate Properly
-function toggleGreenLight() {
-    if (currentDeathMessage) {
-        currentDeathMessage.remove();
-        currentDeathMessage = null;
-    }
+function startGreenLight() {
+    isGreenLight = true;
+    console.log("🟢 Green Light! Players Move.");
+    toggleDollImage(); // Show doll when Green Light starts
+    playSound([dollReloadSound.src]);
+    dollTalkSound.playbackRate = Math.random() * (1.5 - 0.5) + 0.5;
+    dollTalkSound.play();
 
-    if (isDollShooting) return;
+    // ✅ Ensure Red Light starts after a random time (3-6 seconds)
+    setTimeout(startRedLight, Math.random() * (6000 - 3000) + 3000);
+}
 
-    isGreenLight = !isGreenLight; // ✅ Toggle state properly
-    console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
+function startRedLight() {
+    isGreenLight = false;
+    isDollShooting = true;
+    console.log("🔴 Red Light! Players Stop.");
+    toggleDollImage(); // Hide doll when Red Light starts
+    dollTalkSound.pause();
 
-    toggleDollImage(); // ✅ Show or hide doll image
+    // ✅ Keep eliminating players while Red Light is active
+    let redLightDuration = Math.random() * (12000 - 1000) + 1000;
+    let shootInterval = setInterval(() => {
+        if (!isGreenLight) {
+            eliminatePlayers();
+        } else {
+            clearInterval(shootInterval);
+        }
+    }, 1000);
 
-    if (isGreenLight) {
-        playSound([dollReloadSound.src]);
-        dollTalkSound.playbackRate = Math.random() * (1.5 - 0.5) + 0.5;
-        dollTalkSound.play();
-
-        // ✅ Schedule next RED light (Ensure it alternates)
-        setTimeout(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
-    } else {
-        dollTalkSound.pause();
-        isDollShooting = true;
-
-        let redLightDuration = Math.random() * (12000 - 1000) + 1000;
-        let shootInterval = setInterval(() => {
-            if (!isGreenLight) {
-                eliminatePlayers();
-            } else {
-                clearInterval(shootInterval);
-            }
-        }, 1000);
-
-        setTimeout(() => {
-            isDollShooting = false;
-            isGreenLight = true;
-            toggleGreenLight(); // ✅ This line was missing before!
-        }, redLightDuration);
-    }
+    // ✅ Ensure Green Light starts after Red Light duration
+    setTimeout(() => {
+        isDollShooting = false;
+        startGreenLight();
+    }, redLightDuration);
 }
 
 // ✅ Start the game by triggering the first Green Light
-setTimeout(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
+setTimeout(startGreenLight, Math.random() * (6000 - 3000) + 3000);
 
 // ✅ Ensure Cyborg HUD is added properly after page load
 function addCyborgHud() {
@@ -548,5 +543,3 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
-
-
