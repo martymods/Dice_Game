@@ -3,10 +3,10 @@
 /* ✅ "SAVE US" Text */
 #save-us {
     position: absolute;
-    bottom: 20px;
-    left: 50%;
+    bottom: 18px;
+    left: -350%;
     transform: translateX(-50%);
-    font-size: 40px;
+    font-size: 20px;
     font-weight: bold;
     color: red;
     text-shadow: 2px 2px 5px black;
@@ -16,13 +16,13 @@
 /* ✅ Combo Meter Container */
 #combo-container {
     position: absolute;
-    bottom: 60px;
-    left: 50%;
+    bottom:40px;
+    left: -340%;
     transform: translateX(-50%);
     text-align: center;
     font-size: 24px;
     font-weight: bold;
-    color: white;
+    color: #ff00fc;
     z-index: 1000;
     display: none; /* Hidden initially */
 }
@@ -31,7 +31,7 @@
 #combo-bar {
     width: 200px;
     height: 20px;
-    background: green;
+    background: #ff00fc;
     border: 2px solid white;
     transition: width 0.1s linear;
 }
@@ -40,8 +40,8 @@
 /* ✅ Doll Attack Image Settings */
 #doll-attack {
     position: absolute;
-    bottom: 855px; /* Controls distance from bottom */
-    right: 650px; /* Controls horizontal placement */
+    bottom: 850px; /* Controls distance from bottom */
+    right: 900px; /* Controls horizontal placement */
     width: 110px; /* Adjustable width */
     height: auto; /* Maintain aspect ratio */
     opacity: 1; /* Fully visible */
