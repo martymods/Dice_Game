@@ -303,23 +303,30 @@ function addToLeaderboard(player) {
 // ✅ Function to Eliminate Players Randomly (Ensures Some Players Survive)
 function eliminatePlayers() {
     if (!isGreenLight && players.length > 0) {
-        let playersToKill = [...players]; // Make a copy to avoid modifying array while looping
+        let playersToKill = [...players]; // ✅ Make a copy to avoid modifying array while looping
 
         function killNextPlayer() {
-            if (playersToKill.length === 0 || isGreenLight) return; // Stop if all killed or game changes
+            if (playersToKill.length === 0 || isGreenLight) return; // ✅ Stop if all killed or Green Light starts
 
             let randomIndex = Math.floor(Math.random() * playersToKill.length);
-            let player = playersToKill.splice(randomIndex, 1)[0]; // Remove from list
+            let player = playersToKill.splice(randomIndex, 1)[0]; // ✅ Remove from list
 
             if (player) {
-                displayDeath(player);
+                let survivalChance = Math.random(); // 🎲 Generates a number between 0 and 1
+
+                if (survivalChance < 0.5) {
+                    // ✅ 50% chance to kill
+                    displayDeath(player);
+                } else {
+                    console.log(`🎉 ${player.nameTag.innerText} survived Red Light!`);
+                }
             }
 
-            // ✅ Wait 1 second before killing another player
+            // ✅ Wait 1 second before attempting to kill another player
             setTimeout(killNextPlayer, 1000);
         }
 
-        // ✅ Start first kill
+        // ✅ Start first kill attempt
         killNextPlayer();
     }
 }
