@@ -363,6 +363,7 @@ function displayDeath(player) {
     }, 2000);
 }
 
+
 function removeAllPlayers() {
     players.forEach(player => {
         if (player.element) player.element.remove();
@@ -535,16 +536,22 @@ function startRedLight() {
     toggleDollImage(); // Hide doll when Red Light starts
     dollTalkSound.pause();
 
-    let redLightDuration = Math.random() * (12000 - 1000) + 1000;
-    let shootInterval = setInterval(() => {
-        if (!isGreenLight) {
-            eliminatePlayers();
-        } else {
-            clearInterval(shootInterval);
+    let redLightDuration = Math.random() * (6000 - 3000) + 3000; // 🔹 3 to 6 seconds
+
+    // ✅ Kill One Player Every Second
+    let killInterval = setInterval(() => {
+        if (!isGreenLight && players.length > 0) {
+            let randomPlayerIndex = Math.floor(Math.random() * players.length);
+            let playerToKill = players[randomPlayerIndex];
+
+            if (playerToKill) {
+                displayDeath(playerToKill);
+            }
         }
-    }, 1000);
+    }, 1000); // ✅ Kills one player every second
 
     setTimeout(() => {
+        clearInterval(killInterval); // ✅ Stop killing when Red Light ends
         isDollShooting = false;
         startGreenLight(); // ✅ Transition to Green Light after Red Light duration
     }, redLightDuration);
