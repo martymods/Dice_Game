@@ -32,6 +32,37 @@ bgImage.src = "/SG/game-background.jpg";
 // ✅ Winner Line Position
 const winnerLineY = 100;
 
+// ✅ Preload All Sounds to Prevent Loading Errors
+function preloadSounds(soundArray) {
+    soundArray.forEach(sound => {
+        const audio = new Audio(sound);
+        audio.load();
+    });
+}
+
+// ✅ Preload all game sounds
+preloadSounds([
+    "/SG/SG_Background_Ambience_0.mp3",
+    "/SG/Buzzer.mp3",
+    "/SG/CountDown.mp3",
+    "/SG/CountDown_END.mp3",
+    "/SG/SoundAl.mp3",
+    "/SG/Doll_Reload.mp3",
+    "/SG/Doll_Talk.mp3",
+    "/SG/Doll_Shooting_0.mp3",
+    "/SG/Doll_Shooting_1.mp3",
+    "/SG/Doll_Shooting_2.mp3",
+    "/SG/Doll_Shooting_3.mp3",
+    "/SG/C_Hit_0.mp3",
+    "/SG/C_Hit_1.mp3",
+    "/SG/C_Hit_2.mp3",
+    "/SG/C_Death_0.mp3",
+    "/SG/C_Death_1.mp3",
+    "/SG/C_Death_2.mp3",
+    "/SG/C_Death_3.mp3",
+    "/SG/C_Death_4.mp3"
+]);
+
 // ✅ Footstep Sounds
 const footstepSounds = ['/SG/walk_0.mp3', '/SG/walk_1.mp3', '/SG/walk_2.mp3'];
 
@@ -288,7 +319,7 @@ function displayDeathMessage(player) {
 }
 
 
-// ✅ Toggle Green Light / Red Light
+// ✅ Toggle Green Light / Red Light (Fixed)
 function toggleGreenLight() {
     if (currentDeathMessage) {
         currentDeathMessage.remove();
@@ -297,7 +328,9 @@ function toggleGreenLight() {
 
     if (isDollShooting) return;
 
+    // ✅ Flip Green Light/Red Light properly
     isGreenLight = !isGreenLight;
+    
     console.log(isGreenLight ? "🟢 Green Light! Players Move." : "🔴 Red Light! Players Stop.");
 
     if (isGreenLight) {
@@ -311,6 +344,7 @@ function toggleGreenLight() {
     if (!isGreenLight) {
         isDollShooting = true;
         let redLightDuration = Math.random() * (12000 - 1000) + 1000;
+
         let shootInterval = setInterval(() => {
             if (!isGreenLight) {
                 eliminatePlayers();
@@ -323,8 +357,14 @@ function toggleGreenLight() {
             isDollShooting = false;
             isGreenLight = true;
         }, redLightDuration);
+    } else {
+        // ✅ Ensure the game doesn't keep calling Green Light back-to-back
+        setTimeout(() => {
+            toggleGreenLight();
+        }, Math.random() * (6000 - 3000) + 3000);
     }
 }
+
 
 // ✅ Function to Alternate Cyborg HUD
 function toggleCyborgHud() {
