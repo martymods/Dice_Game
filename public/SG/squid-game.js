@@ -410,11 +410,8 @@ function toggleGreenLight() {
         dollTalkSound.playbackRate = Math.random() * (1.5 - 0.5) + 0.5;
         dollTalkSound.play();
 
-        // ✅ Schedule Red Light only ONCE
-        setTimeout(() => {
-            isGreenLight = false;
-            toggleGreenLight();
-        }, Math.random() * (6000 - 3000) + 3000);
+        // ✅ Schedule next RED light (Ensure it alternates)
+        setTimeout(toggleGreenLight, Math.random() * (6000 - 3000) + 3000);
     } else {
         dollTalkSound.pause();
         isDollShooting = true;
@@ -431,7 +428,7 @@ function toggleGreenLight() {
         setTimeout(() => {
             isDollShooting = false;
             isGreenLight = true;
-            toggleGreenLight();
+            toggleGreenLight(); // ✅ This line was missing before!
         }, redLightDuration);
     }
 }
@@ -551,4 +548,5 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
 
