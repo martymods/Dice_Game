@@ -289,13 +289,18 @@ function startRoundCountdown() {
     countdownTimer = setInterval(() => {
         countdownTimerElement.innerText = `Time Left: ${timeLeft}`;
         if (timeLeft <= 10) countdownSound.play();
+        
         if (timeLeft === 0) {
             clearInterval(countdownTimer);
             countdownEndSound.play();
             isGreenLight = false;
-            eliminatePlayers();
-            removeAllPlayers(); // ✅ Ensure all remaining players disappear
-            
+
+            eliminatePlayers(); // Ensure remaining players are eliminated
+            removeAllPlayers(); // Remove all players who didn't die
+
+            // ✅ Remove ALL red death messages from the screen
+            removeDeathMessages();
+
             if (countdownTimerElement) {
                 countdownTimerElement.remove();
                 countdownTimerElement = null;
@@ -307,6 +312,11 @@ function startRoundCountdown() {
     }, 1000);
 }
 
+function removeDeathMessages() {
+    let deathMessages = document.querySelectorAll(".death-message");
+    deathMessages.forEach(msg => msg.remove());
+    currentDeathMessage = null;
+}
 
 // ✅ Function to Display "Player X is Dead" Message
 let currentDeathMessage = null;
