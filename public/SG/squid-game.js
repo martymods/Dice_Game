@@ -176,8 +176,10 @@ function updatePlayers() {
         // ✅ If colliding, trigger jump animation
         if (collidedWithDeadBody && !player.isJumping) {
             jumpOverDeadBody(player);
-        } else if (!player.isJumping) {
-            // ✅ Continue normal movement (ONLY IF NOT JUMPING)
+        } 
+        
+        // ✅ Only update animation if NOT jumping
+        if (!player.isJumping) {
             if (isGreenLight && !isDollShooting) {
                 player.y -= 0.4; // Move towards the red line
                 player.element.src = characterSprites[player.spriteIndex].walking; // ✅ Walk animation
@@ -358,6 +360,11 @@ function displayDeath(player) {
 
     screenShake(); // ✅ Add screen shake effect
 
+    // ✅ Change Player Name to Red (keep it red over dead body)
+    player.nameTag.style.color = "red";
+    player.nameTag.style.fontWeight = "bold";
+    player.nameTag.style.textShadow = "2px 2px 5px black";
+
     // ✅ Remove the player instantly before showing the dead body
     if (player.element) player.element.remove();
     players = players.filter(p => p !== player);
@@ -383,9 +390,13 @@ function displayDeath(player) {
 
         document.getElementById("game-container").appendChild(deadBodyElement);
         deadBodies.push(deadBodyElement);
+
+        // ✅ Keep player's name tag over dead body
+        setTimeout(() => {
+            deadBodyElement.insertAdjacentElement('afterend', player.nameTag);
+        }, 100);
     }
 }
-
 
 function removeAllPlayers() {
     players.forEach(player => {
@@ -798,11 +809,12 @@ function jumpOverDeadBody(player) {
     setTimeout(() => {
         player.isJumping = false;
 
-        // ✅ Resume walking if Green Light is active, otherwise idle
+        // ✅ Resume movement after jump
         if (isGreenLight && !isDollShooting) {
-            player.element.src = characterSprites[player.spriteIndex].walking; // Resume walking
+            player.element.src = characterSprites[player.spriteIndex].walking; // ✅ Resume walking
+            player.y -= 0.4; // ✅ Keep moving forward
         } else {
-            player.element.src = characterSprites[player.spriteIndex].idle; // Go idle
+            player.element.src = characterSprites[player.spriteIndex].idle; // ✅ Go idle
         }
     }, 600);
 }
