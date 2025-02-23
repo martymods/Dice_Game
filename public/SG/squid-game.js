@@ -161,26 +161,38 @@ function updatePlayers() {
     players.forEach(player => {
         if (!player || !player.element || !player.nameTag) return;
 
-        if (isGreenLight && !isDollShooting) {
-            player.y -= 0.4;
-            
-            // ✅ Use Preloaded Image Instead of Fetching New One
-            if (player.element.src !== preloadedImages[characterSprites[player.spriteIndex].walking].src) {
-                player.element.src = preloadedImages[characterSprites[player.spriteIndex].walking].src;
-            }
+        // ✅ Check for collision with dead bodies
+        let collidedWithDeadBody = deadBodies.some(body => {
+            let playerRect = player.element.getBoundingClientRect();
+            let bodyRect = body.getBoundingClientRect();
+            return (
+                playerRect.bottom >= bodyRect.top && 
+                playerRect.top <= bodyRect.bottom &&
+                playerRect.right >= bodyRect.left &&
+                playerRect.left <= bodyRect.right
+            );
+        });
 
-            playFootstepSound(player);
+        if (collidedWithDeadBody) {
+            jumpOverDeadBody(player); // 🎯 Trigger Jump Animation
         } else {
-            if (player.element.src !== preloadedImages[characterSprites[player.spriteIndex].idle].src) {
-                player.element.src = preloadedImages[characterSprites[player.spriteIndex].idle].src;
+            // ✅ Continue normal movement (only if not jumping)
+            if (!player.isJumping) {
+                if (isGreenLight && !isDollShooting) {
+                    player.y -= 0.4;
+                    player.element.src = characterSprites[player.spriteIndex].walking;
+                    playFootstepSound(player);
+                } else {
+                    player.element.src = characterSprites[player.spriteIndex].idle;
+                }
             }
         }
 
-        // ✅ Properly Update Position
+        // ✅ Update player position in the UI
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`;
 
-        // ✅ Handle Winner Line Detection
+        // ✅ Handle winner line detection
         if (player.y <= winnerLineY) {
             if (!firstWinnerTime) {
                 firstWinnerTime = Date.now();
@@ -236,14 +248,14 @@ const deadBodySprites = [
 
 // ✅ Character Sprites
 const characterSprites = [
-    { idle: "/SG/char_0_0.gif", walking: "/SG/char_0_1.gif" },
-    { idle: "/SG/char_1_0.gif", walking: "/SG/char_1_1.gif" },
-    { idle: "/SG/char_2_0.gif", walking: "/SG/char_2_1.gif" },
-    { idle: "/SG/char_3_0.gif", walking: "/SG/char_3_1.gif" },
-    { idle: "/SG/char_4_0.gif", walking: "/SG/char_4_1.gif" },
-    { idle: "/SG/char_5_0.gif", walking: "/SG/char_5_1.gif" },
-    { idle: "/SG/char_6_0.gif", walking: "/SG/char_6_1.gif" },
-    { idle: "/SG/char_7_0.gif", walking: "/SG/char_7_1.gif" }
+    { idle: "/SG/char_0_0.gif", walking: "/SG/char_0_1.gif", jumping: "/SG/char_0_2.gif" },
+    { idle: "/SG/char_1_0.gif", walking: "/SG/char_1_1.gif", jumping: "/SG/char_1_2.gif" },
+    { idle: "/SG/char_2_0.gif", walking: "/SG/char_2_1.gif", jumping: "/SG/char_2_2.gif" },
+    { idle: "/SG/char_3_0.gif", walking: "/SG/char_3_1.gif", jumping: "/SG/char_3_2.gif" },
+    { idle: "/SG/char_4_0.gif", walking: "/SG/char_4_1.gif", jumping: "/SG/char_4_2.gif" },
+    { idle: "/SG/char_5_0.gif", walking: "/SG/char_5_1.gif", jumping: "/SG/char_5_2.gif" },
+    { idle: "/SG/char_6_0.gif", walking: "/SG/char_6_1.gif", jumping: "/SG/char_6_2.gif" },
+    { idle: "/SG/char_7_0.gif", walking: "/SG/char_7_1.gif", jumping: "/SG/char_7_2.gif" }
 ];
 
 // ✅ Store audio elements to reuse them
@@ -793,6 +805,25 @@ window.addEventListener("keydown", (event) => {
         increaseCombo();
     }
 });
+
+// Jump over dead body
+function jumpOverDeadBody(player) {
+    if (player.isJumping) return; // ✅ Prevent multiple jumps at once
+    player.isJumping = true; // ✅ Set jumping state
+
+    // ✅ Change to jumping animation
+    player.element.src = characterSprites[player.spriteIndex].jumping;
+
+    // ⏳ Wait for GIF duration (600ms), then switch back to normal animation
+    setTimeout(() => {
+        player.isJumping = false;
+        if (isGreenLight && !isDollShooting) {
+            player.element.src = characterSprites[player.spriteIndex].walking; // Resume walking
+        } else {
+            player.element.src = characterSprites[player.spriteIndex].idle; // Go idle
+        }
+    }, 600);
+}
 
 // ✅ Start Game
 dollMusic.loop = true;
