@@ -161,6 +161,9 @@ function updatePlayers() {
     players.forEach(player => {
         if (!player || !player.element || !player.nameTag) return;
 
+        // ✅ If the player is in the middle of a jump, do not change animation until done
+        if (player.isJumping) return;
+
         // ✅ Check for collision with dead bodies
         let collidedWithDeadBody = deadBodies.some(body => {
             let playerRect = player.element.getBoundingClientRect();
@@ -173,19 +176,20 @@ function updatePlayers() {
             );
         });
 
-        // ✅ If colliding, trigger jump animation
-        if (collidedWithDeadBody && !player.isJumping) {
+        if (collidedWithDeadBody) {
             jumpOverDeadBody(player);
-        } 
-        
-        // ✅ Only update animation if NOT jumping
-        if (!player.isJumping) {
+        } else {
+            // ✅ Fix Walking & Idle Animation Switching
             if (isGreenLight && !isDollShooting) {
-                player.y -= 0.4; // Move towards the red line
-                player.element.src = characterSprites[player.spriteIndex].walking; // ✅ Walk animation
-                playFootstepSound(player);
+                player.y -= 0.4; // ✅ Move forward
+                if (player.element.src !== characterSprites[player.spriteIndex].walking) {
+                    player.element.src = characterSprites[player.spriteIndex].walking; // ✅ Walking animation
+                }
+                playFootstepSound();
             } else {
-                player.element.src = characterSprites[player.spriteIndex].idle; // ✅ Idle animation
+                if (player.element.src !== characterSprites[player.spriteIndex].idle) {
+                    player.element.src = characterSprites[player.spriteIndex].idle; // ✅ Idle animation for Red Light
+                }
             }
         }
 
@@ -809,13 +813,21 @@ function jumpOverDeadBody(player) {
     setTimeout(() => {
         player.isJumping = false;
 
-        // ✅ Resume movement after jump
+        // ✅ Ensure the character keeps moving forward
         if (isGreenLight && !isDollShooting) {
             player.element.src = characterSprites[player.spriteIndex].walking; // ✅ Resume walking
-            player.y -= 0.4; // ✅ Keep moving forward
+            player.y -= 0.4; // ✅ Continue moving forward
         } else {
-            player.element.src = characterSprites[player.spriteIndex].idle; // ✅ Go idle
+            player.element.src = characterSprites[player.spriteIndex].idle; // ✅ Go idle if Red Light
         }
+
+        // ✅ Small delay to ensure character moves after jumping
+        setTimeout(() => {
+            if (isGreenLight && !isDollShooting) {
+                player.y -= 0.4;
+            }
+        }, 50);
+
     }, 600);
 }
 
