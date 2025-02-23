@@ -691,16 +691,33 @@ function gameLoop() {
 function increaseCombo() {
     if (!comboActive) {
         comboActive = true;
-        comboContainer.style.display = "block"; // Show combo meter
+        comboContainer.style.display = "block";
         comboCount = 0;
         comboBarWidth = 200;
-        decreaseComboBar(); // Start decreasing
+        decreaseComboBar();
     }
 
     comboCount++;
     comboText.innerText = `Combo: ${comboCount}`;
-    comboBarWidth = Math.min(comboBarWidth + 10, 200); // Refill a little
+    comboBarWidth = Math.min(comboBarWidth + 10, 200);
+
+    // 🎵 Change sound every 5 combo points
+    let soundIndex = Math.floor(comboCount / 5) % comboSounds.length;
+    let selectedSound = comboSounds[soundIndex];
+
+    playSound(selectedSound);
+
+    comboContainer.classList.add("flash-effect");
+    setTimeout(() => comboContainer.classList.remove("flash-effect"), 200);
 }
+
+// ✅ Play Sound Function
+function playSound(soundPath) {
+    let audio = new Audio(soundPath);
+    audio.volume = 0.8; // Default volume
+    audio.play();
+}
+
 
 // ✅ FUNCTION TO DECREASE COMBO BAR
 function decreaseComboBar() {
