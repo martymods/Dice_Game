@@ -194,14 +194,26 @@ function updatePlayers() {
 // ✅ Winner Line Position
 const winnerLineY = 100;
 
-// ✅ Footstep Sounds (Fixed Paths)
-const footstepSounds = ["/SG/walk_0.mp3", "/SG/walk_1.mp3", "/SG/walk_2.mp3"];
+// ✅ Updated Function: Play Footstep Sound with 17 Variants
+const footstepSounds = [
+    "/SG/S_Cement_01_Mono.WAV", "/SG/S_Cement_02_Mono.WAV", "/SG/S_Cement_03_Mono.WAV",
+    "/SG/S_Cement_04_Mono.WAV", "/SG/S_Cement_05_Mono.WAV", "/SG/S_Cement_06_Mono.WAV",
+    "/SG/S_Cement_07_Mono.WAV", "/SG/S_Cement_08_Mono.WAV", "/SG/S_Cement_09_Mono.WAV",
+    "/SG/S_Cement_10_Mono.WAV", "/SG/S_Cement_11_Mono.WAV", "/SG/S_Cement_12_Mono.WAV",
+    "/SG/S_Cement_13_Mono.WAV", "/SG/S_Cement_14_Mono.WAV", "/SG/S_Cement_15_Mono.WAV",
+    "/SG/S_Cement_16_Mono.WAV", "/SG/S_Cement_17_Mono.WAV"
+];
+
+let lastFootstepTime = 0;
 
 function playFootstepSound() {
+    let now = Date.now();
+    if (now - lastFootstepTime < 300) return; // Prevents excessive footstep sounds
+
+    lastFootstepTime = now;
     let soundPath = footstepSounds[Math.floor(Math.random() * footstepSounds.length)];
     playSound(soundPath);
 }
-
 // ✅ Sound Effects
 const gunshotSounds = ["/SG/Doll_Shooting_0.mp3", "/SG/Doll_Shooting_1.mp3", "/SG/Doll_Shooting_2.mp3", "/SG/Doll_Shooting_3.mp3"];
 const hitSounds = ["/SG/C_Hit_0.mp3", "/SG/C_Hit_1.mp3", "/SG/C_Hit_2.mp3"];
@@ -276,15 +288,6 @@ function drawBackground() {
     ctx.shadowBlur = 0;
 }
 
-// ✅ Function to Play Footstep Sound
-function playFootstepSound(player) {
-    if (Math.random() < 0.2) {
-        playSound(footstepSounds, 0.29); // 🔹 Reduced volume by 50%
-        const footstep = new Audio(footstepSounds[Math.floor(Math.random() * footstepSounds.length)]);
-        footstep.volume = 0.3;
-        footstep.play();
-    }
-}
 
 // ✅ Function to Add Players to Leaderboard
 function addToLeaderboard(player) {
@@ -308,44 +311,43 @@ function addToLeaderboard(player) {
 // ✅ Ensure Killing is Spaced Out (1 Second Per Kill)
 function eliminatePlayers() {
     if (!isGreenLight && players.length > 0) {
-        let remainingPlayers = [...players];
+        let alivePlayers = players.filter(p => !p.isDead); // Only consider players who are alive
 
         function killNext() {
-            if (remainingPlayers.length === 0 || isGreenLight) return;
-            
-            let randomIndex = Math.floor(Math.random() * remainingPlayers.length);
-            let playerToKill = remainingPlayers.splice(randomIndex, 1)[0];
+            if (alivePlayers.length === 0 || isGreenLight) return;
+
+            let randomIndex = Math.floor(Math.random() * alivePlayers.length);
+            let playerToKill = alivePlayers.splice(randomIndex, 1)[0];
 
             if (playerToKill && !playerToKill.isDead) {
                 let survivalChance = Math.random();
                 if (survivalChance < 0.5) {
                     displayDeath(playerToKill);
-                } else {
-                    console.log(`🎉 ${playerToKill.nameTag.innerText} survived!`);
                 }
             }
-            
-            if (remainingPlayers.length > 0) {
-                setTimeout(killNext, 1000); // ✅ Space out kills
+
+            if (alivePlayers.length > 0) {
+                setTimeout(killNext, 1000);
             }
         }
-        
+
         killNext();
     }
 }
 
-// ✅ Modify Death Function to Ensure Dead Bodies Spawn at Correct Location
+// ✅ Updated Function: Prevent Multiple Dead Body Spawns
 function displayDeath(player) {
-    if (!player || player.isDead) return; // ✅ Prevent killing twice
+    if (!player || player.isDead) return; // Prevent multiple deaths
+    player.isDead = true; // Mark player as dead
 
-    // ✅ Play gunshot sound once
+    // ✅ Play sound effects
     playSound(gunshotSounds[Math.floor(Math.random() * gunshotSounds.length)]);
     setTimeout(() => playSound(hitSounds[Math.floor(Math.random() * hitSounds.length)]), 100);
     setTimeout(() => playSound(deathSounds[Math.floor(Math.random() * deathSounds.length)]), 300);
 
-    screenShake(); // ✅ Add screen shake effect on elimination
+    screenShake(); // Add screen shake effect
 
-    // ✅ Change Player Name to Red
+    // ✅ Update player name to indicate death
     player.nameTag.style.color = "red";
     player.nameTag.style.fontWeight = "bold";
     player.nameTag.style.textShadow = "2px 2px 5px black";
@@ -361,28 +363,32 @@ function displayDeath(player) {
         } else {
             clearInterval(deathAnimation);
 
-            // ✅ Ensure Dead Body Spawns Exactly Where Player Died
-            const deadBodyElement = new Image();
-            let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+            // ✅ Ensure ONLY ONE Dead Body Spawns
+            if (!player.hasDeadBody) {
+                player.hasDeadBody = true; // Prevent duplicate bodies
 
-            // ✅ Check if the image exists in `preloadedImages` before using it
-            if (preloadedImages[deadBodySprite]) {
-                deadBodyElement.src = preloadedImages[deadBodySprite].src;
-            } else {
-                console.error("❌ Dead body image not found in preloadedImages:", deadBodySprite);
-                return; // Prevent errors
+                const deadBodyElement = new Image();
+                let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+
+                if (preloadedImages[deadBodySprite]) {
+                    deadBodyElement.src = preloadedImages[deadBodySprite].src;
+                } else {
+                    console.error("❌ Dead body image not found in preloadedImages:", deadBodySprite);
+                    return;
+                }
+
+                deadBodyElement.className = "dead-body";
+                deadBodyElement.style.position = "absolute";
+                deadBodyElement.style.left = player.element.style.left;
+                deadBodyElement.style.top = player.element.style.top;
+
+                document.getElementById("game-container").appendChild(deadBodyElement);
+                deadBodies.push(deadBodyElement);
             }
-
-            deadBodyElement.className = "dead-body";
-            deadBodyElement.style.position = "absolute";
-            deadBodyElement.style.left = player.element.style.left;
-            deadBodyElement.style.top = player.element.style.top;
-
-            document.getElementById("game-container").appendChild(deadBodyElement);
-            deadBodies.push(deadBodyElement);
         }
     }, 100);
 
+    // ✅ Remove player after 2 seconds
     setTimeout(() => {
         if (player.element) player.element.remove();
         players = players.filter(p => p !== player);
