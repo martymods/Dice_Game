@@ -162,7 +162,7 @@ function updatePlayers() {
         if (!player || !player.element || !player.nameTag) return;
 
         if (isGreenLight && !isDollShooting) {
-            player.y -= 0.6;
+            player.y -= 0.4;
             
             // ✅ Use Preloaded Image Instead of Fetching New One
             if (player.element.src !== preloadedImages[characterSprites[player.spriteIndex].walking].src) {
@@ -194,8 +194,13 @@ function updatePlayers() {
 // ✅ Winner Line Position
 const winnerLineY = 100;
 
-// ✅ Footstep Sounds
-const footstepSounds = ['/SG/walk_0.mp3', '/SG/walk_1.mp3', '/SG/walk_2.mp3'];
+// ✅ Footstep Sounds (Fixed Paths)
+const footstepSounds = ["/SG/walk_0.mp3", "/SG/walk_1.mp3", "/SG/walk_2.mp3"];
+
+function playFootstepSound() {
+    let soundPath = footstepSounds[Math.floor(Math.random() * footstepSounds.length)];
+    playSound(soundPath);
+}
 
 // ✅ Sound Effects
 const gunshotSounds = ["/SG/Doll_Shooting_0.mp3", "/SG/Doll_Shooting_1.mp3", "/SG/Doll_Shooting_2.mp3", "/SG/Doll_Shooting_3.mp3"];
@@ -300,45 +305,43 @@ function addToLeaderboard(player) {
     }
 }
 
-// ✅ Function to Eliminate Players Randomly (Ensures Some Players Survive)
+// ✅ Ensure Killing is Spaced Out (1 Second Per Kill)
 function eliminatePlayers() {
     if (!isGreenLight && players.length > 0) {
-        let playersToKill = [...players]; // ✅ Make a copy to avoid modifying array while looping
+        let remainingPlayers = [...players];
 
-        function killNextPlayer() {
-            if (playersToKill.length === 0 || isGreenLight) return; // ✅ Stop if all killed or Green Light starts
+        function killNext() {
+            if (remainingPlayers.length === 0 || isGreenLight) return;
+            
+            let randomIndex = Math.floor(Math.random() * remainingPlayers.length);
+            let playerToKill = remainingPlayers.splice(randomIndex, 1)[0];
 
-            let randomIndex = Math.floor(Math.random() * playersToKill.length);
-            let player = playersToKill.splice(randomIndex, 1)[0]; // ✅ Remove from list
-
-            if (player) {
-                let survivalChance = Math.random(); // 🎲 Generates a number between 0 and 1
-
+            if (playerToKill && !playerToKill.isDead) {
+                let survivalChance = Math.random();
                 if (survivalChance < 0.5) {
-                    // ✅ 50% chance to kill
-                    displayDeath(player);
+                    displayDeath(playerToKill);
                 } else {
-                    console.log(`🎉 ${player.nameTag.innerText} survived Red Light!`);
+                    console.log(`🎉 ${playerToKill.nameTag.innerText} survived!`);
                 }
             }
-
-            // ✅ Wait 1 second before attempting to kill another player
-            setTimeout(killNextPlayer, 1000);
+            
+            if (remainingPlayers.length > 0) {
+                setTimeout(killNext, 1000); // ✅ Space out kills
+            }
         }
-
-        // ✅ Start first kill attempt
-        killNextPlayer();
+        
+        killNext();
     }
 }
 
 // ✅ Modify Death Function to Ensure Dead Bodies Spawn at Correct Location
 function displayDeath(player) {
-    if (!player || !player.element) return;
+    if (!player || player.isDead) return; // ✅ Prevent killing twice
 
     // ✅ Play gunshot sound once
-    playSound(gunshotSounds);
-    setTimeout(() => playSound(hitSounds), 100);
-    setTimeout(() => playSound(deathSounds), 500); // 🔹 Slight delay prevents overload
+    playSound(gunshotSounds[Math.floor(Math.random() * gunshotSounds.length)]);
+    setTimeout(() => playSound(hitSounds[Math.floor(Math.random() * hitSounds.length)]), 100);
+    setTimeout(() => playSound(deathSounds[Math.floor(Math.random() * deathSounds.length)]), 300);
 
     screenShake(); // ✅ Add screen shake effect on elimination
 
@@ -711,13 +714,24 @@ function increaseCombo() {
     setTimeout(() => comboContainer.classList.remove("flash-effect"), 200);
 }
 
-// ✅ Play Sound Function
-function playSound(soundPath) {
-    let audio = new Audio(soundPath);
-    audio.volume = 0.8; // Default volume
-    audio.play();
-}
+// ✅ Store Preloaded Sounds and Prevent Duplication
+let preloadedAudio = {};
 
+// ✅ Helper Function to Play Sounds Efficiently
+function playSound(soundPath) {
+    if (!preloadedAudio[soundPath]) {
+        preloadedAudio[soundPath] = new Audio(soundPath);
+    }
+    
+    let sound = preloadedAudio[soundPath];
+
+    // ✅ Only play if not already playing
+    if (!sound.paused) return;
+
+    sound.currentTime = 0;
+    sound.volume = 0.5;
+    sound.play().catch(error => console.warn("🔇 Audio play prevented:", error));
+}
 
 // ✅ FUNCTION TO DECREASE COMBO BAR
 function decreaseComboBar() {
@@ -743,31 +757,6 @@ const comboSounds = [
     "/SG/Combo_0.mp3", "/SG/Combo_1.mp3", "/SG/Combo_2.mp3", "/SG/Combo_3.mp3", "/SG/Combo_4.mp3", "/SG/Combo_5.mp3", "/SG/Combo_6.mp3", "/SG/Combo_7.mp3", "/SG/Combo_8.mp3", "/SG/Combo_9.mp3"
 ];
 const comboEndSound = "/SG/Combo_over.mp3";
-
-function increaseCombo() {
-    if (!comboActive) {
-        comboActive = true;
-        comboContainer.style.display = "block";
-        comboCount = 0;
-        comboBarWidth = 200;
-        decreaseComboBar();
-    }
-
-    comboCount++;
-    comboText.innerText = `Combo: ${comboCount}`;
-    comboBarWidth = Math.min(comboBarWidth + 10, 200);
-
-    // 🎵 Get volume based on combo count (increases every 5 points)
-    let volumeIncrease = Math.min(1, 0.2 + (Math.floor(comboCount / 5) * 0.1)); // Max volume capped at 1
-
-    let soundIndex = Math.min(comboCount, comboSounds.length - 1);
-    let selectedSound = comboSounds[soundIndex];
-
-    playSoundWithVolume(selectedSound, volumeIncrease);
-
-    comboContainer.classList.add("flash-effect");
-    setTimeout(() => comboContainer.classList.remove("flash-effect"), 200);
-}
 
 // ✅ New function to play sound with volume control
 function playSoundWithVolume(soundPath, volume) {
