@@ -422,8 +422,14 @@ function startRoundCountdown() {
     buzzerSound.play();
     countdownTimer = setInterval(() => {
         countdownTimerElement.innerText = `Time Left: ${timeLeft}`;
-        if (timeLeft <= 10) countdownSound.play();
         
+        if (timeLeft <= 10) countdownSound.play();
+
+        // 🎤 Play countdown voices for last 3 seconds
+        if (timeLeft === 3) playSound("/SG/Woman_Voice_UI_Count_Down_3.mp3");
+        if (timeLeft === 2) playSound("/SG/Woman_Voice_UI_Count_Down_2.mp3");
+        if (timeLeft === 1) playSound("/SG/Woman_Voice_UI_Count_Down_1.mp3");
+
         if (timeLeft === 0) {
             clearInterval(countdownTimer);
             countdownEndSound.play();
@@ -593,6 +599,19 @@ function startRedLight() {
             clearInterval(killInterval); // ✅ Stop when time runs out
         }
     }, 1000); // ✅ Kill one player per second
+
+    // 🎤 Play a random voice line between 0 to 3 seconds after Red Light starts
+    setTimeout(() => {
+        let randomVoiceLine = [
+            "/SG/Woman_Voice_UI_00.mp3",
+            "/SG/Woman_Voice_UI_01.mp3",
+            "/SG/Woman_Voice_UI_02.mp3",
+            "/SG/Woman_Voice_UI_03.mp3",
+            "/SG/Woman_Voice_UI_04.mp3",
+            "/SG/Woman_Voice_UI_05.mp3"
+        ];
+        playSound(randomVoiceLine[Math.floor(Math.random() * randomVoiceLine.length)]);
+    }, Math.random() * 3000); // 🔄 Play sound randomly between 0 and 3 seconds
 
     setTimeout(() => {
         clearInterval(killInterval);
@@ -821,6 +840,26 @@ window.addEventListener("keydown", (event) => {
         increaseCombo();
     }
 });
+
+// Play a Random Ambient
+function playAmbientDollVoice() {
+    let ambientVoiceLines = [
+        "/SG/Woman_Voice_ambience_00.mp3",
+        "/SG/Woman_Voice_ambience_01.mp3",
+        "/SG/Woman_Voice_ambience_02.mp3",
+        "/SG/Woman_Voice_ambience_03.mp3",
+        "/SG/Woman_Voice_ambience_04.mp3"
+    ];
+    
+    playSound(ambientVoiceLines[Math.floor(Math.random() * ambientVoiceLines.length)]);
+    
+    // 🔄 Schedule next voice line in 20-45 seconds
+    setTimeout(playAmbientDollVoice, Math.random() * (45000 - 20000) + 20000);
+}
+
+// ✅ Start ambient voice lines when the game starts
+setTimeout(playAmbientDollVoice, Math.random() * (45000 - 20000) + 20000);
+
 
 // ✅ Start Game
 dollMusic.loop = true;
