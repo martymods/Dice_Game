@@ -280,6 +280,27 @@ app.get('/leaderboard', (req, res) => {
     res.json(sortedPlayers.map(([wallet, data]) => ({ wallet, points: data.points })));
 });
 
+app.post("/api/tiktok/webhook", (req, res) => {
+    try {
+        console.log("📡 Webhook Event Received:", req.body);
+        
+        // Send an immediate success response (TikTok requires 200 OK)
+        res.status(200).json({ success: true });
+
+        // Process the event asynchronously (so TikTok gets a fast response)
+        setTimeout(() => {
+            if (req.body && req.body.event) {
+                console.log("✅ TikTok Webhook Data Processed:", req.body);
+                // 🔹 Here you can add logic to handle events (e.g., GiftReceived, ChatMessage, etc.)
+            }
+        }, 100);
+
+    } catch (error) {
+        console.error("❌ Webhook Error:", error);
+        res.status(500).json({ error: "Server error processing webhook." });
+    }
+});
+
 
 // Start Server
 server.listen(port, () => {
