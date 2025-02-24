@@ -389,10 +389,10 @@ function displayDeath(player) {
     }, 100);
 
     // ✅ Remove player after 2 seconds
-    setTimeout(() => {
+
         if (player.element) player.element.remove();
         players = players.filter(p => p !== player);
-    }, 2000);
+    
 }
 
 function removeAllPlayers() {
@@ -548,6 +548,13 @@ function startGreenLight() {
     isGreenLight = true;
 
     console.log("🟢 Green Light! Players Move.");
+    
+    // ✅ Reset the doll image to default when Green Light starts
+    let dollImg = document.getElementById("doll-attack");
+    if (dollImg) {
+        dollImg.src = "/SG/Doll_Attack.gif";
+    }
+
     toggleDollImage(); // Show doll when Green Light starts
     playSound([dollReloadSound.src]);
     dollTalkSound.playbackRate = Math.random() * (1.5 - 0.5) + 0.5;
