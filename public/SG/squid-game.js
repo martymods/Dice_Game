@@ -753,15 +753,14 @@ function resetGame() {
 }
 
 // ✅ Function to Add Players Using TikTok Username
-function addPlayer(tiktokUsername) {
+function addPlayer(tiktokUsername = null) {
     if (!characterSprites || characterSprites.length === 0) return;
 
     const index = players.length % characterSprites.length;
-    const randomNumber = Math.floor(Math.random() * 99999) + 1;
     const spawnX = Math.random() * (canvas.width - 50) + 10;
 
-    // ✅ Use TikTok username if provided, else use default PlayerX
-    let playerName = tiktokUsername ? tiktokUsername : `Player${players.length + 1}`;
+    // ✅ Use TikTok username if available, otherwise use "PlayerX"
+    let playerName = tiktokUsername && tiktokUsername.trim() !== "" ? tiktokUsername : `Player${players.length + 1}`;
 
     const playerElement = document.createElement('img');
     playerElement.src = characterSprites[index].idle;
@@ -774,7 +773,7 @@ function addPlayer(tiktokUsername) {
 
     const nameTag = document.createElement('span');
     nameTag.className = 'player-name';
-    nameTag.innerText = playerName; // ✅ Use TikTok username
+    nameTag.innerText = playerName; // ✅ Set TikTok username
     nameTag.style.left = `${spawnX}px`;
     nameTag.style.top = `${canvas.height - 80}px`;
     nameTag.style.position = 'absolute';
@@ -786,13 +785,12 @@ function addPlayer(tiktokUsername) {
         x: spawnX,
         y: canvas.height - 60,
         spriteIndex: index,
-        name: playerName, // ✅ Store TikTok username
-        number: randomNumber,
+        name: playerName, // ✅ Save actual TikTok username
         element: playerElement,
         nameTag: nameTag
     });
 
-    console.log(`🎮 New Player Joined: ${playerName}`); // ✅ Debugging log
+    console.log(`🎮 New Player Joined: ${playerName}`);
 }
 
 // ✅ Global Variable to Store Incoming TikTok Usernames
@@ -939,5 +937,4 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
-
 
