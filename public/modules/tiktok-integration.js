@@ -4,30 +4,36 @@
 async function initializeTikTokChat() {
     try {
         console.log("🔄 Requesting TikTok Access Token...");
-
         const tokenResponse = await fetch("/api/tiktok/token", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
         });
 
-        if (!tokenResponse.ok) throw new Error(`❌ Token Fetch Failed: ${tokenResponse.statusText}`);
+        if (!tokenResponse.ok) {
+            console.error("❌ Token Fetch Failed:", await tokenResponse.text());
+            return;
+        }
 
         const tokenData = await tokenResponse.json();
         const accessToken = tokenData.access_token;
 
-        if (!accessToken) throw new Error("❌ Access Token is missing!");
+        if (!accessToken) {
+            console.error("❌ No Access Token Received!");
+            return;
+        }
 
         console.log("✅ TikTok Access Token Received:", accessToken);
 
-        // ✅ Open WebSocket for TikTok chat
+        // Open WebSocket for TikTok chat
         const chatSocket = new WebSocket(`wss://tiktok.live.chat/stream?access_token=${accessToken}`);
 
-        chatSocket.onopen = () => console.log("✅ WebSocket Connection Established!");
-        chatSocket.onerror = (error) => console.error("❌ WebSocket Error:", error);
         chatSocket.onmessage = (event) => {
-            console.log("📩 Message from TikTok Chat:", event.data);
             const message = JSON.parse(event.data);
             handleChatMessage(message);
+        };
+
+        chatSocket.onerror = (error) => {
+            console.error("❌ TikTok WebSocket Error:", error);
         };
 
     } catch (error) {
