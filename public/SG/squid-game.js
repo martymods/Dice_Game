@@ -274,7 +274,8 @@ function playSound(soundArray) {
 function drawBackground() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-    ctx.drawImage(dollImage, canvas.width / 2 - 50, 20, 100, 100);
+
+    // ❌ Removed dollImage from being drawn on the canvas
 
     // ✅ Draw Winner Line
     ctx.beginPath();
