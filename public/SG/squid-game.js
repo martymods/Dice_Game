@@ -156,7 +156,7 @@ function preloadImages(imagePaths) {
     });
 }
 
-// ✅ Modify UpdatePlayers to Use Preloaded Images
+// ✅ Modify UpdatePlayers to Use Preloaded Images & Ensure Players Are Marked as Winners
 function updatePlayers() {
     players.forEach(player => {
         if (!player || !player.element || !player.nameTag) return;
@@ -180,12 +180,14 @@ function updatePlayers() {
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`;
 
-        // ✅ Handle Winner Line Detection
-        if (player.y <= winnerLineY) {
+        // ✅ Handle Winner Line Detection (Keeps Leaderboard)
+        if (player.y <= winnerLineY && !leaderboardScores[player.nameTag.innerText]) {
             if (!firstWinnerTime) {
                 firstWinnerTime = Date.now();
                 startRoundCountdown();
             }
+
+            leaderboardScores[player.nameTag.innerText] = true; // ✅ Mark as a winner
             addToLeaderboard(player);
         }
     });
@@ -312,7 +314,7 @@ function addToLeaderboard(player) {
 // ✅ Ensure Killing is Spaced Out (1 Second Per Kill) and Skip Winners
 function eliminatePlayers() {
     if (!isGreenLight && players.length > 0) {
-        let alivePlayers = players.filter(p => !p.isDead && p.y > winnerLineY); // 🔹 Exclude players past the line
+        let alivePlayers = players.filter(p => !p.isDead && !p.hasCrossedLine); // ✅ Exclude winners
 
         function killNext() {
             if (alivePlayers.length === 0 || isGreenLight) return;
@@ -322,7 +324,7 @@ function eliminatePlayers() {
 
             if (playerToKill && !playerToKill.isDead) {
                 let survivalChance = Math.random();
-                if (survivalChance < 0.6) {
+                if (survivalChance < 0.5) {
                     displayDeath(playerToKill);
                 }
             }
@@ -335,7 +337,6 @@ function eliminatePlayers() {
         killNext();
     }
 }
-
 
 // ✅ Updated Function: Display Death with Blood GIF + Splatter
 function displayDeath(player) {
