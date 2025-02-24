@@ -311,7 +311,7 @@ function addToLeaderboard(player) {
 // ✅ Ensure Killing is Spaced Out (1 Second Per Kill)
 function eliminatePlayers() {
     if (!isGreenLight && players.length > 0) {
-        let alivePlayers = players.filter(p => !p.isDead); // Only consider players who are alive
+        let alivePlayers = players.filter(p => !p.isDead && p.y > winnerLineY); // 🔹 Only players who haven't crossed the red line
 
         function killNext() {
             if (alivePlayers.length === 0 || isGreenLight) return;
@@ -400,27 +400,19 @@ function startRoundCountdown() {
     countdownTimer = setInterval(() => {
         countdownTimerElement.innerText = `Time Left: ${timeLeft}`;
         if (timeLeft <= 10) countdownSound.play();
-        
+
         if (timeLeft === 0) {
             clearInterval(countdownTimer);
             countdownEndSound.play();
-            
-            isGreenLight = false; // ✅ Force stop Green Light
-            isDollShooting = true; // ✅ Ensure Red Light actions occur
-            startRedLight(); // ✅ Immediately start Red Light phase
-        
-            eliminatePlayers(); // Ensure remaining players are eliminated
-            removeAllPlayers(); // Remove all players who didn't die
-        
-            // ✅ Remove ALL red death messages from the screen
-            removeDeathMessages();
-        
-            if (countdownTimerElement) {
-                countdownTimerElement.remove();
-                countdownTimerElement = null;
-            }
-        
-            setTimeout(resetGame, 3000);
+
+            isGreenLight = false;  // ✅ Stop movement
+            isDollShooting = false; // ✅ Disable shooting
+            eliminatePlayers(); // ✅ Last check for players still in danger
+
+            setTimeout(() => {
+                announceWinners(); // ✅ Call function to announce winners
+                resetGame(); // ✅ Reset the game after a brief delay
+            }, 3000);
         }
         
         timeLeft--;
@@ -771,6 +763,19 @@ window.addEventListener("keydown", (event) => {
 });
 
 // ✅ Start Game
+function announceWinners() {
+    let winners = players.filter(player => player.y <= winnerLineY);
+    
+    if (winners.length > 0) {
+        let winnerNames = winners.map(player => player.nameTag.innerText).join(", ");
+        alert(`🏆 Winners: ${winnerNames}`);
+    } else {
+        alert("❌ No winners this round!");
+    }
+}
+
+
+// Announce Winners
 dollMusic.loop = true;
 dollMusic.play();
 requestAnimationFrame(gameLoop);
