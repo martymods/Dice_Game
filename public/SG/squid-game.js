@@ -156,7 +156,7 @@ function preloadImages(imagePaths) {
     });
 }
 
-// ✅ Modify UpdatePlayers to Use Preloaded Images & Ensure Players Are Marked as Winners
+// ✅ Modify UpdatePlayers to Ensure Players Are Marked as Safe
 function updatePlayers() {
     players.forEach(player => {
         if (!player || !player.element || !player.nameTag) return;
@@ -180,14 +180,17 @@ function updatePlayers() {
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`;
 
-        // ✅ Handle Winner Line Detection (Keeps Leaderboard)
-        if (player.y <= winnerLineY && !leaderboardScores[player.nameTag.innerText]) {
+        // ✅ Handle Winner Line Detection and Ensure Players Are "Safe"
+        if (player.y <= winnerLineY && !player.hasCrossedLine) {
+            player.hasCrossedLine = true; // ✅ Mark as Safe
+            console.log(`🏁 ${player.nameTag.innerText} has crossed the line!`);
+
             if (!firstWinnerTime) {
                 firstWinnerTime = Date.now();
                 startRoundCountdown();
             }
 
-            leaderboardScores[player.nameTag.innerText] = true; // ✅ Mark as a winner
+            leaderboardScores[player.nameTag.innerText] = true; // ✅ Add to leaderboard
             addToLeaderboard(player);
         }
     });
@@ -314,7 +317,7 @@ function addToLeaderboard(player) {
 // ✅ Ensure Killing is Spaced Out (1 Second Per Kill) and Skip Winners
 function eliminatePlayers() {
     if (!isGreenLight && players.length > 0) {
-        let alivePlayers = players.filter(p => !p.isDead && !p.hasCrossedLine); // ✅ Exclude winners
+        let alivePlayers = players.filter(p => !p.isDead && !p.hasCrossedLine); // ✅ Exclude players who crossed
 
         function killNext() {
             if (alivePlayers.length === 0 || isGreenLight) return;
