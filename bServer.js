@@ -81,6 +81,14 @@ let winningNumber = Math.floor(Math.random() * 50000) + 1;
 // TikTok Token Route
 app.post('/api/tiktok/token', async (req, res) => {
     try {
+        console.log("📡 TikTok Token Request Received...");
+
+        // Ensure environment variables are set
+        if (!process.env.TIKTOK_CLIENT_KEY || !process.env.TIKTOK_CLIENT_SECRET) {
+            console.error("❌ TikTok API Keys are missing!");
+            return res.status(500).json({ error: "TikTok API credentials missing." });
+        }
+
         const response = await fetch('https://open-api.tiktok.com/oauth/access_token/', {
             method: 'POST',
             headers: {
@@ -95,17 +103,26 @@ app.post('/api/tiktok/token', async (req, res) => {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('❌ TikTok API Error:', errorText);
-            return res.status(response.status).json({ error: 'Failed to fetch TikTok token' });
+            console.error("❌ TikTok API Error:", errorText);
+            return res.status(response.status).json({ error: "Failed to fetch TikTok token", details: errorText });
         }
 
         const data = await response.json();
+
+        if (!data.access_token) {
+            console.error("❌ TikTok returned an invalid token response:", data);
+            return res.status(500).json({ error: "TikTok did not return an access token." });
+        }
+
+        console.log("✅ TikTok Access Token Fetched Successfully!");
         res.json({ access_token: data.access_token });
+
     } catch (error) {
-        console.error('❌ Error fetching TikTok token:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error("❌ Error fetching TikTok token:", error);
+        res.status(500).json({ error: "Server error while fetching TikTok token" });
     }
 });
+
 
 // Pot Route
 app.get('/pot', (req, res) => {
