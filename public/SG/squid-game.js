@@ -337,25 +337,19 @@ function eliminatePlayers() {
 
 // ✅ Updated Function: Remove Character Instantly When Shot
 function displayDeath(player) {
-    if (!player || player.isDead) return; // ✅ Prevent multiple deaths
-    player.isDead = true; // ✅ Mark player as dead
+    if (!player || player.isDead) return; // Prevent multiple deaths
+    player.isDead = true; // Mark player as dead
 
-    // ✅ Play sound effects
+    // ✅ Play death sound effects
     playSound(gunshotSounds[Math.floor(Math.random() * gunshotSounds.length)]);
     setTimeout(() => playSound(hitSounds[Math.floor(Math.random() * hitSounds.length)]), 100);
     setTimeout(() => playSound(deathSounds[Math.floor(Math.random() * deathSounds.length)]), 300);
 
-    screenShake(); // ✅ Add screen shake effect
-
-    // ✅ Instantly remove character before showing the dead body
-    if (player.element) {
-        player.element.remove(); // ✅ Remove the character immediately
-    }
-    players = players.filter(p => p !== player); // ✅ Remove player from the array
+    screenShake(); // Add screen shake effect
 
     // ✅ Ensure ONLY ONE Dead Body Spawns
     if (!player.hasDeadBody) {
-        player.hasDeadBody = true; // ✅ Prevent duplicate bodies
+        player.hasDeadBody = true; // Prevent duplicate bodies
 
         const deadBodyElement = new Image();
         let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
@@ -369,12 +363,21 @@ function displayDeath(player) {
 
         deadBodyElement.className = "dead-body";
         deadBodyElement.style.position = "absolute";
-        deadBodyElement.style.left = `${player.x}px`;
-        deadBodyElement.style.top = `${player.y}px`;
+        deadBodyElement.style.left = player.element.style.left;
+        deadBodyElement.style.top = player.element.style.top;
 
         document.getElementById("game-container").appendChild(deadBodyElement);
         deadBodies.push(deadBodyElement);
+
+        // ✅ Change player's name to red upon death
+        player.nameTag.style.color = "red";
+        player.nameTag.style.fontWeight = "bold";
+        player.nameTag.style.textShadow = "2px 2px 5px black";
     }
+
+    // ✅ Instantly remove the player
+    if (player.element) player.element.remove();
+    players = players.filter(p => p !== player);
 }
 
 // ✅ Modify `startRoundCountdown()` to remove players at 0
