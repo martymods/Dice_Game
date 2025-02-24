@@ -161,43 +161,26 @@ function updatePlayers() {
     players.forEach(player => {
         if (!player || !player.element || !player.nameTag) return;
 
-        // ✅ If the player is in the middle of a jump, do not change animation until done
-        if (player.isJumping) return;
+        if (isGreenLight && !isDollShooting) {
+            player.y -= 0.4;
+            
+            // ✅ Use Preloaded Image Instead of Fetching New One
+            if (player.element.src !== preloadedImages[characterSprites[player.spriteIndex].walking].src) {
+                player.element.src = preloadedImages[characterSprites[player.spriteIndex].walking].src;
+            }
 
-        // ✅ Check for collision with dead bodies
-        let collidedWithDeadBody = deadBodies.some(body => {
-            let playerRect = player.element.getBoundingClientRect();
-            let bodyRect = body.getBoundingClientRect();
-            return (
-                playerRect.bottom >= bodyRect.top &&
-                playerRect.top <= bodyRect.bottom &&
-                playerRect.right >= bodyRect.left &&
-                playerRect.left <= bodyRect.right
-            );
-        });
-
-        if (collidedWithDeadBody) {
-            jumpOverDeadBody(player);
+            playFootstepSound(player);
         } else {
-            // ✅ Fix Walking & Idle Animation Switching
-            if (isGreenLight && !isDollShooting) {
-                player.y -= 0.4; // ✅ Move forward
-                if (player.element.src !== characterSprites[player.spriteIndex].walking) {
-                    player.element.src = characterSprites[player.spriteIndex].walking; // ✅ Walking animation
-                }
-                playFootstepSound();
-            } else {
-                if (player.element.src !== characterSprites[player.spriteIndex].idle) {
-                    player.element.src = characterSprites[player.spriteIndex].idle; // ✅ Idle animation for Red Light
-                }
+            if (player.element.src !== preloadedImages[characterSprites[player.spriteIndex].idle].src) {
+                player.element.src = preloadedImages[characterSprites[player.spriteIndex].idle].src;
             }
         }
 
-        // ✅ Update player position in the UI
+        // ✅ Properly Update Position
         player.element.style.top = `${player.y}px`;
         player.nameTag.style.top = `${player.y - 20}px`;
 
-        // ✅ Handle winner line detection
+        // ✅ Handle Winner Line Detection
         if (player.y <= winnerLineY) {
             if (!firstWinnerTime) {
                 firstWinnerTime = Date.now();
@@ -253,14 +236,14 @@ const deadBodySprites = [
 
 // ✅ Character Sprites
 const characterSprites = [
-    { idle: "/SG/char_0_0.gif", walking: "/SG/char_0_1.gif", jumping: "/SG/char_0_2.gif" },
-    { idle: "/SG/char_1_0.gif", walking: "/SG/char_1_1.gif", jumping: "/SG/char_1_2.gif" },
-    { idle: "/SG/char_2_0.gif", walking: "/SG/char_2_1.gif", jumping: "/SG/char_2_2.gif" },
-    { idle: "/SG/char_3_0.gif", walking: "/SG/char_3_1.gif", jumping: "/SG/char_3_2.gif" },
-    { idle: "/SG/char_4_0.gif", walking: "/SG/char_4_1.gif", jumping: "/SG/char_4_2.gif" },
-    { idle: "/SG/char_5_0.gif", walking: "/SG/char_5_1.gif", jumping: "/SG/char_5_2.gif" },
-    { idle: "/SG/char_6_0.gif", walking: "/SG/char_6_1.gif", jumping: "/SG/char_6_2.gif" },
-    { idle: "/SG/char_7_0.gif", walking: "/SG/char_7_1.gif", jumping: "/SG/char_7_2.gif" }
+    { idle: "/SG/char_0_0.gif", walking: "/SG/char_0_1.gif" },
+    { idle: "/SG/char_1_0.gif", walking: "/SG/char_1_1.gif" },
+    { idle: "/SG/char_2_0.gif", walking: "/SG/char_2_1.gif" },
+    { idle: "/SG/char_3_0.gif", walking: "/SG/char_3_1.gif" },
+    { idle: "/SG/char_4_0.gif", walking: "/SG/char_4_1.gif" },
+    { idle: "/SG/char_5_0.gif", walking: "/SG/char_5_1.gif" },
+    { idle: "/SG/char_6_0.gif", walking: "/SG/char_6_1.gif" },
+    { idle: "/SG/char_7_0.gif", walking: "/SG/char_7_1.gif" }
 ];
 
 // ✅ Store audio elements to reuse them
@@ -354,52 +337,62 @@ function eliminatePlayers() {
 
 // ✅ Updated Function: Prevent Multiple Dead Body Spawns
 function displayDeath(player) {
-    if (!player || player.isDead) return; // ✅ Prevent multiple deaths
-    player.isDead = true; // ✅ Mark player as dead
+    if (!player || player.isDead) return; // Prevent multiple deaths
+    player.isDead = true; // Mark player as dead
 
     // ✅ Play sound effects
     playSound(gunshotSounds[Math.floor(Math.random() * gunshotSounds.length)]);
     setTimeout(() => playSound(hitSounds[Math.floor(Math.random() * hitSounds.length)]), 100);
     setTimeout(() => playSound(deathSounds[Math.floor(Math.random() * deathSounds.length)]), 300);
 
-    screenShake(); // ✅ Add screen shake effect
+    screenShake(); // Add screen shake effect
 
-    // ✅ Change Player Name to Red (keep it red over dead body)
+    // ✅ Update player name to indicate death
     player.nameTag.style.color = "red";
     player.nameTag.style.fontWeight = "bold";
     player.nameTag.style.textShadow = "2px 2px 5px black";
 
-    // ✅ Remove the player instantly before showing the dead body
-    if (player.element) player.element.remove();
-    players = players.filter(p => p !== player);
-
-    // ✅ Ensure ONLY ONE Dead Body Spawns
-    if (!player.hasDeadBody) {
-        player.hasDeadBody = true; // ✅ Prevent duplicate bodies
-
-        const deadBodyElement = new Image();
-        let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
-
-        if (preloadedImages[deadBodySprite]) {
-            deadBodyElement.src = preloadedImages[deadBodySprite].src;
+    let deathIndex = 0;
+    const deathAnimation = setInterval(() => {
+        if (deathIndex < bloodExplosionFrames.length) {
+            let explosionImage = preloadedImages[bloodExplosionFrames[deathIndex]];
+            if (explosionImage) {
+                player.element.src = explosionImage.src;
+            }
+            deathIndex++;
         } else {
-            console.error("❌ Dead body image not found in preloadedImages:", deadBodySprite);
-            return;
+            clearInterval(deathAnimation);
+
+            // ✅ Ensure ONLY ONE Dead Body Spawns
+            if (!player.hasDeadBody) {
+                player.hasDeadBody = true; // Prevent duplicate bodies
+
+                const deadBodyElement = new Image();
+                let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+
+                if (preloadedImages[deadBodySprite]) {
+                    deadBodyElement.src = preloadedImages[deadBodySprite].src;
+                } else {
+                    console.error("❌ Dead body image not found in preloadedImages:", deadBodySprite);
+                    return;
+                }
+
+                deadBodyElement.className = "dead-body";
+                deadBodyElement.style.position = "absolute";
+                deadBodyElement.style.left = player.element.style.left;
+                deadBodyElement.style.top = player.element.style.top;
+
+                document.getElementById("game-container").appendChild(deadBodyElement);
+                deadBodies.push(deadBodyElement);
+            }
         }
+    }, 100);
 
-        deadBodyElement.className = "dead-body";
-        deadBodyElement.style.position = "absolute";
-        deadBodyElement.style.left = player.element.style.left;
-        deadBodyElement.style.top = player.element.style.top;
-
-        document.getElementById("game-container").appendChild(deadBodyElement);
-        deadBodies.push(deadBodyElement);
-
-        // ✅ Keep player's name tag over dead body
-        setTimeout(() => {
-            deadBodyElement.insertAdjacentElement('afterend', player.nameTag);
-        }, 100);
-    }
+    // ✅ Remove player after 2 seconds
+    setTimeout(() => {
+        if (player.element) player.element.remove();
+        players = players.filter(p => p !== player);
+    }, 2000);
 }
 
 function removeAllPlayers() {
@@ -801,36 +794,6 @@ window.addEventListener("keydown", (event) => {
     }
 });
 
-// Jump over dead body
-function jumpOverDeadBody(player) {
-    if (player.isJumping) return; // ✅ Prevent multiple jumps
-    player.isJumping = true; // ✅ Set jumping state
-
-    // ✅ Change to jumping animation
-    player.element.src = characterSprites[player.spriteIndex].jumping;
-
-    // ⏳ Wait for GIF duration (600ms), then switch back to normal animation
-    setTimeout(() => {
-        player.isJumping = false;
-
-        // ✅ Ensure the character keeps moving forward
-        if (isGreenLight && !isDollShooting) {
-            player.element.src = characterSprites[player.spriteIndex].walking; // ✅ Resume walking
-            player.y -= 0.4; // ✅ Continue moving forward
-        } else {
-            player.element.src = characterSprites[player.spriteIndex].idle; // ✅ Go idle if Red Light
-        }
-
-        // ✅ Small delay to ensure character moves after jumping
-        setTimeout(() => {
-            if (isGreenLight && !isDollShooting) {
-                player.y -= 0.4;
-            }
-        }, 50);
-
-    }, 600);
-}
-
 // ✅ Start Game
 dollMusic.loop = true;
 dollMusic.play();
@@ -839,3 +802,4 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
