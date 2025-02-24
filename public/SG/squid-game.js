@@ -156,6 +156,13 @@ function preloadImages(imagePaths) {
     });
 }
 
+// ✅ Function that TikFinity Calls When a Player Joins
+function onTikTokGiftReceived(username) {
+    console.log(`🎁 TikTok User Joined: ${username}`);
+
+    latestTikTokUser = username; // ✅ Store the latest TikTok username
+}
+
 // ✅ Modify UpdatePlayers to Ensure Players Are Marked as Safe
 function updatePlayers() {
     players.forEach(player => {
@@ -164,7 +171,6 @@ function updatePlayers() {
         if (isGreenLight && !isDollShooting) {
             player.y -= 0.4;
             
-            // ✅ Use Preloaded Image Instead of Fetching New One
             if (player.element.src !== preloadedImages[characterSprites[player.spriteIndex].walking].src) {
                 player.element.src = preloadedImages[characterSprites[player.spriteIndex].walking].src;
             }
@@ -183,7 +189,7 @@ function updatePlayers() {
         // ✅ Handle Winner Line Detection and Ensure Players Are "Safe"
         if (player.y <= winnerLineY && !player.hasCrossedLine) {
             player.hasCrossedLine = true; // ✅ Mark as Safe
-            console.log(`🏁 ${player.nameTag.innerText} has crossed the line!`);
+            console.log(`🏁 SAFE: ${player.nameTag.innerText} has crossed the line!`); // 🔴 Debugging log
 
             if (!firstWinnerTime) {
                 firstWinnerTime = Date.now();
@@ -317,7 +323,13 @@ function addToLeaderboard(player) {
 // ✅ Ensure Killing is Spaced Out (1 Second Per Kill) and Skip Winners
 function eliminatePlayers() {
     if (!isGreenLight && players.length > 0) {
-        let alivePlayers = players.filter(p => !p.isDead && !p.hasCrossedLine); // ✅ Exclude players who crossed
+        let alivePlayers = players.filter(p => !p.isDead); 
+
+        console.log(`⚠️ CHECKING FOR ELIMINATIONS, ALIVE PLAYERS: ${alivePlayers.length}`);
+
+        alivePlayers = alivePlayers.filter(p => !p.hasCrossedLine); // ✅ Exclude players who crossed
+
+        console.log(`🏁 SAFE PLAYERS EXCLUDED, REMAINING TARGETS: ${alivePlayers.length}`);
 
         function killNext() {
             if (alivePlayers.length === 0 || isGreenLight) return;
@@ -326,6 +338,8 @@ function eliminatePlayers() {
             let playerToKill = alivePlayers.splice(randomIndex, 1)[0];
 
             if (playerToKill && !playerToKill.isDead) {
+                console.log(`💀 ATTEMPTING TO KILL: ${playerToKill.nameTag.innerText}`);
+
                 let survivalChance = Math.random();
                 if (survivalChance < 0.5) {
                     displayDeath(playerToKill);
@@ -738,13 +752,16 @@ function resetGame() {
     firstWinnerTime = null;
 }
 
-// ✅ Function to Add Players (Fixed)
-function addPlayer(name) {
+// ✅ Function to Add Players Using TikTok Username
+function addPlayer(tiktokUsername) {
     if (!characterSprites || characterSprites.length === 0) return;
 
     const index = players.length % characterSprites.length;
     const randomNumber = Math.floor(Math.random() * 99999) + 1;
     const spawnX = Math.random() * (canvas.width - 50) + 10;
+
+    // ✅ Use TikTok username if provided, else use default PlayerX
+    let playerName = tiktokUsername ? tiktokUsername : `Player${players.length + 1}`;
 
     const playerElement = document.createElement('img');
     playerElement.src = characterSprites[index].idle;
@@ -757,7 +774,7 @@ function addPlayer(name) {
 
     const nameTag = document.createElement('span');
     nameTag.className = 'player-name';
-    nameTag.innerText = `${name} (${randomNumber})`;
+    nameTag.innerText = playerName; // ✅ Use TikTok username
     nameTag.style.left = `${spawnX}px`;
     nameTag.style.top = `${canvas.height - 80}px`;
     nameTag.style.position = 'absolute';
@@ -769,17 +786,23 @@ function addPlayer(name) {
         x: spawnX,
         y: canvas.height - 60,
         spriteIndex: index,
-        name: name,
+        name: playerName, // ✅ Store TikTok username
         number: randomNumber,
         element: playerElement,
         nameTag: nameTag
     });
+
+    console.log(`🎮 New Player Joined: ${playerName}`); // ✅ Debugging log
 }
 
-// ✅ Ensure pressing '1' still spawns players
+// ✅ Global Variable to Store Incoming TikTok Usernames
+let latestTikTokUser = null;
+
+// ✅ Listen for the "1" key press to spawn a TikTok user's character
 window.addEventListener('keydown', event => {
     if (event.key === '1') {
-        addPlayer(`Player${players.length + 1}`);
+        addPlayer(latestTikTokUser); // ✅ Use TikTok username instead of "PlayerX"
+        latestTikTokUser = null; // ✅ Reset after spawning character
     }
 });
 
@@ -916,4 +939,5 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
 
