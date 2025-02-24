@@ -1,26 +1,37 @@
 // tiktok-integration.js //
 
+// ✅ Initialize TikTok Chat with Error Handling
 async function initializeTikTokChat() {
     try {
+        console.log("🔄 Requesting TikTok Access Token...");
+
         const tokenResponse = await fetch("/api/tiktok/token", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
         });
+
+        if (!tokenResponse.ok) throw new Error(`❌ Token Fetch Failed: ${tokenResponse.statusText}`);
 
         const tokenData = await tokenResponse.json();
         const accessToken = tokenData.access_token;
 
-        // Open WebSocket for TikTok chat
+        if (!accessToken) throw new Error("❌ Access Token is missing!");
+
+        console.log("✅ TikTok Access Token Received:", accessToken);
+
+        // ✅ Open WebSocket for TikTok chat
         const chatSocket = new WebSocket(`wss://tiktok.live.chat/stream?access_token=${accessToken}`);
 
+        chatSocket.onopen = () => console.log("✅ WebSocket Connection Established!");
+        chatSocket.onerror = (error) => console.error("❌ WebSocket Error:", error);
         chatSocket.onmessage = (event) => {
+            console.log("📩 Message from TikTok Chat:", event.data);
             const message = JSON.parse(event.data);
             handleChatMessage(message);
         };
+
     } catch (error) {
-        console.error("Error initializing TikTok Chat:", error);
+        console.error("❌ Error initializing TikTok Chat:", error);
     }
 }
 
@@ -45,9 +56,13 @@ const pollVotes = { heads: 0, tails: 0 };
 
 // ✅ TikFinity Integration: Capture Gift Givers and Spawn Players
 window.addEventListener("message", (event) => {
-    if (event.data?.event === "GiftReceived") {
-        console.log("Gift received from:", event.data.username);
-        addTikTokPlayer(event.data.username);
+    if (event.data?.event === "GiftReceived" && event.data.username) {
+        console.log(`🎁 TikTok Gift Received from @${event.data.username}`);
+
+        // ✅ Store username and pass it to the game
+        latestTikTokUser = event.data.username;
+        addPlayer(latestTikTokUser);
+        latestTikTokUser = null; // ✅ Clear after adding
     }
 });
 
