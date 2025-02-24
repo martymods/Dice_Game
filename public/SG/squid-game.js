@@ -406,15 +406,24 @@ function addBloodSplatter(player) {
         splatterElement.src = preloadedImages[splatterSprite]?.src || splatterSprite;
         splatterElement.className = "blood-splatter";
         splatterElement.style.position = "absolute";
-        splatterElement.style.left = `${parseInt(player.element.style.left) + (Math.random() * 20 - 10)}px`; // Small variation in position
-        splatterElement.style.top = `${parseInt(player.element.style.top) + (Math.random() * 10)}px`;
+
+        // ✅ Adjust Blood Splatter Position (Align with Character)
+        let playerX = parseInt(player.element.style.left);
+        let playerY = parseInt(player.element.style.top);
+
+        splatterElement.style.left = `${playerX + (Math.random() * 20 - 10)}px`; // Small variation in position
+        splatterElement.style.top = `${playerY + (Math.random() * 10)}px`;
         splatterElement.style.width = `${Math.random() * 50 + 50}px`; // Random size
+        splatterElement.style.height = splatterElement.style.width; // Keep aspect ratio
         splatterElement.style.transform = `rotate(${Math.random() * 360}deg)`; // Random rotation
         splatterElement.style.opacity = "0.9";
         splatterElement.style.zIndex = "-1"; // Keep it under dead bodies
 
         document.getElementById("game-container").appendChild(splatterElement);
-        deadBodies.push(splatterElement); // Add to list so they get removed when the timer reaches zero
+        deadBodies.push(splatterElement); // ✅ Add to array so they get removed when round resets
+
+        // ✅ Debugging: Log when a blood splatter is added
+        console.log(`🩸 Blood Splatter ${i + 1} added at (${splatterElement.style.left}, ${splatterElement.style.top})`);
     }
 }
 
