@@ -336,73 +336,99 @@ function eliminatePlayers() {
     }
 }
 
-// ✅ Updated Function: Prevent Multiple Dead Body Spawns
+// ✅ Updated Function: Display Death with Blood GIF + Splatter
 function displayDeath(player) {
-    if (!player || player.isDead) return; // Prevent multiple deaths
-    player.isDead = true; // Mark player as dead
+    if (!player || player.isDead) return; // ✅ Prevent multiple deaths
+    player.isDead = true; // ✅ Mark player as dead
 
     // ✅ Play sound effects
     playSound(gunshotSounds[Math.floor(Math.random() * gunshotSounds.length)]);
     setTimeout(() => playSound(hitSounds[Math.floor(Math.random() * hitSounds.length)]), 100);
     setTimeout(() => playSound(deathSounds[Math.floor(Math.random() * deathSounds.length)]), 300);
 
-    screenShake(); // Add screen shake effect
+    screenShake(); // ✅ Add screen shake effect
 
-    // ✅ Update player name to indicate death
+    // ✅ Change player's name to red upon death
     player.nameTag.style.color = "red";
     player.nameTag.style.fontWeight = "bold";
     player.nameTag.style.textShadow = "2px 2px 5px black";
 
-    let deathIndex = 0;
-    const deathAnimation = setInterval(() => {
-        if (deathIndex < bloodExplosionFrames.length) {
-            let explosionImage = preloadedImages[bloodExplosionFrames[deathIndex]];
-            if (explosionImage) {
-                player.element.src = explosionImage.src;
-            }
-            deathIndex++;
-        } else {
-            clearInterval(deathAnimation);
+    // ✅ Ensure ONLY ONE Dead Body Spawns
+    if (!player.hasDeadBody) {
+        player.hasDeadBody = true; // ✅ Prevent duplicate bodies
 
-            // ✅ Ensure ONLY ONE Dead Body Spawns
-            if (!player.hasDeadBody) {
-                player.hasDeadBody = true; // Prevent duplicate bodies
+        // 🎨 Create Dead Body Image
+        const deadBodyElement = new Image();
+        let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+        deadBodyElement.src = preloadedImages[deadBodySprite]?.src || deadBodySprite;
+        deadBodyElement.className = "dead-body";
+        deadBodyElement.style.position = "absolute";
+        deadBodyElement.style.left = player.element.style.left;
+        deadBodyElement.style.top = player.element.style.top;
+        document.getElementById("game-container").appendChild(deadBodyElement);
+        deadBodies.push(deadBodyElement);
 
-                const deadBodyElement = new Image();
-                let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+        // 🎨 Add Blood Splatter under Dead Body
+        addBloodSplatter(player);
 
-                if (preloadedImages[deadBodySprite]) {
-                    deadBodyElement.src = preloadedImages[deadBodySprite].src;
-                } else {
-                    console.error("❌ Dead body image not found in preloadedImages:", deadBodySprite);
-                    return;
-                }
+        // 🎨 Create Blood Explosion GIF on top of Dead Body
+        const bloodGif = new Image();
+        bloodGif.src = "/SG/BloodSplatter_Explosion.gif";
+        bloodGif.className = "blood-gif";
+        bloodGif.style.position = "absolute";
+        bloodGif.style.left = player.element.style.left;
+        bloodGif.style.top = player.element.style.top;
+        document.getElementById("game-container").appendChild(bloodGif);
 
-                deadBodyElement.className = "dead-body";
-                deadBodyElement.style.position = "absolute";
-                deadBodyElement.style.left = player.element.style.left;
-                deadBodyElement.style.top = player.element.style.top;
+        // ⏳ Remove GIF after animation completes (~1.2 seconds)
+        setTimeout(() => {
+            bloodGif.remove();
+        }, 1200);
+    }
 
-                document.getElementById("game-container").appendChild(deadBodyElement);
-                deadBodies.push(deadBodyElement);
-            }
-        }
-    }, 100);
-
-    // ✅ Remove player after 2 seconds
-
-        if (player.element) player.element.remove();
-        players = players.filter(p => p !== player);
-    
+    // ✅ Instantly remove the player from the game
+    if (player.element) player.element.remove();
+    players = players.filter(p => p !== player);
 }
 
+// ✅ Function to Add Random Blood Splatter Under Dead Body
+function addBloodSplatter(player) {
+    let splatterCount = Math.floor(Math.random() * 3) + 1; // Randomly place 1-3 splatters
+
+    for (let i = 0; i < splatterCount; i++) {
+        let splatterElement = new Image();
+        let splatterSprite = `/SG/Blood_Splatter_0${Math.floor(Math.random() * 9)}.png`; // Pick a random splatter
+
+        splatterElement.src = preloadedImages[splatterSprite]?.src || splatterSprite;
+        splatterElement.className = "blood-splatter";
+        splatterElement.style.position = "absolute";
+        splatterElement.style.left = `${parseInt(player.element.style.left) + (Math.random() * 20 - 10)}px`; // Small variation in position
+        splatterElement.style.top = `${parseInt(player.element.style.top) + (Math.random() * 10)}px`;
+        splatterElement.style.width = `${Math.random() * 50 + 50}px`; // Random size
+        splatterElement.style.transform = `rotate(${Math.random() * 360}deg)`; // Random rotation
+        splatterElement.style.opacity = "0.9";
+        splatterElement.style.zIndex = "-1"; // Keep it under dead bodies
+
+        document.getElementById("game-container").appendChild(splatterElement);
+        deadBodies.push(splatterElement); // Add to list so they get removed when the timer reaches zero
+    }
+}
+
+// ✅ Remove All Players, Dead Bodies, and Blood Splatter at End of Round
 function removeAllPlayers() {
     players.forEach(player => {
         if (player.element) player.element.remove();
         if (player.nameTag) player.nameTag.remove();
     });
-    players = []; // Clear array
+    players = []; // ✅ Clear players
+
+    deadBodies.forEach(body => body.remove()); // ✅ Remove dead bodies
+    deadBodies = []; // ✅ Clear array
+
+    let bloodSplatters = document.querySelectorAll(".blood-splatter");
+    bloodSplatters.forEach(splatter => splatter.remove()); // ✅ Remove all blood splatters
 }
+
 
 // ✅ Modify `startRoundCountdown()` to remove players at 0
 function startRoundCountdown() {
@@ -873,5 +899,4 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
-
 
