@@ -81,7 +81,7 @@ let winningNumber = Math.floor(Math.random() * 50000) + 1;
 // TikTok Token Route
 app.post('/api/tiktok/token', async (req, res) => {
     try {
-        const response = await fetch('https://api.tiktok.com/live/token', {
+        const response = await fetch('https://open-api.tiktok.com/oauth/access_token/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -89,18 +89,20 @@ app.post('/api/tiktok/token', async (req, res) => {
             body: JSON.stringify({
                 client_key: process.env.TIKTOK_CLIENT_KEY,
                 client_secret: process.env.TIKTOK_CLIENT_SECRET,
+                grant_type: 'client_credentials'
             }),
         });
 
         if (!response.ok) {
-            console.error('TikTok API Error:', await response.text());
+            const errorText = await response.text();
+            console.error('❌ TikTok API Error:', errorText);
             return res.status(response.status).json({ error: 'Failed to fetch TikTok token' });
         }
 
         const data = await response.json();
-        res.json(data);
+        res.json({ access_token: data.access_token });
     } catch (error) {
-        console.error('Error fetching TikTok token:', error);
+        console.error('❌ Error fetching TikTok token:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });
