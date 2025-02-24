@@ -311,7 +311,7 @@ function addToLeaderboard(player) {
 // ✅ Ensure Killing is Spaced Out (1 Second Per Kill)
 function eliminatePlayers() {
     if (!isGreenLight && players.length > 0) {
-        let alivePlayers = players.filter(p => !p.isDead && p.y > winnerLineY); // 🔹 Only players who haven't crossed the red line
+        let alivePlayers = players.filter(p => !p.isDead); // Only consider players who are alive
 
         function killNext() {
             if (alivePlayers.length === 0 || isGreenLight) return;
@@ -335,49 +335,72 @@ function eliminatePlayers() {
     }
 }
 
-// ✅ Updated Function: Remove Character Instantly When Shot
+// ✅ Updated Function: Prevent Multiple Dead Body Spawns
 function displayDeath(player) {
     if (!player || player.isDead) return; // Prevent multiple deaths
     player.isDead = true; // Mark player as dead
 
-    // ✅ Play death sound effects
+    // ✅ Play sound effects
     playSound(gunshotSounds[Math.floor(Math.random() * gunshotSounds.length)]);
     setTimeout(() => playSound(hitSounds[Math.floor(Math.random() * hitSounds.length)]), 100);
     setTimeout(() => playSound(deathSounds[Math.floor(Math.random() * deathSounds.length)]), 300);
 
     screenShake(); // Add screen shake effect
 
-    // ✅ Ensure ONLY ONE Dead Body Spawns
-    if (!player.hasDeadBody) {
-        player.hasDeadBody = true; // Prevent duplicate bodies
+    // ✅ Update player name to indicate death
+    player.nameTag.style.color = "red";
+    player.nameTag.style.fontWeight = "bold";
+    player.nameTag.style.textShadow = "2px 2px 5px black";
 
-        const deadBodyElement = new Image();
-        let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
-
-        if (preloadedImages[deadBodySprite]) {
-            deadBodyElement.src = preloadedImages[deadBodySprite].src;
+    let deathIndex = 0;
+    const deathAnimation = setInterval(() => {
+        if (deathIndex < bloodExplosionFrames.length) {
+            let explosionImage = preloadedImages[bloodExplosionFrames[deathIndex]];
+            if (explosionImage) {
+                player.element.src = explosionImage.src;
+            }
+            deathIndex++;
         } else {
-            console.error("❌ Dead body image not found in preloadedImages:", deadBodySprite);
-            return;
+            clearInterval(deathAnimation);
+
+            // ✅ Ensure ONLY ONE Dead Body Spawns
+            if (!player.hasDeadBody) {
+                player.hasDeadBody = true; // Prevent duplicate bodies
+
+                const deadBodyElement = new Image();
+                let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+
+                if (preloadedImages[deadBodySprite]) {
+                    deadBodyElement.src = preloadedImages[deadBodySprite].src;
+                } else {
+                    console.error("❌ Dead body image not found in preloadedImages:", deadBodySprite);
+                    return;
+                }
+
+                deadBodyElement.className = "dead-body";
+                deadBodyElement.style.position = "absolute";
+                deadBodyElement.style.left = player.element.style.left;
+                deadBodyElement.style.top = player.element.style.top;
+
+                document.getElementById("game-container").appendChild(deadBodyElement);
+                deadBodies.push(deadBodyElement);
+            }
         }
+    }, 100);
 
-        deadBodyElement.className = "dead-body";
-        deadBodyElement.style.position = "absolute";
-        deadBodyElement.style.left = player.element.style.left;
-        deadBodyElement.style.top = player.element.style.top;
+    // ✅ Remove player after 2 seconds
+    setTimeout(() => {
+        if (player.element) player.element.remove();
+        players = players.filter(p => p !== player);
+    }, 2000);
+}
 
-        document.getElementById("game-container").appendChild(deadBodyElement);
-        deadBodies.push(deadBodyElement);
-
-        // ✅ Change player's name to red upon death
-        player.nameTag.style.color = "red";
-        player.nameTag.style.fontWeight = "bold";
-        player.nameTag.style.textShadow = "2px 2px 5px black";
-    }
-
-    // ✅ Instantly remove the player
-    if (player.element) player.element.remove();
-    players = players.filter(p => p !== player);
+function removeAllPlayers() {
+    players.forEach(player => {
+        if (player.element) player.element.remove();
+        if (player.nameTag) player.nameTag.remove();
+    });
+    players = []; // Clear array
 }
 
 // ✅ Modify `startRoundCountdown()` to remove players at 0
@@ -400,19 +423,27 @@ function startRoundCountdown() {
     countdownTimer = setInterval(() => {
         countdownTimerElement.innerText = `Time Left: ${timeLeft}`;
         if (timeLeft <= 10) countdownSound.play();
-
+        
         if (timeLeft === 0) {
             clearInterval(countdownTimer);
             countdownEndSound.play();
-
-            isGreenLight = false;  // ✅ Stop movement
-            isDollShooting = false; // ✅ Disable shooting
-            eliminatePlayers(); // ✅ Last check for players still in danger
-
-            setTimeout(() => {
-                announceWinners(); // ✅ Call function to announce winners
-                resetGame(); // ✅ Reset the game after a brief delay
-            }, 3000);
+            
+            isGreenLight = false; // ✅ Force stop Green Light
+            isDollShooting = true; // ✅ Ensure Red Light actions occur
+            startRedLight(); // ✅ Immediately start Red Light phase
+        
+            eliminatePlayers(); // Ensure remaining players are eliminated
+            removeAllPlayers(); // Remove all players who didn't die
+        
+            // ✅ Remove ALL red death messages from the screen
+            removeDeathMessages();
+        
+            if (countdownTimerElement) {
+                countdownTimerElement.remove();
+                countdownTimerElement = null;
+            }
+        
+            setTimeout(resetGame, 3000);
         }
         
         timeLeft--;
@@ -545,6 +576,8 @@ function startRedLight() {
             let playerToKill = players[randomPlayerIndex];
 
             if (playerToKill && !playerToKill.isDead) {
+                // 🎯 Change Doll GIF based on player position
+                updateDollAttackImage(playerToKill);
                 displayDeath(playerToKill);
             }
 
@@ -559,6 +592,25 @@ function startRedLight() {
         isDollShooting = false;
         startGreenLight();
     }, redLightDuration);
+}
+
+// ✅ Function to Change Doll's Attack Image Based on Player Position
+function updateDollAttackImage(player) {
+    let dollImg = document.getElementById("doll-attack");
+    if (!dollImg) return;
+
+    let playerX = player.element.getBoundingClientRect().left;
+    let canvasCenter = canvas.width / 2;
+    let canvasRight = canvas.width - (canvas.width / 3);
+    let canvasLeft = canvas.width / 3;
+
+    if (playerX < canvasLeft) {
+        dollImg.src = "/SG/Doll_Attack_Left.gif"; // 🔴 Use Left GIF
+    } else if (playerX > canvasRight) {
+        dollImg.src = "/SG/Doll_Attack_Right.gif"; // 🔴 Use Right GIF
+    } else {
+        dollImg.src = "/SG/Doll_Attack_Center.gif"; // 🔴 Use Center GIF
+    }
 }
 
 // ✅ Start the game with the first Green Light
@@ -740,6 +792,7 @@ function playSoundWithVolume(soundPath, volume) {
     audio.play();
 }
 
+
 function decreaseComboBar() {
     clearInterval(comboInterval);
     comboInterval = setInterval(() => {
@@ -763,19 +816,6 @@ window.addEventListener("keydown", (event) => {
 });
 
 // ✅ Start Game
-function announceWinners() {
-    let winners = players.filter(player => player.y <= winnerLineY);
-    
-    if (winners.length > 0) {
-        let winnerNames = winners.map(player => player.nameTag.innerText).join(", ");
-        alert(`🏆 Winners: ${winnerNames}`);
-    } else {
-        alert("❌ No winners this round!");
-    }
-}
-
-
-// Announce Winners
 dollMusic.loop = true;
 dollMusic.play();
 requestAnimationFrame(gameLoop);
@@ -783,3 +823,4 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
