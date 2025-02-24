@@ -347,12 +347,9 @@ function displayDeath(player) {
 
     screenShake(); // ✅ Add screen shake effect
 
-    // ✅ Remove the character instantly before showing the dead body
+    // ✅ Instantly remove character before showing the dead body
     if (player.element) {
-        player.element.remove();
-    }
-    if (player.nameTag) {
-        player.nameTag.remove(); // ✅ Instantly remove name tag to prevent overlay issues
+        player.element.remove(); // ✅ Remove the character immediately
     }
     players = players.filter(p => p !== player); // ✅ Remove player from the array
 
