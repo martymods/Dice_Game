@@ -335,72 +335,49 @@ function eliminatePlayers() {
     }
 }
 
-// ✅ Updated Function: Prevent Multiple Dead Body Spawns
+// ✅ Updated Function: Remove Character Instantly When Shot
 function displayDeath(player) {
-    if (!player || player.isDead) return; // Prevent multiple deaths
-    player.isDead = true; // Mark player as dead
+    if (!player || player.isDead) return; // ✅ Prevent multiple deaths
+    player.isDead = true; // ✅ Mark player as dead
 
     // ✅ Play sound effects
     playSound(gunshotSounds[Math.floor(Math.random() * gunshotSounds.length)]);
     setTimeout(() => playSound(hitSounds[Math.floor(Math.random() * hitSounds.length)]), 100);
     setTimeout(() => playSound(deathSounds[Math.floor(Math.random() * deathSounds.length)]), 300);
 
-    screenShake(); // Add screen shake effect
+    screenShake(); // ✅ Add screen shake effect
 
-    // ✅ Update player name to indicate death
-    player.nameTag.style.color = "red";
-    player.nameTag.style.fontWeight = "bold";
-    player.nameTag.style.textShadow = "2px 2px 5px black";
+    // ✅ Remove the character instantly before showing the dead body
+    if (player.element) {
+        player.element.remove();
+    }
+    if (player.nameTag) {
+        player.nameTag.remove(); // ✅ Instantly remove name tag to prevent overlay issues
+    }
+    players = players.filter(p => p !== player); // ✅ Remove player from the array
 
-    let deathIndex = 0;
-    const deathAnimation = setInterval(() => {
-        if (deathIndex < bloodExplosionFrames.length) {
-            let explosionImage = preloadedImages[bloodExplosionFrames[deathIndex]];
-            if (explosionImage) {
-                player.element.src = explosionImage.src;
-            }
-            deathIndex++;
+    // ✅ Ensure ONLY ONE Dead Body Spawns
+    if (!player.hasDeadBody) {
+        player.hasDeadBody = true; // ✅ Prevent duplicate bodies
+
+        const deadBodyElement = new Image();
+        let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
+
+        if (preloadedImages[deadBodySprite]) {
+            deadBodyElement.src = preloadedImages[deadBodySprite].src;
         } else {
-            clearInterval(deathAnimation);
-
-            // ✅ Ensure ONLY ONE Dead Body Spawns
-            if (!player.hasDeadBody) {
-                player.hasDeadBody = true; // Prevent duplicate bodies
-
-                const deadBodyElement = new Image();
-                let deadBodySprite = deadBodySprites[Math.floor(Math.random() * deadBodySprites.length)];
-
-                if (preloadedImages[deadBodySprite]) {
-                    deadBodyElement.src = preloadedImages[deadBodySprite].src;
-                } else {
-                    console.error("❌ Dead body image not found in preloadedImages:", deadBodySprite);
-                    return;
-                }
-
-                deadBodyElement.className = "dead-body";
-                deadBodyElement.style.position = "absolute";
-                deadBodyElement.style.left = player.element.style.left;
-                deadBodyElement.style.top = player.element.style.top;
-
-                document.getElementById("game-container").appendChild(deadBodyElement);
-                deadBodies.push(deadBodyElement);
-            }
+            console.error("❌ Dead body image not found in preloadedImages:", deadBodySprite);
+            return;
         }
-    }, 100);
 
-    // ✅ Remove player after 2 seconds
-    setTimeout(() => {
-        if (player.element) player.element.remove();
-        players = players.filter(p => p !== player);
-    }, 2000);
-}
+        deadBodyElement.className = "dead-body";
+        deadBodyElement.style.position = "absolute";
+        deadBodyElement.style.left = `${player.x}px`;
+        deadBodyElement.style.top = `${player.y}px`;
 
-function removeAllPlayers() {
-    players.forEach(player => {
-        if (player.element) player.element.remove();
-        if (player.nameTag) player.nameTag.remove();
-    });
-    players = []; // Clear array
+        document.getElementById("game-container").appendChild(deadBodyElement);
+        deadBodies.push(deadBodyElement);
+    }
 }
 
 // ✅ Modify `startRoundCountdown()` to remove players at 0
@@ -771,7 +748,6 @@ function playSoundWithVolume(soundPath, volume) {
     audio.play();
 }
 
-
 function decreaseComboBar() {
     clearInterval(comboInterval);
     comboInterval = setInterval(() => {
@@ -802,4 +778,3 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
-
