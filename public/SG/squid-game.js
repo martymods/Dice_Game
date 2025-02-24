@@ -403,27 +403,26 @@ function addBloodSplatter(player) {
         let splatterElement = new Image();
         let splatterSprite = `/SG/Blood_Splatter_0${Math.floor(Math.random() * 9)}.png`; // Pick a random splatter
 
-        splatterElement.src = preloadedImages[splatterSprite]?.src || splatterSprite;
+        splatterElement.src = splatterSprite;
         splatterElement.className = "blood-splatter";
         splatterElement.style.position = "absolute";
 
-        // ✅ Adjust Blood Splatter Position (Align with Character)
+        // ✅ Align with Character's Exact Position
         let playerX = parseInt(player.element.style.left);
         let playerY = parseInt(player.element.style.top);
 
-        splatterElement.style.left = `${playerX + (Math.random() * 20 - 10)}px`; // Small variation in position
-        splatterElement.style.top = `${playerY + (Math.random() * 10)}px`;
-        splatterElement.style.width = `${Math.random() * 50 + 50}px`; // Random size
-        splatterElement.style.height = splatterElement.style.width; // Keep aspect ratio
+        splatterElement.style.left = `${playerX + (Math.random() * 10 - 5)}px`; // Small variation in position
+        splatterElement.style.top = `${playerY + 20}px`; // Move slightly downward to match ground level
+        splatterElement.style.width = `${player.element.clientWidth * 1.2}px`; // Scale to match character size
+        splatterElement.style.height = splatterElement.style.width; // Maintain aspect ratio
         splatterElement.style.transform = `rotate(${Math.random() * 360}deg)`; // Random rotation
-        splatterElement.style.opacity = "0.9";
-        splatterElement.style.zIndex = "-1"; // Keep it under dead bodies
+        splatterElement.style.opacity = "1";
+        splatterElement.style.zIndex = "0"; // Keep under dead bodies
 
         document.getElementById("game-container").appendChild(splatterElement);
-        deadBodies.push(splatterElement); // ✅ Add to array so they get removed when round resets
+        deadBodies.push(splatterElement);
 
-        // ✅ Debugging: Log when a blood splatter is added
-        console.log(`🩸 Blood Splatter ${i + 1} added at (${splatterElement.style.left}, ${splatterElement.style.top})`);
+        console.log(`🩸 Blood Splatter ${i + 1} created at (${splatterElement.style.left}, ${splatterElement.style.top})`);
     }
 }
 
