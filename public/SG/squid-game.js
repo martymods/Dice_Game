@@ -517,13 +517,13 @@ function addDollAttackImage() {
 }
 
 // ✅ Toggle Doll Visibility
-function toggleDollImage() {
+function toggleDollImage(isRedLight) {
     let dollImg = document.getElementById("doll-attack");
-    
+
     if (!dollImg) {
         dollImg = document.createElement("img");
         dollImg.id = "doll-attack";
-        dollImg.src = "/SG/Doll_Attack.gif";
+        dollImg.src = "/SG/Doll_Attack.gif"; // Default Doll Image
         dollImg.style.position = "absolute";
         dollImg.style.bottom = "855px";
         dollImg.style.right = "650px";
@@ -535,11 +535,11 @@ function toggleDollImage() {
         document.body.appendChild(dollImg);
     }
 
-    // ✅ Toggle visibility based on Green Light
-    if (isGreenLight) {
-        dollImg.style.opacity = "1"; // Show image
+    if (isRedLight) {
+        dollImg.style.opacity = "1"; // ✅ Ensure it's visible on Red Light
     } else {
-        dollImg.style.opacity = "0"; // Hide image
+        dollImg.src = "/SG/Doll_Attack.gif"; // ✅ Reset to Default on Green Light
+        dollImg.style.opacity = "1"; // ✅ Keep visible
     }
 }
 
@@ -555,14 +555,13 @@ function startGreenLight() {
     isGreenLight = true;
 
     console.log("🟢 Green Light! Players Move.");
-    
-    // ✅ Reset the doll image to default when Green Light starts
+
     let dollImg = document.getElementById("doll-attack");
     if (dollImg) {
-        dollImg.src = "/SG/Doll_Attack.gif";
+        dollImg.src = "/SG/Doll_Attack.gif"; // ✅ Reset to Default Doll GIF
     }
 
-    toggleDollImage(); // Show doll when Green Light starts
+    toggleDollImage(false); // ✅ Keep Doll visible with Default Image
     playSound([dollReloadSound.src]);
     dollTalkSound.playbackRate = Math.random() * (1.5 - 0.5) + 0.5;
     dollTalkSound.play();
@@ -572,13 +571,14 @@ function startGreenLight() {
     }, Math.random() * (6000 - 3000) + 3000);
 }
 
+
 function startRedLight() {
     if (!isGreenLight) return;
     isGreenLight = false;
     isDollShooting = true;
 
     console.log("🔴 Red Light! Players Stop.");
-    toggleDollImage();
+    toggleDollImage(true); // ✅ Ensure Doll is visible for Red Light
     dollTalkSound.pause();
 
     let redLightDuration = Math.random() * (6000 - 3000) + 3000; // 🔹 3 to 6 seconds
@@ -590,8 +590,7 @@ function startRedLight() {
             let playerToKill = players[randomPlayerIndex];
 
             if (playerToKill && !playerToKill.isDead) {
-                // 🎯 Change Doll GIF based on player position
-                updateDollAttackImage(playerToKill);
+                updateDollAttackImage(playerToKill); // ✅ Change Doll GIF Based on Position
                 displayDeath(playerToKill);
             }
 
@@ -612,7 +611,7 @@ function startRedLight() {
             "/SG/Woman_Voice_UI_05.mp3"
         ];
         playSound(randomVoiceLine[Math.floor(Math.random() * randomVoiceLine.length)]);
-    }, Math.random() * 3000); // 🔄 Play sound randomly between 0 and 3 seconds
+    }, Math.random() * 3000);
 
     setTimeout(() => {
         clearInterval(killInterval);
@@ -624,13 +623,14 @@ function startRedLight() {
 // ✅ Function to Change Doll's Attack Image Based on Player Position
 function updateDollAttackImage(player) {
     let dollImg = document.getElementById("doll-attack");
-    if (!dollImg) return;
+    if (!dollImg) return; // If no doll image, exit
 
     let playerX = player.element.getBoundingClientRect().left;
     let canvasCenter = canvas.width / 2;
     let canvasRight = canvas.width - (canvas.width / 3);
     let canvasLeft = canvas.width / 3;
 
+    // ✅ Choose the appropriate Doll GIF based on the player's position
     if (playerX < canvasLeft) {
         dollImg.src = "/SG/Doll_Attack_Left.gif"; // 🔴 Use Left GIF
     } else if (playerX > canvasRight) {
@@ -638,6 +638,9 @@ function updateDollAttackImage(player) {
     } else {
         dollImg.src = "/SG/Doll_Attack_Center.gif"; // 🔴 Use Center GIF
     }
+
+    // ✅ Ensure the doll is visible
+    dollImg.style.opacity = "1";
 }
 
 // ✅ Start the game with the first Green Light
@@ -870,4 +873,5 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
 
