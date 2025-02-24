@@ -309,10 +309,10 @@ function addToLeaderboard(player) {
     }
 }
 
-// ✅ Ensure Killing is Spaced Out (1 Second Per Kill)
+// ✅ Ensure Killing is Spaced Out (1 Second Per Kill) and Skip Winners
 function eliminatePlayers() {
     if (!isGreenLight && players.length > 0) {
-        let alivePlayers = players.filter(p => !p.isDead); // Only consider players who are alive
+        let alivePlayers = players.filter(p => !p.isDead && p.y > winnerLineY); // 🔹 Exclude players past the line
 
         function killNext() {
             if (alivePlayers.length === 0 || isGreenLight) return;
@@ -322,7 +322,7 @@ function eliminatePlayers() {
 
             if (playerToKill && !playerToKill.isDead) {
                 let survivalChance = Math.random();
-                if (survivalChance < 0.5) {
+                if (survivalChance < 0.6) {
                     displayDeath(playerToKill);
                 }
             }
@@ -335,6 +335,7 @@ function eliminatePlayers() {
         killNext();
     }
 }
+
 
 // ✅ Updated Function: Display Death with Blood GIF + Splatter
 function displayDeath(player) {
