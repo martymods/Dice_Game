@@ -41,6 +41,12 @@ app.get('/modules/tiktok_game.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/modules/tiktok_game.html'));
 });
 
+app.post("/test/webhook", (req, res) => {
+    console.log("✅ Webhook Test Received:", req.body);
+    res.status(200).send("Webhook Test Successful");
+});
+
+
 // Leaderboard
 const leaderboardFile = path.resolve(__dirname, 'leaderboard.json');
 let leaderboard = [];
