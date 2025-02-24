@@ -28,12 +28,16 @@
     <!-- TikFinity Integration -->
     <script src="https://www.tikfinity.com/integration.js"></script>
     <script>
-        window.addEventListener("message", (event) => {
-            if (event.data?.event === "GiftReceived") {
-                console.log("Gift received from:", event.data.username);
-                addTikTokPlayer(event.data.username);
-            }
-        });
+window.addEventListener("message", (event) => {
+    if (event.data?.event === "GiftReceived" && event.data.username) {
+        console.log(`🎁 TikTok Gift Received from @${event.data.username}`);
+
+        // ✅ Store username and pass it to the game
+        latestTikTokUser = event.data.username;
+        addPlayer(latestTikTokUser);
+        latestTikTokUser = null; // ✅ Clear after adding
+    }
+});
     </script>
 
     <!-- Game Scripts -->
