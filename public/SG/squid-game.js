@@ -365,6 +365,8 @@ function displayDeath(player) {
         deadBodyElement.style.position = "absolute";
         deadBodyElement.style.left = player.element.style.left;
         deadBodyElement.style.top = player.element.style.top;
+        deadBodyElement.style.width = player.element.style.width; // ✅ Scale to match player
+        deadBodyElement.style.height = player.element.style.height;
         document.getElementById("game-container").appendChild(deadBodyElement);
         deadBodies.push(deadBodyElement);
 
@@ -378,6 +380,8 @@ function displayDeath(player) {
         bloodGif.style.position = "absolute";
         bloodGif.style.left = player.element.style.left;
         bloodGif.style.top = player.element.style.top;
+        bloodGif.style.width = player.element.style.width; // ✅ Scale to match player
+        bloodGif.style.height = player.element.style.height;
         document.getElementById("game-container").appendChild(bloodGif);
 
         // ⏳ Remove GIF after animation completes (~1.2 seconds)
