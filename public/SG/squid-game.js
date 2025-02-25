@@ -716,7 +716,6 @@ function updateDollAttackImage(player) {
 // ✅ Start the game with the first Green Light
 setTimeout(startGreenLight, Math.random() * (6000 - 3000) + 3000);
 
-
 /* ✅ Cyborg HUD Improvements */
 function addCyborgHud() {
     let hud = document.getElementById("cyborg-hud");
@@ -725,26 +724,22 @@ function addCyborgHud() {
         hud = document.createElement("img");
         hud.id = "cyborg-hud";
         hud.src = "/SG/Cyborg_Hud_0.gif"; // ✅ Start with default image
-        document.body.appendChild(hud);
+        hud.style.position = "absolute";
+        hud.style.bottom = "10px"; // ✅ Move it up slightly
+        hud.style.right = "10px"; // ✅ Move it more into view
+        hud.style.width = "180px"; // ✅ Adjust width for better fit
+        hud.style.height = "auto";
+        hud.style.zIndex = "10"; // ✅ Keep it above the background but below the game UI
+        hud.style.opacity = "1"; 
+        document.getElementById("game-container").appendChild(hud); // ✅ Attach it to the game container
     }
 }
-
-let cyborgHud = document.getElementById("cyborg-hud");
-
-if (cyborgHud) {
-    cyborgHud.classList.add("cy-hud-large"); // ✅ Ensures size control
-    cyborgHud.classList.add("cy-hud-transparent"); // ✅ Allows transparency effect
-}
-
-document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
-document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
 
 // ✅ Run after window fully loads
 window.onload = function () {
     addCyborgHud();
     toggleCyborgHud(); // ✅ Start switching images after loading
 };
-
 
 /* ✅ Red Light Death Visual Effect (Screen Shake) */
 function screenShake() {
@@ -946,4 +941,8 @@ setTimeout(playAmbientDollVoice, Math.random() * (45000 - 20000) + 20000);
 dollMusic.loop = true;
 dollMusic.play();
 requestAnimationFrame(gameLoop);
+
+document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
+document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
+document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
 
