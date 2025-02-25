@@ -65,15 +65,15 @@
     width: 300px;
 }
 
-
 /* ✅ Cyborg HUD - Position, Size, and Visibility */
 #cyborg-hud {
     position: absolute;
-    bottom: 15px; /* Adjust positioning to stay visible */
-    right: 15px; /* Adjust for better placement */
-    width: 180px; /* Resize to fit the screen */
+    bottom: -80px; /* ✅ Moves it lower, below the background */
+    right: 50%; /* ✅ Center horizontally */
+    transform: translateX(50%); /* ✅ Ensures correct centering */
+    width: 220px; /* ✅ Adjust width */
     height: auto;
-    z-index: 10; /* Ensure it stays below the game UI */
+    z-index: -1; /* ✅ Puts it behind the game */
     opacity: 1;
 }
 
