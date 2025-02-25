@@ -343,7 +343,11 @@ function eliminatePlayers() {
                 let survivalChance = Math.random();
                 if (survivalChance < 0.5) {
                     displayDeath(playerToKill);
+                } else {
+                    console.log(`💨 Missed shot! ${playerToKill.nameTag.innerText} survived.`);
+                    updateDollAttackImage(null); // Make the turret show a missed shot
                 }
+                
             }
 
             if (alivePlayers.length > 0) {
@@ -682,21 +686,27 @@ function updateDollAttackImage(player) {
     let dollImg = document.getElementById("doll-attack");
     if (!dollImg) return; // If no doll image, exit
 
+    // If the shot was a miss, keep turret in default idle frame
+    if (!player) {
+        dollImg.src = "/SG/Doll_Attack_Miss.gif"; // Missed shot frame
+        return;
+    }
+
     let playerX = player.element.getBoundingClientRect().left;
     let canvasCenter = canvas.width / 2;
     let canvasRight = canvas.width - (canvas.width / 3);
     let canvasLeft = canvas.width / 3;
 
-    // ✅ Choose the appropriate Doll GIF based on the player's position
+    // Choose the appropriate turret aiming direction
     if (playerX < canvasLeft) {
-        dollImg.src = "/SG/Doll_Attack_Left.gif"; // 🔴 Use Left GIF
+        dollImg.src = "/SG/Doll_Attack_Left.gif"; // Aims left
     } else if (playerX > canvasRight) {
-        dollImg.src = "/SG/Doll_Attack_Right.gif"; // 🔴 Use Right GIF
+        dollImg.src = "/SG/Doll_Attack_Right.gif"; // Aims right
     } else {
-        dollImg.src = "/SG/Doll_Attack_Center.gif"; // 🔴 Use Center GIF
+        dollImg.src = "/SG/Doll_Attack_Center.gif"; // Aims center
     }
 
-    // ✅ Ensure the doll is visible
+    // Ensure the turret is visible
     dollImg.style.opacity = "1";
 }
 
@@ -759,7 +769,7 @@ function addPlayer(tiktokUsername = null) {
     const index = players.length % characterSprites.length;
     const spawnX = Math.random() * (canvas.width - 50) + 10;
 
-    // ✅ Use TikTok username if available, otherwise use "PlayerX"
+    // ✅ If a TikTok username exists, use it; otherwise, use "PlayerX"
     let playerName = tiktokUsername && tiktokUsername.trim() !== "" ? tiktokUsername : `Player${players.length + 1}`;
 
     const playerElement = document.createElement('img');
@@ -792,6 +802,14 @@ function addPlayer(tiktokUsername = null) {
 
     console.log(`🎮 New Player Joined: ${playerName}`);
 }
+
+// ✅ Listen for "1" key to spawn a TikTok user's character
+window.addEventListener('keydown', event => {
+    if (event.key === '1') {
+        addPlayer(latestTikTokUser); // ✅ Use TikTok username instead of "PlayerX"
+        latestTikTokUser = null; // ✅ Reset after spawning character
+    }
+});
 
 // ✅ Global Variable to Store Incoming TikTok Usernames
 let latestTikTokUser = null;
