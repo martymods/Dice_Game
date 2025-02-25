@@ -725,16 +725,10 @@ function addCyborgHud() {
         hud = document.createElement("img");
         hud.id = "cyborg-hud";
         hud.src = "/SG/Cyborg_Hud_0.gif"; // ✅ Start with default image
-        hud.style.position = "absolute"; // ✅ Ensure proper positioning
-        hud.style.bottom = "20px"; // ✅ Position at bottom of screen
-        hud.style.right = "20px"; // ✅ Position at right of screen
-        hud.style.width = "200px"; // ✅ Adjust size
-        hud.style.height = "auto";
-        hud.style.zIndex = "1000"; // ✅ Ensure it's above other elements
-        hud.style.opacity = "1"; // ✅ Make sure it's visible
         document.body.appendChild(hud);
     }
 }
+
 
 // ✅ Run after window fully loads
 window.onload = function () {
@@ -742,27 +736,6 @@ window.onload = function () {
     toggleCyborgHud(); // ✅ Start switching images after loading
 };
 
-// ✅ Function to Control Cyborg HUD in CSS
-function toggleCyborgHud() {
-    let hud = document.getElementById("cyborg-hud");
-    if (!hud) {
-        addCyborgHud();
-        hud = document.getElementById("cyborg-hud");
-    }
-
-    let newSrc = Math.random() < 0.5 ? "/SG/Cyborg_Hud_0.gif" : "/SG/Cyborg_Hud_1.gif";
-
-    if (hud.src !== newSrc) {
-        hud.src = newSrc;
-        console.log(`🔄 Cyborg HUD updated: ${hud.src}`);
-    }
-
-    setTimeout(toggleCyborgHud, Math.random() * (7000 - 3000) + 3000);
-}
-
-// ✅ Call function to initialize HUD
-addCyborgHud();
-toggleCyborgHud();
 
 /* ✅ Red Light Death Visual Effect (Screen Shake) */
 function screenShake() {
@@ -968,4 +941,5 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
 
