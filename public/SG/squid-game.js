@@ -137,8 +137,13 @@ preloadAssets(() => {
 // ✅ Function to start game only after assets are ready
 function startGame() {
     if (assetsReady) {
-        dollMusic.loop = true;
-        dollMusic.play();
+        // ✅ Ensure music starts only AFTER the user interacts
+        document.addEventListener("click", function playMusicOnce() {
+            dollMusic.loop = true;
+            dollMusic.play().catch(err => console.warn("🔇 Audio play prevented:", err));
+            document.removeEventListener("click", playMusicOnce); // ✅ Only trigger once
+        });
+
         requestAnimationFrame(gameLoop);
     } else {
         setTimeout(startGame, 500); // Wait until assets are fully loaded
@@ -949,4 +954,5 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
+
 
