@@ -68,8 +68,8 @@
 /* ✅ Cyborg HUD - Position, Size, and Visibility */
 #cyborg-hud {
     position: absolute;
-    bottom: -80px; /* ✅ Moves it lower, below the background */
-    right: 50%; /* ✅ Center horizontally */
+    bottom: 180px; /* ✅ Moves it lower, below the background */
+    right: 26%; /* ✅ Center horizontally */
     transform: translateX(50%); /* ✅ Ensures correct centering */
     width: 220px; /* ✅ Adjust width */
     height: auto;
