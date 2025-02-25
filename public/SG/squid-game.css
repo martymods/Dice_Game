@@ -69,7 +69,7 @@
 #cyborg-hud {
     position: absolute;
     bottom: 180px; /* ✅ Moves it lower, below the background */
-    right: 26%; /* ✅ Center horizontally */
+    right: 33.5%; /* ✅ Center horizontally */
     transform: translateX(50%); /* ✅ Ensures correct centering */
     width: 220px; /* ✅ Adjust width */
     height: auto;
