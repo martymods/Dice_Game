@@ -729,6 +729,15 @@ function addCyborgHud() {
     }
 }
 
+let cyborgHud = document.getElementById("cyborg-hud");
+
+if (cyborgHud) {
+    cyborgHud.classList.add("cy-hud-large"); // ✅ Ensures size control
+    cyborgHud.classList.add("cy-hud-transparent"); // ✅ Allows transparency effect
+}
+
+document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
+document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
 
 // ✅ Run after window fully loads
 window.onload = function () {
@@ -937,9 +946,4 @@ setTimeout(playAmbientDollVoice, Math.random() * (45000 - 20000) + 20000);
 dollMusic.loop = true;
 dollMusic.play();
 requestAnimationFrame(gameLoop);
-
-document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
-document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
-document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
-
 
