@@ -1,6 +1,6 @@
 /* squid-game.js */
 
-const socket = io("https://dice-game-1-6iwc.onrender.com");
+const socket = io("https://dice-game-1-6iwc.onrender.com", { transports: ["websocket"] });
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const backgroundTracks = [
