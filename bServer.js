@@ -6,8 +6,10 @@ import dotenv from 'dotenv';
 import { ethers } from 'ethers';
 import fs from 'fs';
 import path from 'path';
-import fetch from 'node-fetch'; // ESM syntax for fetch
+import fetch from 'node-fetch'; 
 import { fileURLToPath } from 'url';
+import axios from 'axios'; // 🔹 Add axios for API calls
+import bodyParser from 'body-parser'; // 🔹 Add body-parser for parsing JSON requests
 
 // Resolve __dirname in ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -27,6 +29,29 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+// Function to generate AI response
+async function getAIResponse(userMessage) {
+    try {
+        const response = await axios.post("https://api.openai.com/v1/chat/completions", {
+            model: "gpt-4",
+            messages: [
+                { role: "system", content: "You are a fun and energetic AI commentator in a TikTok race game. Respond with enthusiasm and humor!" },
+                { role: "user", content: userMessage }
+            ],
+            max_tokens: 50
+        }, {
+            headers: { "Authorization": `Bearer ${OPENAI_API_KEY}` }
+        });
+
+        return response.data.choices[0].message.content;
+    } catch (error) {
+        console.error("❌ AI Error:", error);
+        return "I didn't quite catch that! Try again!";
+    }
+}
+
 // Serve Static Files
 app.get('/privacy', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/privacy.html'));
@@ -44,6 +69,28 @@ app.get('/modules/tiktok_game.html', (req, res) => {
 app.post("/test/webhook", (req, res) => {
     console.log("✅ Webhook Test Received:", req.body);
     res.status(200).send("Webhook Test Successful");
+});
+
+// TikTok Chat Webhook: AI Bot Responds to TikTok Messages
+app.post('/api/tiktok/chat', async (req, res) => {
+    const { username, message } = req.body;
+
+    if (!username || !message) {
+        return res.status(400).json({ error: "Invalid data received" });
+    }
+
+    console.log(`📩 New Message from ${username}: ${message}`);
+
+    // Get AI response
+    const aiResponse = await getAIResponse(message);
+
+    console.log(`🤖 AI Response: ${aiResponse}`);
+
+    // Broadcast AI response to all players via WebSocket
+    io.emit('tiktok-chat-response', { username, aiResponse });
+
+    // Send AI response back to TikTok
+    res.json({ response: aiResponse });
 });
 
 
@@ -164,6 +211,16 @@ io.on('connection', (socket) => {
             io.emit('playerUpdate', { players: onlinePlayers });
         }
     });
+
+        // ✅ NEW: Handle AI Chat Responses
+        socket.on('tiktok-chat-response', (data) => {
+            const { username, aiResponse } = data;
+            console.log(`💬 AI Replying to ${username}: ${aiResponse}`);
+    
+            // Emit AI response to all connected players
+            io.emit('chatMessage', { username, message: aiResponse });
+        });
+    
 
     socket.on('createGame', ({ roomName, playerName }) => {
         games[roomName] = { players: [playerName], maxPlayers: 2 };
