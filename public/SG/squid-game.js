@@ -976,6 +976,30 @@ function decreaseComboBar() {
     }, 100);
 }
 
+const chatBox = document.getElementById("chat-box");
+
+let isDragging = false;
+let offsetX, offsetY;
+
+chatBox.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    offsetX = e.clientX - chatBox.offsetLeft;
+    offsetY = e.clientY - chatBox.offsetTop;
+    chatBox.style.cursor = "grabbing";
+});
+
+document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    chatBox.style.left = `${e.clientX - offsetX}px`;
+    chatBox.style.top = `${e.clientY - offsetY}px`;
+});
+
+document.addEventListener("mouseup", () => {
+    isDragging = false;
+    chatBox.style.cursor = "grab";
+});
+
+
 window.addEventListener("keydown", (event) => {
     if (event.key.toLowerCase() === "n") {
         increaseCombo();
