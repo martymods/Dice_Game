@@ -720,10 +720,18 @@ setTimeout(startGreenLight, Math.random() * (6000 - 3000) + 3000);
 /* ✅ Cyborg HUD Improvements */
 function addCyborgHud() {
     let hud = document.getElementById("cyborg-hud");
+
     if (!hud) {
         hud = document.createElement("img");
         hud.id = "cyborg-hud";
-        hud.src = "/SG/Cyborg_Hud_0.gif"; // Start with default
+        hud.src = "/SG/Cyborg_Hud_0.gif"; // ✅ Start with default image
+        hud.style.position = "absolute"; // ✅ Ensure proper positioning
+        hud.style.bottom = "20px"; // ✅ Position at bottom of screen
+        hud.style.right = "20px"; // ✅ Position at right of screen
+        hud.style.width = "200px"; // ✅ Adjust size
+        hud.style.height = "auto";
+        hud.style.zIndex = "1000"; // ✅ Ensure it's above other elements
+        hud.style.opacity = "1"; // ✅ Make sure it's visible
         document.body.appendChild(hud);
     }
 }
@@ -737,8 +745,18 @@ window.onload = function () {
 // ✅ Function to Control Cyborg HUD in CSS
 function toggleCyborgHud() {
     let hud = document.getElementById("cyborg-hud");
-    if (!hud) addCyborgHud();
-    hud.src = Math.random() < 0.5 ? "/SG/Cyborg_Hud_0.gif" : "/SG/Cyborg_Hud_1.gif";
+    if (!hud) {
+        addCyborgHud();
+        hud = document.getElementById("cyborg-hud");
+    }
+
+    let newSrc = Math.random() < 0.5 ? "/SG/Cyborg_Hud_0.gif" : "/SG/Cyborg_Hud_1.gif";
+
+    if (hud.src !== newSrc) {
+        hud.src = newSrc;
+        console.log(`🔄 Cyborg HUD updated: ${hud.src}`);
+    }
+
     setTimeout(toggleCyborgHud, Math.random() * (7000 - 3000) + 3000);
 }
 
