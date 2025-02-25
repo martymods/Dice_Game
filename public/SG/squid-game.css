@@ -68,14 +68,13 @@
 
 /* ✅ Cyborg HUD - Position, Size, and Visibility */
 #cyborg-hud {
-    display: block !important;  /* ✅ Ensure it's visible */
     position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 200px;
+    bottom: 15px; /* Adjust positioning to stay visible */
+    right: 15px; /* Adjust for better placement */
+    width: 180px; /* Resize to fit the screen */
     height: auto;
-    z-index: 1000; /* ✅ Make sure it's on top */
-    opacity: 1; /* ✅ Ensure it's fully visible */
+    z-index: 10; /* Ensure it stays below the game UI */
+    opacity: 1;
 }
 
 /* ✅ Make Cyborg HUD Larger */
@@ -90,7 +89,7 @@
 
 /* ✅ Make Cyborg HUD Transparent */
 .cy-hud-transparent {
-    opacity: 0.5;
+    opacity: 1.0;
 }
 
 /* ✅ Hide Cyborg HUD */
