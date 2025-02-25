@@ -726,7 +726,8 @@ function addCyborgHud() {
         hud.src = "/SG/Cyborg_Hud_0.gif"; // ✅ Default image
         hud.style.position = "absolute";
         hud.style.bottom = "-80px"; // ✅ Moves it further down, below background
-        hud.style.right = "10px"; // ✅ Move it more into view
+        hud.style.right = "50%"; // ✅ Center horizontally (adjust if needed)
+        hud.style.transform = "translateX(50%)"; // ✅ Center properly
         hud.style.width = "220px"; // ✅ Adjust size
         hud.style.height = "auto";
         hud.style.zIndex = "-1"; // ✅ Moves it behind everything
@@ -734,6 +735,7 @@ function addCyborgHud() {
         document.body.appendChild(hud); // ✅ Attach it globally, not to the game container
     }
 }
+
 
 // ✅ Run after window fully loads
 window.onload = function () {
