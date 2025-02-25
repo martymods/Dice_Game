@@ -969,8 +969,7 @@ setTimeout(playAmbientDollVoice, Math.random() * (45000 - 20000) + 20000);
 
 
 // ✅ Start Game
-dollMusic.loop = true;
-dollMusic.play();
+currentTrack.play();
 requestAnimationFrame(gameLoop);
 
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
