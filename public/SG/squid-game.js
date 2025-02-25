@@ -342,11 +342,11 @@ function eliminatePlayers() {
 
                 let survivalChance = Math.random();
                 if (survivalChance < 0.5) {
-                    displayDeath(playerToKill);
-                } else {
                     console.log(`💨 Missed shot! ${playerToKill.nameTag.innerText} survived.`);
-                    updateDollAttackImage(null); // Make the turret show a missed shot
-                }
+                    updateDollAttackImage(null); // ✅ Display missed shot frame
+                } else {
+                    displayDeath(playerToKill);
+                }   
                 
             }
 
@@ -686,27 +686,30 @@ function updateDollAttackImage(player) {
     let dollImg = document.getElementById("doll-attack");
     if (!dollImg) return; // If no doll image, exit
 
-    // If the shot was a miss, keep turret in default idle frame
+    // If the shot was a miss, display missed shot frame
     if (!player) {
-        dollImg.src = "/SG/Doll_Attack_Miss.gif"; // Missed shot frame
+        dollImg.src = "/SG/Doll_Attack_Miss.gif"; // Show "missed shot" animation
         return;
     }
 
     let playerX = player.element.getBoundingClientRect().left;
     let canvasCenter = canvas.width / 2;
-    let canvasRight = canvas.width - (canvas.width / 3);
     let canvasLeft = canvas.width / 3;
+    let canvasRight = (canvas.width / 3) * 2;
 
-    // Choose the appropriate turret aiming direction
+    // Choose turret attack direction based on player's position
     if (playerX < canvasLeft) {
-        dollImg.src = "/SG/Doll_Attack_Left.gif"; // Aims left
+        dollImg.src = "/SG/Doll_Attack_Left.gif"; // 🔴 Shoots left
+        console.log(`🎯 Target is on the LEFT`);
     } else if (playerX > canvasRight) {
-        dollImg.src = "/SG/Doll_Attack_Right.gif"; // Aims right
+        dollImg.src = "/SG/Doll_Attack_Right.gif"; // 🔴 Shoots right
+        console.log(`🎯 Target is on the RIGHT`);
     } else {
-        dollImg.src = "/SG/Doll_Attack_Center.gif"; // Aims center
+        dollImg.src = "/SG/Doll_Attack_Center.gif"; // 🔴 Shoots center
+        console.log(`🎯 Target is in the CENTER`);
     }
 
-    // Ensure the turret is visible
+    // ✅ Ensure turret image is visible
     dollImg.style.opacity = "1";
 }
 
@@ -802,14 +805,6 @@ function addPlayer(tiktokUsername = null) {
 
     console.log(`🎮 New Player Joined: ${playerName}`);
 }
-
-// ✅ Listen for "1" key to spawn a TikTok user's character
-window.addEventListener('keydown', event => {
-    if (event.key === '1') {
-        addPlayer(latestTikTokUser); // ✅ Use TikTok username instead of "PlayerX"
-        latestTikTokUser = null; // ✅ Reset after spawning character
-    }
-});
 
 // ✅ Global Variable to Store Incoming TikTok Usernames
 let latestTikTokUser = null;
