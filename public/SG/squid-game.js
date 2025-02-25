@@ -723,15 +723,15 @@ function addCyborgHud() {
     if (!hud) {
         hud = document.createElement("img");
         hud.id = "cyborg-hud";
-        hud.src = "/SG/Cyborg_Hud_0.gif"; // ✅ Start with default image
+        hud.src = "/SG/Cyborg_Hud_0.gif"; // ✅ Default image
         hud.style.position = "absolute";
-        hud.style.bottom = "10px"; // ✅ Move it up slightly
+        hud.style.bottom = "-80px"; // ✅ Moves it further down, below background
         hud.style.right = "10px"; // ✅ Move it more into view
-        hud.style.width = "180px"; // ✅ Adjust width for better fit
+        hud.style.width = "220px"; // ✅ Adjust size
         hud.style.height = "auto";
-        hud.style.zIndex = "10"; // ✅ Keep it above the background but below the game UI
-        hud.style.opacity = "1"; 
-        document.getElementById("game-container").appendChild(hud); // ✅ Attach it to the game container
+        hud.style.zIndex = "-1"; // ✅ Moves it behind everything
+        hud.style.opacity = "1";
+        document.body.appendChild(hud); // ✅ Attach it globally, not to the game container
     }
 }
 
