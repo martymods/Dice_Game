@@ -2,7 +2,17 @@
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const dollMusic = new Audio("/SG/SG_Background_Ambience_0.mp3");
+const backgroundTracks = [
+    "/SG/SG_Background_Ambience_0.mp3",
+    "/SG/SG_Background_Ambience_1.mp3",
+    "/SG/SG_Background_Ambience_2.mp3",
+    "/SG/SG_Background_Ambience_3.mp3",
+    "/SG/SG_Background_Ambience_4.mp3",
+    "/SG/SG_Background_Ambience_5.mp3"
+];
+
+let currentTrack = new Audio(); // Holds the current playing track
+
 const buzzerSound = new Audio("/SG/Buzzer.mp3");
 const countdownSound = new Audio("/SG/CountDown.mp3");
 const countdownEndSound = new Audio("/SG/CountDown_END.mp3");
@@ -137,10 +147,8 @@ preloadAssets(() => {
 // ✅ Function to start game only after assets are ready
 function startGame() {
     if (assetsReady) {
-        // ✅ Ensure music starts only AFTER the user interacts
         document.addEventListener("click", function playMusicOnce() {
-            dollMusic.loop = true;
-            dollMusic.play().catch(err => console.warn("🔇 Audio play prevented:", err));
+            playRandomBackgroundMusic(); // 🎵 Start random track
             document.removeEventListener("click", playMusicOnce); // ✅ Only trigger once
         });
 
@@ -148,6 +156,20 @@ function startGame() {
     } else {
         setTimeout(startGame, 500); // Wait until assets are fully loaded
     }
+}
+
+function playRandomBackgroundMusic() {
+    let randomIndex = Math.floor(Math.random() * backgroundTracks.length); // 🎵 Pick a random track
+    currentTrack.src = backgroundTracks[randomIndex]; // 🎧 Set the new track
+    currentTrack.volume = 0.5; // 🔊 Adjust volume if needed
+    currentTrack.play().catch(err => console.warn("🔇 Audio play prevented:", err));
+
+    console.log(`🎶 Now playing: ${backgroundTracks[randomIndex]}`);
+
+    // 🔁 When the track ends, select another at random
+    currentTrack.onended = () => {
+        playRandomBackgroundMusic();
+    };
 }
 
 // ✅ Call the function once
@@ -954,5 +976,4 @@ requestAnimationFrame(gameLoop);
 document.getElementById("cyborg-hud").classList.add("cy-hud-large"); // Makes HUD Larger
 document.getElementById("cyborg-hud").classList.add("cy-hud-transparent"); // Reduces Opacity
 document.getElementById("cyborg-hud").classList.add("cy-hud-hidden"); // Hides HUD
-
 
