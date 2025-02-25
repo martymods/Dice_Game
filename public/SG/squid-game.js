@@ -1,5 +1,6 @@
 /* squid-game.js */
 
+const socket = io("https://dice-game-1-6iwc.onrender.com");
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const backgroundTracks = [
@@ -156,6 +157,39 @@ function startGame() {
     } else {
         setTimeout(startGame, 500); // Wait until assets are fully loaded
     }
+}
+
+// Function to make AI bot read messages aloud
+function speakMessage(text) {
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 1;
+    synth.speak(utterance);
+}
+
+// Listen for AI chatbot messages from server
+socket.on('tiktok-chat-response', (data) => {
+    const { username, aiResponse } = data;
+
+    console.log(`🎙️ AI: ${aiResponse}`);
+
+    // Speak out the response
+    speakMessage(aiResponse);
+
+    // Display chat message in the game UI
+    showChatMessage(username, aiResponse);
+});
+
+// Function to show chat messages in the game UI
+function showChatMessage(username, message) {
+    const chatBox = document.getElementById("chat-box");
+    const msgElement = document.createElement("p");
+    msgElement.innerHTML = `<strong>${username}:</strong> ${message}`;
+    chatBox.appendChild(msgElement);
+
+    // Remove old messages after a while
+    setTimeout(() => msgElement.remove(), 10000);
 }
 
 function playRandomBackgroundMusic() {
