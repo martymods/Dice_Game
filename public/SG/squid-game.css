@@ -252,3 +252,14 @@ button:hover {
     from { transform: translateY(100px); }
     to { transform: translateY(0); }
 }
+
+.cyborg-hud {
+    position: absolute;
+    bottom: -80px; /* ✅ Moves below background */
+    right: 50%; /* ✅ Center horizontally */
+    transform: translateX(50%); /* ✅ Ensures proper centering */
+    width: 220px; /* ✅ Adjust width */
+    height: auto;
+    z-index: -1; /* ✅ Moves it behind gameplay */
+    opacity: 1;
+}
