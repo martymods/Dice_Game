@@ -76,23 +76,16 @@ app.post('/api/tiktok/chat', async (req, res) => {
     const { username, message } = req.body;
 
     if (!username || !message) {
-        return res.status(400).json({ error: "Invalid data received" });
+        return res.status(400).json({ error: "Invalid data received." });
     }
 
-    console.log(`📩 New Message from ${username}: ${message}`);
+    console.log(`📩 New TikTok Message: ${username}: ${message}`);
 
-    // Get AI response
-    const aiResponse = await getAIResponse(message);
+    // Send message to the frontend
+    io.emit("tiktok-chat-response", { username, aiResponse: message });
 
-    console.log(`🤖 AI Response: ${aiResponse}`);
-
-    // Broadcast AI response to all players via WebSocket
-    io.emit('tiktok-chat-response', { username, aiResponse });
-
-    // Send AI response back to TikTok
-    res.json({ response: aiResponse });
+    res.status(200).json({ success: true });
 });
-
 
 // Leaderboard
 const leaderboardFile = path.resolve(__dirname, 'leaderboard.json');
