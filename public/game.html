@@ -37,15 +37,7 @@
     </div>
 </div>
 
-    <div id="player-info">
-        <p id="betting-status">
-            Balance: <span id="balance-images"></span> | Bet: $0
-        </p>
-        <p id="rent-status">Rent Due: $0 in 0 rolls</p>
-    </div>
-
-
-<button id="showCombinationsButton">Show Combinations</button>
+    <button id="showCombinationsButton" class="chip-button">Show Combinations</button>
             <!-- Hustler Info -->
             <div id="hustler-info">
                 <p id="multiplier-display">Multiplier: 1x</p> <!-- New Multiplier Display -->
@@ -88,23 +80,41 @@
 
         <!-- Right Side -->
         <div id="right-side">
-            <div id="balance-display" style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
-                <!-- Balance images will be displayed here -->
+            <div id="status-hud">
+                <div class="status-card balance-card" id="betting-status">
+                    <div class="status-card__header">
+                        <span class="status-card__label">Balance</span>
+                        <span class="status-card__pulse" id="balance-trend">--</span>
+                    </div>
+                    <div class="status-card__value" id="balance-number">$0</div>
+                    <div class="status-card__sub">Bet: <span id="bet-amount-text">$0</span></div>
+                    <div id="balance-display" class="balance-display"></div>
+                </div>
+                <div class="status-card rent-card" id="rent-status">
+                    <div class="status-card__label">Rent Due</div>
+                    <div class="status-card__value" id="rent-amount-text">$0</div>
+                    <div class="status-card__sub">Rolls Left: <span id="rent-rolls-text">0</span></div>
+                </div>
+                <div class="status-card multiplier-card">
+                    <div class="status-card__label">Multiplier</div>
+                    <div class="status-card__value" id="multiplier-display">1.00x</div>
+                    <div class="status-card__sub" id="multiplier-details">Stack wins to power up.</div>
+                </div>
+                <div class="status-card earnings-card" id="earnings-card">
+                    <div class="status-card__label">Earnings / Sec</div>
+                    <div class="status-card__value">$<span id="earnings-per-second">0.00</span></div>
+                    <div class="status-card__sub" id="earnings-trend">Awaiting action…</div>
+                </div>
             </div>
-            <div id="earnings-counter" style="text-align: center; font-size: 18px; margin-top: 5px;">
-                Earnings per Second: $<span id="earnings-per-second">0.00</span>
-            </div>
-            
-            
 
             <div id="controls">
                 <img id="rollButton" src="/images/Button_RollDice.gif" alt="Roll Dice" class="button-image">
-                <input type="number" id="betAmount" placeholder="Enter Bet Amount" min="1">
+                <input type="number" id="betAmount" class="pill-input" placeholder="Enter Bet Amount" min="1">
                 <img id="betButton" src="/images/Button_PlaceBet.gif" alt="Place Bet" class="button-image">
                 <img id="bet25Button" src="/images/Button_Bet25.gif" alt="Bet 25%" class="button-image">
                 <img id="bet50Button" src="/images/Button_Bet50.gif" alt="Bet 50%" class="button-image">
                 <img id="bet100Button" src="/images/Button_Bet100.gif" alt="Bet 100%" class="button-image">
-                <button id="quitButton" class="small-button">Quit Game</button>
+                <button id="quitButton" class="chip-button danger">Quit Game</button>
             </div>
 
             <div id="dice-container">
@@ -140,8 +150,22 @@
         </div>
         <img id="eth-bet-button" src="/images/Button_PlaceBet.gif" alt="Place Bet (ETH)" class="button-image crypto-bet-button">
     </div>
-    
-    
+
+    <div id="fortune-area">
+        <div id="fortune-cookie-section">
+            <img id="cookie-buy" src="/images/cookie_Buy.png" alt="Buy Fortune Cookie">
+            <button id="buy-cookie-button" class="chip-button fortune">
+                <img src="/images/ETH_Logo.png" alt="ETH Logo">
+                Buy ($1 ETH)
+            </button>
+        </div>
+        <div id="fortune-collection">
+            <h3>My Fortune Cookies</h3>
+            <p>Collected: <span id="cookie-count">0</span>/25</p>
+            <div id="my-fortunes" class="fortune-collection__grid"></div>
+        </div>
+    </div>
+
     <div id="shop-container">
         <h3>Shop</h3>
         <div id="hustler-list">
@@ -186,15 +210,6 @@
     </div>
 </div>
 
-<!-- Fortune Cookie Section -->
-<div id="fortune-cookie-section">
-    <img id="cookie-buy" src="/images/cookie_Buy.png" alt="Buy Fortune Cookie">
-    <button id="buy-cookie-button">
-        <img src="/images/ETH_Logo.png" alt="ETH Logo">
-        Buy ($1 ETH)
-    </button>
-</div>
-
 <div id="fortune-display" style="display: none;">
     <img id="cookie-open" src="/images/cookie_Open.png" alt="Open Fortune Cookie">
     <div id="fortune-text"></div>
@@ -214,13 +229,6 @@
         <button id="send-message">Send</button>
     </div>
 </div>
-
-<div id="fortune-collection">
-    <h3>My Fortune Cookies</h3>
-    <p>Collected: <span id="cookie-count">0</span>/25</p>
-    <div id="collected-cookies"></div> <!-- Updated to use a div for flex display -->
-</div>
-
 
 <script src="/socket.io/socket.io.js"></script> <!-- Load Socket.IO -->
 <script src="/socket-init.js"></script> <!-- Initialize Socket -->
