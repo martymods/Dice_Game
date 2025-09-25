@@ -173,7 +173,7 @@ async function setupSinglePlayer() {
     const quitButton = document.getElementById('quitButton');
     const bettingStatus = document.getElementById('betting-status');
     const gameStatus = document.getElementById('gameStatus');
-    const rentStatus = document.getElementById('rent-status');
+    const rentSummaryElement = document.getElementById('rent-summary-text');
     const inventoryDisplay = document.getElementById('inventory-list');
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
@@ -189,8 +189,8 @@ async function setupSinglePlayer() {
     const betAmountTextElement = document.getElementById('bet-amount-text');
     const rentAmountElement = document.getElementById('rent-amount-text');
     const rentRollsElement = document.getElementById('rent-rolls-text');
-    const multiplierDisplayElement = document.getElementById('multiplier-display');
-    const multiplierDetailsElement = document.getElementById('multiplier-details');
+    const multiplierDisplayElement = document.getElementById('multiplier-value');
+    const multiplierDetailsElement = document.getElementById('multiplier-breakdown');
     const earningsCardElement = document.getElementById('earnings-card');
 
     const ambienceSound = new Audio('/sounds/Ambience0.ogg');
@@ -204,7 +204,7 @@ async function setupSinglePlayer() {
         { id: 'quitButton', element: quitButton },
         { id: 'betting-status', element: bettingStatus },
         { id: 'gameStatus', element: gameStatus },
-        { id: 'rent-status', element: rentStatus },
+        { id: 'rent-summary-text', element: rentSummaryElement },
         { id: 'inventory-list', element: inventoryDisplay },
         { id: 'buy-item-container', element: popup },
         { id: 'item-list', element: itemList },
@@ -213,8 +213,8 @@ async function setupSinglePlayer() {
         { id: 'bet50Button', element: bet50Button },
         { id: 'bet100Button', element: bet100Button },
         { id: 'balance-number', element: balanceNumberElement },
-        { id: 'multiplier-display', element: multiplierDisplayElement },
-        { id: 'multiplier-details', element: multiplierDetailsElement },
+        { id: 'multiplier-value', element: multiplierDisplayElement },
+        { id: 'multiplier-breakdown', element: multiplierDetailsElement },
         { id: 'earnings-card', element: earningsCardElement }
     ];
 
@@ -668,6 +668,10 @@ function deactivateOnFire() {
         if (rentRollsElement) {
             rentRollsElement.textContent = rollsRemaining.toString();
         }
+        if (rentSummaryElement) {
+            const rollsLabel = rollsRemaining === 1 ? 'roll' : 'rolls';
+            rentSummaryElement.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} ${rollsLabel}`;
+        }
 
         const hustlerEffects = hustlerInventory.map(hustler => hustler.description).join(', ');
         const hustlerEffectElement = document.getElementById('hustler-effects');
@@ -834,7 +838,10 @@ function animateDice(dice1, dice2, callback) {
         const rollsRemaining = maxTurns - turns;
 
         if (rollsRemaining > 0) {
-            rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
+            if (rentSummaryElement) {
+                const rollsLabel = rollsRemaining === 1 ? 'roll' : 'rolls';
+                rentSummaryElement.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} ${rollsLabel}`;
+            }
         } else {
             if (balance >= rent) {
                 adjustBalance(-rent);
@@ -1303,12 +1310,14 @@ export async function placeBet(betAmountETH) {
         console.log("Transaction successful:", transaction);
 
         // Display bet amount in ETH and USD
-        const bettingStatus = document.getElementById('betting-status');
-        bettingStatus.innerHTML = `
-            <img src="/images/ETH_Logo.png" alt="ETH" style="width: 24px; vertical-align: middle;">
-            <span style="color: #7fbcf7;">${betAmount} ETH</span>
-            <span>($${betAmountUSD})</span>
-        `;
+        const bettingStatusNote = document.getElementById('betting-status-note');
+        if (bettingStatusNote) {
+            bettingStatusNote.innerHTML = `
+                <img src="/images/ETH_Logo.png" alt="ETH" />
+                <span style="color: #7fbcf7;">${betAmount} ETH</span>
+                <span>($${betAmountUSD})</span>
+            `;
+        }
         showGameMessage('Bet placed successfully!', 'success');
 
         const ethInputField = document.getElementById('betAmountETH');
@@ -1344,14 +1353,53 @@ function disconnectWallet() {
 }
 
 function initializeCryptoButtons() {
+    const krakenBtcAddress = '3BuG5H7qyEVsnRk7cs6i2sgjYoRVGEHXtb';
     const payBitcoinButton = document.getElementById('pay-with-bitcoin');
+    const copyKrakenButton = document.getElementById('copy-kraken-address');
+    const krakenAddressElement = document.getElementById('kraken-btc-address');
     const connectMetaMaskButton = document.getElementById('connect-metamask');
     const ethBetButtonElement = document.getElementById('eth-bet-button');
     const ethInputField = document.getElementById('betAmountETH');
 
+    if (krakenAddressElement) {
+        krakenAddressElement.textContent = krakenBtcAddress;
+    }
+
+    const copyKrakenAddressToClipboard = async (silent = false) => {
+        try {
+            if (typeof navigator !== 'undefined' && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                await navigator.clipboard.writeText(krakenBtcAddress);
+                if (!silent) {
+                    showGameMessage('Kraken BTC address copied to clipboard.', 'success');
+                }
+                return true;
+            }
+        } catch (error) {
+            console.warn('Unable to copy Kraken address:', error);
+        }
+
+        if (!silent) {
+            window.prompt('Kraken BTC Address', krakenBtcAddress);
+        }
+        return false;
+    };
+
     if (payBitcoinButton) {
-        payBitcoinButton.addEventListener('click', () => {
-            showGameMessage('Bitcoin payments are coming soon.', 'info');
+        payBitcoinButton.addEventListener('click', async () => {
+            const copied = await copyKrakenAddressToClipboard(true);
+            const instructions = copied
+                ? 'Kraken BTC address copied. Deposit BTC through Kraken and include your player name in the memo.'
+                : `Deposit BTC through Kraken to ${krakenBtcAddress} and include your player name in the memo.`;
+            showGameMessage(instructions, 'info');
+        });
+    }
+
+    if (copyKrakenButton) {
+        copyKrakenButton.addEventListener('click', async () => {
+            const copied = await copyKrakenAddressToClipboard();
+            if (!copied) {
+                showGameMessage(`BTC Address: ${krakenBtcAddress}`, 'info');
+            }
         });
     }
 

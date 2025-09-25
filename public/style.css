@@ -54,26 +54,30 @@ body {
     background-color: black; /* Night mode theme */
     color: white; /* Default text color for dark theme */
     margin: 0;
-    padding: 0;
+    padding: 24px;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start;
+    min-height: 100vh;
     flex-direction: column;
     background-size: cover;
     background-position: center;
+    box-sizing: border-box;
 }
 
 /* Game Container Styling */
 #game-container {
-    background-color: rgba(0, 0, 0, 0.8);
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.2);
-    width: 93%;
-    max-width: 5000px;
-    padding: 10px;
-    text-align: center;
+    background-color: rgba(0, 0, 0, 0.82);
+    border-radius: 14px;
+    box-shadow: 0 20px 38px rgba(0, 0, 0, 0.55);
+    width: min(1200px, 96vw);
+    padding: 24px;
     color: white;
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+    box-sizing: border-box;
 }
 
 /* Button Styles */
@@ -110,31 +114,42 @@ h1 {
 }
 
 /* Dice and Status Section */
+#dice-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
 #dice-container {
-    margin: 20px 0;
+    margin: 0;
 }
 
 .dice {
-    width: 120px;
-    height: 120px;
-    margin: 8px;
+    width: 96px;
+    height: 96px;
 }
 
 #status-hud {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-    margin-bottom: 28px;
-    padding: 0 8px;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+@media (min-width: 1080px) {
+    #status-hud {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 .status-card {
     position: relative;
-    padding: 18px 20px 24px;
-    border-radius: 18px;
-    background: linear-gradient(160deg, rgba(30, 30, 45, 0.95) 0%, rgba(12, 12, 18, 0.95) 55%, rgba(4, 4, 8, 0.98) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 16px 28px rgba(0, 0, 0, 0.42);
+    padding: 14px 16px 18px;
+    border-radius: 14px;
+    background: linear-gradient(160deg, rgba(30, 30, 45, 0.9) 0%, rgba(12, 12, 18, 0.92) 55%, rgba(4, 4, 8, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.38);
     overflow: hidden;
     transition: transform 0.25s ease, border-color 0.3s ease;
 }
@@ -164,10 +179,10 @@ h1 {
 }
 
 .status-card__value {
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: #fdf6ff;
-    text-shadow: 0 8px 16px rgba(110, 180, 255, 0.45);
+    text-shadow: 0 6px 12px rgba(110, 180, 255, 0.4);
     line-height: 1.1;
 }
 
@@ -176,6 +191,29 @@ h1 {
     font-size: 0.82rem;
     color: rgba(212, 225, 255, 0.75);
     letter-spacing: 0.04em;
+}
+
+.status-card__summary {
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: rgba(217, 229, 255, 0.68);
+    letter-spacing: 0.04em;
+}
+
+.status-card__note {
+    margin-top: 8px;
+    font-size: 0.76rem;
+    color: rgba(149, 182, 255, 0.78);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.status-card__note img {
+    width: 20px;
+    height: 20px;
 }
 
 .status-card__pulse {
@@ -461,41 +499,42 @@ h1 {
 }
 
 /* Mobile Optimization */
-@media screen and (max-width: 600px) {
-    button {
-        width: 100%;
-        font-size: 12px;
-        padding: 12px;
-    }
+    @media screen and (max-width: 600px) {
+        button {
+            width: 100%;
+            font-size: 12px;
+            padding: 12px;
+        }
 
-    #game-container {
-        padding: 10px;
-    }
+        #game-container {
+            padding: 16px;
+            grid-template-columns: 1fr;
+        }
 
-    #dice-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 20px; /* Add spacing between the dice */
-        margin-top: 50px;
-        position: relative;
-    }
-    
-    .dice {
-        width: 150px; /* Increase size of dice */
-        height: 150px;
-        border-radius: 10px; /* Slightly round corners for a polished look */
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7), 0 0 30px rgba(255, 255, 255, 0.5); /* Glow effect */
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .dice:hover {
-        transform: scale(1.1); /* Slight zoom-in effect when hovered */
-        box-shadow: 0 0 20px rgba(255, 255, 0, 0.9), 0 0 40px rgba(255, 215, 0, 0.7); /* Stronger glow when hovered */
-    }
-    
+        #dice-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 0;
+            position: relative;
+        }
 
-    #rollButton, #betButton, #quitButton, #bet25Button, #bet50Button, #bet100Button {
+        .dice {
+            width: 92px;
+            height: 92px;
+            border-radius: 10px;
+            box-shadow: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .dice:hover {
+            transform: scale(1.05);
+            box-shadow: none;
+        }
+
+
+        #rollButton, #betButton, #quitButton, #bet25Button, #bet50Button, #bet100Button {
         width: 100%;
     }
 
@@ -525,9 +564,9 @@ h1 {
 
 .button-image {
     cursor: pointer;
-    width: 120px; /* Adjust as needed */
+    width: 110px; /* Adjust as needed */
     height: auto;
-    margin: 10px; /* Space between buttons */
+    margin: 4px; /* Space between buttons */
     transition: transform 0.2s ease-in-out;
 }
 
@@ -725,24 +764,55 @@ h1 {
     transform: scale(1.2); /* Slight zoom effect */
     box-shadow: 0 0 25px rgba(255, 215, 0, 1), 0 0 50px rgba(255, 69, 0, 1); /* Stronger glow */
 }
-/* Game Container Layout */
-#game-container {
-    display: flex;
-    height: 100vh;
-}
-
 /* Left Side (Store, Hustler Info, Inventory) */
 #left-side {
-    flex: 0.8;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    background: url('/images/Backfrounf_Moving_0.gif') center center no-repeat; /* Add background image */
-    background-size: cover; /* Ensures the image covers the container completely */
-    padding: 10px;
+    gap: 16px;
+    background: linear-gradient(180deg, rgba(24, 24, 34, 0.92) 0%, rgba(10, 10, 18, 0.9) 60%, rgba(4, 4, 10, 0.95) 100%),
+        url('/images/Backfrounf_Moving_0.gif') center center/cover no-repeat;
+    padding: 18px 16px;
+    border-radius: 12px;
     color: white;
+    max-height: calc(100vh - 180px);
     overflow-y: auto;
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 900px) {
+    #game-container {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    #left-side,
+    #right-side {
+        max-height: none;
+    }
+}
+
+.panel-section {
+    background: rgba(8, 8, 14, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px 16px;
+    width: 100%;
+    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.35);
+}
+
+.panel-section h3 {
+    margin: 0 0 12px;
+    font-size: 0.88rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #9fc4ff;
+}
+
+.panel-section p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: rgba(220, 230, 255, 0.78);
+    line-height: 1.4;
 }
 
 #store-image {
@@ -759,37 +829,41 @@ h1 {
 }
 
 #inventory {
-    margin-top: 20px;
+    margin-top: 0;
 }
 
 /* Right Side (Gameplay) */
 #right-side {
-    flex: 2;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
     align-items: center;
-    background-color: #11111100;
-    color: white;
-    padding: 15px;
+    gap: 24px;
+    padding: 8px 8px 16px;
+    max-height: calc(100vh - 180px);
     overflow-y: auto;
 }
 
 #dice-container {
-    margin-top: -400px;
+    margin-top: 0;
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 18px;
 }
 
 .button-image {
     cursor: pointer;
-    margin: 5px;
-    width: 120px;
+    margin: 4px;
+    width: 110px;
+    max-width: 22vw;
 }
 
 #controls {
-    margin-top: 400px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 #gameStatus {
@@ -976,12 +1050,7 @@ h1 {
     font-size: 16px;
 }
 #purchased-items-section {
-    margin-top: 20px;
-    background-color: rgba(0, 0, 0, 0.8);
-    border: 1px solid #FFD700;
-    border-radius: 10px;
-    padding: 10px;
-    color: white;
+    margin-top: 0;
     text-align: center;
 }
 
@@ -1218,11 +1287,11 @@ h1 {
 }
 
 #fortune-area {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 20px;
-    margin: 30px auto 10px;
-    width: min(820px, 100%);
+    width: 100%;
 }
 
 #fortune-cookie-section {
@@ -1231,31 +1300,33 @@ h1 {
     align-items: center;
     justify-content: center;
     gap: 14px;
-    padding: 20px;
-    border-radius: 20px;
+    padding: 18px;
+    border-radius: 18px;
     background: radial-gradient(120% 120% at 50% 0%, rgba(255, 196, 87, 0.18) 0%, rgba(20, 20, 20, 0.88) 55%, rgba(6, 6, 6, 0.92) 100%);
     border: 1px solid rgba(255, 170, 0, 0.25);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+    min-width: 200px;
 }
 
 #fortune-cookie-section img {
-    width: 68px;
+    width: 64px;
     cursor: pointer;
     filter: drop-shadow(0 8px 12px rgba(255, 184, 67, 0.35));
 }
 
 #fortune-collection {
-    padding: 20px;
-    border-radius: 20px;
+    padding: 18px;
+    border-radius: 18px;
     background: linear-gradient(140deg, rgba(33, 33, 48, 0.85) 0%, rgba(10, 10, 14, 0.94) 60%, rgba(3, 3, 5, 0.98) 100%);
     border: 1px solid rgba(135, 206, 255, 0.18);
-    box-shadow: 0 14px 32px rgba(10, 16, 34, 0.5);
+    box-shadow: 0 12px 26px rgba(10, 16, 34, 0.45);
     text-align: center;
+    min-width: 220px;
 }
 
 #fortune-collection h3 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #8fd2ff;
@@ -1264,7 +1335,7 @@ h1 {
 #fortune-collection p {
     margin: 6px 0 16px;
     color: rgba(217, 234, 255, 0.8);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .fortune-collection__grid {
@@ -1273,6 +1344,8 @@ h1 {
     gap: 10px;
     justify-items: center;
     padding: 6px;
+    max-height: 180px;
+    overflow-y: auto;
 }
 
 #fortune-display {
@@ -1281,25 +1354,17 @@ h1 {
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    background-color: rgba(0, 0, 0, 1);
+    background-color: rgba(0, 0, 0, 0.92);
     color: white;
-    padding: 1000px;
-    border-radius: 10px;
+    padding: 24px;
+    border-radius: 14px;
     z-index: 1000;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+    width: min(90vw, 380px);
 }
 
 #fortune-display img {
-    width: 100px;
-}
-
-#fortune-collection {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 10px;
-    border-radius: 10px;
+    width: 96px;
 }
 
 #fortune-collection ul {
@@ -1562,6 +1627,11 @@ body {
     box-shadow: 0 10px 22px rgba(255, 160, 0, 0.25);
 }
 
+.crypto-chip__icon {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
 .crypto-input {
     display: flex;
     align-items: center;
@@ -1599,6 +1669,39 @@ body {
 .crypto-bet-button:hover {
     transform: translateY(-2px);
     filter: drop-shadow(0 6px 18px rgba(255, 146, 48, 0.35));
+}
+
+.crypto-instructions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: rgba(8, 8, 14, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.35);
+}
+
+.crypto-instructions__label {
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(210, 226, 255, 0.78);
+}
+
+.crypto-instructions code {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.04em;
+}
+
+.chip-button--compact {
+    padding: 6px 14px;
+    font-size: 0.72rem;
 }
 
 #chat-footer {
