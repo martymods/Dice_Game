@@ -1298,34 +1298,231 @@ body {
     margin: 0;
 }
 
-#message-list {
-    max-height: 200px;
-    overflow-y: auto;
-    background: #34495e;
-    padding: 10px;
-    border-radius: 5px;
+#game-message-stack {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 2000;
+    pointer-events: none;
+}
+
+.game-message {
+    min-width: 240px;
+    max-width: 320px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    background: rgba(10, 10, 10, 0.88);
+    border-left: 4px solid #4ad0ff;
+    color: #f1f5ff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.game-message.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.game-message--success { border-color: #3cffae; }
+.game-message--warning { border-color: #f6c65b; }
+.game-message--error { border-color: #ff5b5b; }
+.game-message--bonus { border-color: #ff8bff; }
+
+#crypto-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+
+.crypto-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: rgba(12, 12, 12, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #f5f7ff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.crypto-chip img {
+    width: 22px;
+    height: 22px;
+}
+
+.crypto-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(255, 160, 0, 0.25);
+}
+
+.crypto-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(12, 12, 12, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.crypto-input__icon {
+    width: 20px;
+    height: 20px;
+}
+
+.crypto-input input {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #f5f7ff;
+    font-weight: 600;
+    width: 110px;
+}
+
+.crypto-input input::placeholder {
+    color: rgba(245, 247, 255, 0.6);
+}
+
+.crypto-bet-button {
+    width: 160px;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.crypto-bet-button:hover {
+    transform: translateY(-2px);
+    filter: drop-shadow(0 6px 18px rgba(255, 146, 48, 0.35));
 }
 
 #chat-footer {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 380px;
     display: flex;
-    gap: 5px;
-    padding: 5px;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 18px;
+    background: rgba(10, 10, 15, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(6px);
+    z-index: 1400;
 }
 
-#chat-footer input {
-    flex-grow: 1;
-    padding: 5px;
-    border-radius: 3px;
-    border: none;
+.chat-panel {
+    display: flex;
+    gap: 12px;
 }
 
-#chat-footer button {
-    background-color: #16a085;
-    color: white;
+.chat-messages {
+    flex: 1;
+    max-height: 230px;
+    overflow-y: auto;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chat-message {
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+
+.chat-message__name {
+    color: #7fbcf7;
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.chat-message__text {
+    color: #f3f4ff;
+}
+
+.chat-sidebar {
+    width: 110px;
+    padding: 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chat-sidebar h4 {
+    margin: 0 0 6px;
+    color: #ffce73;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.chat-sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.chat-sidebar li {
+    color: #fef3c7;
+    font-size: 0.75rem;
+}
+
+.chat-input-row {
+    display: flex;
+    gap: 10px;
+}
+
+#message-input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+#send-message {
+    padding: 10px 18px;
     border: none;
-    border-radius: 3px;
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #ffb347, #ff0844);
+    color: #ffffff;
     cursor: pointer;
-    padding: 5px 10px;
+    box-shadow: 0 10px 20px rgba(255, 104, 104, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#send-message:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(255, 104, 104, 0.5);
+}
+
+#send-message:active {
+    transform: translateY(0);
 }
 
 #chat-container {
@@ -1399,6 +1596,63 @@ body {
 
 #closeCombinationsButton:hover {
     background-color: #e53935; /* Darker red on hover */
+}
+
+
+.game-over-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 28px;
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 9999;
+    padding: 24px;
+}
+
+.game-over-visual {
+    width: min(90vw, 780px);
+    height: auto;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 25px 55px rgba(0, 0, 0, 0.65);
+}
+
+.game-over-actions {
+    display: flex;
+    gap: 18px;
+}
+
+.game-over-actions button {
+    padding: 12px 28px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    color: #0b0b0f;
+    background: linear-gradient(135deg, #ffe259, #ffa751);
+    box-shadow: 0 16px 30px rgba(255, 119, 59, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.game-over-actions button:nth-child(2) {
+    background: linear-gradient(135deg, #ff0844, #ffb199);
+    color: #fff6f0;
+}
+
+.game-over-actions button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 36px rgba(255, 119, 59, 0.45);
+}
+
+.game-over-actions button:active {
+    transform: translateY(0);
 }
 
 #closeCombinationsButton:active {
