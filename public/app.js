@@ -12,6 +12,7 @@ import {
     updateBalanceDisplay,
     initChatUI,
     setEarningsPerSecond,
+    updateRollCount,
 } from './modules/ui.js';
 import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
@@ -79,13 +80,17 @@ if (!window.playerStats) {
         totalTimePlayed: 0, // In seconds
         currentWinStreak: 0,
         longestWinStreak: 0,
-        totalDaysPassed: 0
+        totalDaysPassed: 0,
+        rollHistory: {}
     };
 
     window.loadStats = function () {
         const savedStats = localStorage.getItem('playerStats');
         if (savedStats) {
             Object.assign(window.playerStats, JSON.parse(savedStats));
+        }
+        if (!window.playerStats.rollHistory || typeof window.playerStats.rollHistory !== 'object') {
+            window.playerStats.rollHistory = {};
         }
     };
 
@@ -104,7 +109,7 @@ if (!window.playerStats) {
                 <li>Months Unlocked: ${playerStats.monthsUnlocked}/12</li>
                 <li>Total Money Won: $${playerStats.totalMoneyWon.toLocaleString()}</li>
                 <li>Total Money Lost: $${playerStats.totalMoneyLost.toLocaleString()}</li>
-                <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
+                <li>Hustlers Recruited: ${(playerStats.hustlersRecruited ?? 0)}</li>
                 <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
                 <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
                 <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
@@ -179,13 +184,21 @@ async function setupSinglePlayer() {
     const bet25Button = document.getElementById('bet25Button');
     const bet50Button = document.getElementById('bet50Button');
     const bet100Button = document.getElementById('bet100Button');
+    const balanceNumberElement = document.getElementById('balance-number');
+    const balanceTrendElement = document.getElementById('balance-trend');
+    const betAmountTextElement = document.getElementById('bet-amount-text');
+    const rentAmountElement = document.getElementById('rent-amount-text');
+    const rentRollsElement = document.getElementById('rent-rolls-text');
+    const multiplierDisplayElement = document.getElementById('multiplier-display');
+    const multiplierDetailsElement = document.getElementById('multiplier-details');
+    const earningsCardElement = document.getElementById('earnings-card');
 
     const ambienceSound = new Audio('/sounds/Ambience0.ogg');
     ambienceSound.loop = true;
     ambienceSound.play().catch(err => console.error('Ambience sound error:', err));
 
-     // Ensure necessary elements exist
-     const requiredElements = [
+    // Ensure necessary elements exist
+    const requiredElements = [
         { id: 'rollButton', element: rollButton },
         { id: 'betButton', element: betButton },
         { id: 'quitButton', element: quitButton },
@@ -198,7 +211,11 @@ async function setupSinglePlayer() {
         { id: 'gameOverContainer', element: gameOverContainer },
         { id: 'bet25Button', element: bet25Button },
         { id: 'bet50Button', element: bet50Button },
-        { id: 'bet100Button', element: bet100Button }
+        { id: 'bet100Button', element: bet100Button },
+        { id: 'balance-number', element: balanceNumberElement },
+        { id: 'multiplier-display', element: multiplierDisplayElement },
+        { id: 'multiplier-details', element: multiplierDetailsElement },
+        { id: 'earnings-card', element: earningsCardElement }
     ];
 
     for (const { id, element } of requiredElements) {
@@ -221,9 +238,17 @@ async function setupSinglePlayer() {
 
     setEarningsPerSecond(0);
 
+    let lastMultiplierSnapshot = {
+        total: 1,
+        base: 1,
+        hustlerBonus: 0,
+        itemBonus: 0,
+        cashBonus: 0,
+    };
+
     function recordEarnings(previous, current) {
         const delta = current - previous;
-        if (delta > 0 && earningsTracker.startTime === null) {
+        if (delta !== 0 && earningsTracker.startTime === null) {
             earningsTracker.startTime = Date.now();
         }
 
@@ -235,6 +260,28 @@ async function setupSinglePlayer() {
             }
         }
     }
+
+    function updateMultiplierHud(snapshot = lastMultiplierSnapshot) {
+        lastMultiplierSnapshot = snapshot;
+        if (multiplierDisplayElement) {
+            multiplierDisplayElement.textContent = `${snapshot.total.toFixed(2)}x`;
+        }
+        if (multiplierDetailsElement) {
+            const segments = ['Base 1x'];
+            if (snapshot.hustlerBonus > 0) {
+                segments.push(`Hustlers +${snapshot.hustlerBonus.toFixed(2)}x`);
+            }
+        if (snapshot.itemBonus > 0) {
+            segments.push(`Items +${(snapshot.itemBonus * 100).toFixed(0)}%`);
+        }
+        if (snapshot.cashBonus > 0) {
+            segments.push(`Bonus $${Math.round(snapshot.cashBonus).toLocaleString()}`);
+        }
+        multiplierDetailsElement.textContent = segments.join(' • ');
+    }
+}
+
+    updateMultiplierHud();
 
     function adjustBalance(delta, { track = true } = {}) {
         const previous = balance;
@@ -410,13 +457,24 @@ async function setupSinglePlayer() {
                 showGameMessage('Loaded Dice reshaped the roll!', 'bonus', { duration: 2400 });
             }
 
+            updateRollCount(dice1, dice2);
+            const rollKey = `${dice1}-${dice2}`;
+            playerStats.rollHistory[rollKey] = (playerStats.rollHistory[rollKey] || 0) + 1;
+            saveStats();
+
             const { multiplier, cashBonus } = applyHustlerEffects(dice1, dice2);
+            const itemMultiplierBonus = itemEffectsManager.state?.winMultiplierBonus || 0;
+            const totalMultiplier = multiplier * (1 + itemMultiplierBonus);
+
+            updateMultiplierHud({
+                total: totalMultiplier,
+                base: multiplier,
+                hustlerBonus: Math.max(multiplier - 1, 0),
+                itemBonus: itemMultiplierBonus,
+                cashBonus,
+            });
 
             animateDice(dice1, dice2, () => {
-                const diceRollSounds = ["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"];
-                const randomSound = diceRollSounds[Math.floor(Math.random() * diceRollSounds.length)];
-                playSound(randomSound);
-
                 let winnings = 0;
 
                 if (sum === 7 || sum === 11) {
@@ -429,7 +487,7 @@ async function setupSinglePlayer() {
                     });
                     winnings = baseWinnings + cashBonus + itemBonus;
                     adjustBalance(winnings);
-                    gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
+                    gameStatus.textContent = `You win! 🎉 Roll: ${sum} • Multiplier ${totalMultiplier.toFixed(2)}x`;
                     playSound("/sounds/Winner_0.ogg");
                     flashScreen('gold');
                     showWinningAmount(winnings);
@@ -443,7 +501,7 @@ async function setupSinglePlayer() {
                     }
                 } else if (sum === 2 || sum === 3 || sum === 12) {
                     adjustBalance(-currentBet);
-                    gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
+                    gameStatus.textContent = `You lose! 💔 Roll: ${sum} • Multiplier ${totalMultiplier.toFixed(2)}x`;
                     playSound("/sounds/Loser_0.ogg");
                     flashScreen('red');
                     showLosingAmount(currentBet);
@@ -457,7 +515,8 @@ async function setupSinglePlayer() {
                     if (cashBonus) {
                         adjustBalance(cashBonus);
                     }
-                    gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplier}x. Bonus: $${cashBonus}`;
+                    const bonusText = cashBonus ? ` • Bonus $${cashBonus.toLocaleString()}` : '';
+                    gameStatus.textContent = `Roll: ${sum} • Multiplier ${totalMultiplier.toFixed(2)}x${bonusText}`;
                 }
 
                 const passiveIncome = itemEffectsManager.getPassiveIncome();
@@ -488,25 +547,6 @@ async function setupSinglePlayer() {
     // Attach handleRollDice to the window object
     window.handleRollDice = handleRollDice;
     
-    function updateBalanceImages(balance) {
-        console.log(`Updating balance to: ${balance}`); // Debugging log
-        const balanceContainer = document.getElementById('balance-images');
-        if (!balanceContainer) {
-            console.error('Balance container not found');
-            return;
-        }
-        balanceContainer.innerHTML = ''; // Clear existing images
-    
-        const balanceString = balance.toString(); // Convert balance to string
-        for (let digit of balanceString) {
-            const digitElement = document.createElement('div');
-            digitElement.classList.add('balance-digit');
-            digitElement.style.backgroundImage = `url('/images/Font_Number_${digit}.gif')`;
-            balanceContainer.appendChild(digitElement);
-        }
-    }
-    
-
 // Global variable for the fire border
 let fireBorderElement;
 
@@ -614,15 +654,28 @@ function deactivateOnFire() {
     }
 
     function refreshStatusPanel() {
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
-        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
+        const rollsRemaining = Math.max(maxTurns - turns, 0);
+
+        if (balanceNumberElement) {
+            balanceNumberElement.textContent = `$${Math.max(0, Math.round(balance)).toLocaleString()}`;
+        }
+        if (betAmountTextElement) {
+            betAmountTextElement.textContent = `$${currentBet.toLocaleString()}`;
+        }
+        if (rentAmountElement) {
+            rentAmountElement.textContent = `$${rent.toLocaleString()}`;
+        }
+        if (rentRollsElement) {
+            rentRollsElement.textContent = rollsRemaining.toString();
+        }
 
         const hustlerEffects = hustlerInventory.map(hustler => hustler.description).join(', ');
         const hustlerEffectElement = document.getElementById('hustler-effects');
         if (hustlerEffectElement) {
-            hustlerEffectElement.textContent = `Active Hustler Effects: ${hustlerEffects}`;
+            hustlerEffectElement.textContent = `Active Hustler Effects: ${hustlerEffects || 'None'}`;
         }
 
+        updateMultiplierHud();
         updateBackgroundImage();
     }
 
@@ -739,7 +792,7 @@ function animateDice(dice1, dice2, callback) {
     dice2Element.src = rollingAnimation;
 
     // Play the rolling sound effect
-    playSound("/sounds/DiceRoll.ogg");
+    playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"], true);
 
     // Wait for the rolling animation to finish before showing the result
     setTimeout(() => {
@@ -985,6 +1038,10 @@ function addHustlerToInventory(hustler) {
         return;
     }
     hustlerInventory.push(hustler);
+    if (window.playerStats) {
+        window.playerStats.hustlersRecruited = (window.playerStats.hustlersRecruited || 0) + 1;
+        saveStats();
+    }
     updateHustlerInventoryUI();
 }
 
@@ -1087,7 +1144,7 @@ function displayStats() {
             <li>Months Unlocked: ${playerStats.monthsUnlocked}/12</li>
             <li>Total Money Won: $${playerStats.totalMoneyWon.toLocaleString()}</li>
             <li>Total Money Lost: $${playerStats.totalMoneyLost.toLocaleString()}</li>
-            <li>Hustlers Recruited: ${playerStats.hustlersRecruited}</li>
+            <li>Hustlers Recruited: ${(playerStats.hustlersRecruited ?? 0)}</li>
             <li>Total Time Played: ${formatTime(playerStats.totalTimePlayed)}</li>
             <li>Current Winning Streak: ${playerStats.currentWinStreak}</li>
             <li>Longest Winning Streak: ${playerStats.longestWinStreak}</li>
@@ -1480,7 +1537,6 @@ const fortunes = [
 let collectedFortunes = new Set();
 
 const cookieCountElement = document.getElementById("cookie-count");
-const collectedCookiesElement = document.getElementById("collected-cookies");
 const fortuneTextElement = document.getElementById("fortune-text");
 const fortuneDisplayElement = document.getElementById("fortune-display");
 
@@ -1603,6 +1659,10 @@ function updateDiceAppearance(color) {
 
 function displayPurchasedCookie(fortune, imagePath) {
     const myFortunesSection = document.getElementById("my-fortunes"); // Section to display collected cookies
+    if (!myFortunesSection) {
+        console.warn('My fortunes section not found.');
+        return;
+    }
 
     // Create a new cookie icon
     const cookieIcon = document.createElement("div");
@@ -1617,7 +1677,16 @@ function displayPurchasedCookie(fortune, imagePath) {
 
 export function updateCollectionDisplay() {
     const myFortunesSection = document.getElementById("my-fortunes");
+    const collectionCountElement = document.getElementById("cookie-count");
+    if (!myFortunesSection) {
+        console.warn('My fortunes section not found in DOM.');
+        return;
+    }
     myFortunesSection.innerHTML = ""; // Clear existing display
+
+    if (collectionCountElement) {
+        collectionCountElement.textContent = collectedFortunes.size;
+    }
 
     collectedFortunes.forEach((fortune) => {
         let imagePath = "/images/cookie_Open.png"; // Default cookie image
