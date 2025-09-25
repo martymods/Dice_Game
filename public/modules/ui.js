@@ -50,6 +50,54 @@ function playHoverSound() {
 }
 
 
+let messageStackContainer;
+
+function ensureMessageStack() {
+    if (!messageStackContainer) {
+        messageStackContainer = document.createElement('div');
+        messageStackContainer.id = 'game-message-stack';
+
+        const attachContainer = () => {
+            if (!messageStackContainer.isConnected) {
+                document.body.appendChild(messageStackContainer);
+            }
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', attachContainer, { once: true });
+        } else {
+            attachContainer();
+        }
+    }
+
+    return messageStackContainer;
+}
+
+export function showGameMessage(message, type = 'info', options = {}) {
+    const container = ensureMessageStack();
+    const card = document.createElement('div');
+    card.className = `game-message game-message--${type}`;
+    card.textContent = message;
+
+    const { duration = 3200 } = options;
+
+    container.appendChild(card);
+
+    requestAnimationFrame(() => {
+        card.classList.add('visible');
+    });
+
+    setTimeout(() => {
+        card.classList.remove('visible');
+        setTimeout(() => {
+            if (card.parentElement === container) {
+                container.removeChild(card);
+            }
+        }, 350);
+    }, duration);
+}
+
+
 
 /**
  * Applies the effects of all purchased items.
@@ -250,50 +298,54 @@ export function updateHustlerPanel(hustlerInventory) {
 /**
  * Shows the item popup with a list of available items and calculates restocking fee dynamically.
  */
-export function showItemPopup(balance, items, purchasedItems) {
+export function showItemPopup(configOrBalance, maybeItems, maybePurchasedItems) {
+    const config = typeof configOrBalance === 'object' && !Array.isArray(configOrBalance)
+        ? {
+            balance: 0,
+            items: [],
+            purchasedItems: [],
+            onPurchase: null,
+            ...configOrBalance,
+        }
+        : {
+            balance: Number(configOrBalance) || 0,
+            items: maybeItems || [],
+            purchasedItems: maybePurchasedItems || [],
+            onPurchase: null,
+        };
+
     const popup = document.getElementById('buy-item-container');
     const itemList = document.getElementById('item-list');
-    console.log('ItemList DOM:', itemList);
 
-    if (!itemList) {
-        console.error('item-list element not found. Ensure it exists in game.html.');
+    if (!popup || !itemList) {
+        console.error('Shop popup elements are missing from the DOM.');
         return;
     }
 
-    if (!items || items.length === 0) {
-        console.error('No items available to show in the shop.');
-        return;
-    }
-
-    const restockButton = document.getElementById('restockButton');
-    const restockFeeElement = document.getElementById('restock-fee');
-    const restockFee = Math.floor(balance * 0.15);
+    const availableItems = (config.items && config.items.length ? config.items : [...itemsList])
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
 
     popup.style.display = 'block';
     itemList.innerHTML = '';
 
+    const restockFeeElement = document.getElementById('restock-fee');
     if (restockFeeElement) {
+        const restockFee = Math.floor(config.balance * 0.15);
         restockFeeElement.textContent = `Restock Fee: $${restockFee.toLocaleString()}`;
     }
 
-    const shuffledItems = (items.length ? items : [...itemsList])
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
-    console.log('Shuffled items:', shuffledItems);
-
-    shuffledItems.forEach(item => {
+    availableItems.forEach(item => {
         const itemContainer = document.createElement('div');
         itemContainer.classList.add('item-container');
 
-        // Add item image
         const itemImage = document.createElement('img');
         const itemNameFormatted = item.name.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '');
         itemImage.src = `/images/itemimage/${itemNameFormatted}.png`;
         itemImage.alt = item.name;
-        itemImage.onerror = () => { itemImage.src = '/images/itemimage/Item_NoIcon.png'; }; // Fallback image
+        itemImage.onerror = () => { itemImage.src = '/images/itemimage/Item_NoIcon.png'; };
         itemImage.classList.add('item-image');
 
-        // Create item button
         const itemButton = document.createElement('button');
         itemButton.textContent = `${item.name} (${item.rarity}) - $${item.cost.toLocaleString()}`;
         itemButton.style.backgroundColor = getItemColor(item.rarity);
@@ -301,29 +353,22 @@ export function showItemPopup(balance, items, purchasedItems) {
 
         itemButton.onmouseenter = () => showItemDescription(item.description);
         itemButton.onmouseleave = hideItemDescription;
-
         itemButton.onclick = () => {
-            handleItemPurchase(item, balance, purchasedItems);
-            applyPurchasedItemEffects(purchasedItems);
-
-            const voiceClips = ["/sounds/Lord_voice_0.ogg", "/sounds/Lord_voice_1.ogg", "/sounds/Lord_voice_2.ogg"];
-            playSound(voiceClips, true);
+            if (typeof config.onPurchase === 'function') {
+                config.onPurchase(item);
+            }
         };
 
-        // Append image and button to the container
         itemContainer.appendChild(itemImage);
         itemContainer.appendChild(itemButton);
-
         itemList.appendChild(itemContainer);
     });
 
+    const restockButton = document.getElementById('restockButton');
     if (restockButton) {
         restockButton.onclick = () => {
-            console.log('Restocking items...');
-            handleRestock(balance, [...itemsList]);
+            handleRestock(config.balance, [...itemsList], config.onPurchase);
         };
-    } else {
-        console.error('restockButton not found in the DOM.');
     }
 }
 
@@ -336,7 +381,7 @@ export function showItemPopup(balance, items, purchasedItems) {
 /**
  * Handles restocking items by deducting 15% of the player's balance and updating the store.
  */
-export function handleRestock(balance, items) {
+export function handleRestock(balance, items, onPurchase) {
     const restockFee = Math.floor(balance * 0.15); // 15% of the player's balance
 
     if (balance >= restockFee) {
@@ -345,17 +390,17 @@ export function handleRestock(balance, items) {
 
         // Shuffle and regenerate new items
         const newItems = items.sort(() => Math.random() - 0.5).slice(0, 3);
-        updateStoreUI(newItems, balance); // Update the store UI
-        alert(`Restocked items for $${restockFee.toLocaleString()}!`);
+        updateStoreUI(newItems, balance, onPurchase); // Update the store UI
+        showGameMessage(`Restocked items for $${restockFee.toLocaleString()}!`, 'bonus');
     } else {
-        alert('Not enough money to restock!');
+        showGameMessage('Not enough money to restock!', 'warning');
     }
 }
 
 /**
  * Updates the store UI with new items and balance.
  */
-function updateStoreUI(items, balance) {
+function updateStoreUI(items, balance, onPurchase) {
     const itemList = document.getElementById('item-list');
     const balanceDisplay = document.getElementById('balance-display');
 
@@ -392,8 +437,9 @@ function updateStoreUI(items, balance) {
 
         // Add click functionality for purchasing items
         itemButton.onclick = () => {
-            handleItemPurchase(item, balance, purchasedItems);
-            updatePurchasedItemsDisplay(purchasedItems);
+            if (typeof onPurchase === 'function') {
+                onPurchase(item);
+            }
         };
 
         // Append the image and button to the container
@@ -442,10 +488,10 @@ export function handleItemPurchase(item, balance, purchasedItems = []) {
         updatePurchasedItemsDisplay(purchasedItems); // Update inventory UI
         updateBalanceDisplay(balance); // Update balance display
         playSound("/sounds/UI_Buy1.ogg");
-        alert(`You purchased ${item.name}!`);
+        showGameMessage(`You purchased ${item.name}!`, 'success');
         return { balance, purchasedItems };
     } else {
-        alert("Not enough money to buy this item.");
+        showGameMessage('Not enough money to buy this item.', 'warning');
         playSound("/sounds/UI_Error.ogg");
         return { balance, purchasedItems }; // Return unchanged values
     }
@@ -581,24 +627,22 @@ export function displayBonusFromItems(bonus) {
  */
 export function handleGameOverScreen() {
     const gameOverContainer = document.getElementById('gameOverContainer');
-    gameOverContainer.innerHTML = ''; // Clear previous content
+    if (!gameOverContainer) {
+        console.error('Game over container not found.');
+        return;
+    }
 
-    // Show GameOverEvicted.gif
+    gameOverContainer.innerHTML = '';
+    gameOverContainer.classList.add('game-over-overlay');
+    gameOverContainer.style.display = 'flex';
+
     const evictedGif = document.createElement('img');
-    evictedGif.src = '/images/GameOverEvicted.gif?v=1.0.1'; // Cache-busted URL
+    evictedGif.src = '/images/GameOverEvicted.gif?v=1.0.1';
     evictedGif.alt = 'Game Over Evicted';
-    evictedGif.style.position = 'fixed';
-    evictedGif.style.top = '0';
-    evictedGif.style.left = '0';
-    evictedGif.style.width = '100%';
-    evictedGif.style.height = '100%';
-    evictedGif.style.objectFit = 'cover';
-    evictedGif.style.zIndex = '9998';
+    evictedGif.className = 'game-over-visual';
 
     gameOverContainer.appendChild(evictedGif);
-    gameOverContainer.style.display = 'block';
 
-    // Replace with GameOverIdleScreen.png after 6 seconds
     setTimeout(() => {
         evictedGif.src = '/images/GameOverIdleScreen.png?v=1.0.1'; // Cache-busted URL
         evictedGif.alt = 'Game Over Idle Screen';
@@ -644,148 +688,71 @@ export function updateBalanceDisplay(balance) {
         balanceDisplay.appendChild(digitImage);
     }
 
-    // Update earnings per second
-    setEarningsPerSecondFromBalance(balance);
 }
 
-let lastBalance = 0; // Track the last balance
 
-function setEarningsPerSecondFromBalance(currentBalance) {
-    const earningsCounterElement = document.getElementById("earnings-per-second");
-    if (!earningsCounterElement) {
-        console.warn("Earnings counter element not found. Skipping setEarningsPerSecondFromBalance.");
+
+
+export function initChatUI(socket) {
+    const chatFooter = document.getElementById('chat-footer');
+    if (!chatFooter) {
         return;
     }
-    const timeInterval = 1; // Interval in seconds for calculations
-    const earnings = (currentBalance - lastBalance) / timeInterval;
-    lastBalance = currentBalance; // Update last balance for next calculation
-    animateEarningsCounter(earnings, parseFloat(earningsCounterElement.textContent) || 0);
-}
 
+    const messageList = document.getElementById('message-list');
+    const playerList = document.getElementById('player-names');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-message');
 
+    const appendMessage = (name, text) => {
+        if (!messageList) return;
+        const row = document.createElement('div');
+        row.className = 'chat-message';
+        row.innerHTML = `<span class="chat-message__name">${name}</span><span class="chat-message__text">${text}</span>`;
+        messageList.appendChild(row);
+        messageList.scrollTop = messageList.scrollHeight;
+    };
 
+    const sendCurrentMessage = () => {
+        if (!socket || !messageInput) return;
+        const value = messageInput.value.trim();
+        if (!value) return;
+        socket.emit('sendMessage', value);
+        messageInput.value = '';
+    };
 
-// Chat functionality
+    if (sendButton) {
+        sendButton.onclick = sendCurrentMessage;
+    }
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    const chatButton = document.getElementById('toggle-chat');
-    if (chatButton) {
-        chatButton.addEventListener('click', () => {
-            console.log('Chat button clicked (ui.js)');
-            const chatContainer = document.getElementById('chat-container');
-            chatContainer.classList.toggle('chat-expanded');
+    if (messageInput) {
+        messageInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendCurrentMessage();
+            }
         });
     }
-});
-
-// Send a message
-document.addEventListener('DOMContentLoaded', () => {
-    const sendMessageButton = document.getElementById('send-message');
-    const messageInput = document.getElementById('message-input');
-
-    function handleSendMessage() {
-        if (!window.socket) {
-            console.error('Socket is not initialized.');
-            return;
-        }
-
-        const message = messageInput?.value.trim();
-        if (message) {
-            console.log('Sending message:', message);
-            window.socket.emit('sendMessage', message);
-            messageInput.value = ''; // Clear the input field
-        } else {
-            console.error('Message is empty.');
-        }
-    }
-
-    if (sendMessageButton) {
-        // Remove any existing listener before adding a new one
-        sendMessageButton.removeEventListener('click', handleSendMessage);
-        sendMessageButton.addEventListener('click', handleSendMessage);
-    } else {
-        console.error('Send message button not found.');
-    }
-});
-
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    const socket = window.socket; // Access the global `socket`
 
     if (!socket) {
-        console.error('Socket is not initialized. Ensure app.js is loaded before ui.js.');
+        console.warn('Chat UI initialised without a socket instance.');
         return;
     }
 
-    // **Forcefully clear all existing listeners**
-    socket.removeAllListeners(); // Completely unbind all listeners attached to this socket
+    socket.off('newMessage');
+    socket.on('newMessage', ({ name, message }) => appendMessage(name, message));
 
-    // Add fresh listeners
-    socket.on('newMessage', ({ name, message }) => {
-        const messageList = document.getElementById('message-list');
-        if (messageList) {
-            const messageDiv = document.createElement('div');
-            messageDiv.textContent = `${name}: ${message}`;
-            messageList.appendChild(messageDiv);
-            messageList.scrollTop = messageList.scrollHeight; // Scroll to the latest message
-        } else {
-            console.error('message-list element not found in the DOM.');
-        }
-    });
-
+    socket.off('playerUpdate');
     socket.on('playerUpdate', ({ players }) => {
-        const playerNames = document.getElementById('player-names');
-        if (!playerNames) {
-            console.error("Element 'player-names' not found in the DOM.");
-            return; // Exit early if the element is missing
-        }
-        playerNames.innerHTML = '';
+        if (!playerList) return;
+        playerList.innerHTML = '';
         Object.values(players).forEach((name) => {
             const li = document.createElement('li');
             li.textContent = name;
-            playerNames.appendChild(li);
+            playerList.appendChild(li);
         });
     });
-});
-
-
-
-// Update message list
-socket.on('newMessage', ({ name, message }) => {
-    console.log('Socket initialized in app.js:', socket);
-
-    const messageList = document.getElementById('message-list');
-    const div = document.createElement('div');
-    div.textContent = `${name}: ${message}`;
-    messageList.appendChild(div);
-    messageList.scrollTop = messageList.scrollHeight; // Scroll to the latest message
-});
-
-socket.emit('test', 'Hello from Client');
-
-socket.on('testReply', (data) => {
-    console.log('Server reply:', data);
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const socket = window.socket;
-
-    if (!socket) {
-        console.error('Socket is not initialized. Ensure app.js is loaded before ui.js.');
-        return;
-    }
-
-    socket.on('newMessage', ({ name, message }) => {
-        console.log(`New message from ${name}: ${message}`);
-        const messageList = document.getElementById('message-list');
-        const messageDiv = document.createElement('div');
-        messageDiv.textContent = `${name}: ${message}`;
-        messageList.appendChild(messageDiv);
-        messageList.scrollTop = messageList.scrollHeight; // Scroll to the bottom
-    });
-});
+}
 
 /**
  * Initializes and manages the combinations modal functionality.

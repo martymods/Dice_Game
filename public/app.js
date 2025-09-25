@@ -3,16 +3,19 @@
 import { rollDice, animateDice, playDiceSound } from './modules/dice.js';
 import { playerStats, loadStats, saveStats, updateWinStreak, resetWinStreak } from './modules/gameLogic.js';
 import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hustlers.js';
-import { updateUI, showItemPopup, getItemColor, handleGameOverScreen } from './modules/ui.js';
+import {
+    updateUI,
+    showItemPopup,
+    handleGameOverScreen,
+    showGameMessage,
+    updatePurchasedItemsDisplay,
+    updateBalanceDisplay,
+    initChatUI,
+    setEarningsPerSecond,
+} from './modules/ui.js';
 import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
-import { applyPurchasedItemEffects } from './itemEffects.js'; 
-import { updateBalanceDisplay, setEarningsPerSecond } from './modules/ui.js'; // Ensure the correct path
-
-// Example: Setting earnings dynamically based on gameplay logic
-if (document.getElementById("earnings-per-second")) {
-setEarningsPerSecond(15.75); // This sets the earnings per second to $15.75
-}
+import { createItemEffectsManager } from './itemEffects.js';
 
 // Use `window.socket` instead:
 console.log('Using global socket in app.js:', window.socket);
@@ -47,6 +50,8 @@ if (typeof window === "undefined") {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initChatUI(window.socket || null);
+    initializeCryptoButtons();
     const urlParams = new URLSearchParams(window.location.search);
     const isSinglePlayer = urlParams.has('singlePlayer');
 
@@ -122,8 +127,6 @@ if (!window.playerStats) {
 
 async function setupSinglePlayer() {
     loadStats();
-    const purchasedItems = []; // Initialize or fetch purchased items here
-    applyPurchasedItemEffects(purchasedItems); // Apply pre-purchased effects
     console.log('Single Player mode active.');
 
     let balance = 300;
@@ -135,6 +138,26 @@ async function setupSinglePlayer() {
     let items = [];
     let dreamCoins = 0; // New DreamCoin balance
     let gameStartTime = Date.now();
+
+    const purchasedItems = [];
+    const earningsTracker = {
+        baseBalance: balance,
+        startTime: null,
+        net: 0,
+    };
+
+    const cloneItem = (item) => (typeof structuredClone === 'function'
+        ? structuredClone(item)
+        : JSON.parse(JSON.stringify(item)));
+
+    const itemEffectsManager = createItemEffectsManager({
+        adjustBalance: (amount, options = {}) => adjustBalance(amount, options),
+        awardBonusItem: (item, options = {}) => handleItemAcquisition(cloneItem(item), {
+            free: true,
+            silent: options.silent,
+        }),
+        showMessage: (message, type) => showGameMessage(message, type || 'bonus'),
+    });
 
     // Increment games played
     playerStats.gamesPlayed++;
@@ -181,18 +204,121 @@ async function setupSinglePlayer() {
     for (const { id, element } of requiredElements) {
         if (!element) {
             console.error(`Missing required element: ${id}`);
-            alert(`Missing required element: ${id}. Please check the HTML.`);
+            showGameMessage(`Missing required element: ${id}. Please check the HTML.`, 'warning');
             return;
         }
     }
-   
+
     if (!itemsList || itemsList.length === 0) {
         console.error('Items list is empty or not loaded from items.js.');
-        alert('Failed to load items. Please refresh the page.');
+        showGameMessage('Failed to load items. Please refresh the page.', 'error');
         return;
     }
     
-        updateUI();
+    const betInput = document.getElementById('betAmount');
+    const ethInput = document.getElementById('betAmountETH');
+    const ethBetButton = document.getElementById('eth-bet-button');
+
+    setEarningsPerSecond(0);
+
+    function recordEarnings(previous, current) {
+        const delta = current - previous;
+        if (delta > 0 && earningsTracker.startTime === null) {
+            earningsTracker.startTime = Date.now();
+        }
+
+        if (earningsTracker.startTime !== null) {
+            earningsTracker.net = current - earningsTracker.baseBalance;
+            const elapsedSeconds = (Date.now() - earningsTracker.startTime) / 1000;
+            if (elapsedSeconds > 0) {
+                setEarningsPerSecond(earningsTracker.net / elapsedSeconds);
+            }
+        }
+    }
+
+    function adjustBalance(delta, { track = true } = {}) {
+        const previous = balance;
+        balance = Math.max(0, Math.round((balance + delta) * 100) / 100);
+        updateBalanceDisplay(balance);
+        updateUI(balance, rent, turns, maxTurns, currentBet);
+        if (track) {
+            recordEarnings(previous, balance);
+        } else {
+            earningsTracker.net = balance - earningsTracker.baseBalance;
+        }
+        return balance;
+    }
+
+    function handleItemAcquisition(item, { free = false, silent = false } = {}) {
+        if (!item) return false;
+        if (!free && balance < item.cost) {
+            if (!silent) {
+                showGameMessage('Not enough money to buy this item.', 'warning');
+            }
+            return false;
+        }
+
+        if (!free) {
+            adjustBalance(-item.cost);
+        }
+
+        purchasedItems.push(item);
+        updatePurchasedItemsDisplay(purchasedItems);
+        const summary = itemEffectsManager.applyItemEffect(item);
+
+        if (!silent) {
+            const message = summary ? `${item.name}: ${summary}` : `You purchased ${item.name}!`;
+            showGameMessage(message, 'success', { duration: 3600 });
+        }
+
+        refreshStatusPanel();
+        return true;
+    }
+
+    function refreshBetButtons() {
+        if (rollButton) {
+            rollButton.src = currentBet >= 1
+                ? '/images/Button_RollDice_Active.gif'
+                : '/images/Button_RollDice.gif';
+        }
+
+        if (betButton) {
+            betButton.src = currentBet >= 1
+                ? '/images/Button_PlaceBet_Active.gif'
+                : '/images/Button_PlaceBet.gif';
+        }
+
+        if (ethBetButton && ethInput) {
+            const ethValue = parseFloat(ethInput.value || '0');
+            ethBetButton.src = ethValue > 0
+                ? '/images/Button_PlaceBet_Active.gif'
+                : '/images/Button_PlaceBet.gif';
+        }
+    }
+
+    function syncBetFromInput() {
+        if (!betInput) return;
+        const value = parseInt(betInput.value, 10);
+        if (!isNaN(value) && value > 0) {
+            currentBet = Math.min(value, balance);
+        } else {
+            currentBet = 0;
+        }
+        refreshStatusPanel();
+        refreshBetButtons();
+        updateBalanceDisplay(balance);
+        refreshBetButtons();
+    }
+
+    if (betInput) {
+        betInput.addEventListener('input', syncBetFromInput);
+    }
+
+    if (ethInput) {
+        ethInput.addEventListener('input', refreshBetButtons);
+    }
+
+        refreshStatusPanel();
 
         rollButton.addEventListener('click', handleRollDice);
         betButton.addEventListener('click', handlePlaceBet);
@@ -214,127 +340,150 @@ async function setupSinglePlayer() {
 
         function setBet(input) {
             let amount;
-        
-            // Determine if input is a percentage or a fixed amount
-            if (typeof input === "number" && input <= 1) {
-                // If input is a decimal (percentage), calculate the bet amount
+
+            if (typeof input === 'number' && input <= 1) {
                 amount = Math.floor(balance * input);
             } else {
-                // Otherwise, treat it as a fixed amount
-                amount = input;
+                amount = Number(input);
             }
-        
-            // Ensure the bet does not exceed the balance
-            if (amount > balance) amount = balance;
-        
-            // Validate the bet
-            if (amount <= 0) {
-                alert("Insufficient balance to place this bet!");
+
+            if (Number.isNaN(amount)) {
+                showGameMessage('Please enter a valid bet amount.', 'warning');
                 return;
             }
-        
-            // Update the current bet and UI
+
+            if (amount > balance) amount = balance;
+
+            if (amount <= 0) {
+                showGameMessage('Insufficient balance to place this bet!', 'warning');
+                currentBet = 0;
+                refreshBetButtons();
+                refreshStatusPanel();
+                return;
+            }
+
             currentBet = Math.floor(amount);
-            console.log(`Bet set to: $${currentBet}`); // Debugging log
-            updateUI(); // Update the UI with the new bet
+            if (betInput) {
+                betInput.value = currentBet;
+            }
+
+            refreshStatusPanel();
+            refreshBetButtons();
         }
-        
+
         // Make the function globally accessible
         window.setBet = setBet;
         
 
         function handleRollDice() {
             if (!canRollDice) {
-                console.log("Roll Dice is on cooldown."); // Debugging message
                 return;
             }
-        
+
+            syncBetFromInput();
             if (currentBet <= 0) {
-                alert('Place a bet first!');
+                showGameMessage('Place a bet first!', 'warning');
                 return;
             }
-        
-            canRollDice = false; // Disable rolling
+
+            canRollDice = false;
             setTimeout(() => {
-                canRollDice = true; // Re-enable rolling after 0.2 seconds
-            }, 200); // 200 milliseconds delay
+                canRollDice = true;
+            }, 200);
 
-        // Dim the background and highlight the dice during the roll
-        const gameContainer = document.getElementById('game-container');
-        const diceContainer = document.getElementById('dice-container');
-        gameContainer.classList.add('dimmed'); // Dim the background
-        diceContainer.classList.add('dimmed-dice'); // Brighten the dice and add glow
+            const gameContainer = document.getElementById('game-container');
+            const diceContainer = document.getElementById('dice-container');
+            gameContainer.classList.add('dimmed');
+            diceContainer.classList.add('dimmed-dice');
 
-        // Play dice shake sound
-        playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
+            playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
 
-        // Generate dice rolls
-        const dice1 = Math.floor(Math.random() * 6) + 1;
-        const dice2 = Math.floor(Math.random() * 6) + 1;
-        const sum = dice1 + dice2;
+            let rollResult = rollDice();
+            let { dice1, dice2 } = rollResult;
+            let sum = dice1 + dice2;
 
-        // Apply Hustler Effects
-        const { multiplier, cashBonus } = applyHustlerEffects(dice1, dice2);
-
-        // Animate dice rolling
-        animateDice(dice1, dice2, () => {
-            // Play dice roll sound after animation stops
-            const diceRollSounds = ["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"];
-            const randomSound = diceRollSounds[Math.floor(Math.random() * diceRollSounds.length)];
-            playSound(randomSound);
-
-
-            let winnings = 0;
-
-            if (sum === 7 || sum === 11) {
-                // Winning roll
-                winnings = currentBet * 2 * multiplier + cashBonus;
-                balance += winnings;
-                updateBalanceDisplay(balance); // Reflect changes
-                gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
-                playSound("/sounds/Winner_0.ogg");
-                flashScreen('gold');
-                showWinningAmount(winnings);
-
-                // Update total money won
-                playerStats.totalMoneyWon += winnings;
-                saveStats();
-
-                winStreak++;
-                if (winStreak >= 3 && !onFire) {
-                    activateOnFire(); // Activate "on fire" if streak is 3
-                }
-            } else if (sum === 2 || sum === 3 || sum === 12) {
-                // Losing roll
-                balance -= currentBet; // Deduct the bet on loss
-                updateBalanceDisplay(balance); // Reflect changes
-                gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
-                playSound("/sounds/Loser_0.ogg");
-                flashScreen('red');
-                showLosingAmount(currentBet);
-
-                // Update total money lost
-                playerStats.totalMoneyLost += currentBet;
-                saveStats();
-
-                winStreak = 0; // Reset streak
-                if (onFire) deactivateOnFire(); // Deactivate "on fire" on loss
-            } else {
-                // Neutral roll
-                balance += cashBonus;
-                gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplier}x. Bonus: $${cashBonus}`;
+            if (itemEffectsManager.shouldForceReroll(sum)) {
+                rollResult = rollDice();
+                dice1 = rollResult.dice1;
+                dice2 = rollResult.dice2;
+                sum = dice1 + dice2;
+                showGameMessage('Loaded Dice reshaped the roll!', 'bonus', { duration: 2400 });
             }
 
-            currentBet = 0;
-            updateUIAfterRoll();
+            const { multiplier, cashBonus } = applyHustlerEffects(dice1, dice2);
 
-            // Restore background brightness after roll
-            setTimeout(() => {
-                gameContainer.classList.remove('dimmed');
-                diceContainer.classList.remove('dimmed-dice');
-            }, 1000); // Restore after 1 second
-        });
-    }
+            animateDice(dice1, dice2, () => {
+                const diceRollSounds = ["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"];
+                const randomSound = diceRollSounds[Math.floor(Math.random() * diceRollSounds.length)];
+                playSound(randomSound);
+
+                let winnings = 0;
+
+                if (sum === 7 || sum === 11) {
+                    const baseWinnings = currentBet * 2 * multiplier;
+                    const itemBonus = itemEffectsManager.applyWinBonuses({
+                        baseWinnings,
+                        sum,
+                        dice1,
+                        dice2,
+                    });
+                    winnings = baseWinnings + cashBonus + itemBonus;
+                    adjustBalance(winnings);
+                    gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
+                    playSound("/sounds/Winner_0.ogg");
+                    flashScreen('gold');
+                    showWinningAmount(winnings);
+
+                    playerStats.totalMoneyWon += winnings;
+                    saveStats();
+
+                    winStreak++;
+                    if (winStreak >= 3 && !onFire) {
+                        activateOnFire();
+                    }
+                } else if (sum === 2 || sum === 3 || sum === 12) {
+                    adjustBalance(-currentBet);
+                    gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
+                    playSound("/sounds/Loser_0.ogg");
+                    flashScreen('red');
+                    showLosingAmount(currentBet);
+
+                    playerStats.totalMoneyLost += currentBet;
+                    saveStats();
+
+                    winStreak = 0;
+                    if (onFire) deactivateOnFire();
+                } else {
+                    if (cashBonus) {
+                        adjustBalance(cashBonus);
+                    }
+                    gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplier}x. Bonus: $${cashBonus}`;
+                }
+
+                const passiveIncome = itemEffectsManager.getPassiveIncome();
+                const rollBonus = itemEffectsManager.applyRollBonuses({ dice1, dice2, sum });
+                const totalItemIncome = (passiveIncome || 0) + (rollBonus || 0);
+                if (totalItemIncome !== 0) {
+                    adjustBalance(totalItemIncome);
+                    showGameMessage(`${totalItemIncome > 0 ? '+' : ''}$${Math.abs(totalItemIncome).toLocaleString()} from items`,
+                        totalItemIncome > 0 ? 'bonus' : 'warning',
+                        { duration: 2600 });
+                }
+
+                currentBet = 0;
+                if (betInput) {
+                    betInput.value = '';
+                }
+                refreshStatusPanel();
+                refreshBetButtons();
+                updateUIAfterRoll();
+
+                setTimeout(() => {
+                    gameContainer.classList.remove('dimmed');
+                    diceContainer.classList.remove('dimmed-dice');
+                }, 1000);
+            });
+        }
 
     // Attach handleRollDice to the window object
     window.handleRollDice = handleRollDice;
@@ -448,18 +597,23 @@ function deactivateOnFire() {
 
         const betAmount = parseInt(document.getElementById('betAmount').value);
         if (isNaN(betAmount) || betAmount <= 0 || betAmount > balance) {
-            alert('Invalid bet amount.');
+            showGameMessage('Invalid bet amount.', 'warning');
+            currentBet = 0;
         } else {
             currentBet = betAmount;
-            updateUI();
         }
+        if (betInput) {
+            betInput.value = currentBet || '';
+        }
+        refreshStatusPanel();
+        refreshBetButtons();
     }
 
     function displayInventory() {
         inventoryDisplay.innerHTML = items.map(item => `<li>${item.name} (${item.description})</li>`).join('');
     }
 
-    function updateUI() {
+    function refreshStatusPanel() {
         bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
         rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
 
@@ -539,31 +693,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Combination modal elements are missing in the DOM.');
     }
 });
-
-document.addEventListener('DOMContentLoaded', () => {
-    const cryptoSection = document.getElementById('crypto-section');
-    if (cryptoSection) {
-        cryptoSection.addEventListener('click', (event) => {
-            if (event.target.tagName === 'BUTTON') {
-                const action = event.target.textContent.trim();
-                if (action === "Connect MetaMask") {
-                    connectMetaMask();
-                } else if (action === "Place Bet") {
-                    const betAmountETH = document.getElementById('betAmountETH')?.value;
-                    if (betAmountETH) {
-                        placeBet(betAmountETH);
-                    } else {
-                        alert("Please enter a valid bet amount.");
-                    }
-                }
-            }
-        });
-    } else {
-        console.error("Crypto section element is missing.");
-    }
-});
-
-
 
 document.addEventListener('DOMContentLoaded', () => {
     const introContainer = document.getElementById('intro-container');
@@ -655,8 +784,8 @@ function animateDice(dice1, dice2, callback) {
             rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${rollsRemaining} rolls`;
         } else {
             if (balance >= rent) {
-                // Deduct rent and adjust progression
-                balance -= rent;
+                adjustBalance(-rent);
+                itemEffectsManager.handleRentPaid({ rentPaid: rent, balance });
                 rent *= progression <= 9 ? 4 : 5;
                 maxTurns++;
                 progression++;
@@ -673,11 +802,14 @@ function animateDice(dice1, dice2, callback) {
 
                 // Display congratulatory popup
                 const randomStatement = rentPaidStatements[Math.floor(Math.random() * rentPaidStatements.length)];
-                alert(randomStatement);
+                showGameMessage(randomStatement, 'success', { duration: 4500 });
 
-                // Show item popup
-                console.log('Opening shop with items:', itemsList);
-                showItemPopup(balance, [...itemsList]);
+                showItemPopup({
+                    balance,
+                    items: [...itemsList],
+                    purchasedItems,
+                    onPurchase: (item) => handleItemAcquisition(cloneItem(item)),
+                });
 
 
             } else {
@@ -808,77 +940,42 @@ function animateDice(dice1, dice2, callback) {
  * Displays the GameOverEvicted.gif covering the entire screen when the balance reaches 0.
  */
     function showGameOverScreen() {
-        // Ensure a container for the game over screen
-        const gameOverContainer = document.createElement('div');
-        gameOverContainer.id = 'gameOverContainer';
-        gameOverContainer.style.position = 'fixed';
-        gameOverContainer.style.top = '0';
-        gameOverContainer.style.left = '0';
-        gameOverContainer.style.width = '100%';
-        gameOverContainer.style.height = '100%';
-        gameOverContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.9)'; // Black overlay
-        gameOverContainer.style.display = 'flex';
-        gameOverContainer.style.justifyContent = 'center';
-        gameOverContainer.style.alignItems = 'center';
-        gameOverContainer.style.zIndex = '9999';
-    
-        // Add the GameOverEvicted.gif image
+        let gameOverContainer = document.getElementById('gameOverContainer');
+        if (!gameOverContainer) {
+            gameOverContainer = document.createElement('div');
+            gameOverContainer.id = 'gameOverContainer';
+            document.body.appendChild(gameOverContainer);
+        }
+
+        gameOverContainer.className = 'game-over-overlay';
+        gameOverContainer.innerHTML = '';
+
         const gameOverImage = document.createElement('img');
-        gameOverImage.src = '/images/GameOverEvicted.gif'; // Replace with the correct path
+        gameOverImage.src = '/images/GameOverEvicted.gif';
         gameOverImage.alt = 'Game Over';
-        gameOverImage.style.width = '100%';
-        gameOverImage.style.height = '100%';
-        gameOverImage.style.objectFit = 'cover';
-    
+        gameOverImage.className = 'game-over-visual';
         gameOverContainer.appendChild(gameOverImage);
-    
-        // Create buttons container
+
         const buttonsContainer = document.createElement('div');
-        buttonsContainer.style.position = 'fixed';
-        buttonsContainer.style.bottom = '20px';
-        buttonsContainer.style.left = '50%';
-        buttonsContainer.style.transform = 'translateX(-50%)';
-        buttonsContainer.style.zIndex = '9999';
-        buttonsContainer.style.display = 'flex';
-        buttonsContainer.style.gap = '20px';
-    
-        // Restart Button
+        buttonsContainer.className = 'game-over-actions';
+
         const restartButton = document.createElement('button');
+        restartButton.type = 'button';
         restartButton.textContent = 'Restart';
-        restartButton.style.padding = '10px 20px';
-        restartButton.style.fontSize = '18px';
-        restartButton.style.backgroundColor = '#28a745';
-        restartButton.style.color = '#fff';
-        restartButton.style.border = 'none';
-        restartButton.style.borderRadius = '5px';
-        restartButton.style.cursor = 'pointer';
         restartButton.addEventListener('click', () => {
-            window.location.reload(); // Refresh the page
+            window.location.reload();
         });
-    
-        // Quit Game Button
+
         const quitButton = document.createElement('button');
+        quitButton.type = 'button';
         quitButton.textContent = 'Quit Game';
-        quitButton.style.padding = '10px 20px';
-        quitButton.style.fontSize = '18px';
-        quitButton.style.backgroundColor = '#dc3545';
-        quitButton.style.color = '#fff';
-        quitButton.style.border = 'none';
-        quitButton.style.borderRadius = '5px';
-        quitButton.style.cursor = 'pointer';
         quitButton.addEventListener('click', () => {
-            window.location.href = '/'; // Navigate to the main menu/index page
+            window.location.href = '/';
         });
-    
-        // Append buttons to the container
+
         buttonsContainer.appendChild(restartButton);
         buttonsContainer.appendChild(quitButton);
-    
-        // Append buttons container to the game over container
         gameOverContainer.appendChild(buttonsContainer);
-    
-        // Append the entire container to the body
-        document.body.appendChild(gameOverContainer);
     }
     
 
@@ -1011,10 +1108,10 @@ async function payoutWinnings(playerAddress, winningsETH) {
         });
 
         console.log("Payout successful:", transaction);
-        alert("Payout sent successfully!");
+        showGameMessage('Payout sent successfully!', 'success');
     } catch (error) {
         console.error("Error sending payout:", error);
-        alert("Payout failed. Please check your wallet.");
+        showGameMessage('Payout failed. Please check your wallet.', 'error');
     }
 }
 
@@ -1030,7 +1127,7 @@ async function handleWin(betAmount) {
     });
 
     console.log("Payout successful:", transaction);
-    alert(`Congratulations! You won ${winnings} ETH ($${winningsUSD}).`);
+    showGameMessage(`Congratulations! You won ${winnings} ETH ($${winningsUSD}).`, 'success');
 
     const gameStatus = document.getElementById('gameStatus');
     gameStatus.innerHTML = `
@@ -1049,7 +1146,7 @@ function handleLoss(betAmount) {
         <span style="color: red;">-${betAmount} ETH</span>
         <span>($${lossUSD})</span>
     `;
-    alert(`You lost ${betAmount} ETH ($${lossUSD}). Better luck next time!`);
+    showGameMessage(`You lost ${betAmount} ETH ($${lossUSD}). Better luck next time!`, 'warning');
 }
 
 export function startSinglePlayer() {
@@ -1083,9 +1180,9 @@ export async function connectMetaMask() {
         // Persist wallet address in localStorage
         localStorage.setItem("connectedWallet", address);
 
-        alert(`Connected wallet: ${address}`);
+        showGameMessage(`Connected wallet: ${address}`, 'success');
     } else {
-        alert("MetaMask is not installed. Please install it to use this feature.");
+        showGameMessage('MetaMask is not installed. Please install it to use this feature.', 'warning');
     }
 }
 // Make signer accessible globally
@@ -1125,14 +1222,14 @@ window.connectMetaMask = connectMetaMask;
 export async function placeBet(betAmountETH) {
     try {
         if (!signer) {
-            alert("Please connect your MetaMask wallet first.");
+            showGameMessage('Please connect your MetaMask wallet first.', 'warning');
             return;
         }
 
         // Validate and parse bet amount
         const betAmount = parseFloat(betAmountETH);
         if (isNaN(betAmount) || betAmount <= 0) {
-            alert("Invalid bet amount.");
+            showGameMessage('Invalid bet amount.', 'warning');
             return;
         }
 
@@ -1155,7 +1252,16 @@ export async function placeBet(betAmountETH) {
             <span style="color: #7fbcf7;">${betAmount} ETH</span>
             <span>($${betAmountUSD})</span>
         `;
-        alert("Bet placed successfully!");
+        showGameMessage('Bet placed successfully!', 'success');
+
+        const ethInputField = document.getElementById('betAmountETH');
+        if (ethInputField) {
+            ethInputField.value = '';
+        }
+        const ethBetImage = document.getElementById('eth-bet-button');
+        if (ethBetImage) {
+            ethBetImage.src = '/images/Button_PlaceBet.gif';
+        }
 
         // Simulate game outcome (for example purposes)
         const playerWon = Math.random() < 0.5; // 50% chance of winning
@@ -1166,7 +1272,7 @@ export async function placeBet(betAmountETH) {
         }
     } catch (error) {
         console.error("Error placing bet:", error);
-        alert("Bet placement failed. Please try again.");
+        showGameMessage('Bet placement failed. Please try again.', 'error');
     }
 }
 
@@ -1174,32 +1280,40 @@ export async function placeBet(betAmountETH) {
 window.placeBet = placeBet;
 
 
-const cryptoSection = document.getElementById('crypto-section');
-if (cryptoSection) {
-    cryptoSection.addEventListener('click', (event) => {
-        if (event.target.tagName === 'BUTTON') {
-            const action = event.target.textContent.trim();
-            if (action === "Connect MetaMask") {
-                connectMetaMask();
-            } else if (action === "Place Bet") {
-                const betAmountETH = document.getElementById('betAmountETH')?.value;
-                if (betAmountETH) {
-                    placeBet(betAmountETH);
-                } else {
-                    alert("Please enter a valid bet amount.");
-                }
-            }
-        }
-    });
-} else {
-    console.warn("crypto-section element not found in the DOM. Skipping event listener setup.");
-}
-
-
 function disconnectWallet() {
     localStorage.removeItem("connectedWallet");
     signer = null;
-    alert("Wallet disconnected.");
+    showGameMessage('Wallet disconnected.', 'info');
+}
+
+function initializeCryptoButtons() {
+    const payBitcoinButton = document.getElementById('pay-with-bitcoin');
+    const connectMetaMaskButton = document.getElementById('connect-metamask');
+    const ethBetButtonElement = document.getElementById('eth-bet-button');
+    const ethInputField = document.getElementById('betAmountETH');
+
+    if (payBitcoinButton) {
+        payBitcoinButton.addEventListener('click', () => {
+            showGameMessage('Bitcoin payments are coming soon.', 'info');
+        });
+    }
+
+    if (connectMetaMaskButton) {
+        connectMetaMaskButton.addEventListener('click', () => {
+            connectMetaMask();
+        });
+    }
+
+    if (ethBetButtonElement) {
+        ethBetButtonElement.addEventListener('click', () => {
+            const betAmountETH = ethInputField?.value;
+            if (betAmountETH && parseFloat(betAmountETH) > 0) {
+                placeBet(betAmountETH);
+            } else {
+                showGameMessage('Enter an ETH amount to place a bet.', 'warning');
+            }
+        });
+    }
 }
 
  //  Refactor Wallet Restoration
@@ -1216,11 +1330,11 @@ function disconnectWallet() {
             } catch (err) {
                 console.error("Failed to restore wallet connection:", err);
                 localStorage.removeItem("connectedWallet");
-                alert("Please reconnect your wallet.");
+                showGameMessage('Please reconnect your wallet.', 'warning');
             }
         } else if (!window.ethereum) {
             console.error("MetaMask is not installed.");
-            alert("MetaMask is required to connect your wallet.");
+            showGameMessage('MetaMask is required to connect your wallet.', 'warning');
         }
     }
 }

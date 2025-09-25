@@ -1,140 +1,194 @@
 // itemEffects.js
+// Centralised item effect manager used by the single-player game logic.
 
 import { itemsList } from './items.js';
 
-// Apply purchased item effects
-export function applyPurchasedItemEffects(purchasedItems) {
-    if (!Array.isArray(purchasedItems)) {
-        console.error('purchasedItems is not an array.');
-        return;
+/**
+ * Creates a manager that keeps track of purchased item effects and exposes
+ * helper utilities for the game loop.
+ *
+ * @param {Object} context
+ * @param {(amount: number, options?: { track?: boolean, source?: string }) => void} context.adjustBalance
+ *        Function used to mutate the player's balance.
+ * @param {(item: object, options?: { silent?: boolean }) => void} context.awardBonusItem
+ *        Function used to add a bonus item to the inventory without deducting cost.
+ * @param {(message: string, type?: string) => void} context.showMessage
+ *        Function for displaying in-game toast/overlay messages.
+ */
+export function createItemEffectsManager(context) {
+    const state = {
+        passiveIncomePerRoll: 0,
+        winMultiplierBonus: 0,
+        loadedDice: false,
+        summaries: [],
+        rollCallbacks: [],
+        winCallbacks: [],
+        rentCallbacks: [],
+    };
+
+    /**
+     * Applies an item's effect to the manager state.
+     * @param {object} item - The purchased item definition.
+     * @returns {string} - A short summary describing the applied effect.
+     */
+    function applyItemEffect(item) {
+        const definition = itemEffectDefinitions[item.name] || defaultEffect;
+        const summary = definition({ item, state, context });
+        if (summary) {
+            state.summaries.push({ name: item.name, summary });
+        }
+        return summary;
     }
 
-    purchasedItems.forEach(item => {
-        const effect = window.itemEffects[item.name];
-        if (typeof effect === 'function') {
-            try {
-                effect(); // Call the effect function
-                console.log(`Effect applied for item: ${item.name}`);
-            } catch (err) {
-                console.error(`Error applying effect for item: ${item.name}`, err);
-            }
-        } else {
-            console.warn(`No effect defined for item: ${item.name}`);
+    /**
+     * Executes roll based bonuses and returns the combined reward.
+     * @param {object} rollContext - { dice1, dice2, sum }
+     * @returns {number}
+     */
+    function applyRollBonuses(rollContext) {
+        return state.rollCallbacks.reduce((total, callback) => {
+            const value = Number(callback(rollContext)) || 0;
+            return total + value;
+        }, 0);
+    }
+
+    /**
+     * Calculates additional winnings after a successful roll.
+     * @param {object} winContext - { baseWinnings, sum, dice1, dice2 }
+     * @returns {number}
+     */
+    function applyWinBonuses(winContext) {
+        let extra = 0;
+        if (state.winMultiplierBonus !== 0) {
+            extra += winContext.baseWinnings * state.winMultiplierBonus;
         }
-    });
+        extra += state.winCallbacks.reduce((total, callback) => {
+            const value = Number(callback(winContext)) || 0;
+            return total + value;
+        }, 0);
+        return extra;
+    }
+
+    /**
+     * Executes callbacks when rent is paid.
+     */
+    function handleRentPaid(contextData) {
+        state.rentCallbacks.forEach(callback => {
+            try {
+                callback(contextData);
+            } catch (err) {
+                console.error('Rent callback error:', err);
+            }
+        });
+    }
+
+    function shouldForceReroll(sum) {
+        return state.loadedDice && sum < 7;
+    }
+
+    function getPassiveIncome() {
+        return state.passiveIncomePerRoll;
+    }
+
+    function getSummaries() {
+        return state.summaries.slice();
+    }
+
+    return {
+        applyItemEffect,
+        applyRollBonuses,
+        applyWinBonuses,
+        handleRentPaid,
+        shouldForceReroll,
+        getPassiveIncome,
+        getSummaries,
+        state,
+    };
 }
 
-// Make all functions globally accessible
-window.itemEffects = {};
+// ---------------------------------------------------------------------------
+// Item effect implementations
+// ---------------------------------------------------------------------------
 
-// Add placeholder functions for missing items
-const addPlaceholderEffect = (name) => {
-    const effectFunctionName = name.replace(/[^\w]/g, '').toLowerCase() + 'Effect';
-    window.itemEffects[effectFunctionName] = () => {
-        console.warn(`Placeholder effect triggered for item: ${name}`);
-    };
-};
+const itemEffectDefinitions = {
+    'Loaded Dice': ({ state }) => {
+        state.loadedDice = true;
+        return 'Grants a reroll when you land below 7.';
+    },
 
-// Add effect functions for specific items
-window.itemEffects['Loaded Dice'] = () => {
-    console.log('Effect applied: Loaded Dice');
-    const originalRollFunction = window.rollDice;
-    window.rollDice = () => {
-        const { dice1, dice2 } = originalRollFunction();
-        const sum = dice1 + dice2;
-        if (sum === 7 || sum === 11) {
-            const winnings = window.currentBet * 2;
-            window.updateBalance(window.balance + winnings);
-            console.log(`Loaded Dice activated: Won $${winnings}`);
+    'Forged Papers': ({ context }) => {
+        const grantedItems = [];
+        for (let i = 0; i < 3; i++) {
+            const randomItem = getRandomItem();
+            if (randomItem) {
+                grantedItems.push(randomItem.name);
+                context.awardBonusItem(randomItem, { silent: true });
+            }
         }
-        return { dice1, dice2 };
-    };
+        if (grantedItems.length) {
+            context.showMessage(`Forged Papers recruited: ${grantedItems.join(', ')}.`, 'bonus');
+        }
+        return 'Immediately recruits three random allies to your stash.';
+    },
+
+    "Old Gang Leaders Blade": ({ state, context }) => {
+        state.passiveIncomePerRoll += 9;
+        context.showMessage('The blade hums with power. +$9 every roll!', 'bonus');
+        return 'Adds $9 passive income on every roll.';
+    },
+
+    "Neighborhood OGs Manual": ({ state }) => {
+        state.winMultiplierBonus += 0.05;
+        return 'Win payouts boosted by 5%.';
+    },
+
+    'Lucky Black Cat': ({ state }) => {
+        state.rollCallbacks.push(({ sum }) => (sum === 9 ? 9 : 0));
+        return 'Awards $9 whenever you roll a total of nine.';
+    },
+
+    'Rusty Revolver': ({ context }) => {
+        context.adjustBalance(150, { source: 'Rusty Revolver' });
+        return 'Gives a $150 payout on purchase.';
+    },
+
+    'Gamblers Token': ({ state }) => {
+        state.passiveIncomePerRoll += 2;
+        state.rollCallbacks.push(() => (Math.random() < 0.1 ? -2 : 0));
+        return 'Adds $2 each roll but risks losing $2 occasionally.';
+    },
+
+    'Brown Pay Bump': ({ state }) => {
+        state.passiveIncomePerRoll += 4;
+        return 'The crew kicks back an extra $4 per roll.';
+    },
+
+    'Gold-Plated Dice': ({ state }) => {
+        state.rollCallbacks.push(({ sum }) => (sum > 6 ? 3 : 0));
+        return 'Adds $3 whenever you roll above six.';
+    },
+
+    'Lucky Horseshoe': ({ state }) => {
+        state.winCallbacks.push(() => 3);
+        return 'Adds a flat $3 bonus to winning rolls.';
+    },
 };
 
-window.itemEffects['Forged Papers'] = () => {
-    console.log('Effect applied: Forged Papers');
-    for (let i = 0; i < 3; i++) {
-        const randomItem = itemsList[Math.floor(Math.random() * itemsList.length)];
-        window.addToPurchasedItems(randomItem);
-        console.log(`Forged Papers added item: ${randomItem.name}`);
+function defaultEffect({ item, state }) {
+    const passiveBonus = Math.max(1, Math.round(item.cost * 0.02));
+    state.passiveIncomePerRoll += passiveBonus;
+    return `Generates $${passiveBonus} passive income every roll.`;
+}
+
+function cloneData(item) {
+    if (typeof structuredClone === 'function') {
+        return structuredClone(item);
     }
-};
+    return JSON.parse(JSON.stringify(item));
+}
 
-window.itemEffects['Old Gang Leaders Blade'] = () => {
-    console.log('Effect applied: Old Gang Leaders Blade');
-    const originalPlaceBet = window.placeBet;
-    window.placeBet = (betAmount) => {
-        const earnings = betAmount * 0.1;
-        window.updateBalance(window.balance + earnings);
-        console.log(`Old Gang Leader's Blade added $${earnings} to balance.`);
-        originalPlaceBet(betAmount);
-    };
-};
+function getRandomItem() {
+    if (!itemsList || !itemsList.length) return null;
+    return cloneData(itemsList[Math.floor(Math.random() * itemsList.length)]);
+}
 
-window.itemEffects['Neighborhood OGs Manual'] = () => {
-    console.log('Effect applied: Neighborhood OGs Manual');
-    const originalPayoutFunction = window.calculateItemPayout;
-    window.calculateItemPayout = (item) => {
-        const basePayout = originalPayoutFunction(item);
-        const boostedPayout = basePayout * 1.05;
-        console.log(`Neighborhood OG's Manual boosted payout for ${item.name}: $${boostedPayout}`);
-        return boostedPayout;
-    };
-};
-
-// Add placeholder effects for all missing items
-const missingItems = [ 
-    'Barrel of Hustlers', 'Big Dreamers Bomb', 'Pigeon Coop', 'Black Cat Amulet',
-    'Street Pepper', 'Street Adoption Papers', 'Brown Pay Bump', 'Unmarked Bills', 
-    'Pocket Burner', 'Big Symbol Stash', 'Lucky Black Cat', 'Sticky Fingers',
-    'Corrupted Cufflinks', 'Hustlers Degree', 'Booster Deck', 'Rusty Revolver', 
-    'Shady Deal Contract', 'Urban Jungle', 'Ancient Switchblade', 'Collectors Charm',
-    'High Rollers Jacket', 'Dice Coders Toolkit', 'Gold-Toothed Grin', 'Loan Officer',
-    'Pawn Shop Clerk', 'Dirty Cop', 'Greedy Bartender', 'Cursed Dice', 'Gamblers Token',
-    'Dumpster Diver', 'Getaway Driver', 'Dice Masters Gloves', 'Counterfeit Coin',
-    'Money Launderer', 'Lucky Horseshoe', 'Gold-Plated Dice', 'Crime Syndicate', 
-    'Haunted Die', 'Insider Trader', 'Snake Oil Salesman', 'Cracked Dice', 'Gutter Stash',
-    'Street Gold Chain', 'Rusty Revolver', 'Gambling Addicts Coin', 'Snitchs Phone',
-    'Roll Modder', 'Broken ATM', 'Crime Family Cookbook', 'Silent Alarm', 'Junkyard Jackpot',
-    'One-Armed Bandit', 'Stacked Wallet', 'Loan Sharks Ledger', 'Greedy Hustler',
-    'Wrathful Hustler', 'Jolly Hustler', 'Sly Hustler', 'Loyalty Card', 'Steel Hustler',
-    'Abstract Hustler', 'Even Steven', 'Odd Todd', 'Lucky Roller', 'Extra Roll King',
-    'Pattern Hustler', 'Faceless Hustler', 'Green Hustler', 'Square Hustler',
-    'Smiley Face Buffoon', 'Superposition Hustler', 'Shortcut Hustler', 'Photograph Hustler',
-    'Dumpster Diver', 'Rocket Booster', 'Cursed Hustler', 'Getaway Driver', 'The Trio',
-    'Snake Oil Salesman', 'Crime Syndicate', 'Dice Master', 'Glass Ball', 'Onyx Agate',
-    'Back Alley Bookie', 'Street Magician', 'Pawn Broker', 'Black Market Dealer',
-    'Street Food Vendor', 'Fake ID Maker', 'Loan Shark', 'Counterfeit Artist', 'Shady Accountant',
-    'Graffiti Artist', 'Street Racer', 'Con Artist', 'Street Preacher', 'Pigeon Trainer',
-    'Ruthless Collector', 'Street Dealer', 'Illegal Fireworks', 'Hustler’s Union',
-    'Shady Landlord', 'Snake Charmer', 'Card Counter', 'Dice Forger', 'Money Mule',
-    'Undercover Cop', 'Street Philosopher', 'Fast Talker', 'Mad Inventor', 'Shady Lawyer',
-    'Street Scam Artist', 'Blackmail Specialist', 'Street Gambler', 'Fast Cash Courier',
-    'Shady Pawnshop Owner', 'Illegal Loan Dealer', 'Fake Lotto Vendor', 'Dice Shark',
-    'Street Muscle', 'Insurance Fraud Expert', 'Street Snitch', 'Underground Mechanic',
-    'Offshore Investor', 'Silent Partner', 'Dice Dealer', 'Midnight Courier', 
-    'Warehouse Thief', 'Dumpster Scavenger', 'Roulette Hustler', 'Charity Hustler', 
-    'Street Chemist', 'Underground King', 'Puppet Master', 'Backdoor Hacker', 
-    'Street Charmer', 'Shakedown Specialist', 'Lucky Scoundrel', 'Illegal Arms Dealer',
-    'High-Stakes Broker', 'Corner Lookout', 'Bodega Schemer', 'Card Counter',
-    'Street Fortune Teller', 'Pawned Off', 'Fake Charity Organizer', 'Illegal Street Vendor',
-    'The Fence', 'Side Hustle Manager', 'Late Night Gambler', 'Shifty Collector', 
-    'Street Lawyer', 'Two-Timing Hustler', 'Street DJ', 'Fake Bail Bondsman', 
-    'Pawn King', 'Urban Scavenger', 'Street Magician', 'Rooftop Courier', 'Alleyway Hustler', 
-    'Fake Casino Dealer', 'Blackout Expert', 'Street Economist', 'Junk Trader',
-    'Dice Manipulator', 'Street Artist', 'Night Market Dealer', 'Gangland Accountant',
-    'Fake Landlord', 'Sly Saboteur', 'Fast Talker', 'Corner Hustler', 'Back Alley Mechanic',
-    'The Enforcer', 'Shifty Gambler', 'Dice Whiz'
-];
-
-missingItems.forEach(item => addPlaceholderEffect(item));
-
-// Check for missing functions in the future
-itemsList.forEach(item => {
-    const itemNameWithoutEmoji = item.name.split(' ')[0].toLowerCase();
-    const effectFunctionName = `${itemNameWithoutEmoji}Effect`;
-
-    if (!window.itemEffects[effectFunctionName]) {
-        console.warn(`Missing effect function for item: ${item.name}`);
-    }
-});
