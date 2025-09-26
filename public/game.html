@@ -45,31 +45,35 @@
         <!-- Left Side -->
         <div id="left-side">
             <div id="status-hud">
-                <div class="status-card balance-card" id="betting-status">
-                    <div class="status-card__header">
-                        <span class="status-card__label">Balance</span>
-                        <span class="status-card__pulse" id="balance-trend">--</span>
+                <div class="status-hud__primary">
+                    <div class="status-card balance-card" id="betting-status">
+                        <div class="status-card__header">
+                            <span class="status-card__label">Balance</span>
+                            <span class="status-card__pulse" id="balance-trend">--</span>
+                        </div>
+                        <div class="status-card__value" id="balance-number">$0</div>
+                        <div class="status-card__sub">Bet: <span id="bet-amount-text">$0</span></div>
+                        <div id="balance-display" class="balance-display"></div>
+                        <div id="betting-status-note" class="status-card__note"></div>
                     </div>
-                    <div class="status-card__value" id="balance-number">$0</div>
-                    <div class="status-card__sub">Bet: <span id="bet-amount-text">$0</span></div>
-                    <div id="balance-display" class="balance-display"></div>
-                    <div id="betting-status-note" class="status-card__note"></div>
                 </div>
-                <div class="status-card rent-card">
-                    <div class="status-card__label">Rent Due</div>
-                    <div class="status-card__value" id="rent-amount-text">$0</div>
-                    <div class="status-card__sub">Rolls Left: <span id="rent-rolls-text">0</span></div>
-                    <div class="status-card__summary" id="rent-summary-text">Rent Due: $400 in 6 rolls</div>
-                </div>
-                <div class="status-card multiplier-card">
-                    <div class="status-card__label">Multiplier</div>
-                    <div class="status-card__value" id="multiplier-value">1.00x</div>
-                    <div class="status-card__sub" id="multiplier-breakdown">Stack wins to power up.</div>
-                </div>
-                <div class="status-card earnings-card" id="earnings-card">
-                    <div class="status-card__label">Earnings / Sec</div>
-                    <div class="status-card__value">$<span id="earnings-per-second">0.00</span></div>
-                    <div class="status-card__sub" id="earnings-trend">Awaiting action…</div>
+                <div class="status-hud__secondary">
+                    <div class="status-card rent-card">
+                        <div class="status-card__label">Rent Due</div>
+                        <div class="status-card__value" id="rent-amount-text">$0</div>
+                        <div class="status-card__sub">Rolls Left: <span id="rent-rolls-text">0</span></div>
+                        <div class="status-card__summary" id="rent-summary-text">Rent Due: $400 in 6 rolls</div>
+                    </div>
+                    <div class="status-card multiplier-card">
+                        <div class="status-card__label">Multiplier</div>
+                        <div class="status-card__value" id="multiplier-value">1.00x</div>
+                        <div class="status-card__sub" id="multiplier-breakdown">Stack wins to power up.</div>
+                    </div>
+                    <div class="status-card earnings-card" id="earnings-card">
+                        <div class="status-card__label">Earnings / Sec</div>
+                        <div class="status-card__value">$<span id="earnings-per-second">0.00</span></div>
+                        <div class="status-card__sub" id="earnings-trend">Awaiting action…</div>
+                    </div>
                 </div>
             </div>
 
@@ -158,38 +162,44 @@
                 <span class="earnings-banner__value">$<span id="earnings-per-second">0.00</span></span>
             </div>
 
-            <div id="controls" class="control-panel">
-                <img id="rollButton" src="/images/Button_RollDice.gif" alt="Roll Dice" class="button-image">
-                <input type="number" id="betAmount" class="pill-input" placeholder="Enter Bet Amount" min="1">
-                <img id="betButton" src="/images/Button_PlaceBet.gif" alt="Place Bet" class="button-image">
-                <img id="bet25Button" src="/images/Button_Bet25.gif" alt="Bet 25%" class="button-image">
-                <img id="bet50Button" src="/images/Button_Bet50.gif" alt="Bet 50%" class="button-image">
-                <img id="bet100Button" src="/images/Button_Bet100.gif" alt="Bet 100%" class="button-image">
-                <button id="quitButton" class="chip-button danger">Quit Game</button>
-            </div>
-
-            <div id="crypto-section" class="neon-panel">
-                <button id="pay-with-bitcoin" class="crypto-chip">
-                    <span class="crypto-chip__icon">₿</span>
-                    <span>Pay with Bitcoin (Kraken)</span>
-                </button>
-
-                <button id="connect-metamask" class="crypto-chip">
-                    <img src="/images/MetaMask_Fox.png" alt="MetaMask">
-                    <span>Connect MetaMask</span>
-                </button>
-
-                <div class="crypto-input">
-                    <img src="/images/ETH_Logo.png" alt="ETH" class="crypto-input__icon">
-                    <input type="number" id="betAmountETH" placeholder="Enter Bet in ETH" step="0.01" min="0">
+            <div class="control-stack">
+                <div id="controls" class="control-panel">
+                    <img id="rollButton" src="/images/Button_RollDice.gif" alt="Roll Dice" class="button-image">
+                    <input type="number" id="betAmount" class="pill-input" placeholder="Enter Bet Amount" min="1">
+                    <img id="betButton" src="/images/Button_PlaceBet.gif" alt="Place Bet" class="button-image">
+                    <img id="bet25Button" src="/images/Button_Bet25.gif" alt="Bet 25%" class="button-image">
+                    <img id="bet50Button" src="/images/Button_Bet50.gif" alt="Bet 50%" class="button-image">
+                    <img id="bet100Button" src="/images/Button_Bet100.gif" alt="Bet 100%" class="button-image">
+                    <button id="quitButton" class="chip-button danger">Quit Game</button>
                 </div>
-                <img id="eth-bet-button" src="/images/Button_PlaceBet.gif" alt="Place Bet (ETH)" class="button-image crypto-bet-button">
-            </div>
 
-            <div class="crypto-instructions">
-                <span class="crypto-instructions__label">Kraken BTC Address:</span>
-                <code id="kraken-btc-address">3BuG5H7qyEVsnRk7cs6i2sgjYoRVGEHXtb</code>
-                <button id="copy-kraken-address" class="chip-button chip-button--compact">Copy Address</button>
+                <div id="crypto-section" class="crypto-strip">
+                    <div class="crypto-strip__row">
+                        <button id="pay-with-bitcoin" class="chip-button chip-button--compact crypto-action">
+                            <span class="crypto-action__icon">₿</span>
+                            <span>Pay with Bitcoin (Kraken)</span>
+                        </button>
+
+                        <button id="connect-metamask" class="chip-button chip-button--compact crypto-action">
+                            <img src="/images/MetaMask_Fox.png" alt="MetaMask">
+                            <span>Connect MetaMask</span>
+                        </button>
+
+                        <button id="copy-kraken-address" class="chip-button chip-button--compact crypto-action">Copy Address</button>
+                    </div>
+
+                    <div class="crypto-strip__row crypto-strip__row--entry">
+                        <div class="crypto-input">
+                            <img src="/images/ETH_Logo.png" alt="ETH" class="crypto-input__icon">
+                            <input type="number" id="betAmountETH" placeholder="Enter Bet in ETH" step="0.01" min="0">
+                        </div>
+                        <button id="eth-place-bet" class="chip-button chip-button--compact crypto-action is-disabled" disabled>Place Bet (ETH)</button>
+                        <div class="crypto-strip__address">
+                            <span class="crypto-strip__address-label">Kraken BTC:</span>
+                            <code id="kraken-btc-address">3BuG5H7qyEVsnRk7cs6i2sgjYoRVGEHXtb</code>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Game Over Section -->

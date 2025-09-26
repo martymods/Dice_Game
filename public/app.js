@@ -242,7 +242,7 @@ async function setupSinglePlayer() {
     
     const betInput = document.getElementById('betAmount');
     const ethInput = document.getElementById('betAmountETH');
-    const ethBetButton = document.getElementById('eth-bet-button');
+    const ethActionButton = document.getElementById('eth-place-bet');
 
     setEarningsPerSecond(0);
 
@@ -346,11 +346,11 @@ async function setupSinglePlayer() {
                 : '/images/Button_PlaceBet.gif';
         }
 
-        if (ethBetButton && ethInput) {
+        if (ethActionButton && ethInput) {
             const ethValue = parseFloat(ethInput.value || '0');
-            ethBetButton.src = ethValue > 0
-                ? '/images/Button_PlaceBet_Active.gif'
-                : '/images/Button_PlaceBet.gif';
+            const hasEth = ethValue > 0;
+            ethActionButton.classList.toggle('is-disabled', !hasEth);
+            ethActionButton.disabled = !hasEth;
         }
     }
 
@@ -394,6 +394,17 @@ async function setupSinglePlayer() {
             playSound('/sounds/UI_Click1.ogg');
             setBet(balance);
         });
+
+        if (ethActionButton) {
+            ethActionButton.addEventListener('click', () => {
+                const betAmountETH = ethInput?.value;
+                if (betAmountETH && parseFloat(betAmountETH) > 0) {
+                    placeBet(betAmountETH);
+                } else {
+                    showGameMessage('Enter an ETH amount to place a bet.', 'warning');
+                }
+            });
+        }
    
 
         function setBet(input) {
@@ -544,7 +555,7 @@ async function setupSinglePlayer() {
                 refreshBetButtons();
                 updateUIAfterRoll();
 
-            });
+            }, { onFire });
         }
 
     // Attach handleRollDice to the window object
@@ -794,37 +805,6 @@ if (skipIntroButton) {
         mainMenu.style.display = 'flex';
     });
 });
-
-
-function animateDice(dice1, dice2, callback) {
-    const dice1Element = document.getElementById('dice1');
-    const dice2Element = document.getElementById('dice2');
-
-    if (!dice1Element || !dice2Element) {
-        console.error("Dice elements not found in the DOM.");
-        return;
-    }
-
-    // Set the rolling animation for both dice
-    const rollingAnimation = '/images/3dDiceRoll_1.gif';
-    dice1Element.src = rollingAnimation;
-    dice2Element.src = rollingAnimation;
-
-    // Play the rolling sound effect
-    playSound(["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"], true);
-
-    // Wait for the rolling animation to finish before showing the result
-    setTimeout(() => {
-        // Set the final dice result based on whether "onFire" is active
-        dice1Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice1}${onFire ? '.gif' : '.gif'}`;
-        dice2Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice2}${onFire ? '.gif' : '.gif'}`;
-
-        // Execute the callback function after the final dice are displayed
-        if (typeof callback === 'function') {
-            callback();
-        }
-    }, 2000); // Adjust this timeout to match the duration of your rolling animation GIF
-}
 
 
     function updateUIAfterRoll() {
@@ -1339,9 +1319,10 @@ export async function placeBet(betAmountETH) {
         if (ethInputField) {
             ethInputField.value = '';
         }
-        const ethBetImage = document.getElementById('eth-bet-button');
-        if (ethBetImage) {
-            ethBetImage.src = '/images/Button_PlaceBet.gif';
+        const ethPlaceBetButton = document.getElementById('eth-place-bet');
+        if (ethPlaceBetButton) {
+            ethPlaceBetButton.classList.add('is-disabled');
+            ethPlaceBetButton.disabled = true;
         }
 
         // Simulate game outcome (for example purposes)
@@ -1373,8 +1354,6 @@ function initializeCryptoButtons() {
     const copyKrakenButton = document.getElementById('copy-kraken-address');
     const krakenAddressElement = document.getElementById('kraken-btc-address');
     const connectMetaMaskButton = document.getElementById('connect-metamask');
-    const ethBetButtonElement = document.getElementById('eth-bet-button');
-    const ethInputField = document.getElementById('betAmountETH');
 
     if (krakenAddressElement) {
         krakenAddressElement.textContent = krakenBtcAddress;
@@ -1424,16 +1403,6 @@ function initializeCryptoButtons() {
         });
     }
 
-    if (ethBetButtonElement) {
-        ethBetButtonElement.addEventListener('click', () => {
-            const betAmountETH = ethInputField?.value;
-            if (betAmountETH && parseFloat(betAmountETH) > 0) {
-                placeBet(betAmountETH);
-            } else {
-                showGameMessage('Enter an ETH amount to place a bet.', 'warning');
-            }
-        });
-    }
 }
 
  //  Refactor Wallet Restoration
