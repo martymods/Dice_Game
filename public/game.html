@@ -109,15 +109,42 @@
 
         <!-- Right Side -->
         <div id="right-side">
+            <div id="scoreboard" class="scoreboard">
+                <div class="scoreboard__main">
+                    <span class="scoreboard__label">Bankroll</span>
+                    <div class="scoreboard__value" id="scoreboard-balance">$0</div>
+                </div>
+                <div class="scoreboard__chips">
+                    <div class="scoreboard__chip">
+                        <span class="scoreboard__chip-label">Bet</span>
+                        <span class="scoreboard__chip-value" id="scoreboard-bet">$0</span>
+                    </div>
+                    <div class="scoreboard__chip">
+                        <span class="scoreboard__chip-label">Rent Due</span>
+                        <span class="scoreboard__chip-value" id="scoreboard-rent">$0</span>
+                        <span class="scoreboard__chip-sub"><span id="scoreboard-rolls">0</span> rolls left</span>
+                    </div>
+                    <div class="scoreboard__chip">
+                        <span class="scoreboard__chip-label">Multiplier</span>
+                        <span class="scoreboard__chip-value" id="scoreboard-multiplier">1.00x</span>
+                    </div>
+                </div>
+            </div>
+
             <div id="dice-stage">
                 <div id="dice-container">
                     <img id="dice1" class="dice" src="/images/dice1.gif" alt="Dice 1">
                     <img id="dice2" class="dice" src="/images/dice2.gif" alt="Dice 2">
                 </div>
-                <p id="gameStatus"></p>
+                <p id="gameStatus" class="game-status-banner"></p>
             </div>
 
-            <div id="controls">
+            <div id="earnings-counter" class="earnings-banner">
+                <span class="earnings-banner__label">Earnings per Second</span>
+                <span class="earnings-banner__value">$<span id="earnings-per-second">0.00</span></span>
+            </div>
+
+            <div id="controls" class="control-panel">
                 <img id="rollButton" src="/images/Button_RollDice.gif" alt="Roll Dice" class="button-image">
                 <input type="number" id="betAmount" class="pill-input" placeholder="Enter Bet Amount" min="1">
                 <img id="betButton" src="/images/Button_PlaceBet.gif" alt="Place Bet" class="button-image">
@@ -127,7 +154,7 @@
                 <button id="quitButton" class="chip-button danger">Quit Game</button>
             </div>
 
-            <div id="crypto-section">
+            <div id="crypto-section" class="neon-panel">
                 <button id="pay-with-bitcoin" class="crypto-chip">
                     <span class="crypto-chip__icon">₿</span>
                     <span>Pay with Bitcoin (Kraken)</span>
@@ -151,7 +178,7 @@
                 <button id="copy-kraken-address" class="chip-button chip-button--compact">Copy Address</button>
             </div>
 
-            <div id="fortune-area">
+            <div id="fortune-area" class="neon-panel">
                 <div id="fortune-cookie-section">
                     <img id="cookie-buy" src="/images/cookie_Buy.png" alt="Buy Fortune Cookie">
                     <button id="buy-cookie-button" class="chip-button fortune">
