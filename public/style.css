@@ -159,12 +159,13 @@ h1 {
     align-items: center;
     justify-content: center;
     gap: 16px;
-    padding: 26px 24px 24px;
+    padding: 32px 28px 28px;
     background: rgba(6, 12, 32, 0.4);
     border-radius: 24px;
     border: 1px solid rgba(120, 186, 255, 0.22);
     box-shadow: 0 20px 34px rgba(6, 10, 28, 0.45);
     overflow: hidden;
+    min-height: 320px;
 }
 
 #dice-stage::before {
@@ -184,13 +185,15 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 32px;
-    padding: 20px 24px;
+    gap: 36px;
+    padding: 28px 32px;
     border-radius: 20px;
     background: rgba(12, 22, 52, 0.42);
     border: 1px solid rgba(120, 186, 255, 0.24);
     box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.45), 0 0 28px rgba(92, 125, 255, 0.28);
     z-index: 1;
+    min-height: 220px;
+    min-width: 320px;
 }
 
 #dice-container::after {
@@ -204,8 +207,8 @@ h1 {
 }
 
 .dice {
-    width: 110px;
-    height: 110px;
+    width: 150px;
+    height: 150px;
     filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.55));
     animation: floatDice 4.6s ease-in-out infinite;
     position: relative;
@@ -900,6 +903,20 @@ h1 {
     .crypto-strip__address {
         width: 100%;
         justify-content: space-between;
+    }
+}
+
+@media (max-width: 700px) {
+    #dice-container {
+        flex-wrap: wrap;
+        min-width: unset;
+        min-height: 180px;
+        padding: 24px;
+    }
+
+    .dice {
+        width: 120px;
+        height: 120px;
     }
 }
 
