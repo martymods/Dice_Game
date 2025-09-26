@@ -54,10 +54,10 @@ body {
     background-color: #02030b;
     color: #f7f8ff;
     margin: 0;
-    padding: 24px 28px;
+    padding: 24px;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: stretch;
     min-height: 100vh;
     flex-direction: column;
     background-size: cover;
@@ -66,6 +66,7 @@ body {
     box-sizing: border-box;
     position: relative;
     overflow-x: hidden;
+    gap: 16px;
 }
 
 body.drawer-visible {
@@ -93,16 +94,17 @@ body::before {
     border-radius: 22px;
     border: 1px solid rgba(120, 186, 255, 0.16);
     box-shadow: 0 22px 48px rgba(2, 2, 12, 0.55);
-    width: min(1180px, 94vw);
+    width: min(1280px, 100%);
+    height: calc(100vh - 72px);
     padding: 24px;
     color: #f7f8ff;
     display: grid;
-    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
     gap: 24px;
     align-items: stretch;
     box-sizing: border-box;
     backdrop-filter: blur(18px);
-    overflow: visible;
+    overflow: hidden;
     z-index: 1;
 }
 
@@ -215,15 +217,29 @@ h1 {
 }
 
 #status-hud {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 16px;
 }
 
-@media (min-width: 1080px) {
-    #status-hud {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+.status-hud__primary {
+    display: flex;
+}
+
+.status-hud__primary .status-card {
+    flex: 1;
+    min-width: 0;
+}
+
+.status-hud__secondary {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.status-hud__secondary .status-card {
+    flex: 1 1 160px;
+    min-width: 0;
 }
 
 .status-card {
@@ -838,8 +854,8 @@ h1 {
     padding: 18px 16px;
     border-radius: 18px;
     color: #f7f8ff;
-    max-height: none;
-    overflow: visible;
+    height: 100%;
+    overflow-y: auto;
     box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.22);
     border: 1px solid rgba(120, 186, 255, 0.18);
     backdrop-filter: blur(10px);
@@ -863,6 +879,27 @@ h1 {
     #left-side,
     #right-side {
         max-height: none;
+    }
+
+    .status-hud__primary,
+    .status-hud__secondary {
+        flex-direction: column;
+    }
+
+    .status-hud__secondary {
+        gap: 12px;
+    }
+
+    .crypto-strip__row--entry {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .crypto-strip__row--entry .crypto-action,
+    .crypto-strip__address {
+        width: 100%;
+        justify-content: space-between;
     }
 }
 
@@ -936,8 +973,8 @@ h1 {
     align-items: stretch;
     gap: 18px;
     padding: 12px 4px 12px;
-    max-height: none;
-    overflow: visible;
+    height: 100%;
+    overflow-y: auto;
 }
 
 #right-side::-webkit-scrollbar {
@@ -1029,7 +1066,7 @@ h1 {
 .roll-history {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     padding: 12px 16px;
     border-radius: 16px;
     border: 1px solid rgba(120, 186, 255, 0.18);
@@ -1047,21 +1084,42 @@ h1 {
 
 .roll-history__list {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    align-items: center;
+    gap: 12px;
     justify-content: flex-start;
+    flex: 1;
 }
 
 .roll-history__entry {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 10px;
+    gap: 10px;
+    padding: 6px 12px;
     border-radius: 12px;
     border: 1px solid rgba(120, 186, 255, 0.22);
     background: rgba(12, 22, 48, 0.38);
     box-shadow: 0 8px 16px rgba(6, 12, 28, 0.28);
-    min-width: 92px;
+    min-width: 120px;
+}
+
+.roll-history__dice-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.roll-history__icons {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.roll-history__icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35));
 }
 
 .roll-history__sum {
@@ -1130,6 +1188,23 @@ h1 {
     width: 100%;
 }
 
+.control-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.neon-panel {
+    border-radius: 18px;
+    border: 1px solid rgba(120, 186, 255, 0.2);
+    background: rgba(8, 16, 44, 0.32);
+    box-shadow: 0 16px 24px rgba(4, 10, 24, 0.32);
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
 .control-panel .button-image {
     width: 118px;
     transition: transform 0.2s ease, filter 0.2s ease;
@@ -1151,15 +1226,70 @@ h1 {
     padding: 12px 26px;
 }
 
-.neon-panel {
-    border-radius: 18px;
-    border: 1px solid rgba(120, 186, 255, 0.2);
-    background: rgba(8, 16, 44, 0.32);
-    box-shadow: 0 16px 24px rgba(4, 10, 24, 0.32);
-    padding: 20px 22px;
+.crypto-strip {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(120, 186, 255, 0.2);
+    background: rgba(8, 16, 44, 0.28);
+    box-shadow: 0 12px 22px rgba(4, 10, 24, 0.25);
+}
+
+.crypto-strip__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.crypto-strip__row--entry {
+    justify-content: space-between;
+}
+
+.crypto-strip__row--entry .crypto-input {
+    flex: 1 1 220px;
+}
+
+.crypto-strip__row--entry .crypto-action {
+    flex-shrink: 0;
+}
+
+.crypto-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.crypto-action img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.crypto-action .crypto-action__icon {
+    font-size: 1rem;
+}
+
+.crypto-strip__address {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: rgba(186, 206, 255, 0.78);
+    justify-content: flex-start;
+    white-space: normal;
+    word-break: break-all;
+}
+
+.crypto-strip__address code {
+    font-size: 0.8rem;
+    color: #7fbcf7;
+    background: rgba(12, 24, 54, 0.6);
+    padding: 4px 8px;
+    border-radius: 8px;
 }
 
 #fortune-area {
@@ -1944,7 +2074,8 @@ body {
     background: transparent;
     color: #f5f7ff;
     font-weight: 600;
-    width: 110px;
+    width: 100%;
+    min-width: 0;
 }
 
 .crypto-input input::placeholder {
@@ -1993,6 +2124,11 @@ body {
 .chip-button--compact {
     padding: 6px 14px;
     font-size: 0.72rem;
+}
+
+.chip-button.is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 #chat-footer {
@@ -2685,18 +2821,25 @@ img[src="/images/Button_Bet100.gif"]:hover {
 }
 #hud-controls,
 .hud-controls {
-    width: min(1180px, 94vw);
-    margin: 0 auto 16px;
+    position: fixed;
+    left: 24px;
+    bottom: 24px;
+    width: auto;
+    margin: 0;
     display: flex;
-    justify-content: flex-end;
-    position: relative;
-    z-index: 2;
+    justify-content: flex-start;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.hud-controls .interface-toggle {
+    pointer-events: auto;
 }
 
 .interface-toggle {
     display: inline-flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: 6px;
     padding: 10px 16px;
     border-radius: 16px;

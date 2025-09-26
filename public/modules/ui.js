@@ -189,7 +189,7 @@ export function updateUI(balance = 0, rent = 0, turns = 0, maxTurns = 0, current
     }
 }
 
-const MAX_ROLL_HISTORY = 6;
+const MAX_ROLL_HISTORY = 3;
 const recentRolls = [];
 
 export function recordRecentRoll(dice1, dice2, sum) {
@@ -212,11 +212,26 @@ export function recordRecentRoll(dice1, dice2, sum) {
         sumBadge.className = 'roll-history__sum';
         sumBadge.textContent = sum.toString();
 
+        const diceGroup = document.createElement('div');
+        diceGroup.className = 'roll-history__dice-group';
+
+        const icons = document.createElement('div');
+        icons.className = 'roll-history__icons';
+
+        [dice1, dice2].forEach((value, index) => {
+            const icon = document.createElement('img');
+            icon.className = 'roll-history__icon';
+            icon.src = `/images/dice${value}.gif`;
+            icon.alt = `Die ${index + 1}: ${value}`;
+            icons.appendChild(icon);
+        });
+
         const diceBreakdown = document.createElement('span');
         diceBreakdown.className = 'roll-history__dice';
         diceBreakdown.textContent = `${dice1} + ${dice2}`;
 
-        entry.append(sumBadge, diceBreakdown);
+        diceGroup.append(icons, diceBreakdown);
+        entry.append(sumBadge, diceGroup);
         list.appendChild(entry);
     });
 }
