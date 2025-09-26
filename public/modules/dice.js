@@ -21,65 +21,33 @@ export function animateDice(dice1, dice2, callback, options = {}) {
     const dice1Element = document.getElementById('dice1');
     const dice2Element = document.getElementById('dice2');
 
-    console.group('[Dice] Starting animation');
-    console.log('Final target values', { dice1, dice2, onFire });
-
     if (!dice1Element || !dice2Element) {
         console.error('[Dice] Dice elements missing in DOM.', { dice1Element, dice2Element });
-        console.groupEnd();
         callback?.();
         return;
     }
 
-    console.log('Dice element references', {
-        dice1ElementPresent: Boolean(dice1Element),
-        dice2ElementPresent: Boolean(dice2Element),
-        dice1CurrentSrc: dice1Element?.src,
-        dice2CurrentSrc: dice2Element?.src,
-    });
+    const spritePrefix = onFire ? 'DiceFire' : 'dice';
+    const spriteExtension = onFire ? '.gif' : '.png';
+    let iterations = 0;
+    const maxIterations = 10;
 
-    let counter = 0;
     const interval = setInterval(() => {
-        const dice1Src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}${onFire ? '.gif' : '.gif'}`;
-        const dice2Src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}${onFire ? '.gif' : '.gif'}`;
+        const randomDice1 = Math.floor(Math.random() * 6) + 1;
+        const randomDice2 = Math.floor(Math.random() * 6) + 1;
 
-        dice1Element.src = dice1Src;
-        dice2Element.src = dice2Src;
+        dice1Element.src = `/images/${spritePrefix}${randomDice1}${spriteExtension}`;
+        dice2Element.src = `/images/${spritePrefix}${randomDice2}${spriteExtension}`;
 
-        console.debug('[Dice] Animation frame', {
-            iteration: counter,
-            appliedSources: { dice1Src, dice2Src },
-        });
+        iterations += 1;
 
-        // Adjust size for "on fire" state
-        if (onFire) {
-            dice1Element.style.width = '150px'; // Larger width
-            dice1Element.style.height = '150px'; // Larger height
-            dice2Element.style.width = '150px';
-            dice2Element.style.height = '150px';
-        } else {
-            dice1Element.style.width = '100px'; // Standard width
-            dice1Element.style.height = '100px'; // Standard height
-            dice2Element.style.width = '100px';
-            dice2Element.style.height = '100px';
-        }
-
-        counter++;
-
-        if (counter >= 10) {
+        if (iterations >= maxIterations) {
             clearInterval(interval);
-            dice1Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice1}${onFire ? '.gif' : '.gif'}`;
-            dice2Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice2}${onFire ? '.gif' : '.gif'}`;
-            console.log('[Dice] Animation complete. Applying final sources.', {
-                finalDice1Src: dice1Element.src,
-                finalDice2Src: dice2Element.src,
-            });
-            console.groupEnd();
-            callback();
+            dice1Element.src = `/images/${spritePrefix}${dice1}${spriteExtension}`;
+            dice2Element.src = `/images/${spritePrefix}${dice2}${spriteExtension}`;
+            callback?.();
         }
     }, 100);
-
-    console.log('[Dice] Interval established for animation', { intervalId: interval });
 }
 
 
