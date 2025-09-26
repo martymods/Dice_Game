@@ -32,6 +32,15 @@
         </div>
     </div>
 
+    <div class="hud-controls">
+        <button id="interface-toggle" class="interface-toggle" aria-label="Toggle utilities" aria-controls="utility-drawer" aria-expanded="false">
+            <span class="interface-toggle__bar"></span>
+            <span class="interface-toggle__bar"></span>
+            <span class="interface-toggle__bar"></span>
+            <span class="interface-toggle__label">Chat &amp; Fortune</span>
+        </button>
+    </div>
+
     <div id="game-container">
         <!-- Left Side -->
         <div id="left-side">
@@ -110,7 +119,7 @@
         <!-- Right Side -->
         <div id="right-side">
             <div id="scoreboard" class="scoreboard">
-                <div class="scoreboard__main">
+                <div class="scoreboard__primary-row">
                     <span class="scoreboard__label">Bankroll</span>
                     <div class="scoreboard__value" id="scoreboard-balance">$0</div>
                 </div>
@@ -129,6 +138,11 @@
                         <span class="scoreboard__chip-value" id="scoreboard-multiplier">1.00x</span>
                     </div>
                 </div>
+            </div>
+
+            <div id="roll-history" class="roll-history">
+                <span class="roll-history__label">Recent Rolls</span>
+                <div id="roll-history-list" class="roll-history__list"></div>
             </div>
 
             <div id="dice-stage">
@@ -176,21 +190,6 @@
                 <span class="crypto-instructions__label">Kraken BTC Address:</span>
                 <code id="kraken-btc-address">3BuG5H7qyEVsnRk7cs6i2sgjYoRVGEHXtb</code>
                 <button id="copy-kraken-address" class="chip-button chip-button--compact">Copy Address</button>
-            </div>
-
-            <div id="fortune-area" class="neon-panel">
-                <div id="fortune-cookie-section">
-                    <img id="cookie-buy" src="/images/cookie_Buy.png" alt="Buy Fortune Cookie">
-                    <button id="buy-cookie-button" class="chip-button fortune">
-                        <img src="/images/ETH_Logo.png" alt="ETH Logo">
-                        Buy ($1 ETH)
-                    </button>
-                </div>
-                <div id="fortune-collection">
-                    <h3>My Fortune Cookies</h3>
-                    <p>Collected: <span id="cookie-count">0</span>/25</p>
-                    <div id="my-fortunes" class="fortune-collection__grid"></div>
-                </div>
             </div>
 
             <!-- Game Over Section -->
@@ -247,19 +246,44 @@
     <button id="close-fortune">Close</button>
 </div>
 
-<div id="chat-footer">
-    <div class="chat-panel">
-        <div id="message-list" class="chat-messages"></div>
-        <div class="chat-sidebar">
-            <h4>Players</h4>
-            <ul id="player-names"></ul>
+    <aside id="utility-drawer" class="utility-drawer" aria-hidden="true">
+        <div class="utility-drawer__panel">
+            <div class="utility-drawer__header">
+                <h2>Table Talk &amp; Fortunes</h2>
+                <button id="utility-close" class="chip-button chip-button--compact" type="button">Close</button>
+            </div>
+            <div class="utility-drawer__body">
+                <section id="fortune-area" class="neon-panel utility-section">
+                    <div id="fortune-cookie-section">
+                        <img id="cookie-buy" src="/images/cookie_Buy.png" alt="Buy Fortune Cookie">
+                        <button id="buy-cookie-button" class="chip-button fortune">
+                            <img src="/images/ETH_Logo.png" alt="ETH Logo">
+                            Buy ($1 ETH)
+                        </button>
+                    </div>
+                    <div id="fortune-collection">
+                        <h3>My Fortune Cookies</h3>
+                        <p>Collected: <span id="cookie-count">0</span>/25</p>
+                        <div id="my-fortunes" class="fortune-collection__grid"></div>
+                    </div>
+                </section>
+
+                <section id="chat-footer" class="utility-section">
+                    <div class="chat-panel">
+                        <div id="message-list" class="chat-messages"></div>
+                        <div class="chat-sidebar">
+                            <h4>Players</h4>
+                            <ul id="player-names"></ul>
+                        </div>
+                    </div>
+                    <div class="chat-input-row">
+                        <input id="message-input" type="text" placeholder="Type your message..." />
+                        <button id="send-message">Send</button>
+                    </div>
+                </section>
+            </div>
         </div>
-    </div>
-    <div class="chat-input-row">
-        <input id="message-input" type="text" placeholder="Type your message..." />
-        <button id="send-message">Send</button>
-    </div>
-</div>
+    </aside>
 
 <script src="/socket.io/socket.io.js"></script> <!-- Load Socket.IO -->
 <script src="/socket-init.js"></script> <!-- Initialize Socket -->
