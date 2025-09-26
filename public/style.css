@@ -2887,8 +2887,9 @@ img[src="/images/Button_Bet100.gif"]:hover {
 .utility-drawer {
     position: fixed;
     inset: 0;
-    display: flex;
+    display: none;
     justify-content: flex-end;
+    align-items: flex-start;
     padding: 32px;
     background: rgba(2, 4, 12, 0.62);
     backdrop-filter: blur(18px);
@@ -2952,6 +2953,7 @@ img[src="/images/Button_Bet100.gif"]:hover {
 }
 
 .utility-drawer--open {
+    display: flex;
     opacity: 1;
     pointer-events: auto;
 }

@@ -445,12 +445,30 @@ async function setupSinglePlayer() {
         
 
         function handleRollDice() {
+            console.group('[Game] handleRollDice invoked');
+            console.log('Snapshot before validation', {
+                canRollDice,
+                currentBet,
+                balance,
+                onFire,
+                timestamp: new Date().toISOString(),
+            });
+
             if (!canRollDice) {
+                console.warn('Roll attempt blocked: canRollDice flag is false.');
+                console.groupEnd();
                 return;
             }
 
             syncBetFromInput();
+            console.log('Bet synchronised from input', {
+                currentBet,
+                betInputValue: betInput?.value,
+            });
+
             if (currentBet <= 0) {
+                console.warn('Roll aborted: currentBet is not positive.');
+                console.groupEnd();
                 showGameMessage('Place a bet first!', 'warning');
                 return;
             }
@@ -458,19 +476,24 @@ async function setupSinglePlayer() {
             canRollDice = false;
             setTimeout(() => {
                 canRollDice = true;
+                console.log('Roll cooldown reset. canRollDice restored to true.');
             }, 200);
 
+            console.log('Initiating audio + dice roll.');
             playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
 
             let rollResult = rollDice();
             let { dice1, dice2 } = rollResult;
             let sum = dice1 + dice2;
+            console.log('Initial roll result', { dice1, dice2, sum });
 
             if (itemEffectsManager.shouldForceReroll(sum)) {
+                console.info('Item effect triggered forced reroll for sum:', sum);
                 rollResult = rollDice();
                 dice1 = rollResult.dice1;
                 dice2 = rollResult.dice2;
                 sum = dice1 + dice2;
+                console.log('Forced reroll result', { dice1, dice2, sum });
                 showGameMessage('Loaded Dice reshaped the roll!', 'bonus', { duration: 2400 });
             }
 
@@ -479,10 +502,21 @@ async function setupSinglePlayer() {
             const rollKey = `${dice1}-${dice2}`;
             playerStats.rollHistory[rollKey] = (playerStats.rollHistory[rollKey] || 0) + 1;
             saveStats();
+            console.log('Updated roll tracking', {
+                rollKey,
+                occurrences: playerStats.rollHistory[rollKey],
+                totalRollsTracked: Object.values(playerStats.rollHistory).reduce((acc, val) => acc + val, 0),
+            });
 
             const { multiplier, cashBonus } = applyHustlerEffects(dice1, dice2);
             const itemMultiplierBonus = itemEffectsManager.state?.winMultiplierBonus || 0;
             const totalMultiplier = multiplier * (1 + itemMultiplierBonus);
+            console.log('Resolved multipliers and bonuses', {
+                multiplier,
+                cashBonus,
+                itemMultiplierBonus,
+                totalMultiplier,
+            });
 
             updateMultiplierHud({
                 total: totalMultiplier,
@@ -493,6 +527,7 @@ async function setupSinglePlayer() {
             });
 
             animateDice(dice1, dice2, () => {
+                console.log('Dice animation callback executed. Calculating outcomes.');
                 let winnings = 0;
 
                 if (sum === 7 || sum === 11) {
@@ -540,6 +575,11 @@ async function setupSinglePlayer() {
                 const passiveIncome = itemEffectsManager.getPassiveIncome();
                 const rollBonus = itemEffectsManager.applyRollBonuses({ dice1, dice2, sum });
                 const totalItemIncome = (passiveIncome || 0) + (rollBonus || 0);
+                console.log('Post-roll income summary', {
+                    passiveIncome,
+                    rollBonus,
+                    totalItemIncome,
+                });
                 if (totalItemIncome !== 0) {
                     adjustBalance(totalItemIncome);
                     showGameMessage(`${totalItemIncome > 0 ? '+' : ''}$${Math.abs(totalItemIncome).toLocaleString()} from items`,
@@ -548,12 +588,15 @@ async function setupSinglePlayer() {
                 }
 
                 currentBet = 0;
+                console.log('Resetting bet state after roll.');
                 if (betInput) {
                     betInput.value = '';
                 }
                 refreshStatusPanel();
                 refreshBetButtons();
                 updateUIAfterRoll();
+
+                console.groupEnd();
 
             }, { onFire });
         }
