@@ -658,6 +658,7 @@ export function updateBalanceDisplay(balance) {
     const balanceCard = document.getElementById('betting-status');
     const balanceTrendElement = document.getElementById('balance-trend');
     const balanceNumberElement = document.getElementById('balance-number');
+    const scoreboardBalanceElement = document.getElementById('scoreboard-balance');
 
     // Check if the display container exists
     if (!balanceDisplay) {
@@ -682,6 +683,9 @@ export function updateBalanceDisplay(balance) {
 
     // Convert the balance to a string and iterate over each digit
     const wholeNumber = Math.max(0, Math.round(balance));
+    if (scoreboardBalanceElement) {
+        scoreboardBalanceElement.textContent = `$${wholeNumber.toLocaleString()}`;
+    }
     const balanceString = wholeNumber.toString();
     for (const digit of balanceString) {
         const digitImage = document.createElement('img');

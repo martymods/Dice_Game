@@ -192,6 +192,11 @@ async function setupSinglePlayer() {
     const multiplierDisplayElement = document.getElementById('multiplier-value');
     const multiplierDetailsElement = document.getElementById('multiplier-breakdown');
     const earningsCardElement = document.getElementById('earnings-card');
+    const scoreboardBalanceElement = document.getElementById('scoreboard-balance');
+    const scoreboardBetElement = document.getElementById('scoreboard-bet');
+    const scoreboardRentElement = document.getElementById('scoreboard-rent');
+    const scoreboardRollsElement = document.getElementById('scoreboard-rolls');
+    const scoreboardMultiplierElement = document.getElementById('scoreboard-multiplier');
 
     const ambienceSound = new Audio('/sounds/Ambience0.ogg');
     ambienceSound.loop = true;
@@ -265,6 +270,9 @@ async function setupSinglePlayer() {
         lastMultiplierSnapshot = snapshot;
         if (multiplierDisplayElement) {
             multiplierDisplayElement.textContent = `${snapshot.total.toFixed(2)}x`;
+        }
+        if (scoreboardMultiplierElement) {
+            scoreboardMultiplierElement.textContent = `${snapshot.total.toFixed(2)}x`;
         }
         if (multiplierDetailsElement) {
             const segments = ['Base 1x'];
@@ -438,11 +446,6 @@ async function setupSinglePlayer() {
                 canRollDice = true;
             }, 200);
 
-            const gameContainer = document.getElementById('game-container');
-            const diceContainer = document.getElementById('dice-container');
-            gameContainer.classList.add('dimmed');
-            diceContainer.classList.add('dimmed-dice');
-
             playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
 
             let rollResult = rollDice();
@@ -537,10 +540,6 @@ async function setupSinglePlayer() {
                 refreshBetButtons();
                 updateUIAfterRoll();
 
-                setTimeout(() => {
-                    gameContainer.classList.remove('dimmed');
-                    diceContainer.classList.remove('dimmed-dice');
-                }, 1000);
             });
         }
 
@@ -659,14 +658,26 @@ function deactivateOnFire() {
         if (balanceNumberElement) {
             balanceNumberElement.textContent = `$${Math.max(0, Math.round(balance)).toLocaleString()}`;
         }
+        if (scoreboardBalanceElement) {
+            scoreboardBalanceElement.textContent = `$${Math.max(0, Math.round(balance)).toLocaleString()}`;
+        }
         if (betAmountTextElement) {
             betAmountTextElement.textContent = `$${currentBet.toLocaleString()}`;
+        }
+        if (scoreboardBetElement) {
+            scoreboardBetElement.textContent = `$${currentBet.toLocaleString()}`;
         }
         if (rentAmountElement) {
             rentAmountElement.textContent = `$${rent.toLocaleString()}`;
         }
+        if (scoreboardRentElement) {
+            scoreboardRentElement.textContent = `$${rent.toLocaleString()}`;
+        }
         if (rentRollsElement) {
             rentRollsElement.textContent = rollsRemaining.toString();
+        }
+        if (scoreboardRollsElement) {
+            scoreboardRollsElement.textContent = rollsRemaining.toString();
         }
         if (rentSummaryElement) {
             const rollsLabel = rollsRemaining === 1 ? 'roll' : 'rolls';
