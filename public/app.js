@@ -13,6 +13,8 @@ import {
     initChatUI,
     setEarningsPerSecond,
     updateRollCount,
+    recordRecentRoll,
+    initUtilityDrawer,
 } from './modules/ui.js';
 import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
@@ -52,6 +54,7 @@ if (typeof window === "undefined") {
 
 document.addEventListener('DOMContentLoaded', () => {
     initChatUI(window.socket || null);
+    initUtilityDrawer();
     initializeCryptoButtons();
     const urlParams = new URLSearchParams(window.location.search);
     const isSinglePlayer = urlParams.has('singlePlayer');
@@ -461,6 +464,7 @@ async function setupSinglePlayer() {
             }
 
             updateRollCount(dice1, dice2);
+            recordRecentRoll(dice1, dice2, sum);
             const rollKey = `${dice1}-${dice2}`;
             playerStats.rollHistory[rollKey] = (playerStats.rollHistory[rollKey] || 0) + 1;
             saveStats();

@@ -147,17 +147,78 @@ function updateMultiplierUI(multiplier) {
 /**
  * Updates the UI elements for balance, rent, and turns remaining.
  */
-export function updateUI(balance, rent = 0, turns = 0, maxTurns = 0, currentBet = 0) {
-    const bettingStatus = document.getElementById('betting-status');
-    const rentStatus = document.getElementById('rent-status');
+export function updateUI(balance = 0, rent = 0, turns = 0, maxTurns = 0, currentBet = 0) {
+    const betAmountTextElement = document.getElementById('bet-amount-text');
+    const rentAmountElement = document.getElementById('rent-amount-text');
+    const rentRollsElement = document.getElementById('rent-rolls-text');
+    const rentSummaryElement = document.getElementById('rent-summary-text');
+    const scoreboardBetElement = document.getElementById('scoreboard-bet');
+    const scoreboardRentElement = document.getElementById('scoreboard-rent');
+    const scoreboardRollsElement = document.getElementById('scoreboard-rolls');
+    const rollsRemaining = Math.max(maxTurns - turns, 0);
 
-    if (bettingStatus) {
-        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
+    updateBalanceDisplay(balance);
+
+    if (betAmountTextElement) {
+        betAmountTextElement.textContent = `$${Math.max(0, Math.round(currentBet)).toLocaleString()}`;
     }
 
-    if (rentStatus) {
-        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
+    if (rentAmountElement) {
+        rentAmountElement.textContent = `$${Math.max(0, Math.round(rent)).toLocaleString()}`;
     }
+
+    if (rentRollsElement) {
+        rentRollsElement.textContent = rollsRemaining.toString();
+    }
+
+    if (rentSummaryElement) {
+        const rollsLabel = rollsRemaining === 1 ? 'roll' : 'rolls';
+        rentSummaryElement.textContent = `Rent Due: $${Math.max(0, Math.round(rent)).toLocaleString()} in ${rollsRemaining} ${rollsLabel}`;
+    }
+
+    if (scoreboardBetElement) {
+        scoreboardBetElement.textContent = `$${Math.max(0, Math.round(currentBet)).toLocaleString()}`;
+    }
+
+    if (scoreboardRentElement) {
+        scoreboardRentElement.textContent = `$${Math.max(0, Math.round(rent)).toLocaleString()}`;
+    }
+
+    if (scoreboardRollsElement) {
+        scoreboardRollsElement.textContent = rollsRemaining.toString();
+    }
+}
+
+const MAX_ROLL_HISTORY = 6;
+const recentRolls = [];
+
+export function recordRecentRoll(dice1, dice2, sum) {
+    const list = document.getElementById('roll-history-list');
+    if (!list) {
+        return;
+    }
+
+    recentRolls.unshift({ dice1, dice2, sum });
+    if (recentRolls.length > MAX_ROLL_HISTORY) {
+        recentRolls.length = MAX_ROLL_HISTORY;
+    }
+
+    list.innerHTML = '';
+    recentRolls.forEach(({ dice1, dice2, sum }) => {
+        const entry = document.createElement('div');
+        entry.className = 'roll-history__entry';
+
+        const sumBadge = document.createElement('span');
+        sumBadge.className = 'roll-history__sum';
+        sumBadge.textContent = sum.toString();
+
+        const diceBreakdown = document.createElement('span');
+        diceBreakdown.className = 'roll-history__dice';
+        diceBreakdown.textContent = `${dice1} + ${dice2}`;
+
+        entry.append(sumBadge, diceBreakdown);
+        list.appendChild(entry);
+    });
 }
 
 /**
@@ -794,6 +855,54 @@ export function initChatUI(socket) {
             li.textContent = name;
             playerList.appendChild(li);
         });
+    });
+}
+
+export function initUtilityDrawer() {
+    const toggle = document.getElementById('interface-toggle');
+    const drawer = document.getElementById('utility-drawer');
+    const closeButton = document.getElementById('utility-close');
+
+    if (!toggle || !drawer) {
+        return;
+    }
+
+    const openDrawer = () => {
+        drawer.classList.add('utility-drawer--open');
+        drawer.setAttribute('aria-hidden', 'false');
+        toggle.setAttribute('aria-expanded', 'true');
+        document.body.classList.add('drawer-visible');
+    };
+
+    const closeDrawer = () => {
+        drawer.classList.remove('utility-drawer--open');
+        drawer.setAttribute('aria-hidden', 'true');
+        toggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('drawer-visible');
+    };
+
+    toggle.addEventListener('click', () => {
+        if (drawer.classList.contains('utility-drawer--open')) {
+            closeDrawer();
+        } else {
+            openDrawer();
+        }
+    });
+
+    if (closeButton) {
+        closeButton.addEventListener('click', closeDrawer);
+    }
+
+    drawer.addEventListener('click', (event) => {
+        if (event.target === drawer) {
+            closeDrawer();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && drawer.classList.contains('utility-drawer--open')) {
+            closeDrawer();
+        }
     });
 }
 
