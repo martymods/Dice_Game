@@ -214,6 +214,40 @@ async function setupSinglePlayer() {
     ambienceSound.loop = true;
     ambienceSound.play().catch(err => console.error('Ambience sound error:', err));
 
+    function handleGameOver() {
+        if (isGameOver) {
+            return;
+        }
+
+        isGameOver = true;
+        canRollDice = false;
+        rollInProgress = false;
+
+        const gameEndTime = Date.now();
+        const timePlayed = Math.floor((gameEndTime - gameStartTime) / 1000);
+        playerStats.totalTimePlayed += timePlayed;
+        playerStats.evictions++;
+        playerStats.currentWinStreak = 0;
+        saveStats();
+
+        flashScreen('red');
+
+        if (ambienceSound) {
+            ambienceSound.pause();
+            ambienceSound.currentTime = 0;
+        }
+
+        playSound('/sounds/Death0.ogg');
+
+        showGameOverScreen();
+
+        if (balance > 1) {
+            displayLeaderboardPrompt(balance);
+        } else {
+            alert('Game Over! Better luck next time.');
+        }
+    }
+
      // Ensure necessary elements exist
      const requiredElements = [
         { id: 'rollButton', element: rollButton },
@@ -787,8 +821,10 @@ function animateDice(dice1, dice2, callback) {
     dice1Element.src = rollingAnimation;
     dice2Element.src = rollingAnimation;
 
-    // Play the rolling sound effect
-    playSound("/sounds/DiceRoll.ogg");
+    // Play the rolling sound effect using available roll samples
+    const rollingSounds = ["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"];
+    const rollingSound = rollingSounds[Math.floor(Math.random() * rollingSounds.length)];
+    playSound(rollingSound);
 
     // Wait for the rolling animation to finish before showing the result
     setTimeout(() => {
@@ -1363,39 +1399,6 @@ function initializeCryptoButtons() {
 
 
 
-function handleGameOver() {
-    if (isGameOver) {
-        return;
-    }
-    isGameOver = true;
-    canRollDice = false;
-    rollInProgress = false;
-
-    const gameEndTime = Date.now();
-    const timePlayed = Math.floor((gameEndTime - gameStartTime) / 1000);
-    playerStats.totalTimePlayed += timePlayed;
-    playerStats.evictions++;
-    playerStats.currentWinStreak = 0;
-    saveStats();
-
-    flashScreen('red');
-
-    if (ambienceSound) {
-        ambienceSound.pause();
-        ambienceSound.currentTime = 0;
-    }
-    playSound('/sounds/Death0.ogg');
-
-    showGameOverScreen();
-
-    if (balance > 1) {
-        displayLeaderboardPrompt(balance);
-    } else {
-        alert('Game Over! Better luck next time.');
-    }
-}
-    
-
 // Leaderboard Prompt Function
 async function displayLeaderboardPrompt(score) {
     const overlay = document.getElementById("leaderboard-overlay");
@@ -1595,20 +1598,16 @@ function purchaseFortuneCookie() {
         saveFortuneData(); // Save updated fortunes
 
         // Check for special cookies
-        let specialImage = "cookie_Open.png"; // Default image
         if (randomFortune === "Fortune is on your side.") {
-            specialImage = "cookie_Gold.png";
             updateDiceAppearance("GOLD");
         } else if (randomFortune === "Big dreams start with small crumbs of hope.") {
-            specialImage = "cookie_Blue.png";
             updateDiceAppearance("BLUE");
         } else if (randomFortune === "If at first you don’t succeed, try again.") {
-            specialImage = "cookie_Red.png";
             updateDiceAppearance("RED");
         }
 
         // Update the UI for the purchased fortune
-        displayPurchasedCookie(randomFortune, specialImage);
+        updateCollectionDisplay();
         alert(`You've received a new fortune: "${randomFortune}"`);
     } else {
         alert("You already own this fortune! Try buying another.");
@@ -1625,28 +1624,17 @@ function updateDiceAppearance(color) {
     });
 }
 
-function displayPurchasedCookie(fortune, imagePath) {
-    const myFortunesSection = document.getElementById("my-fortunes"); // Section to display collected cookies
-
-    // Create a new cookie icon
-    const cookieIcon = document.createElement("div");
-    cookieIcon.classList.add("fortune-cookie-icon");
-    cookieIcon.style.backgroundImage = `url(${imagePath})`; // Use special image
-    cookieIcon.title = fortune; // Display fortune message on hover
-
-    // Add the cookie to the player's collection
-    myFortunesSection.appendChild(cookieIcon);
-    updateCollectionDisplay(); // Refresh collection UI
-}
-
 export function updateCollectionDisplay() {
-    const myFortunesSection = document.getElementById("my-fortunes");
-    myFortunesSection.innerHTML = ""; // Clear existing display
+    if (!collectedCookiesElement) {
+        console.warn("Fortune collection container not found. Skipping display refresh.");
+        return;
+    }
+
+    collectedCookiesElement.innerHTML = "";
 
     collectedFortunes.forEach((fortune) => {
-        let imagePath = "/images/cookie_Open.png"; // Default cookie image
+        let imagePath = "/images/cookie_Open.png";
 
-        // Handle special fortune cookies
         if (fortune === "Fortune is on your side.") {
             imagePath = "/images/cookie_Gold.png";
         } else if (fortune === "Big dreams start with small crumbs of hope.") {
@@ -1655,14 +1643,17 @@ export function updateCollectionDisplay() {
             imagePath = "/images/cookie_Red.png";
         }
 
-        // Create and append cookie display
         const cookieIcon = document.createElement("div");
         cookieIcon.classList.add("fortune-cookie-icon");
         cookieIcon.style.backgroundImage = `url(${imagePath})`;
-        cookieIcon.title = fortune; // Display fortune message on hover
+        cookieIcon.title = fortune;
 
-        myFortunesSection.appendChild(cookieIcon);
+        collectedCookiesElement.appendChild(cookieIcon);
     });
+
+    if (cookieCountElement) {
+        cookieCountElement.textContent = collectedFortunes.size.toString();
+    }
 }
 
 
