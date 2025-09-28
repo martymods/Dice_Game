@@ -243,8 +243,6 @@ async function setupSinglePlayer() {
 
         if (balance > 1) {
             displayLeaderboardPrompt(balance);
-        } else {
-            alert('Game Over! Better luck next time.');
         }
     }
 
@@ -1008,11 +1006,23 @@ function animateDice(dice1, dice2, callback) {
         gameOverContainer.style.display = 'flex';
         gameOverContainer.innerHTML = '';
 
-        const gameOverImage = document.createElement('img');
-        gameOverImage.src = '/images/GameOverEvicted.gif';
-        gameOverImage.alt = 'Game Over';
-        gameOverImage.className = 'game-over-visual';
-        gameOverContainer.appendChild(gameOverImage);
+        gameOverContainer.style.backgroundImage = "url('/images/GameOverEvicted.gif')";
+        gameOverContainer.style.backgroundSize = 'cover';
+        gameOverContainer.style.backgroundPosition = 'center';
+        gameOverContainer.style.backgroundRepeat = 'no-repeat';
+
+        const contentContainer = document.createElement('div');
+        contentContainer.className = 'game-over-content';
+
+        const title = document.createElement('h2');
+        title.className = 'game-over-title';
+        title.textContent = 'Evicted! Game Over';
+        contentContainer.appendChild(title);
+
+        const subtitle = document.createElement('p');
+        subtitle.className = 'game-over-subtitle';
+        subtitle.textContent = 'Better luck next time!';
+        contentContainer.appendChild(subtitle);
 
         const buttonsContainer = document.createElement('div');
         buttonsContainer.className = 'game-over-actions';
@@ -1020,6 +1030,7 @@ function animateDice(dice1, dice2, callback) {
         const restartButton = document.createElement('button');
         restartButton.type = 'button';
         restartButton.textContent = 'Restart';
+        restartButton.className = 'game-over-action-button';
         restartButton.addEventListener('click', () => {
             window.location.reload();
         });
@@ -1027,13 +1038,19 @@ function animateDice(dice1, dice2, callback) {
         const quitButton = document.createElement('button');
         quitButton.type = 'button';
         quitButton.textContent = 'Quit Game';
+        quitButton.className = 'game-over-action-button game-over-action-button--danger';
         quitButton.addEventListener('click', () => {
             window.location.href = '/';
         });
 
         buttonsContainer.appendChild(restartButton);
         buttonsContainer.appendChild(quitButton);
-        gameOverContainer.appendChild(buttonsContainer);
+        contentContainer.appendChild(buttonsContainer);
+        gameOverContainer.appendChild(contentContainer);
+
+        setTimeout(() => {
+            gameOverContainer.style.backgroundImage = "url('/images/GameOverIdleScreen.png')";
+        }, 6000);
     }
     
 
@@ -1405,10 +1422,21 @@ async function displayLeaderboardPrompt(score) {
     const playerNameInput = document.getElementById("player-name");
     const submitButton = document.getElementById("submit-leaderboard");
     const leaderboardDisplay = document.getElementById("leaderboard-entries");
+    const promptContainer = document.getElementById("leaderboard-prompt");
+
+    let buttonRow = document.getElementById("leaderboard-button-row");
+    if (!buttonRow) {
+        buttonRow = document.createElement("div");
+        buttonRow.id = "leaderboard-button-row";
+    }
+    buttonRow.className = 'game-over-actions';
+    buttonRow.innerHTML = '';
 
     // Clear previous buttons if any
-    const quitButtonExists = document.getElementById("quit-leaderboard");
-    if (quitButtonExists) quitButtonExists.remove();
+    const existingQuit = document.getElementById("quit-leaderboard");
+    if (existingQuit) existingQuit.remove();
+    const existingRestart = document.getElementById("restart-leaderboard");
+    if (existingRestart) existingRestart.remove();
 
     overlay.style.display = "flex";
 
@@ -1429,15 +1457,31 @@ async function displayLeaderboardPrompt(score) {
         leaderboardDisplay.innerHTML = "<p>Unable to load leaderboard.</p>";
     }
 
-    // Create a Quit Game button dynamically
+    submitButton.classList.add('game-over-action-button');
+    submitButton.type = 'button';
+
+    // Create restart and quit buttons dynamically
+    const restartButton = document.createElement("button");
+    restartButton.id = "restart-leaderboard";
+    restartButton.type = "button";
+    restartButton.textContent = "Restart";
+    restartButton.className = 'game-over-action-button';
+    restartButton.onclick = () => window.location.reload();
+
     const quitButton = document.createElement("button");
     quitButton.id = "quit-leaderboard";
     quitButton.textContent = "Quit Game";
-    quitButton.style.marginLeft = "10px"; // Add spacing from the Submit button
+    quitButton.type = 'button';
+    quitButton.className = 'game-over-action-button game-over-action-button--danger';
     quitButton.onclick = window.quitGame; // Use the globally attached quitGame function
 
-    // Add the Quit Game button next to Submit button
-    submitButton.parentNode.insertBefore(quitButton, submitButton.nextSibling);
+    buttonRow.appendChild(submitButton);
+    buttonRow.appendChild(restartButton);
+    buttonRow.appendChild(quitButton);
+
+    if (promptContainer) {
+        promptContainer.appendChild(buttonRow);
+    }
 
     // Submit leaderboard entry
     submitButton.onclick = async () => {
