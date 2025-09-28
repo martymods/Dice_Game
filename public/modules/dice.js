@@ -1,51 +1,44 @@
 // dice.js
 
 export function rollDice() {
-    const dice1 = Math.floor(Math.random() * 6) + 1;
-    const dice2 = Math.floor(Math.random() * 6) + 1;
-
-    console.groupCollapsed('[Dice] Generated roll');
-    console.log('dice1:', dice1);
-    console.log('dice2:', dice2);
-    console.trace('Roll stack trace');
-    console.groupEnd();
-
     return {
-        dice1,
-        dice2,
+        dice1: Math.floor(Math.random() * 6) + 1,
+        dice2: Math.floor(Math.random() * 6) + 1,
     };
 }
 
-export function animateDice(dice1, dice2, callback, options = {}) {
-    const { onFire = false } = options;
+export function animateDice(dice1, dice2, callback) {
     const dice1Element = document.getElementById('dice1');
     const dice2Element = document.getElementById('dice2');
 
-    if (!dice1Element || !dice2Element) {
-        console.error('[Dice] Dice elements missing in DOM.', { dice1Element, dice2Element });
-        callback?.();
-        return;
-    }
-
-    const spritePrefix = onFire ? 'DiceFire' : 'dice';
-    const spriteExtension = onFire ? '.gif' : '.png';
-    let iterations = 0;
-    const maxIterations = 10;
-
+    let counter = 0;
     const interval = setInterval(() => {
-        const randomDice1 = Math.floor(Math.random() * 6) + 1;
-        const randomDice2 = Math.floor(Math.random() * 6) + 1;
+        const dice1Src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}${onFire ? '.gif' : '.png'}`;
+        const dice2Src = `/images/${onFire ? 'DiceFire' : 'dice'}${Math.floor(Math.random() * 6) + 1}${onFire ? '.gif' : '.png'}`;
+        
+        dice1Element.src = dice1Src;
+        dice2Element.src = dice2Src;
 
-        dice1Element.src = `/images/${spritePrefix}${randomDice1}${spriteExtension}`;
-        dice2Element.src = `/images/${spritePrefix}${randomDice2}${spriteExtension}`;
+        // Adjust size for "on fire" state
+        if (onFire) {
+            dice1Element.style.width = '150px'; // Larger width
+            dice1Element.style.height = '150px'; // Larger height
+            dice2Element.style.width = '150px';
+            dice2Element.style.height = '150px';
+        } else {
+            dice1Element.style.width = '100px'; // Standard width
+            dice1Element.style.height = '100px'; // Standard height
+            dice2Element.style.width = '100px';
+            dice2Element.style.height = '100px';
+        }
 
-        iterations += 1;
+        counter++;
 
-        if (iterations >= maxIterations) {
+        if (counter >= 10) {
             clearInterval(interval);
-            dice1Element.src = `/images/${spritePrefix}${dice1}${spriteExtension}`;
-            dice2Element.src = `/images/${spritePrefix}${dice2}${spriteExtension}`;
-            callback?.();
+            dice1Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice1}${onFire ? '.gif' : '.png'}`;
+            dice2Element.src = `/images/${onFire ? 'DiceFire' : 'dice'}${dice2}${onFire ? '.gif' : '.png'}`;
+            callback();
         }
     }, 100);
 }
@@ -57,16 +50,5 @@ export function playDiceSound(sounds, randomize = false) {
         : sounds;
 
     const audio = new Audio(soundFile);
-    console.groupCollapsed('[Dice] Playing sound');
-    console.log('Source file:', soundFile);
-    console.log('Randomized:', randomize);
-    audio.play()
-        .then(() => {
-            console.log('Audio playback started successfully.');
-            console.groupEnd();
-        })
-        .catch(err => {
-            console.error('Audio play error:', err);
-            console.groupEnd();
-        });
+    audio.play().catch(err => console.error('Audio play error:', err));
 }

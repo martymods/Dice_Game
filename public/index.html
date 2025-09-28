@@ -91,7 +91,24 @@
 </div>
 
 
-<!-- Chat container is now handled by the in-game overlay -->
+<!-- Chat -->
+<div id="chat-container" class="chat-minimized">
+    <div id="chat-header">
+        <span>Chat</span>
+        <button id="toggle-chat" onclick="console.log('Chat button pressed')">☰</button>
+    </div>
+    <div id="chat-body">
+        <div id="player-list">
+            <strong>Online Players:</strong>
+            <ul id="player-names"></ul>
+        </div>
+        <div id="message-list"></div>
+    </div>
+    <div id="chat-footer">
+        <input id="message-input" type="text" placeholder="Type your message..." />
+        <button id="send-message">Send</button>
+    </div>
+</div>
 
 
 <div id="lottery-widget">
@@ -145,10 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const showMainMenu = () => {
         introContainer.style.display = 'none';
         mainMenu.style.display = 'flex';
-        if (chatContainer) {
-            chatContainer.classList.remove('chat-minimized');
-            chatContainer.style.display = 'block';
-        }
+        chatContainer.classList.remove('chat-minimized'); // Ensure chat is visible
+        chatContainer.style.display = 'block'; // Explicitly make chat visible
     };
 
     const introSFX = new Audio('sounds/IntroVideoSFX_0.ogg');
