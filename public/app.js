@@ -184,10 +184,20 @@ async function setupSinglePlayer() {
             ? baseMultiplierOverride
             : (Number.isFinite(lastContext.baseMultiplier) ? lastContext.baseMultiplier : 1);
         const effectiveMultiplier = calculateEffectiveMultiplier(baseMultiplier);
-        updateRollSummary({ multiplier: effectiveMultiplier, baseMultiplier });
+        updateRollSummary({
+            multiplier: effectiveMultiplier,
+            baseMultiplier,
+            multipliers: getRollSummaryMultipliers(),
+        });
     };
 
-    updateRollSummary({ roll: 0, multiplier: calculateEffectiveMultiplier(1), baseMultiplier: 1, bonus: 0 });
+    updateRollSummary({
+        roll: 0,
+        multiplier: calculateEffectiveMultiplier(1),
+        baseMultiplier: 1,
+        bonus: 0,
+        multipliers: getRollSummaryMultipliers(),
+    });
 
     // Increment games played
     playerStats.gamesPlayed++;
@@ -280,6 +290,105 @@ async function setupSinglePlayer() {
     const betInput = document.getElementById('betAmount');
     const ethInput = document.getElementById('betAmountETH');
     const ethBetButton = document.getElementById('eth-bet-button');
+    const betControlElements = [betButton, bet25Button, bet50Button, bet100Button, ethBetButton];
+
+    function getRollSummaryMultipliers() {
+        return {
+            fire: onFire ? 2 : 1,
+        };
+    }
+
+    function setShopState(isOpen) {
+        const active = Boolean(isOpen);
+        document.body.classList.toggle('shop-active', active);
+
+        betControlElements.forEach((element) => {
+            if (!element) {
+                return;
+            }
+            element.style.pointerEvents = active ? 'none' : '';
+            element.style.visibility = active ? 'hidden' : 'visible';
+            if (active) {
+                element.setAttribute('aria-hidden', 'true');
+            } else {
+                element.removeAttribute('aria-hidden');
+            }
+        });
+
+        if (betInput) {
+            betInput.disabled = active;
+            betInput.value = active ? '0' : '';
+        }
+
+        if (ethInput) {
+            ethInput.disabled = active;
+            ethInput.value = active ? '0' : '';
+        }
+
+        if (active) {
+            currentBet = 0;
+        }
+
+        refreshStatusPanel();
+        refreshBetButtons();
+    }
+
+    function openShop(config) {
+        setShopState(true);
+
+        const storeImageElement = document.getElementById('store-image');
+        if (storeImageElement) {
+            storeImageElement.src = '/images/Store0.gif';
+        }
+
+        const buyItemContainerElement = document.getElementById('buy-item-container');
+        if (buyItemContainerElement) {
+            buyItemContainerElement.style.display = 'block';
+        }
+
+        showItemPopup(config);
+    }
+
+    function closeShop() {
+        setShopState(false);
+
+        const buyItemContainerElement = document.getElementById('buy-item-container');
+        if (buyItemContainerElement) {
+            buyItemContainerElement.style.display = 'none';
+        }
+
+        const storeImageElement = document.getElementById('store-image');
+        if (storeImageElement) {
+            storeImageElement.src = '/images/StoreSign_Closed0.gif';
+        }
+    }
+
+    window.toggleStore = (open) => {
+        if (open) {
+            openShop({
+                balance,
+                items: [...itemsList],
+                purchasedItems,
+                onPurchase: (item) => handleItemAcquisition(cloneItem(item)),
+            });
+        } else {
+            closeShop();
+        }
+    };
+
+    const doneShoppingButton = document.getElementById('saveMoneyButton');
+    if (doneShoppingButton) {
+        doneShoppingButton.addEventListener('click', () => {
+            closeShop();
+        });
+    }
+
+    const doneShoppingButtonAlt = document.getElementById('saveMoneyButtonAlt');
+    if (doneShoppingButtonAlt) {
+        doneShoppingButtonAlt.addEventListener('click', () => {
+            closeShop();
+        });
+    }
 
     setEarningsPerSecond(0);
 
@@ -540,6 +649,7 @@ async function setupSinglePlayer() {
                     multiplier: effectiveMultiplier,
                     bonus: totalBonus,
                     baseMultiplier: multiplier,
+                    multipliers: getRollSummaryMultipliers(),
                 });
 
                 const passiveIncome = itemEffectsManager.getPassiveIncome();
@@ -887,7 +997,7 @@ function animateDice(dice1, dice2, callback) {
                 const randomStatement = rentPaidStatements[Math.floor(Math.random() * rentPaidStatements.length)];
                 showGameMessage(randomStatement, 'success', { duration: 4500 });
 
-                showItemPopup({
+                openShop({
                     balance,
                     items: [...itemsList],
                     purchasedItems,
@@ -1006,10 +1116,11 @@ function animateDice(dice1, dice2, callback) {
         gameOverContainer.style.display = 'flex';
         gameOverContainer.innerHTML = '';
 
-        gameOverContainer.style.backgroundImage = "url('/images/GameOverEvicted.gif')";
-        gameOverContainer.style.backgroundSize = 'cover';
-        gameOverContainer.style.backgroundPosition = 'center';
-        gameOverContainer.style.backgroundRepeat = 'no-repeat';
+        const evictedVisual = document.createElement('img');
+        evictedVisual.src = '/images/GameOverEvicted.gif';
+        evictedVisual.alt = 'Game Over - Evicted';
+        evictedVisual.className = 'game-over-visual';
+        gameOverContainer.appendChild(evictedVisual);
 
         const contentContainer = document.createElement('div');
         contentContainer.className = 'game-over-content';
@@ -1049,7 +1160,8 @@ function animateDice(dice1, dice2, callback) {
         gameOverContainer.appendChild(contentContainer);
 
         setTimeout(() => {
-            gameOverContainer.style.backgroundImage = "url('/images/GameOverIdleScreen.png')";
+            evictedVisual.src = '/images/GameOverIdleScreen.png';
+            evictedVisual.alt = 'Game Over Idle Screen';
         }, 6000);
     }
     
@@ -1125,30 +1237,6 @@ function discardHustler(index) {
     hustlerInventory.splice(index, 1); // Remove the hustler
     updateHustlerInventoryUI(); // Refresh UI
 }
-// Manage Store Open/Close Animation
-function toggleStore(open) {
-    const storeImage = document.getElementById('store-image');
-    const buyItemContainer = document.getElementById('buy-item-container');
-
-    if (open) {
-        // Show the "Store Open" animation
-        storeImage.src = '/images/Store0.gif';
-        setTimeout(() => {
-            buyItemContainer.style.display = 'block'; // Show the buy item section
-        }, 1000); // Wait for 1 second
-    } else {
-        // Close the store
-        buyItemContainer.style.display = 'none'; // Hide the buy item section
-        storeImage.src = '/images/StoreSign_Closed0.gif';
-    }
-}
-
-// Add event listener for the "Save Money" button
-document.getElementById('saveMoneyButton').addEventListener('click', () => {
-    toggleStore(false);
-});
-
-
 
 }// Stats Display Logic
 function displayStats() {
