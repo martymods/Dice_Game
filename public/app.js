@@ -13,6 +13,8 @@ import {
     initChatUI,
     setEarningsPerSecond,
     updateRollCount,
+    updateRollSummary,
+    getLastRollContext,
 } from './modules/ui.js';
 import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
@@ -160,6 +162,32 @@ async function setupSinglePlayer() {
         showMessage: (message, type) => showGameMessage(message, type || 'bonus'),
     });
 
+    const calculateEffectiveMultiplier = (baseMultiplier = 1) => {
+        if (itemEffectsManager && typeof itemEffectsManager.getEffectiveMultiplier === 'function') {
+            return itemEffectsManager.getEffectiveMultiplier(baseMultiplier);
+        }
+        return baseMultiplier;
+    };
+
+    const formatMultiplierValue = (value) => {
+        if (!Number.isFinite(value)) {
+            return '1';
+        }
+        const rounded = Math.round(value * 100) / 100;
+        return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(2);
+    };
+
+    const refreshRollSummaryMultiplier = (baseMultiplierOverride) => {
+        const lastContext = getLastRollContext();
+        const baseMultiplier = typeof baseMultiplierOverride === 'number' && Number.isFinite(baseMultiplierOverride)
+            ? baseMultiplierOverride
+            : (Number.isFinite(lastContext.baseMultiplier) ? lastContext.baseMultiplier : 1);
+        const effectiveMultiplier = calculateEffectiveMultiplier(baseMultiplier);
+        updateRollSummary({ multiplier: effectiveMultiplier, baseMultiplier });
+    };
+
+    updateRollSummary({ roll: 0, multiplier: calculateEffectiveMultiplier(1), baseMultiplier: 1, bonus: 0 });
+
     // Increment games played
     playerStats.gamesPlayed++;
     saveStats();
@@ -266,6 +294,7 @@ async function setupSinglePlayer() {
         purchasedItems.push(item);
         updatePurchasedItemsDisplay(purchasedItems);
         const summary = itemEffectsManager.applyItemEffect(item);
+        refreshRollSummaryMultiplier();
 
         if (!silent) {
             const message = summary ? `${item.name}: ${summary}` : `You purchased ${item.name}!`;
@@ -411,7 +440,9 @@ async function setupSinglePlayer() {
                 showGameMessage('Loaded Dice reshaped the roll!', 'bonus', { duration: 2400 });
             }
 
-            const { multiplier, cashBonus } = applyHustlerEffects(dice1, dice2);
+            const { multiplier, cashBonus: hustlerCashBonus } = applyHustlerEffects(dice1, dice2);
+            const cashBonus = Number.isFinite(hustlerCashBonus) ? hustlerCashBonus : 0;
+            const effectiveMultiplier = calculateEffectiveMultiplier(multiplier);
 
             animateDice(dice1, dice2, () => {
                 const diceRollSounds = ["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"];
@@ -421,16 +452,19 @@ async function setupSinglePlayer() {
                 updateRollCount(dice1, dice2);
 
                 let winnings = 0;
+                let itemBonus = 0;
+                let totalBonus = cashBonus;
 
                 if (sum === 7 || sum === 11) {
                     const baseWinnings = currentBet * 2 * multiplier;
-                    const itemBonus = itemEffectsManager.applyWinBonuses({
+                    itemBonus = itemEffectsManager.applyWinBonuses({
                         baseWinnings,
                         sum,
                         dice1,
                         dice2,
                     });
                     winnings = baseWinnings + cashBonus + itemBonus;
+                    totalBonus += itemBonus;
                     adjustBalance(winnings);
                     gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
                     playSound("/sounds/Winner_0.ogg");
@@ -460,8 +494,16 @@ async function setupSinglePlayer() {
                     if (cashBonus) {
                         adjustBalance(cashBonus);
                     }
-                    gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplier}x. Bonus: $${cashBonus}`;
+                    const multiplierText = formatMultiplierValue(effectiveMultiplier);
+                    gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplierText}x. Bonus: $${cashBonus}`;
                 }
+
+                updateRollSummary({
+                    roll: sum,
+                    multiplier: effectiveMultiplier,
+                    bonus: totalBonus,
+                    baseMultiplier: multiplier,
+                });
 
                 const passiveIncome = itemEffectsManager.getPassiveIncome();
                 const rollBonus = itemEffectsManager.applyRollBonuses({ dice1, dice2, sum });
@@ -516,6 +558,8 @@ let fireBorderElement;
 function activateOnFire() {
     onFire = true;
     playSound("/sounds/FireIgnite0.ogg"); // Play ignite sound
+    document.body.classList.add('fire-active');
+    refreshRollSummaryMultiplier();
 
     // Change dice to fire versions
     const dice1Element = document.getElementById('dice1');
@@ -560,6 +604,8 @@ function activateOnFire() {
 
 function deactivateOnFire() {
     onFire = false;
+    document.body.classList.remove('fire-active');
+    refreshRollSummaryMultiplier();
     playSound("/sounds/FireEnd0.ogg"); // Play end sound
 
     // Revert dice to normal versions
