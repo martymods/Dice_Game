@@ -12,6 +12,9 @@ if (!itemsList || itemsList.length === 0) {
 // Global state for multipliers and effects
 let activeEffects = [];
 let currentMultiplier = 1;
+let lastRollTotal = 0;
+let lastBonusAmount = 0;
+let lastBaseMultiplier = 1;
 let purchasedItems = []; // Proper initialization as an empty array
 
 // Function to set default cursor
@@ -38,6 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('mouseenter', () => {
             playHoverSound();
         });
+    });
+
+    document.querySelectorAll('.glowing').forEach(element => {
+        element.classList.add('glow-effect');
     });
 });
 
@@ -109,7 +116,7 @@ export function applyPurchasedItemEffects(purchasedItems = []) {
         purchasedItems = [];
     }
     activeEffects = [];
-    currentMultiplier = 1; // Reset multiplier
+    let computedMultiplier = 1;
 
     purchasedItems.forEach(item => {
         // Remove emoji from item name if present
@@ -121,8 +128,8 @@ export function applyPurchasedItemEffects(purchasedItems = []) {
             const effect = effectFunction(item);
 
             // Update multiplier if effect contains multiplier
-            if (effect.multiplier) {
-                currentMultiplier *= effect.multiplier;
+            if (effect && typeof effect.multiplier === 'number') {
+                computedMultiplier *= effect.multiplier;
             }
 
             activeEffects.push({ name: item.name, effect });
@@ -131,17 +138,67 @@ export function applyPurchasedItemEffects(purchasedItems = []) {
         }
     });
 
-    updateMultiplierUI(currentMultiplier); // Reflect the updated multiplier
+    currentMultiplier = computedMultiplier;
+    updateRollSummary({ multiplier: currentMultiplier });
 }
 
 /**
- * Updates the multiplier display in the UI.
+ * Updates the roll summary display in the UI.
  */
-function updateMultiplierUI(multiplier) {
-    const multiplierElement = document.getElementById('multiplier-display');
-    if (multiplierElement) {
-        multiplierElement.textContent = `Multiplier: ${multiplier.toFixed(2)}x`;
+export function updateRollSummary({ roll, multiplier, bonus, baseMultiplier } = {}) {
+    if (typeof roll === 'number' && Number.isFinite(roll)) {
+        lastRollTotal = Math.round(roll);
     }
+
+    if (typeof bonus === 'number' && Number.isFinite(bonus)) {
+        lastBonusAmount = bonus;
+    }
+
+    if (typeof baseMultiplier === 'number' && Number.isFinite(baseMultiplier)) {
+        lastBaseMultiplier = baseMultiplier;
+    }
+
+    if (typeof multiplier === 'number' && Number.isFinite(multiplier)) {
+        currentMultiplier = multiplier;
+    }
+
+    const multiplierElement = document.getElementById('multiplier-display');
+    if (!multiplierElement) {
+        return;
+    }
+
+    const displayMultiplier = formatMultiplier(currentMultiplier);
+    const displayBonus = formatBonus(lastBonusAmount);
+
+    multiplierElement.textContent = `Roll: ${lastRollTotal}. Multiplier: ${displayMultiplier}x. Bonus: $${displayBonus}`;
+}
+
+export function getLastRollContext() {
+    return {
+        roll: lastRollTotal,
+        bonus: lastBonusAmount,
+        baseMultiplier: lastBaseMultiplier,
+        multiplier: currentMultiplier,
+    };
+}
+
+function formatMultiplier(value) {
+    if (!Number.isFinite(value)) {
+        return '1';
+    }
+    const rounded = Math.round(value * 100) / 100;
+    return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(2);
+}
+
+function formatBonus(value) {
+    if (!Number.isFinite(value)) {
+        return '0';
+    }
+    const rounded = Math.round(value * 100) / 100;
+    const options = Number.isInteger(rounded)
+        ? { minimumFractionDigits: 0, maximumFractionDigits: 0 }
+        : { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+    return rounded.toLocaleString(undefined, options);
 }
 
 /**

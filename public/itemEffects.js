@@ -19,6 +19,8 @@ export function createItemEffectsManager(context) {
     const state = {
         passiveIncomePerRoll: 0,
         winMultiplierBonus: 0,
+        multiplierBonus: 1,
+        flatMultiplierBonus: 0,
         loadedDice: false,
         summaries: [],
         rollCallbacks: [],
@@ -33,7 +35,33 @@ export function createItemEffectsManager(context) {
      */
     function applyItemEffect(item) {
         const definition = itemEffectDefinitions[item.name] || defaultEffect;
-        const summary = definition({ item, state, context });
+        const result = definition({ item, state, context });
+
+        let summary = '';
+        if (typeof result === 'string') {
+            summary = result;
+        } else if (result && typeof result === 'object') {
+            if (typeof result.summary === 'string') {
+                summary = result.summary;
+            }
+
+            if (typeof result.multiplier === 'number') {
+                state.multiplierBonus *= result.multiplier;
+            }
+
+            if (typeof result.multiplierBonus === 'number') {
+                state.multiplierBonus *= result.multiplierBonus;
+            }
+
+            if (typeof result.flatMultiplierBonus === 'number') {
+                state.flatMultiplierBonus += result.flatMultiplierBonus;
+            }
+
+            if (typeof result.winMultiplierBonus === 'number') {
+                state.winMultiplierBonus += result.winMultiplierBonus;
+            }
+        }
+
         if (summary) {
             state.summaries.push({ name: item.name, summary });
         }
@@ -94,6 +122,24 @@ export function createItemEffectsManager(context) {
         return state.summaries.slice();
     }
 
+    function getEffectiveMultiplier(baseMultiplier = 1) {
+        let effective = Number.isFinite(baseMultiplier) ? baseMultiplier : 1;
+
+        if (typeof state.multiplierBonus === 'number' && Number.isFinite(state.multiplierBonus)) {
+            effective *= state.multiplierBonus;
+        }
+
+        if (typeof state.winMultiplierBonus === 'number' && Number.isFinite(state.winMultiplierBonus)) {
+            effective *= 1 + state.winMultiplierBonus;
+        }
+
+        if (typeof state.flatMultiplierBonus === 'number' && Number.isFinite(state.flatMultiplierBonus)) {
+            effective += state.flatMultiplierBonus;
+        }
+
+        return Number.isFinite(effective) ? effective : baseMultiplier;
+    }
+
     return {
         applyItemEffect,
         applyRollBonuses,
@@ -102,6 +148,7 @@ export function createItemEffectsManager(context) {
         shouldForceReroll,
         getPassiveIncome,
         getSummaries,
+        getEffectiveMultiplier,
         state,
     };
 }

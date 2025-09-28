@@ -4,12 +4,11 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { ethers } from 'ethers';
-import fs from 'fs';
 import path from 'path';
-import fetch from 'node-fetch'; 
+import fetch from 'node-fetch';
 import { fileURLToPath } from 'url';
 import axios from 'axios'; // 🔹 Add axios for API calls
-import bodyParser from 'body-parser'; // 🔹 Add body-parser for parsing JSON requests
+import { MongoClient } from 'mongodb';
 
 // Resolve __dirname in ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -87,32 +86,92 @@ app.post('/api/tiktok/chat', async (req, res) => {
     res.status(200).json({ success: true });
 });
 
-// Leaderboard
-const leaderboardFile = path.resolve(__dirname, 'leaderboard.json');
-let leaderboard = [];
+const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_DB = process.env.MONGODB_DB || 'dice_game';
+const MONGODB_COLLECTION = process.env.MONGODB_LEADERBOARD_COLLECTION || 'leaderboard';
 
-const loadLeaderboard = () => {
-    try {
-        if (fs.existsSync(leaderboardFile)) {
-            const data = fs.readFileSync(leaderboardFile, 'utf-8');
-            return JSON.parse(data);
+let mongoClient;
+let leaderboardCollection = null;
+let leaderboardCache = [];
+const playerProfiles = {};
+
+const mapLeaderboardEntries = (entries = []) => entries.map(entry => ({
+    name: entry.name,
+    score: entry.score,
+    wallet: entry.name,
+    points: entry.score,
+}));
+
+async function reloadLeaderboardCache(limit = 100) {
+    if (leaderboardCollection) {
+        const documents = await leaderboardCollection
+            .find({}, { projection: { _id: 0, name: 1, score: 1 } })
+            .sort({ score: -1, updatedAt: 1 })
+            .limit(limit)
+            .toArray();
+        leaderboardCache = documents.map(doc => ({ name: doc.name, score: doc.score }));
+    } else {
+        leaderboardCache = leaderboardCache
+            .slice()
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit);
+    }
+    return leaderboardCache;
+}
+
+async function persistLeaderboardEntry(name, score) {
+    const trimmedName = typeof name === 'string' ? name.trim().slice(0, 50) : '';
+    const numericScore = Number.isFinite(score) ? Math.max(0, Math.round(score)) : 0;
+
+    if (!trimmedName) {
+        throw new Error('Invalid name for leaderboard entry.');
+    }
+
+    if (leaderboardCollection) {
+        await leaderboardCollection.updateOne(
+            { name: trimmedName },
+            {
+                $set: {
+                    name: trimmedName,
+                    score: numericScore,
+                    updatedAt: new Date(),
+                },
+            },
+            { upsert: true },
+        );
+    } else {
+        const existingIndex = leaderboardCache.findIndex(entry => entry.name === trimmedName);
+        if (existingIndex >= 0) {
+            leaderboardCache[existingIndex].score = numericScore;
+        } else {
+            leaderboardCache.push({ name: trimmedName, score: numericScore });
         }
-    } catch (error) {
-        console.error('Failed to load leaderboard:', error);
     }
-    return [];
-};
 
-const saveLeaderboard = () => {
+    await reloadLeaderboardCache();
+    return leaderboardCache;
+}
+
+async function initializeLeaderboardStorage() {
+    if (!MONGODB_URI) {
+        console.warn('MONGODB_URI not set. Leaderboard entries will be stored in memory only.');
+        return;
+    }
+
     try {
-        fs.writeFileSync(leaderboardFile, JSON.stringify(leaderboard, null, 2));
+        mongoClient = new MongoClient(MONGODB_URI, { serverSelectionTimeoutMS: 5000 });
+        await mongoClient.connect();
+        leaderboardCollection = mongoClient.db(MONGODB_DB).collection(MONGODB_COLLECTION);
+        await leaderboardCollection.createIndex({ score: -1 });
+        await reloadLeaderboardCache();
+        console.log('Connected to MongoDB for leaderboard storage.');
     } catch (error) {
-        console.error('Failed to save leaderboard:', error);
+        leaderboardCollection = null;
+        console.error('Failed to connect to MongoDB:', error);
     }
-};
+}
 
-// Load leaderboard on startup
-leaderboard = loadLeaderboard();
+await initializeLeaderboardStorage();
 
 // Wallet Setup
 const privateKey = process.env.PRIVATE_KEY;
@@ -253,39 +312,47 @@ app.get('/vipStatus', (req, res) => {
 
 
 // Leaderboard Endpoints
-app.get('/leaderboard', (req, res) => {
-    res.status(200).json(leaderboard);
+app.get('/leaderboard', async (req, res) => {
+    try {
+        const entries = await reloadLeaderboardCache();
+        res.status(200).json(mapLeaderboardEntries(entries));
+    } catch (error) {
+        console.error('Failed to load leaderboard:', error);
+        res.status(500).json({ error: 'Failed to load leaderboard.' });
+    }
 });
 
-app.post('/leaderboard', (req, res) => {
+app.post('/leaderboard', async (req, res) => {
     const { name, score } = req.body;
-    if (!name || typeof score !== 'number' || score < 0) {
+    if (!name || typeof score !== 'number' || !Number.isFinite(score) || score < 0) {
         return res.status(400).json({ error: 'Invalid name or score.' });
     }
-    leaderboard.push({ name: name.trim(), score });
-    leaderboard.sort((a, b) => b.score - a.score);
-    leaderboard = leaderboard.slice(0, 100);
-    saveLeaderboard();
-    res.status(201).json({ message: 'Leaderboard updated.', leaderboard });
+
+    try {
+        const updatedEntries = await persistLeaderboardEntry(name, score);
+        res.status(201).json({ message: 'Leaderboard updated.', leaderboard: mapLeaderboardEntries(updatedEntries) });
+    } catch (error) {
+        console.error('Failed to update leaderboard entry:', error);
+        res.status(500).json({ error: 'Failed to update leaderboard.' });
+    }
 });
 
-app.post('/updatePoints', (req, res) => {
+app.post('/updatePoints', async (req, res) => {
     const { wallet, amount } = req.body;
     if (!wallet) return res.status(400).json({ success: false });
 
     if (!playerProfiles[wallet]) playerProfiles[wallet] = { points: 0 };
     playerProfiles[wallet].points += amount;
 
-    // Save leaderboard update
-    leaderboard.push({ name: wallet, score: playerProfiles[wallet].points });
-    leaderboard.sort((a, b) => b.score - a.score);
-    leaderboard = leaderboard.slice(0, 100); // Keep top 100
-    saveLeaderboard();
-
-    // 🔄 Broadcast update to all clients
-    io.emit('leaderboardUpdate', leaderboard.slice(0, 10));
-
-    res.json({ success: true });
+    try {
+        const updatedEntries = await persistLeaderboardEntry(wallet, playerProfiles[wallet].points);
+        const topTen = mapLeaderboardEntries(updatedEntries).slice(0, 10);
+        io.emit('leaderboardUpdate', topTen);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Failed to persist leaderboard points:', error);
+        res.status(500).json({ success: false, error: 'Failed to persist leaderboard entry.' });
+    }
 });
 
 
@@ -320,14 +387,6 @@ app.get('/checkEnrollment', async (req, res) => {
         return res.json({ enrolled: false, points: 0 });
     }
     res.json({ enrolled: true, points: playerProfiles[wallet].points });
-});
-
-app.get('/leaderboard', (req, res) => {
-    const sortedPlayers = Object.entries(playerProfiles)
-        .sort((a, b) => b[1].points - a[1].points) // Sort by highest points
-        .slice(0, 10); // Top 10 players
-
-    res.json(sortedPlayers.map(([wallet, data]) => ({ wallet, points: data.points })));
 });
 
 app.post("/api/tiktok/webhook", (req, res) => {
