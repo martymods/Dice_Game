@@ -231,17 +231,12 @@ export function updateUI(balance, rent = 0, turns = 0, maxTurns = 0, currentBet 
     const bettingStatus = document.getElementById('betting-status');
     const rentStatus = document.getElementById('rent-status');
 
-    const safeBalance = Math.max(0, Math.round(Number(balance) || 0));
-    const safeBet = Math.max(0, Math.round(Number(currentBet) || 0));
-    const safeRent = Math.max(0, Math.round(Number(rent) || 0));
-    const rollsRemaining = Math.max(0, Math.round(Number(maxTurns) - Number(turns)));
-
     if (bettingStatus) {
-        bettingStatus.textContent = `Balance: $${safeBalance.toLocaleString()} | Bet: $${safeBet.toLocaleString()}`;
+        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
     }
 
     if (rentStatus) {
-        rentStatus.textContent = `Rent Due: $${safeRent.toLocaleString()} in ${rollsRemaining} rolls`;
+        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
     }
 }
 
@@ -279,9 +274,8 @@ export function flashScreen(color) {
  * Displays a winning amount on the screen with an animation.
  */
 export function showWinningAmount(amount) {
-    const safeAmount = Math.max(0, Math.round(Number(amount) || 0));
     const winAmountDiv = document.createElement('div');
-    winAmountDiv.textContent = `+$${safeAmount.toLocaleString()}`;
+    winAmountDiv.textContent = `+$${amount.toLocaleString()}`;
     winAmountDiv.style.position = 'absolute';
     winAmountDiv.style.top = '50%';
     winAmountDiv.style.left = '50%';
@@ -309,9 +303,8 @@ export function showWinningAmount(amount) {
  * Displays a losing amount on the screen with an animation.
  */
 export function showLosingAmount(amount) {
-    const safeAmount = Math.max(0, Math.round(Number(amount) || 0));
     const loseAmountDiv = document.createElement('div');
-    loseAmountDiv.textContent = `-$${safeAmount.toLocaleString()}`;
+    loseAmountDiv.textContent = `-$${amount.toLocaleString()}`;
     loseAmountDiv.style.position = 'absolute';
     loseAmountDiv.style.top = '50%';
     loseAmountDiv.style.left = '50%';
@@ -413,7 +406,7 @@ export function showItemPopup(configOrBalance, maybeItems, maybePurchasedItems) 
         .sort(() => Math.random() - 0.5)
         .slice(0, 3);
 
-    popup.style.display = 'flex';
+    popup.style.display = 'block';
     itemList.innerHTML = '';
 
     const restockFeeElement = document.getElementById('restock-fee');
@@ -628,18 +621,12 @@ export function addItemToPurchasedItems(item, purchasedItems = []) {
 export function updatePurchasedItemsDisplay(items = []) {
     const purchasedItemsDisplay = document.getElementById('purchased-items-display');
 
-    if (!purchasedItemsDisplay) {
-        console.error('Purchased items display container not found.');
+    if (!Array.isArray(items)) {
+        console.error('updatePurchasedItemsDisplay received an invalid items array.');
         return;
     }
 
-    if (!Array.isArray(items)) {
-        console.error('updatePurchasedItemsDisplay received an invalid items array.');
-        items = [];
-    }
-
-    purchasedItemsDisplay.innerHTML = '';
-
+    // Array of hover sound file paths
     const hoverSounds = [
         '/sounds/itemHover0.ogg',
         '/sounds/itemHover1.ogg',
@@ -649,68 +636,45 @@ export function updatePurchasedItemsDisplay(items = []) {
         '/sounds/itemHover5.ogg',
     ];
 
-    const itemMap = new Map();
-    items.forEach((item) => {
-        if (!item || !item.name) {
-            return;
-        }
+    items.forEach(item => {
+        // Check if the item is already displayed
+        const existingItem = Array.from(purchasedItemsDisplay.children).find(child => 
+            child.getAttribute('data-item-name') === item.name
+        );
 
-        if (!itemMap.has(item.name)) {
-            itemMap.set(item.name, { ...item, count: 0 });
+        if (!existingItem) {
+            const itemContainer = document.createElement('div');
+            itemContainer.classList.add('purchased-item');
+            itemContainer.setAttribute('data-item-name', item.name); // Add name as data-attribute
+            itemContainer.setAttribute('data-item-description', item.description || 'No description available.'); // Add description as data-attribute
+
+            // Add item image
+            const itemImage = document.createElement('img');
+            const itemNameFormatted = item.name.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '');
+            itemImage.src = `/images/itemimage/${itemNameFormatted}.png`;
+            itemImage.alt = item.name;
+            itemImage.onerror = () => { itemImage.src = '/images/itemimage/Item_NoIcon.png'; };
+            itemImage.classList.add('item-image');
+
+            // Add hover event to play a random sound
+            itemContainer.addEventListener('mouseenter', () => {
+                const randomSound = hoverSounds[Math.floor(Math.random() * hoverSounds.length)];
+                const audio = new Audio(randomSound);
+                audio.play().catch(err => console.error('Error playing hover sound:', err));
+            });
+
+            // Add item label
+            const itemLabel = document.createElement('span');
+            itemLabel.textContent = item.name;
+
+            itemContainer.appendChild(itemImage);
+            itemContainer.appendChild(itemLabel);
+
+            purchasedItemsDisplay.appendChild(itemContainer);
         }
-        const entry = itemMap.get(item.name);
-        entry.count += 1;
     });
 
-    const totalItems = items.length;
-    const scale = Math.max(0.55, 1 - Math.max(0, totalItems - 6) * 0.05);
-    purchasedItemsDisplay.style.setProperty('--purchased-item-scale', scale.toFixed(2));
-    purchasedItemsDisplay.dataset.totalItems = String(totalItems);
-
-    itemMap.forEach((itemData) => {
-        const itemContainer = document.createElement('div');
-        itemContainer.classList.add('purchased-item', 'purchased-item--animate-in');
-        itemContainer.setAttribute('data-item-name', itemData.name);
-        itemContainer.setAttribute('data-item-description', itemData.description || 'No description available.');
-
-        const itemImage = document.createElement('img');
-        const itemNameFormatted = itemData.name.replace(/\s/g, '').replace(/[^a-zA-Z0-9]/g, '');
-        itemImage.src = `/images/itemimage/${itemNameFormatted}.png`;
-        itemImage.alt = itemData.name;
-        itemImage.onerror = () => { itemImage.src = '/images/itemimage/Item_NoIcon.png'; };
-        itemImage.classList.add('item-image');
-
-        const itemLabel = document.createElement('span');
-        itemLabel.classList.add('purchased-item__label');
-        itemLabel.textContent = itemData.name;
-
-        const countBadge = document.createElement('span');
-        countBadge.classList.add('purchased-item__count');
-        countBadge.textContent = `x${itemData.count}`;
-        if (itemData.count <= 1) {
-            countBadge.classList.add('purchased-item__count--hidden');
-        }
-
-        itemContainer.appendChild(itemImage);
-        itemContainer.appendChild(itemLabel);
-        itemContainer.appendChild(countBadge);
-
-        itemContainer.addEventListener('mouseenter', () => {
-            const randomSound = hoverSounds[Math.floor(Math.random() * hoverSounds.length)];
-            const audio = new Audio(randomSound);
-            audio.play().catch(err => console.error('Error playing hover sound:', err));
-        });
-
-        purchasedItemsDisplay.appendChild(itemContainer);
-
-        requestAnimationFrame(() => {
-            itemContainer.classList.add('purchased-item--animate-ready');
-            setTimeout(() => {
-                itemContainer.classList.remove('purchased-item--animate-in', 'purchased-item--animate-ready');
-            }, 400);
-        });
-    });
-
+    console.log('Purchased Items Display Updated:', items);
 }
 
 
@@ -719,9 +683,8 @@ export function updatePurchasedItemsDisplay(items = []) {
  * Displays a bonus earned from purchased item effects.
  */
 export function displayBonusFromItems(bonus) {
-    const safeBonus = Math.round(Number(bonus) || 0);
     const bonusElement = document.createElement('div');
-    bonusElement.textContent = `Bonus: $${safeBonus.toLocaleString()}`;
+    bonusElement.textContent = `Bonus: $${bonus.toLocaleString()}`;
     bonusElement.style.position = 'absolute';
     bonusElement.style.top = '50%';
     bonusElement.style.left = '50%';
@@ -791,8 +754,7 @@ export function updateBalanceDisplay(balance) {
     balanceDisplay.appendChild(dollarSignImage);
 
     // Convert the balance to a string and iterate over each digit
-    const safeBalance = Math.max(0, Math.round(Number(balance) || 0));
-    const balanceString = safeBalance.toString();
+    const balanceString = balance.toString();
     for (const digit of balanceString) {
         // Create an image element for each digit
         const digitImage = document.createElement('img');
@@ -1445,24 +1407,21 @@ let currentEarningsValue = 0; // Current earnings per second
 function animateEarningsCounter(target, currentValue) {
     const earningsCounterElement = document.getElementById("earnings-per-second");
     if (!earningsCounterElement) {
+        // Skip execution if the element is not found
         return;
     }
 
-    const startValue = Math.max(0, Math.round(Number(currentValue) || 0));
-    const endValue = Math.max(0, Math.round(Number(target) || 0));
-    const totalFrames = 16;
-    let frame = 0;
+    const step = (target - currentValue) / 20; // Animation duration divided into steps
+    let animationFrame = 0;
 
     const updateAnimation = () => {
-        if (frame < totalFrames) {
-            const progress = frame / totalFrames;
-            const interpolated = Math.round(startValue + (endValue - startValue) * progress);
-            earningsCounterElement.textContent = interpolated.toLocaleString();
-            frame++;
+        if (animationFrame < 20) {
+            currentValue += step;
+            earningsCounterElement.textContent = currentValue.toFixed(2);
+            animationFrame++;
             requestAnimationFrame(updateAnimation);
         } else {
-            earningsCounterElement.textContent = endValue.toLocaleString();
-            earningsCounterElement.dataset.currentValue = String(endValue);
+            earningsCounterElement.textContent = target.toFixed(2); // Final value
         }
     };
 
@@ -1477,29 +1436,13 @@ export function setEarningsPerSecond(value) {
         console.warn("Earnings counter element not found. Skipping setEarningsPerSecond.");
         return;
     }
-
-    const sanitizedTarget = Math.max(0, Math.round(Number(value) || 0));
-    const storedValue = Number(earningsCounterElement.dataset.currentValue);
-    const currentValue = Number.isFinite(storedValue)
-        ? storedValue
-        : Math.max(0, Math.round(Number(earningsCounterElement.textContent.replace(/[^0-9-]/g, '')) || 0));
-
-    animateEarningsCounter(sanitizedTarget, currentValue);
-
-    earningsCounterElement.dataset.currentValue = String(sanitizedTarget);
-    earningsPerSecond = sanitizedTarget;
-    currentEarningsValue = sanitizedTarget;
+    animateEarningsCounter(value, parseFloat(earningsCounterElement.textContent) || 0);
 }
 
 // Start a live update interval
 setInterval(() => {
-    if (earningsPerSecond <= 0) {
-        return;
-    }
-
-    const previousValue = currentEarningsValue;
-    currentEarningsValue = Math.max(0, Math.round(currentEarningsValue + earningsPerSecond));
-    animateEarningsCounter(currentEarningsValue, previousValue);
+    currentEarningsValue += earningsPerSecond;
+    animateEarningsCounter(currentEarningsValue, currentEarningsValue - earningsPerSecond); // Update incrementally
 }, 1000);
 
 function calculateEarningsPerSecond(currentBalance) {
