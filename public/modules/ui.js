@@ -848,6 +848,9 @@ export function initializeCombinationsModal() {
 /**
  * Populates the combinations modal with rules and dice images.
  */
+const MAX_TICKER_ENTRIES = 3;
+const recentRolls = [];
+
 let rollCounts = {
     win: { '1-6': 0, '2-5': 0, '3-4': 0, '4-3': 0, '5-2': 0, '6-1': 0, '5-6': 0, '6-5': 0 },
     lose: { '1-1': 0, '1-2': 0, '2-1': 0, '6-6': 0, '5-5': 0, '1-3': 0 }
@@ -942,29 +945,100 @@ function createDicePairElement(dice1, dice2, rollCounts) {
     container.style.backgroundColor = '#f4f4f4';
 
     const img1 = document.createElement('img');
-    img1.src = `/images/dice${dice1}.gif`;
+    img1.src = `/images/dice${dice1}roll.gif`;
     img1.alt = `Dice ${dice1}`;
-    img1.style.width = '40px';
+    img1.style.width = '46px';
 
     const img2 = document.createElement('img');
-    img2.src = `/images/dice${dice2}.gif`;
+    img2.src = `/images/dice${dice2}roll.gif`;
     img2.alt = `Dice ${dice2}`;
-    img2.style.width = '40px';
+    img2.style.width = '46px';
 
     const combinationKey = `${dice1}-${dice2}`;
     const count = rollCounts[combinationKey] || 0; // Default to 0 if no count exists
 
+    const sumDisplay = document.createElement('span');
+    sumDisplay.textContent = `Sum ${dice1 + dice2}`;
+    sumDisplay.style.marginTop = '6px';
+    sumDisplay.style.fontSize = '12px';
+    sumDisplay.style.fontWeight = '600';
+    sumDisplay.style.color = '#111';
+
     const countDisplay = document.createElement('span');
     countDisplay.textContent = `Rolled: ${count} times`;
-    countDisplay.style.marginTop = '5px';
-    countDisplay.style.fontSize = '14px';
+    countDisplay.style.marginTop = '4px';
+    countDisplay.style.fontSize = '13px';
     countDisplay.style.color = '#333';
 
     container.appendChild(img1);
     container.appendChild(img2);
+    container.appendChild(sumDisplay);
     container.appendChild(countDisplay);
 
     return container;
+}
+
+export function recordDiceTickerEntry({ dice1, dice2, sum, outcome = 'neutral', onFire = false } = {}) {
+    if (!Number.isFinite(dice1) || !Number.isFinite(dice2) || !Number.isFinite(sum)) {
+        return;
+    }
+
+    recentRolls.unshift({ dice1, dice2, sum, outcome, onFire, timestamp: Date.now() });
+    if (recentRolls.length > MAX_TICKER_ENTRIES) {
+        recentRolls.length = MAX_TICKER_ENTRIES;
+    }
+
+    const ticker = document.getElementById('roll-ticker');
+    if (!ticker) {
+        return;
+    }
+
+    ticker.innerHTML = '';
+
+    if (!recentRolls.length) {
+        const placeholder = document.createElement('span');
+        placeholder.className = 'roll-ticker__placeholder';
+        placeholder.textContent = 'Roll to start tracking combos';
+        ticker.appendChild(placeholder);
+        return;
+    }
+
+    const entriesWrapper = document.createElement('div');
+    entriesWrapper.className = 'roll-ticker__entries';
+
+    recentRolls.forEach(roll => {
+        const entry = document.createElement('div');
+        entry.className = 'roll-ticker__entry';
+
+        if (roll.outcome === 'win') {
+            entry.classList.add('roll-ticker__entry--win');
+        } else if (roll.outcome === 'loss') {
+            entry.classList.add('roll-ticker__entry--loss');
+        }
+
+        if (roll.onFire) {
+            entry.classList.add('roll-ticker__entry--fire');
+        }
+
+        const dieOne = document.createElement('img');
+        dieOne.src = `/images/dice${roll.dice1}roll.gif`;
+        dieOne.alt = `Recent roll die showing ${roll.dice1}`;
+
+        const dieTwo = document.createElement('img');
+        dieTwo.src = `/images/dice${roll.dice2}roll.gif`;
+        dieTwo.alt = `Recent roll die showing ${roll.dice2}`;
+
+        const sumText = document.createElement('span');
+        sumText.className = 'roll-ticker__sum';
+        sumText.textContent = `= ${roll.sum}`;
+
+        entry.appendChild(dieOne);
+        entry.appendChild(dieTwo);
+        entry.appendChild(sumText);
+        entriesWrapper.appendChild(entry);
+    });
+
+    ticker.appendChild(entriesWrapper);
 }
 
 /**

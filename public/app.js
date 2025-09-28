@@ -15,6 +15,7 @@ import {
     updateRollCount,
     updateRollSummary,
     getLastRollContext,
+    recordDiceTickerEntry,
 } from './modules/ui.js';
 import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
@@ -451,11 +452,13 @@ async function setupSinglePlayer() {
 
                 updateRollCount(dice1, dice2);
 
+                let outcome = 'neutral';
                 let winnings = 0;
                 let itemBonus = 0;
                 let totalBonus = cashBonus;
 
                 if (sum === 7 || sum === 11) {
+                    outcome = 'win';
                     const baseWinnings = currentBet * 2 * multiplier;
                     itemBonus = itemEffectsManager.applyWinBonuses({
                         baseWinnings,
@@ -490,6 +493,7 @@ async function setupSinglePlayer() {
 
                     winStreak = 0;
                     if (onFire) deactivateOnFire();
+                    outcome = 'loss';
                 } else {
                     if (cashBonus) {
                         adjustBalance(cashBonus);
@@ -497,6 +501,8 @@ async function setupSinglePlayer() {
                     const multiplierText = formatMultiplierValue(effectiveMultiplier);
                     gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplierText}x. Bonus: $${cashBonus}`;
                 }
+
+                recordDiceTickerEntry({ dice1, dice2, sum, outcome, onFire });
 
                 updateRollSummary({
                     roll: sum,
