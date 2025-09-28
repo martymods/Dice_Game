@@ -344,7 +344,7 @@ async function setupSinglePlayer() {
 
         const buyItemContainerElement = document.getElementById('buy-item-container');
         if (buyItemContainerElement) {
-            buyItemContainerElement.style.display = 'flex';
+            buyItemContainerElement.style.display = 'block';
         }
 
         showItemPopup(config);
@@ -410,8 +410,7 @@ async function setupSinglePlayer() {
 
     function adjustBalance(delta, { track = true } = {}) {
         const previous = balance;
-        const nextBalance = Math.round(balance + delta);
-        balance = Math.max(0, nextBalance);
+        balance = Math.max(0, Math.round((balance + delta) * 100) / 100);
         updateBalanceDisplay(balance);
         updateUI(balance, rent, turns, maxTurns, currentBet);
         if (track) {
@@ -518,10 +517,10 @@ async function setupSinglePlayer() {
             if (typeof input === 'number' && input <= 1) {
                 amount = Math.floor(balance * input);
             } else {
-                amount = Math.round(Number(input));
+                amount = Number(input);
             }
 
-            if (!Number.isFinite(amount)) {
+            if (Number.isNaN(amount)) {
                 showGameMessage('Please enter a valid bet amount.', 'warning');
                 return;
             }
@@ -536,7 +535,7 @@ async function setupSinglePlayer() {
                 return;
             }
 
-            currentBet = Math.round(amount);
+            currentBet = Math.floor(amount);
             if (betInput) {
                 betInput.value = currentBet;
             }
@@ -565,6 +564,8 @@ async function setupSinglePlayer() {
                 canRollDice = true;
             }, 200);
 
+            playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
+
             let rollResult = rollDice();
             let { dice1, dice2 } = rollResult;
             let sum = dice1 + dice2;
@@ -578,7 +579,7 @@ async function setupSinglePlayer() {
             }
 
             const { multiplier, cashBonus: hustlerCashBonus } = applyHustlerEffects(dice1, dice2);
-            const cashBonus = Number.isFinite(hustlerCashBonus) ? Math.round(hustlerCashBonus) : 0;
+            const cashBonus = Number.isFinite(hustlerCashBonus) ? hustlerCashBonus : 0;
             const effectiveMultiplier = calculateEffectiveMultiplier(multiplier);
 
             itemEffectsManager.recordRoll({ dice1, dice2, sum });
@@ -609,10 +610,8 @@ async function setupSinglePlayer() {
                         dice2,
                     });
                     const traitBonus = (traitResult?.multiplierBonus || 0) + (traitResult?.flatCashAdd || 0);
-                    const roundedTraitBonus = Math.round(traitBonus);
-                    totalBonus += roundedTraitBonus;
-                    const rawWinnings = baseWinnings + cashBonus + roundedTraitBonus;
-                    winnings = Math.max(0, Math.round(rawWinnings));
+                    totalBonus += traitBonus;
+                    winnings = baseWinnings + cashBonus + traitBonus;
                     finalBalance = adjustBalance(winnings);
                     gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
                     playSound("/sounds/Winner_0.ogg");
@@ -638,11 +637,10 @@ async function setupSinglePlayer() {
                     });
                     finalBalance = adjustBalance(-currentBet);
                     const lossBonus = (traitResult?.multiplierBonus || 0) + (traitResult?.flatCashAdd || 0);
-                    const roundedLossBonus = Math.round(lossBonus);
-                    if (roundedLossBonus !== 0) {
-                        winnings = roundedLossBonus;
-                        finalBalance = adjustBalance(roundedLossBonus);
-                        totalBonus += roundedLossBonus;
+                    if (lossBonus !== 0) {
+                        winnings = lossBonus;
+                        finalBalance = adjustBalance(lossBonus);
+                        totalBonus += lossBonus;
                     }
                     gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
                     playSound("/sounds/Loser_0.ogg");
@@ -667,15 +665,14 @@ async function setupSinglePlayer() {
                         dice1,
                         dice2,
                     });
-                    const neutralBonusRaw = cashBonus + (traitResult?.multiplierBonus || 0) + (traitResult?.flatCashAdd || 0);
-                    const neutralBonus = Math.round(neutralBonusRaw);
+                    const neutralBonus = cashBonus + (traitResult?.multiplierBonus || 0) + (traitResult?.flatCashAdd || 0);
                     totalBonus = neutralBonus;
                     if (neutralBonus !== 0) {
                         winnings = neutralBonus;
                         finalBalance = adjustBalance(neutralBonus);
                     }
                     const multiplierText = formatMultiplierValue(effectiveMultiplier);
-                    gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplierText}x. Bonus: $${neutralBonus.toLocaleString()}`;
+                    gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplierText}x. Bonus: $${neutralBonus}`;
                 }
 
                 itemEffectsManager.finalizeResolve({
@@ -703,11 +700,10 @@ async function setupSinglePlayer() {
                 const passiveIncome = itemEffectsManager.getPassiveIncome();
                 const rollBonus = itemEffectsManager.applyRollBonuses({ dice1, dice2, sum });
                 const totalItemIncome = (passiveIncome || 0) + (rollBonus || 0);
-                const roundedItemIncome = Math.round(totalItemIncome);
-                if (roundedItemIncome !== 0) {
-                    adjustBalance(roundedItemIncome);
-                    showGameMessage(`${roundedItemIncome > 0 ? '+' : ''}$${Math.abs(roundedItemIncome).toLocaleString()} from items`,
-                        roundedItemIncome > 0 ? 'bonus' : 'warning',
+                if (totalItemIncome !== 0) {
+                    adjustBalance(totalItemIncome);
+                    showGameMessage(`${totalItemIncome > 0 ? '+' : ''}$${Math.abs(totalItemIncome).toLocaleString()} from items`,
+                        totalItemIncome > 0 ? 'bonus' : 'warning',
                         { duration: 2600 });
                 }
 
