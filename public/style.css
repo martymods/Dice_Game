@@ -647,8 +647,8 @@ h1 {
     --store-image-width: 80%;
     --glow-blur: 24px;
     --glow-spread: 48px;
-    --glow-primary: rgba(255, 34, 34, 0.65);
-    --glow-secondary: rgba(163, 0, 0, 0.45);
+    --glow-primary: rgb(255 34 34 / 0%);
+    --glow-secondary: rgb(163 0 0 / 0%);
     max-width: var(--store-image-width);
     margin-bottom: 20px;
     border-radius: 18px;
