@@ -422,11 +422,6 @@ async function setupSinglePlayer() {
                 canRollDice = true;
             }, 200);
 
-            const gameContainer = document.getElementById('game-container');
-            const diceContainer = document.getElementById('dice-container');
-            gameContainer.classList.add('dimmed');
-            diceContainer.classList.add('dimmed-dice');
-
             playSound(["/sounds/DiceShake1.ogg", "/sounds/DiceShake2.ogg", "/sounds/DiceShake3.ogg"], true);
 
             let rollResult = rollDice();
@@ -494,6 +489,10 @@ async function setupSinglePlayer() {
                     winStreak = 0;
                     if (onFire) deactivateOnFire();
                     outcome = 'loss';
+
+                    if (balance <= 0) {
+                        handleGameOver();
+                    }
                 } else {
                     if (cashBonus) {
                         adjustBalance(cashBonus);
@@ -528,11 +527,6 @@ async function setupSinglePlayer() {
                 refreshStatusPanel();
                 refreshBetButtons();
                 updateUIAfterRoll();
-
-                setTimeout(() => {
-                    gameContainer.classList.remove('dimmed');
-                    diceContainer.classList.remove('dimmed-dice');
-                }, 1000);
             });
         }
 
