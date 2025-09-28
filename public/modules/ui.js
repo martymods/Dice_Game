@@ -15,6 +15,8 @@ let currentMultiplier = 1;
 let lastRollTotal = 0;
 let lastBonusAmount = 0;
 let lastBaseMultiplier = 1;
+let lastTotalMultiplier = 1;
+const multiplierModifiers = new Map();
 let purchasedItems = []; // Proper initialization as an empty array
 
 // Function to set default cursor
@@ -145,7 +147,7 @@ export function applyPurchasedItemEffects(purchasedItems = []) {
 /**
  * Updates the roll summary display in the UI.
  */
-export function updateRollSummary({ roll, multiplier, bonus, baseMultiplier } = {}) {
+export function updateRollSummary({ roll, multiplier, bonus, baseMultiplier, multipliers } = {}) {
     if (typeof roll === 'number' && Number.isFinite(roll)) {
         lastRollTotal = Math.round(roll);
     }
@@ -162,12 +164,31 @@ export function updateRollSummary({ roll, multiplier, bonus, baseMultiplier } = 
         currentMultiplier = multiplier;
     }
 
+    if (multipliers && typeof multipliers === 'object') {
+        Object.entries(multipliers).forEach(([key, value]) => {
+            if (typeof value === 'number' && Number.isFinite(value)) {
+                multiplierModifiers.set(key, value);
+            } else if (value === null) {
+                multiplierModifiers.delete(key);
+            }
+        });
+    }
+
     const multiplierElement = document.getElementById('multiplier-display');
     if (!multiplierElement) {
         return;
     }
 
-    const displayMultiplier = formatMultiplier(currentMultiplier);
+    let totalMultiplier = currentMultiplier;
+    multiplierModifiers.forEach((value) => {
+        if (Number.isFinite(value)) {
+            totalMultiplier *= value;
+        }
+    });
+
+    lastTotalMultiplier = Number.isFinite(totalMultiplier) ? totalMultiplier : currentMultiplier;
+
+    const displayMultiplier = formatMultiplier(lastTotalMultiplier);
     const displayBonus = formatBonus(lastBonusAmount);
 
     multiplierElement.textContent = `Roll: ${lastRollTotal}. Multiplier: ${displayMultiplier}x. Bonus: $${displayBonus}`;
@@ -179,6 +200,8 @@ export function getLastRollContext() {
         bonus: lastBonusAmount,
         baseMultiplier: lastBaseMultiplier,
         multiplier: currentMultiplier,
+        totalMultiplier: lastTotalMultiplier,
+        modifiers: Object.fromEntries(multiplierModifiers),
     };
 }
 
