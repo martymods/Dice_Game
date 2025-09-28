@@ -12,6 +12,7 @@ import {
     updateBalanceDisplay,
     initChatUI,
     setEarningsPerSecond,
+    updateRollCount,
 } from './modules/ui.js';
 import { itemsList } from './items.js';
 import { playSound } from './modules/audio.js';
@@ -416,6 +417,8 @@ async function setupSinglePlayer() {
                 const diceRollSounds = ["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"];
                 const randomSound = diceRollSounds[Math.floor(Math.random() * diceRollSounds.length)];
                 playSound(randomSound);
+
+                updateRollCount(dice1, dice2);
 
                 let winnings = 0;
 

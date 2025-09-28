@@ -357,19 +357,7 @@ h1 {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #444;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 5px 10px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
     z-index: 1000;
-}
-
-#quitButton.small-button:hover {
-    background-color: #666;
 }
 #main-menu {
     position: relative;
@@ -1029,22 +1017,7 @@ h1 {
 }
 
 #fortune-cookie-section button {
-    background-color: #444;
-    color: #627eeb;
-    border: none;
-    border-radius: 5px;
-    padding: 5px 10px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-}
-
-#fortune-cookie-section button:hover {
-    background-color: #285a03;
+    margin-top: 8px;
 }
 
 #fortune-display {
@@ -1345,16 +1318,17 @@ body {
     margin-top: 24px;
 }
 
-.crypto-chip {
+.crypto-chip,
+.chip-button {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 16px;
+    padding: 8px 18px;
     border-radius: 999px;
-    background: rgba(12, 12, 12, 0.75);
+    background: rgba(12, 12, 12, 0.78);
     border: 1px solid rgba(255, 255, 255, 0.12);
     color: #f5f7ff;
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -1362,14 +1336,35 @@ body {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.crypto-chip img {
+.crypto-chip img,
+.chip-button img {
     width: 22px;
     height: 22px;
 }
 
-.crypto-chip:hover {
+.crypto-chip:hover,
+.chip-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 22px rgba(255, 160, 0, 0.25);
+}
+
+.chip-button--danger {
+    background: rgba(45, 0, 0, 0.85);
+    border-color: rgba(255, 95, 95, 0.45);
+    color: #ffb3b3;
+}
+
+.chip-button--danger:hover {
+    box-shadow: 0 10px 22px rgba(255, 95, 95, 0.35);
+}
+
+.chip-button--accent {
+    border-color: rgba(112, 205, 255, 0.45);
+    box-shadow: inset 0 0 0 1px rgba(112, 205, 255, 0.1);
+}
+
+.chip-button--accent:hover {
+    box-shadow: 0 10px 22px rgba(112, 205, 255, 0.35);
 }
 
 .crypto-input {
@@ -1534,23 +1529,9 @@ body {
 
 /* Button Styles */
 #showCombinationsButton {
-    background-color: #d30000; /* Green background */
-    color: #ffffff; /* White text */
-    padding: 10px 10px; /* Padding for button */
-    border: none; /* Remove border */
-    border-radius: 8px; /* Rounded corners */
-    font-size: 16px; /* Font size */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
-}
-
-#showCombinationsButton:hover {
-    background-color: #710101; /* Darker green on hover */
-    transform: scale(1.05); /* Slightly enlarge */
-}
-
-#showCombinationsButton:active {
-    transform: scale(0.95); /* Slightly shrink on click */
+    margin: 12px 0;
+    width: 100%;
+    justify-content: center;
 }
 
 /* Modal Background Overlay */
@@ -1967,6 +1948,9 @@ img[src="/images/Button_Bet100.gif"]:hover {
 #betting-status, #rent-status {
     margin: 0; /* Remove default margins */
     padding: 0; /* Remove default padding */
+    font-size: 1.05rem;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
 }
 
 /* Updated Button Style with Cookie Animation */

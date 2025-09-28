@@ -913,14 +913,32 @@ function createDicePairElement(dice1, dice2, rollCounts) {
 /**
  * Call this function to update the counts whenever a roll occurs.
  */
-const dicerollCounts = {}; // Global object to store roll counts
-
 export function updateRollCount(dice1, dice2) {
-    const key = `${dice1},${dice2}`;
-    if (!rollCounts[key]) {
-        rollCounts[key] = 0;
+    const directKey = `${dice1}-${dice2}`;
+    const reverseKey = `${dice2}-${dice1}`;
+
+    const incrementCategory = (category) => {
+        if (Object.prototype.hasOwnProperty.call(rollCounts[category], directKey)) {
+            rollCounts[category][directKey]++;
+            return true;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(rollCounts[category], reverseKey)) {
+            rollCounts[category][reverseKey]++;
+            return true;
+        }
+
+        return false;
+    };
+
+    if (!incrementCategory('win')) {
+        incrementCategory('lose');
     }
-    rollCounts[key]++;
+
+    const combinationsModal = document.getElementById('combinationsModal');
+    if (combinationsModal && combinationsModal.style.display === 'flex') {
+        populateCombinationsModal();
+    }
 }
 
 export function getRollCounts() {
