@@ -6,7 +6,6 @@ import { addHustler, applyHustlerEffects, updateHustlerUI } from './modules/hust
 import {
     updateUI,
     showItemPopup,
-    handleGameOverScreen,
     showGameMessage,
     updatePurchasedItemsDisplay,
     updateBalanceDisplay,
@@ -142,6 +141,7 @@ async function setupSinglePlayer() {
     let items = [];
     let dreamCoins = 0; // New DreamCoin balance
     let gameStartTime = Date.now();
+    let isGameOver = false;
 
     const purchasedItems = [];
     const earningsTracker = {
@@ -873,36 +873,8 @@ function animateDice(dice1, dice2, callback) {
         }
     
         // Add this check for balance reaching 0
-        if (balance === 0) {
-            showGameOverScreen();
-        }
-    
         if (balance <= 0) {
             handleGameOver();
-        }
-    }
-
-
-   async function handleGameOver() {
-        const gameEndTime = Date.now();
-        const timePlayed = Math.floor((gameEndTime - gameStartTime) / 1000);
-        playerStats.totalTimePlayed += timePlayed;
-        playerStats.evictions++;
-        playerStats.currentWinStreak = 0;
-        saveStats();
-
-            // Stop ambience sound
-    if (ambienceSound) {
-        ambienceSound.pause();
-        ambienceSound.currentTime = 0; // Reset playback position
-    }
-    
-        flashScreen('red');
-        playSound('/sounds/Death0.ogg');
-    
-        // Leaderboard prompt for scores > 1
-        if (balance > 1) {
-        displayLeaderboardPrompt(balance);
         }
     }
 
@@ -1003,6 +975,7 @@ function animateDice(dice1, dice2, callback) {
         }
 
         gameOverContainer.className = 'game-over-overlay';
+        gameOverContainer.style.display = 'flex';
         gameOverContainer.innerHTML = '';
 
         const gameOverImage = document.createElement('img');
@@ -1397,6 +1370,13 @@ function initializeCryptoButtons() {
 
 
 function handleGameOver() {
+    if (isGameOver) {
+        return;
+    }
+    isGameOver = true;
+    canRollDice = false;
+    rollInProgress = false;
+
     const gameEndTime = Date.now();
     const timePlayed = Math.floor((gameEndTime - gameStartTime) / 1000);
     playerStats.totalTimePlayed += timePlayed;
@@ -1404,27 +1384,22 @@ function handleGameOver() {
     playerStats.currentWinStreak = 0;
     saveStats();
 
-    // Trigger red flash for game over
     flashScreen('red');
 
-    // Play game over sound
     if (ambienceSound) {
         ambienceSound.pause();
-        ambienceSound.currentTime = 0; // Reset playback position
+        ambienceSound.currentTime = 0;
     }
-    const deathSound = new Audio('/sounds/Death0.ogg');
-    deathSound.play().catch(err => console.error('Death sound error:', err));
+    playSound('/sounds/Death0.ogg');
 
-    // Display the game-over screen with animations
-    handleGameOverScreen();
-    
-    // Trigger leaderboard prompt if score is greater than 1
-        if (balance > 1) {
-            displayLeaderboardPrompt(balance);
-        } else {
-            alert('Game Over! Better luck next time.');
-        }
+    showGameOverScreen();
+
+    if (balance > 1) {
+        displayLeaderboardPrompt(balance);
+    } else {
+        alert('Game Over! Better luck next time.');
     }
+}
     
 
 // Leaderboard Prompt Function
