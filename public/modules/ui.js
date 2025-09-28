@@ -147,93 +147,17 @@ function updateMultiplierUI(multiplier) {
 /**
  * Updates the UI elements for balance, rent, and turns remaining.
  */
-export function updateUI(balance = 0, rent = 0, turns = 0, maxTurns = 0, currentBet = 0) {
-    const betAmountTextElement = document.getElementById('bet-amount-text');
-    const rentAmountElement = document.getElementById('rent-amount-text');
-    const rentRollsElement = document.getElementById('rent-rolls-text');
-    const rentSummaryElement = document.getElementById('rent-summary-text');
-    const scoreboardBetElement = document.getElementById('scoreboard-bet');
-    const scoreboardRentElement = document.getElementById('scoreboard-rent');
-    const scoreboardRollsElement = document.getElementById('scoreboard-rolls');
-    const rollsRemaining = Math.max(maxTurns - turns, 0);
+export function updateUI(balance, rent = 0, turns = 0, maxTurns = 0, currentBet = 0) {
+    const bettingStatus = document.getElementById('betting-status');
+    const rentStatus = document.getElementById('rent-status');
 
-    updateBalanceDisplay(balance);
-
-    if (betAmountTextElement) {
-        betAmountTextElement.textContent = `$${Math.max(0, Math.round(currentBet)).toLocaleString()}`;
+    if (bettingStatus) {
+        bettingStatus.textContent = `Balance: $${balance.toLocaleString()} | Bet: $${currentBet}`;
     }
 
-    if (rentAmountElement) {
-        rentAmountElement.textContent = `$${Math.max(0, Math.round(rent)).toLocaleString()}`;
+    if (rentStatus) {
+        rentStatus.textContent = `Rent Due: $${rent.toLocaleString()} in ${maxTurns - turns} rolls`;
     }
-
-    if (rentRollsElement) {
-        rentRollsElement.textContent = rollsRemaining.toString();
-    }
-
-    if (rentSummaryElement) {
-        const rollsLabel = rollsRemaining === 1 ? 'roll' : 'rolls';
-        rentSummaryElement.textContent = `Rent Due: $${Math.max(0, Math.round(rent)).toLocaleString()} in ${rollsRemaining} ${rollsLabel}`;
-    }
-
-    if (scoreboardBetElement) {
-        scoreboardBetElement.textContent = `$${Math.max(0, Math.round(currentBet)).toLocaleString()}`;
-    }
-
-    if (scoreboardRentElement) {
-        scoreboardRentElement.textContent = `$${Math.max(0, Math.round(rent)).toLocaleString()}`;
-    }
-
-    if (scoreboardRollsElement) {
-        scoreboardRollsElement.textContent = rollsRemaining.toString();
-    }
-}
-
-const MAX_ROLL_HISTORY = 3;
-const recentRolls = [];
-
-export function recordRecentRoll(dice1, dice2, sum) {
-    const list = document.getElementById('roll-history-list');
-    if (!list) {
-        return;
-    }
-
-    recentRolls.unshift({ dice1, dice2, sum });
-    if (recentRolls.length > MAX_ROLL_HISTORY) {
-        recentRolls.length = MAX_ROLL_HISTORY;
-    }
-
-    list.innerHTML = '';
-    recentRolls.forEach(({ dice1, dice2, sum }) => {
-        const entry = document.createElement('div');
-        entry.className = 'roll-history__entry';
-
-        const sumBadge = document.createElement('span');
-        sumBadge.className = 'roll-history__sum';
-        sumBadge.textContent = sum.toString();
-
-        const diceGroup = document.createElement('div');
-        diceGroup.className = 'roll-history__dice-group';
-
-        const icons = document.createElement('div');
-        icons.className = 'roll-history__icons';
-
-        [dice1, dice2].forEach((value, index) => {
-            const icon = document.createElement('img');
-            icon.className = 'roll-history__icon';
-            icon.src = `/images/dice${value}.gif`;
-            icon.alt = `Die ${index + 1}: ${value}`;
-            icons.appendChild(icon);
-        });
-
-        const diceBreakdown = document.createElement('span');
-        diceBreakdown.className = 'roll-history__dice';
-        diceBreakdown.textContent = `${dice1} + ${dice2}`;
-
-        diceGroup.append(icons, diceBreakdown);
-        entry.append(sumBadge, diceGroup);
-        list.appendChild(entry);
-    });
 }
 
 /**
@@ -731,20 +655,12 @@ export function handleGameOverScreen() {
  */
 export function updateBalanceDisplay(balance) {
     const balanceDisplay = document.getElementById('balance-display');
-    const balanceCard = document.getElementById('betting-status');
-    const balanceTrendElement = document.getElementById('balance-trend');
-    const balanceNumberElement = document.getElementById('balance-number');
-    const scoreboardBalanceElement = document.getElementById('scoreboard-balance');
 
     // Check if the display container exists
     if (!balanceDisplay) {
         console.error("Balance display container not found.");
         return;
     }
-
-    const previousBalance = balanceCard?.dataset?.previousBalance
-        ? parseFloat(balanceCard.dataset.previousBalance)
-        : balance;
 
     // Clear the previous balance display
     balanceDisplay.innerHTML = '';
@@ -758,53 +674,18 @@ export function updateBalanceDisplay(balance) {
     balanceDisplay.appendChild(dollarSignImage);
 
     // Convert the balance to a string and iterate over each digit
-    const wholeNumber = Math.max(0, Math.round(balance));
-    if (scoreboardBalanceElement) {
-        scoreboardBalanceElement.textContent = `$${wholeNumber.toLocaleString()}`;
-    }
-    const balanceString = wholeNumber.toString();
+    const balanceString = balance.toString();
     for (const digit of balanceString) {
+        // Create an image element for each digit
         const digitImage = document.createElement('img');
-        digitImage.src = `/images/Font_Number_${digit}.gif`;
+        digitImage.src = `/images/Font_Number_${digit}.gif`; // Adjust path if needed
         digitImage.alt = digit;
-        digitImage.style.width = '40px';
+        digitImage.style.width = '40px'; // Adjust size
         digitImage.style.height = 'auto';
-        digitImage.style.margin = '0 2px';
+        digitImage.style.margin = '0 2px'; // Add spacing between digits
+
+        // Append the image to the balance display
         balanceDisplay.appendChild(digitImage);
-    }
-
-    if (balanceNumberElement) {
-        balanceNumberElement.textContent = `$${wholeNumber.toLocaleString()}`;
-    }
-
-    if (balanceTrendElement) {
-        const diff = balance - previousBalance;
-        if (Math.abs(diff) < 0.01) {
-            balanceTrendElement.textContent = '—';
-            balanceTrendElement.style.color = 'rgba(144, 178, 255, 0.8)';
-        } else if (diff > 0) {
-            balanceTrendElement.textContent = `▲ +$${Math.abs(diff).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
-            balanceTrendElement.style.color = '#6effb8';
-        } else {
-            balanceTrendElement.textContent = `▼ -$${Math.abs(diff).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
-            balanceTrendElement.style.color = '#ff8686';
-        }
-    }
-
-    if (balanceCard) {
-        balanceCard.classList.remove('balance-up', 'balance-down');
-        const diff = balance - previousBalance;
-        if (diff > 0.01) {
-            balanceCard.classList.add('balance-up');
-        } else if (diff < -0.01) {
-            balanceCard.classList.add('balance-down');
-        }
-        if (diff !== 0) {
-            setTimeout(() => {
-                balanceCard.classList.remove('balance-up', 'balance-down');
-            }, 640);
-        }
-        balanceCard.dataset.previousBalance = balance.toString();
     }
 
 }
@@ -873,54 +754,6 @@ export function initChatUI(socket) {
     });
 }
 
-export function initUtilityDrawer() {
-    const toggle = document.getElementById('interface-toggle');
-    const drawer = document.getElementById('utility-drawer');
-    const closeButton = document.getElementById('utility-close');
-
-    if (!toggle || !drawer) {
-        return;
-    }
-
-    const openDrawer = () => {
-        drawer.classList.add('utility-drawer--open');
-        drawer.setAttribute('aria-hidden', 'false');
-        toggle.setAttribute('aria-expanded', 'true');
-        document.body.classList.add('drawer-visible');
-    };
-
-    const closeDrawer = () => {
-        drawer.classList.remove('utility-drawer--open');
-        drawer.setAttribute('aria-hidden', 'true');
-        toggle.setAttribute('aria-expanded', 'false');
-        document.body.classList.remove('drawer-visible');
-    };
-
-    toggle.addEventListener('click', () => {
-        if (drawer.classList.contains('utility-drawer--open')) {
-            closeDrawer();
-        } else {
-            openDrawer();
-        }
-    });
-
-    if (closeButton) {
-        closeButton.addEventListener('click', closeDrawer);
-    }
-
-    drawer.addEventListener('click', (event) => {
-        if (event.target === drawer) {
-            closeDrawer();
-        }
-    });
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && drawer.classList.contains('utility-drawer--open')) {
-            closeDrawer();
-        }
-    });
-}
-
 /**
  * Initializes and manages the combinations modal functionality.
  */
@@ -958,21 +791,10 @@ export function initializeCombinationsModal() {
 /**
  * Populates the combinations modal with rules and dice images.
  */
-const combinationGroups = {
-    win: [[1, 6], [2, 5], [3, 4], [4, 3], [5, 2], [6, 1], [5, 6], [6, 5]],
-    lose: [[1, 1], [1, 2], [2, 1], [6, 6], [5, 5], [1, 3]],
+let rollCounts = {
+    win: { '1-6': 0, '2-5': 0, '3-4': 0, '4-3': 0, '5-2': 0, '6-1': 0, '5-6': 0, '6-5': 0 },
+    lose: { '1-1': 0, '1-2': 0, '2-1': 0, '6-6': 0, '5-5': 0, '1-3': 0 }
 };
-
-const rollCounts = new Map();
-let totalRecordedRolls = 0;
-
-function getCombinationKey(dice1, dice2) {
-    return `${dice1}-${dice2}`;
-}
-
-function getCombinationCount(dice1, dice2) {
-    return rollCounts.get(getCombinationKey(dice1, dice2)) || 0;
-}
 
 function populateCombinationsModal() {
     const modalContent = document.querySelector('#combinationsModal .modal-content');
@@ -998,17 +820,18 @@ function populateCombinationsModal() {
     `;
     modalContent.appendChild(rules);
 
-    const summary = document.createElement('p');
-    summary.className = 'combination-summary';
-    summary.textContent = `Total rolls tracked: ${totalRecordedRolls}`;
-    modalContent.appendChild(summary);
-
     // Add visual combinations
     const combinationsSection = document.createElement('div');
     combinationsSection.style.display = 'flex';
     combinationsSection.style.flexDirection = 'column';
     combinationsSection.style.alignItems = 'center';
     modalContent.appendChild(combinationsSection);
+
+    // Define winning and losing combinations
+    const combinations = {
+        win: [[1, 6], [2, 5], [3, 4], [4, 3], [5, 2], [6, 1], [5, 6], [6, 5]],
+        lose: [[1, 1], [1, 2], [2, 1], [6, 6], [5, 5], [1, 3]],
+    };
 
     // Add winning combinations
     const winTitle = document.createElement('h3');
@@ -1021,8 +844,8 @@ function populateCombinationsModal() {
     winRow.style.flexWrap = 'wrap';
     combinationsSection.appendChild(winRow);
 
-    combinationGroups.win.forEach(([dice1, dice2]) => {
-        const pair = createDicePairElement(dice1, dice2, 'win');
+    combinations.win.forEach(([dice1, dice2]) => {
+        const pair = createDicePairElement(dice1, dice2, rollCounts.win);
         winRow.appendChild(pair);
     });
 
@@ -1037,8 +860,8 @@ function populateCombinationsModal() {
     loseRow.style.flexWrap = 'wrap';
     combinationsSection.appendChild(loseRow);
 
-    combinationGroups.lose.forEach(([dice1, dice2]) => {
-        const pair = createDicePairElement(dice1, dice2, 'lose');
+    combinations.lose.forEach(([dice1, dice2]) => {
+        const pair = createDicePairElement(dice1, dice2, rollCounts.lose);
         loseRow.appendChild(pair);
     });
 }
@@ -1047,16 +870,16 @@ function populateCombinationsModal() {
  * Creates a visual representation of a dice pair with roll count.
  * @param {number} dice1 - First dice value.
  * @param {number} dice2 - Second dice value.
- * @param {string} category - Category key for styling.
+ * @param {object} rollCounts - Object to track roll counts for the combination.
  * @returns {HTMLElement} A div element containing the dice images and count.
  */
-function createDicePairElement(dice1, dice2, category) {
+function createDicePairElement(dice1, dice2, rollCounts) {
     const container = document.createElement('div');
     container.style.display = 'flex';
     container.style.flexDirection = 'column';
     container.style.alignItems = 'center';
     container.style.margin = '10px';
-    container.style.border = category === 'win' ? '2px solid #3cffae' : '2px solid #ff6868';
+    container.style.border = '2px solid white';
     container.style.borderRadius = '10px';
     container.style.padding = '10px';
     container.style.backgroundColor = '#f4f4f4';
@@ -1071,10 +894,11 @@ function createDicePairElement(dice1, dice2, category) {
     img2.alt = `Dice ${dice2}`;
     img2.style.width = '40px';
 
-    const count = getCombinationCount(dice1, dice2);
+    const combinationKey = `${dice1}-${dice2}`;
+    const count = rollCounts[combinationKey] || 0; // Default to 0 if no count exists
 
     const countDisplay = document.createElement('span');
-    countDisplay.textContent = count === 1 ? 'Rolled 1 time' : `Rolled ${count} times`;
+    countDisplay.textContent = `Rolled: ${count} times`;
     countDisplay.style.marginTop = '5px';
     countDisplay.style.fontSize = '14px';
     countDisplay.style.color = '#333';
@@ -1089,23 +913,18 @@ function createDicePairElement(dice1, dice2, category) {
 /**
  * Call this function to update the counts whenever a roll occurs.
  */
-export function updateRollCount(dice1, dice2) {
-    const key = getCombinationKey(dice1, dice2);
-    rollCounts.set(key, (rollCounts.get(key) || 0) + 1);
-    totalRecordedRolls += 1;
+const dicerollCounts = {}; // Global object to store roll counts
 
-    const combinationsModal = document.getElementById('combinationsModal');
-    if (combinationsModal && combinationsModal.style.display === 'flex') {
-        populateCombinationsModal();
+export function updateRollCount(dice1, dice2) {
+    const key = `${dice1},${dice2}`;
+    if (!rollCounts[key]) {
+        rollCounts[key] = 0;
     }
+    rollCounts[key]++;
 }
 
 export function getRollCounts() {
-    const snapshot = {};
-    rollCounts.forEach((value, key) => {
-        snapshot[key] = value;
-    });
-    return { total: totalRecordedRolls, combinations: snapshot };
+    return rollCounts; // Optional: To retrieve the roll counts
 }
 
 
@@ -1409,6 +1228,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Initialize earnings-related variables
 let earningsPerSecond = 0;
+let currentEarningsValue = 0; // Current earnings per second
 
 
 // Check if the earnings-per-second element exists before animating
@@ -1444,30 +1264,20 @@ export function setEarningsPerSecond(value) {
         console.warn("Earnings counter element not found. Skipping setEarningsPerSecond.");
         return;
     }
-    const safeValue = Number.isFinite(value) ? value : 0;
-    earningsPerSecond = safeValue;
-    const earningsCardElement = document.getElementById('earnings-card');
-    const earningsTrendText = document.getElementById('earnings-trend');
-    animateEarningsCounter(safeValue, parseFloat(earningsCounterElement.textContent) || 0);
+    animateEarningsCounter(value, parseFloat(earningsCounterElement.textContent) || 0);
+}
 
-    if (earningsCardElement) {
-        earningsCardElement.classList.remove('positive', 'negative');
-        if (safeValue > 0.05) {
-            earningsCardElement.classList.add('positive');
-        } else if (safeValue < -0.05) {
-            earningsCardElement.classList.add('negative');
-        }
-    }
+// Start a live update interval
+setInterval(() => {
+    currentEarningsValue += earningsPerSecond;
+    animateEarningsCounter(currentEarningsValue, currentEarningsValue - earningsPerSecond); // Update incrementally
+}, 1000);
 
-    if (earningsTrendText) {
-        if (Math.abs(safeValue) < 0.01) {
-            earningsTrendText.textContent = 'Holding steady';
-        } else if (safeValue > 0) {
-            earningsTrendText.textContent = `Surging +$${safeValue.toFixed(2)}/s`;
-        } else {
-            earningsTrendText.textContent = `Cooling -$${Math.abs(safeValue).toFixed(2)}/s`;
-        }
-    }
+function calculateEarningsPerSecond(currentBalance) {
+    const timeInterval = 1; // Interval in seconds for calculations
+    const earnings = (currentBalance - lastBalance) / timeInterval;
+    lastBalance = currentBalance; // Update last balance for next calculation
+    return earnings;
 }
 
 // Open High Roller
