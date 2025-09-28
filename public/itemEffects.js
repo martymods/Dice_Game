@@ -1,600 +1,657 @@
 // itemEffects.js
-// Centralised item effect manager used by the single-player game logic.
+// Revised effect runtime built around stackable traits and additive modifiers.
 
 import { itemsList } from './items.js';
+import { TRAIT_DEFINITIONS, ITEM_TRAIT_MAPPING, SPECIAL_ITEM_HANDLERS, DEBT_BOND_TRAIT } from './modules/itemTraits.js';
 
-const RARITY_BASE_MULTIPLIER = {
-    Common: 0.01,
-    Uncommon: 0.016,
-    Rare: 0.022,
-    'Very Rare': 0.03,
-    Legendary: 0.038,
-};
+const globalObject = typeof window !== 'undefined' ? window : globalThis;
 
-const COST_MULTIPLIER_SCALE = 0.00004;
-const COST_MULTIPLIER_CAP = 0.05;
-
-const TAG_LABELS = {
-    dice: 'dice rig',
-    luck: 'luck charm',
-    reroll: 'reroll tech',
-    hustler: 'hustler crew',
-    crew: 'crew support',
-    animal: 'animal asset',
-    habitat: 'habitat upgrade',
-    urban: 'urban booster',
-    criminal: 'criminal asset',
-    law: 'law shield',
-    finance: 'finance booster',
-    interest: 'interest engine',
-    shop: 'shopfront perk',
-    destruction: 'destruction tool',
-    salvage: 'salvage crew',
-    smuggling: 'smuggling ring',
-    travel: 'transport link',
-    weapon: 'weapon cache',
-    knowledge: 'knowledge manual',
-    support: 'support staff',
-    token: 'token charm',
-    certificate: 'certification',
-    tech: 'tech mod',
-    hacker: 'hacking rig',
-    splicer: 'dice splicer',
-    implant: 'hackdie implant',
-    streak: 'streak engine',
-    fire: 'fire boost',
-    rent: 'rent relief',
-    arcane: 'arcane trick',
-    dream: 'dream relic',
-    'rarity-common': 'common set',
-    'rarity-uncommon': 'uncommon set',
-    'rarity-rare': 'rare set',
-    'rarity-very-rare': 'very rare set',
-    'rarity-legendary': 'legendary set',
-};
-
-const TAG_SYNERGY_RULES = {
-    dice: { perOther: 0.006, synergy: { luck: 0.004, reroll: 0.004, splicer: 0.005, implant: 0.004 } },
-    luck: { perOther: 0.005, synergy: { dice: 0.004, token: 0.003, streak: 0.004 } },
-    reroll: { perOther: 0.004, synergy: { dice: 0.006, luck: 0.003 } },
-    hustler: { perOther: 0.007, synergy: { crew: 0.006, finance: 0.004, support: 0.003 } },
-    crew: { perOther: 0.006, synergy: { hustler: 0.006, finance: 0.003, knowledge: 0.002 } },
-    animal: { perOther: 0.006, synergy: { habitat: 0.01, urban: 0.004 } },
-    habitat: { perOther: 0.004, synergy: { animal: 0.01 } },
-    urban: { perOther: 0.003, synergy: { hustler: 0.004, crew: 0.003, animal: 0.003 } },
-    criminal: { perOther: 0.007, synergy: { law: 0.004, smuggling: 0.005, weapon: 0.004 } },
-    law: { perOther: 0.004, synergy: { criminal: 0.004, finance: 0.003 } },
-    finance: { perOther: 0.005, synergy: { shop: 0.004, interest: 0.005, hustler: 0.003 } },
-    interest: { perOther: 0.004, synergy: { finance: 0.006 } },
-    shop: { perOther: 0.003, synergy: { finance: 0.004, certificate: 0.003 } },
-    destruction: { perOther: 0.005, synergy: { salvage: 0.006, finance: 0.003 } },
-    salvage: { perOther: 0.004, synergy: { destruction: 0.007 } },
-    smuggling: { perOther: 0.005, synergy: { travel: 0.005, criminal: 0.005 } },
-    travel: { perOther: 0.004, synergy: { smuggling: 0.004, urban: 0.003 } },
-    weapon: { perOther: 0.004, synergy: { criminal: 0.004, crew: 0.002 } },
-    knowledge: { perOther: 0.004, synergy: { crew: 0.003, finance: 0.002 } },
-    support: { perOther: 0.003, synergy: { crew: 0.003, hustler: 0.002 } },
-    token: { perOther: 0.003, synergy: { luck: 0.004, certificate: 0.003 } },
-    certificate: { perOther: 0.003, synergy: { finance: 0.003, shop: 0.003, dice: 0.002 } },
-    tech: { perOther: 0.005, synergy: { hacker: 0.005, implant: 0.004 } },
-    hacker: { perOther: 0.005, synergy: { tech: 0.005, implant: 0.003 } },
-    splicer: { perOther: 0.006, synergy: { dice: 0.005, tech: 0.003 } },
-    implant: { perOther: 0.006, synergy: { dice: 0.006, streak: 0.004 } },
-    streak: { perOther: 0.005, synergy: { luck: 0.005, fire: 0.004 } },
-    fire: { perOther: 0.003, synergy: { streak: 0.005 } },
-    rent: { perOther: 0.004, synergy: { finance: 0.004 } },
-    arcane: { perOther: 0.004, synergy: { luck: 0.003, knowledge: 0.003 } },
-    dream: { perOther: 0.004, synergy: { luck: 0.003, finance: 0.003 } },
-    'rarity-common': { perOther: 0.0015, synergy: { 'rarity-uncommon': 0.001 } },
-    'rarity-uncommon': { perOther: 0.002, synergy: { 'rarity-rare': 0.0015 } },
-    'rarity-rare': { perOther: 0.0025, synergy: { 'rarity-very-rare': 0.002 } },
-    'rarity-very-rare': { perOther: 0.003, synergy: { 'rarity-rare': 0.002, 'rarity-legendary': 0.003 } },
-    'rarity-legendary': { perOther: 0.004, synergy: { 'rarity-very-rare': 0.003 } },
-};
-
-const SET_BONUSES = [
-    { description: 'Dice control circuit', tags: ['dice', 'luck', 'reroll'], bonus: 0.03, repeatable: true },
-    { description: 'Urban menagerie', tags: ['animal', 'habitat', 'urban'], bonus: 0.035 },
-    { description: 'Crew payroll pipeline', tags: ['hustler', 'crew', 'finance'], bonus: 0.04 },
-    { description: 'Black market triangle', tags: ['criminal', 'smuggling', 'weapon'], bonus: 0.03 },
-    { description: 'Recycling racket', tags: ['destruction', 'salvage', 'finance'], bonus: 0.025 },
-    { description: 'Cyber rig', tags: ['tech', 'hacker', 'implant'], bonus: 0.035 },
-    { description: 'Licensing bureau', tags: ['certificate', 'shop', 'finance'], bonus: 0.02 },
-    { description: 'Hot streak trifecta', tags: ['streak', 'luck', 'fire'], bonus: 0.03 },
-    { description: 'Rent relief coalition', tags: ['rent', 'finance', 'crew'], bonus: 0.02 },
-];
-
-function formatPercent(value) {
-    if (!Number.isFinite(value) || value === 0) {
-        return '0%';
-    }
-    const percent = value * 100;
-    if (Math.abs(percent) >= 1) {
-        return `${percent.toFixed(1)}%`;
-    }
-    return `${percent.toFixed(2)}%`;
-}
-
-function getItemKey(item) {
-    return `${item.name}#${item.cost}`;
-}
-
-function mergeTags(...groups) {
-    const set = new Set();
-    groups.filter(Boolean).forEach(group => {
-        if (Array.isArray(group)) {
-            group.forEach(tag => {
-                if (tag) {
-                    set.add(tag);
+function createEventBus() {
+    const listeners = new Map();
+    return {
+        on(event, handler) {
+            if (!listeners.has(event)) {
+                listeners.set(event, new Set());
+            }
+            listeners.get(event).add(handler);
+            return () => listeners.get(event)?.delete(handler);
+        },
+        emit(event, payload) {
+            const handlers = listeners.get(event);
+            if (!handlers) {
+                return;
+            }
+            [...handlers].forEach(handler => {
+                try {
+                    handler(payload);
+                } catch (error) {
+                    console.error(`[bus:${event}]`, error);
                 }
             });
-        } else if (typeof group === 'string') {
-            set.add(group);
+        },
+    };
+}
+
+function createEffectsEngine(api) {
+    const TRAITS = new Map();
+    const ITEM_TRAITS = new Map();
+    const registers = new Map();
+    const traitStacks = new Map();
+    const itemStacks = new Map();
+
+    const frame = { multiplier: 0, cash: 0 };
+
+    function resetFrame() {
+        frame.multiplier = 0;
+        frame.cash = 0;
+    }
+
+    function addMult(value) {
+        if (Number.isFinite(value) && value !== 0) {
+            frame.multiplier += value;
         }
-    });
-    return Array.from(set);
-}
-
-function deriveTags(item) {
-    const tags = new Set();
-    const name = (item?.name || '').toLowerCase();
-    const description = (item?.description || '').toLowerCase();
-    const text = `${name} ${description}`;
-
-    if (text.includes('dice')) tags.add('dice');
-    if (text.includes('reroll') || text.includes('re-roll')) tags.add('reroll');
-    if (text.includes('hustler')) tags.add('hustler');
-    if (text.includes('crew') || text.includes('ally') || text.includes('recruit') || text.includes('squad') || text.includes('operation')) tags.add('crew');
-    if (text.includes('animal') || text.includes('cat') || text.includes('pigeon') || text.includes('bird') || text.includes('rat') || text.includes('snake') || text.includes('dog') || text.includes('horse')) tags.add('animal');
-    if (text.includes('coop') || text.includes('den') || text.includes('jungle') || text.includes('habitat') || text.includes('lair')) tags.add('habitat');
-    if (text.includes('urban') || text.includes('street') || text.includes('city') || text.includes('neighborhood')) tags.add('urban');
-    if (text.includes('criminal') || text.includes('crime') || text.includes('thief') || text.includes('gang') || text.includes('mob') || text.includes('smuggler') || text.includes('illegal') || text.includes('black market') || text.includes('loan shark') || text.includes('corrupt') || text.includes('fraud') || text.includes('shady')) tags.add('criminal');
-    if (text.includes('lawyer') || text.includes('cop') || text.includes('police') || text.includes('law') || text.includes('bail') || text.includes('court')) tags.add('law');
-    if (text.includes('loan') || text.includes('bank') || text.includes('cash') || text.includes('coin') || text.includes('money') || text.includes('payout') || text.includes('profit') || text.includes('finance') || text.includes('rich') || text.includes('value')) tags.add('finance');
-    if (text.includes('interest') || text.includes('banker')) tags.add('interest');
-    if (text.includes('shop') || text.includes('store') || text.includes('market') || text.includes('vendor') || text.includes('dealer') || text.includes('inventory') || text.includes('restock')) tags.add('shop');
-    if (text.includes('destroy') || text.includes('burn') || text.includes('trash') || text.includes('break') || text.includes('scavenge') || text.includes('recycle') || text.includes('demolish')) tags.add('destruction');
-    if (text.includes('dumpster') || text.includes('junk') || text.includes('scavenger') || text.includes('recycle') || text.includes('salvage')) tags.add('salvage');
-    if (text.includes('smuggle') || text.includes('underground') || text.includes('black market') || text.includes('back alley') || text.includes('backdoor') || text.includes('syndicate')) tags.add('smuggling');
-    if (text.includes('vehicle') || text.includes('driver') || text.includes('courier') || text.includes('racer') || text.includes('transport') || text.includes('ship') || text.includes('boat') || text.includes('car') || text.includes('bike')) tags.add('travel');
-    if (text.includes('luck') || text.includes('lucky') || text.includes('chance') || text.includes('random') || text.includes('gamble') || text.includes('odds')) tags.add('luck');
-    if (text.includes('streak') || text.includes('consecutive') || text.includes('combo') || text.includes('chain') || text.includes('hot')) tags.add('streak');
-    if (text.includes('fire') || text.includes('flame')) tags.add('fire');
-    if (text.includes('tech') || text.includes('computer') || text.includes('digital') || text.includes('cyber') || text.includes('mechanic')) tags.add('tech');
-    if (text.includes('hacker') || text.includes('backdoor')) tags.add('hacker');
-    if (text.includes('implant')) tags.add('implant');
-    if (text.includes('splicer') || text.includes('splice')) tags.add('splicer');
-    if (text.includes('certificate') || text.includes('permit') || text.includes('license') || text.includes('endorsement') || text.includes('seal') || text.includes('token') || text.includes('badge') || text.includes('voucher') || text.includes('charter') || text.includes('approval') || text.includes('pass')) tags.add('certificate');
-    if (text.includes('token') || text.includes('talisman') || text.includes('emblem')) tags.add('token');
-    if (text.includes('manual') || text.includes('book') || text.includes('guide') || text.includes('degree') || text.includes('diploma') || text.includes('codex') || text.includes('scroll')) tags.add('knowledge');
-    if (text.includes('support') || text.includes('boost') || text.includes('mentor') || text.includes('manager') || text.includes('fixer')) tags.add('support');
-    if (text.includes('blade') || text.includes('knife') || text.includes('sword') || text.includes('gun') || text.includes('bomb') || text.includes('weapon') || text.includes('revolver')) tags.add('weapon');
-    if (text.includes('rent')) tags.add('rent');
-    if (text.includes('magic') || text.includes('magician') || text.includes('wizard') || text.includes('arcane')) tags.add('arcane');
-    if (text.includes('dream')) tags.add('dream');
-
-    tags.add(`rarity-${(item?.rarity || 'Common').toLowerCase().replace(/\s+/g, '-')}`);
-    return Array.from(tags);
-}
-
-function getBaseMultiplier(item) {
-    const rarityBonus = RARITY_BASE_MULTIPLIER[item?.rarity] ?? RARITY_BASE_MULTIPLIER.Common;
-    const costBonus = Math.min(COST_MULTIPLIER_CAP, Math.max(0, (item?.cost || 0) * COST_MULTIPLIER_SCALE));
-    return rarityBonus + costBonus;
-}
-
-function describeTagSynergy(tag) {
-    const rule = TAG_SYNERGY_RULES[tag];
-    if (!rule) {
-        return '';
-    }
-    const label = TAG_LABELS[tag] || tag;
-    const parts = [];
-    if (rule.perOther) {
-        parts.push(`${formatPercent(rule.perOther)} per other ${label}`);
-    }
-    if (rule.synergy) {
-        const synergyParts = Object.entries(rule.synergy)
-            .slice(0, 2)
-            .map(([partner, bonus]) => `${formatPercent(bonus)} with ${TAG_LABELS[partner] || partner}`);
-        parts.push(...synergyParts);
-    }
-    return `${label} (${parts.join(', ')})`;
-}
-
-function buildSynergyText(tags) {
-    const descriptions = tags
-        .map(tag => describeTagSynergy(tag))
-        .filter(Boolean);
-
-    if (!descriptions.length) {
-        return '';
     }
 
-    return `Synergy with ${descriptions.join('; ')}.`;
-}
-
-function evaluateSets(tagCounts) {
-    const active = [];
-
-    SET_BONUSES.forEach(rule => {
-        const thresholds = rule.thresholds || {};
-        const counts = rule.tags.map(tag => {
-            const available = tagCounts.get(tag) || 0;
-            const required = thresholds[tag] || 1;
-            return Math.floor(available / required);
-        });
-
-        if (rule.repeatable) {
-            const repeats = Math.min(...counts);
-            if (repeats >= 1) {
-                const totalBonus = rule.bonus * repeats;
-                const label = repeats > 1
-                    ? `${rule.description} x${repeats} (+${formatPercent(totalBonus)})`
-                    : `${rule.description} (+${formatPercent(rule.bonus)})`;
-                active.push({ label, bonus: totalBonus });
-            }
-        } else if (counts.every(count => count >= 1)) {
-            active.push({ label: `${rule.description} (+${formatPercent(rule.bonus)})`, bonus: rule.bonus });
+    function addCash(value) {
+        if (Number.isFinite(value) && value !== 0) {
+            frame.cash += value;
         }
-    });
+    }
 
-    return active;
-}
+    function collectFrameModifiers() {
+        const modifiers = { totalMultiplierAdd: frame.multiplier, flatCashAdd: frame.cash };
+        resetFrame();
+        return modifiers;
+    }
 
-function recomputeBonuses(state) {
-    let base = 0;
-    state.itemRecords.forEach(record => {
-        base += record.baseMultiplier;
-    });
+    function registerTrait(name, binder) {
+        if (!TRAITS.has(name)) {
+            TRAITS.set(name, binder);
+        }
+    }
 
-    let synergy = 0;
-    const synergyBreakdown = {};
-    state.tagCounts.forEach((count, tag) => {
-        const rule = TAG_SYNERGY_RULES[tag];
-        if (!rule || count <= 0) {
+    function ensureTraitRegistered(name) {
+        if (registers.has(name)) {
             return;
         }
-
-        let tagBonus = 0;
-        if (rule.perOther) {
-            tagBonus += Math.max(0, count - 1) * rule.perOther;
+        const binder = TRAITS.get(name);
+        if (!binder) {
+            return;
         }
-        if (rule.synergy) {
-            Object.entries(rule.synergy).forEach(([partner, bonus]) => {
-                const partnerCount = state.tagCounts.get(partner) || 0;
-                if (partnerCount > 0) {
-                    tagBonus += Math.min(count, partnerCount) * bonus;
+        const unsubs = [];
+        const on = (event, handler) => {
+            const off = api.bus.on(event, handler);
+            unsubs.push(off);
+            return off;
+        };
+        const context = {
+            onRoll: handler => on('roll', handler),
+            onPreResolve: handler => on('bet:preResolve', handler),
+            onResolved: handler => on('bet:resolved', handler),
+            addMult,
+            addCash,
+            getStack: itemName => itemStacks.get(itemName) || 0,
+            traitCount: traitName => traitStacks.get(traitName) || 0,
+            adjustBalance: (delta, options) => api.adjustBalance(delta, options),
+            getBalance: api.getBalance,
+            inventoryAPI: api.inventoryAPI,
+            bus: api.bus,
+            random: api.random,
+            grantRerolls: api.grantRerolls,
+            getRollIndex: api.getRollIndex,
+            getPrediction: api.getPrediction,
+            getPurchaseCounter: api.getPurchaseCounter,
+            resetPurchaseCounter: api.resetPurchaseCounter,
+        };
+        const result = binder(context);
+        if (Array.isArray(result)) {
+            result.filter(Boolean).forEach(off => unsubs.push(off));
+        } else if (typeof result === 'function') {
+            unsubs.push(result);
+        }
+        registers.set(name, unsubs);
+    }
+
+    function defineItem(name, traits) {
+        if (!ITEM_TRAITS.has(name)) {
+            ITEM_TRAITS.set(name, []);
+        }
+        const list = ITEM_TRAITS.get(name);
+        traits.forEach(trait => {
+            if (!list.includes(trait)) {
+                list.push(trait);
+            }
+        });
+    }
+
+    function removeTraitListenersIfNeeded(trait) {
+        const count = traitStacks.get(trait) || 0;
+        if (count > 0) {
+            return;
+        }
+        const unsubs = registers.get(trait);
+        if (unsubs) {
+            unsubs.forEach(off => {
+                try {
+                    off?.();
+                } catch (error) {
+                    console.error(`Error cleaning trait ${trait}`, error);
                 }
             });
+            registers.delete(trait);
         }
+    }
 
-        synergyBreakdown[tag] = tagBonus;
-        synergy += tagBonus;
-    });
-
-    let manual = 0;
-    if (state.manualBonusSources) {
-        state.manualBonusSources.forEach(value => {
-            manual += value;
+    function applyItem(name) {
+        itemStacks.set(name, (itemStacks.get(name) || 0) + 1);
+        const traits = ITEM_TRAITS.get(name) || [];
+        traits.forEach(trait => {
+            traitStacks.set(trait, (traitStacks.get(trait) || 0) + 1);
+            ensureTraitRegistered(trait);
         });
     }
 
-    const activeSets = evaluateSets(state.tagCounts);
-    const setBonus = activeSets.reduce((total, entry) => total + entry.bonus, 0);
+    function removeItem(name) {
+        const current = itemStacks.get(name) || 0;
+        if (current <= 0) {
+            return;
+        }
+        if (current === 1) {
+            itemStacks.delete(name);
+        } else {
+            itemStacks.set(name, current - 1);
+        }
+        const traits = ITEM_TRAITS.get(name) || [];
+        traits.forEach(trait => {
+            const existing = traitStacks.get(trait) || 0;
+            const next = Math.max(0, existing - 1);
+            if (next === 0) {
+                traitStacks.delete(trait);
+            } else {
+                traitStacks.set(trait, next);
+            }
+            removeTraitListenersIfNeeded(trait);
+        });
+    }
 
-    state.currentBreakdown = {
-        base,
-        synergy,
-        set: setBonus,
-        manual,
-        activeSets: activeSets.map(entry => entry.label),
-        details: synergyBreakdown,
+    return {
+        registerTrait,
+        defineItem,
+        applyItem,
+        removeItem,
+        collectFrameModifiers,
+        getTraitsForItem: name => (ITEM_TRAITS.get(name) || []).slice(),
+        traitStacks,
+        itemStacks,
+        bus: api.bus,
     };
-
-    state.winMultiplierBonus = base + synergy + setBonus + manual;
 }
 
-function registerComboItem({ item, state, tags, baseMultiplier, passiveIncome = 0, extraSummary }) {
-    const tagList = mergeTags(tags || [], deriveTags(item));
-    const appliedBase = Number.isFinite(baseMultiplier) ? baseMultiplier : getBaseMultiplier(item);
-    const beforeTotal = state.winMultiplierBonus || 0;
-    const beforeSets = new Set(state.currentBreakdown?.activeSets || []);
+function initializeTraits(engine, api) {
+    const { registerTrait } = engine;
+    const isPrime = new Set([2, 3, 5, 7, 11]);
 
-    const key = getItemKey(item);
-    const record = state.itemRecords.get(key) || { count: 0, baseMultiplier: 0, tags: new Set() };
-    record.count += 1;
-    record.baseMultiplier += appliedBase;
-    tagList.forEach(tag => record.tags.add(tag));
-    state.itemRecords.set(key, record);
-
-    tagList.forEach(tag => {
-        state.tagCounts.set(tag, (state.tagCounts.get(tag) || 0) + 1);
-    });
-
-    if (passiveIncome) {
-        const income = Math.round(passiveIncome);
-        if (income !== 0) {
-            state.passiveIncomePerRoll += income;
+    registerTrait('SevenHeaven', ({ onPreResolve, addMult, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.sum === 7) {
+            addMult(0.50 * traitCount('SevenHeaven'));
         }
-    }
+    }));
 
-    recomputeBonuses(state);
-
-    const afterTotal = state.winMultiplierBonus || 0;
-    const delta = afterTotal - beforeTotal;
-    const newSets = [];
-    const afterSets = new Set(state.currentBreakdown?.activeSets || []);
-    afterSets.forEach(label => {
-        if (!beforeSets.has(label)) {
-            newSets.push(label);
+    registerTrait('ElevenEdge', ({ onPreResolve, addCash, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.sum === 11) {
+            addCash(50 * traitCount('ElevenEdge'));
         }
-    });
+    }));
 
-    const summaryParts = [];
-    summaryParts.push(`Adds +${formatPercent(appliedBase)} win multiplier baseline.`);
-    if (passiveIncome) {
-        summaryParts.push(`Passive income +$${Math.round(passiveIncome)} each roll.`);
-    }
+    registerTrait('SnakeEyesTax', ({ onPreResolve, addCash, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.sum === 2) {
+            addCash(-20 * traitCount('SnakeEyesTax'));
+        }
+    }));
 
-    const synergyText = buildSynergyText(tagList);
-    if (synergyText) {
-        summaryParts.push(synergyText);
-    }
+    registerTrait('CrapOutCurse', ({ onPreResolve, addMult, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.sum === 3 || ctx?.sum === 12) {
+            addMult(-0.25 * traitCount('CrapOutCurse'));
+        }
+    }));
 
-    if (extraSummary) {
-        summaryParts.push(extraSummary);
-    }
+    registerTrait('WinBooster', ({ onPreResolve, addMult, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.outcome === 'win') {
+            addMult(0.10 * traitCount('WinBooster'));
+        }
+    }));
 
-    summaryParts.push(`Current total boost from this pickup: +${formatPercent(delta)}.`);
+    registerTrait('LossSiphon', ({ onPreResolve, addCash, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.outcome === 'loss') {
+            addCash(15 * traitCount('LossSiphon'));
+        }
+    }));
 
-    if (newSets.length) {
-        summaryParts.push(`New set bonus: ${newSets.join(', ')}.`);
-    }
+    registerTrait('AnimalPack', ({ onPreResolve, addCash, traitCount }) => onPreResolve(() => {
+        addCash(5 * traitCount('AnimalPack'));
+    }));
 
-    return summaryParts.join(' ');
-}
+    registerTrait('BlingChain', ({ onPreResolve, addCash, traitCount }) => onPreResolve(ctx => {
+        const stacks = traitCount('BlingChain');
+        addCash(1 * stacks);
+        if (ctx && ctx.dice1 === ctx.dice2) {
+            addCash(5 * stacks);
+        }
+    }));
 
-function addManualWinBonus(state, value, source) {
-    if (!Number.isFinite(value) || value === 0) {
-        return 0;
-    }
-    if (!state.manualBonusSources) {
-        state.manualBonusSources = new Map();
-    }
-    const current = state.manualBonusSources.get(source) || 0;
-    state.manualBonusSources.set(source, current + value);
-    recomputeBonuses(state);
-    return value;
-}
+    registerTrait('CriminalRing', ({ onPreResolve, addMult, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.sum > 6) {
+            addMult(0.05 * traitCount('CriminalRing'));
+        }
+    }));
 
-function defaultEffect({ item, state }) {
-    const passiveIncome = Math.max(0, Math.round((item?.cost || 0) * 0.005));
-    return registerComboItem({
-        item,
-        state,
-        passiveIncome,
-    });
-}
+    registerTrait('PrimeSight', ({ onPreResolve, addMult, traitCount }) => onPreResolve(ctx => {
+        if (ctx && isPrime.has(ctx.sum)) {
+            addMult(0.15 * traitCount('PrimeSight'));
+        }
+    }));
 
-const itemEffectDefinitions = {
-    'Loaded Dice': ({ item, state }) => {
-        state.loadedDice = true;
-        return registerComboItem({
-            item,
-            state,
-            tags: mergeTags(deriveTags(item), ['dice', 'luck', 'reroll', 'streak']),
-            baseMultiplier: getBaseMultiplier(item) + 0.01,
-            extraSummary: 'Automatically rerolls totals below 7.',
+    registerTrait('EvenFlow', ({ onPreResolve, addCash, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.sum % 2 === 0) {
+            addCash(10 * traitCount('EvenFlow'));
+        }
+    }));
+
+    registerTrait('OddJob', ({ onPreResolve, addCash, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.sum % 2 === 1) {
+            addCash(10 * traitCount('OddJob'));
+        }
+    }));
+
+    registerTrait('HighRoller', ({ onPreResolve, addMult, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.sum >= 10) {
+            addMult(0.20 * traitCount('HighRoller'));
+        }
+    }));
+
+    registerTrait('LowBall', ({ onPreResolve, addMult, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.sum <= 4) {
+            addMult(0.20 * traitCount('LowBall'));
+        }
+    }));
+
+    registerTrait('DoubleVision', ({ onPreResolve, addCash, traitCount }) => onPreResolve(ctx => {
+        if (ctx && ctx.dice1 === ctx.dice2) {
+            addCash(25 * traitCount('DoubleVision'));
+        }
+    }));
+
+    registerTrait('RerollToken', ({ onResolved, traitCount, grantRerolls }) => onResolved(() => {
+        const count = traitCount('RerollToken');
+        if (count > 0) {
+            grantRerolls(count);
+        }
+    }));
+
+    registerTrait('DestroyCash', ({ bus, adjustBalance, traitCount }) => bus.on('item:destroyed', () => {
+        const count = traitCount('DestroyCash');
+        if (count > 0) {
+            adjustBalance(20 * count, { track: true });
+        }
+    }));
+
+    registerTrait('StealOnResolve', ({ onResolved, adjustBalance, traitCount }) => onResolved(() => {
+        const count = traitCount('StealOnResolve');
+        if (count > 0) {
+            adjustBalance(15 * count, { track: true });
+        }
+    }));
+
+    registerTrait('RiskyInterest', ({ onResolved, onPreResolve, adjustBalance, getBalance, traitCount }) => {
+        const offResolve = onResolved(() => {
+            const count = traitCount('RiskyInterest');
+            if (count <= 0) {
+                return;
+            }
+            const balance = getBalance();
+            const hundreds = Math.floor(balance / 100);
+            if (hundreds > 0) {
+                adjustBalance(2 * count * hundreds, { track: true });
+            }
         });
-    },
+        const offPre = onPreResolve(ctx => {
+            if (ctx?.outcome === 'loss') {
+                const count = traitCount('RiskyInterest');
+                if (count > 0) {
+                    adjustBalance(-10 * count, { track: true });
+                }
+            }
+        });
+        return [offResolve, offPre];
+    });
 
-    'Forged Papers': ({ item, state, context }) => {
-        const grantedItems = [];
-        for (let i = 0; i < 3; i++) {
-            const randomItem = getRandomItem();
-            if (randomItem) {
-                grantedItems.push(randomItem.name);
-                context.awardBonusItem(randomItem, { silent: true });
+    registerTrait('ItemDevourer', ({ onPreResolve, addMult, traitCount }) => onPreResolve(() => {
+        const count = traitCount('ItemDevourer');
+        if (count > 0) {
+            addMult(0.10 * count);
+        }
+    }));
+
+    registerTrait('GlassJackpot', ({ onPreResolve, addMult, traitCount, bus, random }) => {
+        onPreResolve(ctx => {
+            if (ctx?.outcome === 'win') {
+                addMult(0.75 * traitCount('GlassJackpot'));
+            }
+        });
+        return bus.on('bet:resolved', () => {
+            const count = traitCount('GlassJackpot');
+            if (count <= 0) {
+                return;
+            }
+            const chance = Math.min(0.1 * count, 0.8);
+            if (random() < chance) {
+                bus.emit('trait:glassJackpot:break', { trait: 'GlassJackpot' });
+            }
+        });
+    });
+
+    registerTrait('CommonCountBoost', ({ onPreResolve, addCash, traitCount, inventoryAPI }) => onPreResolve(() => {
+        const commons = inventoryAPI.countWhere(item => (item.rarity || '').toLowerCase() === 'common');
+        const count = traitCount('CommonCountBoost');
+        if (commons > 0 && count > 0) {
+            addCash(commons * count);
+        }
+    }));
+
+    registerTrait('SequenceBonus', ({ onPreResolve, addMult, traitCount }) => onPreResolve(ctx => {
+        if (ctx && Math.abs((ctx.dice1 || 0) - (ctx.dice2 || 0)) === 1) {
+            addMult(0.30 * traitCount('SequenceBonus'));
+        }
+    }));
+
+    registerTrait('LastTurnBoom', ({ onPreResolve, addMult, traitCount, getRollIndex }) => onPreResolve(() => {
+        const index = getRollIndex();
+        if (index % 10 === 9) {
+            addMult(1.0 * traitCount('LastTurnBoom'));
+        }
+    }));
+
+    registerTrait('StreakWin', ({ onPreResolve, addMult, traitCount, onResolved }) => {
+        let streak = 0;
+        onResolved(result => {
+            streak = result?.outcome === 'win' ? streak + 1 : 0;
+        });
+        return onPreResolve(() => {
+            if (streak >= 3) {
+                addMult(0.50 * traitCount('StreakWin'));
+            }
+        });
+    });
+
+    registerTrait('StreakLoseRelief', ({ onPreResolve, addCash, traitCount, onResolved }) => {
+        const history = [];
+        onResolved(result => {
+            history.push(result?.outcome);
+            if (history.length > 2) {
+                history.shift();
+            }
+        });
+        return onPreResolve(() => {
+            if (history.length === 2 && history[0] === 'loss' && history[1] === 'loss') {
+                addCash(50 * traitCount('StreakLoseRelief'));
+            }
+        });
+    });
+
+    registerTrait('HighCostHighGain', ({ onPreResolve, addMult, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.sum >= 9) {
+            addMult(0.25 * traitCount('HighCostHighGain'));
+        }
+    }));
+
+    registerTrait('OpponentHurt', ({ bus, adjustBalance, traitCount }) => bus.on('opponent:lose', () => {
+        const count = traitCount('OpponentHurt');
+        if (count > 0) {
+            adjustBalance(25 * count, { track: true });
+        }
+    }));
+
+    registerTrait('PredictMatch', ({ onPreResolve, addCash, traitCount, getPrediction }) => onPreResolve(ctx => {
+        const predicted = getPrediction();
+        if (predicted && ctx?.sum === predicted) {
+            addCash(50 * traitCount('PredictMatch'));
+        }
+    }));
+
+    registerTrait('JackpotNine', ({ onPreResolve, addCash, traitCount }) => onPreResolve(ctx => {
+        if (ctx?.sum === 9) {
+            addCash(9000 * traitCount('JackpotNine'));
+        }
+    }));
+
+    registerTrait('ShopAddict', ({ onPreResolve, addMult, traitCount, getPurchaseCounter, resetPurchaseCounter }) => onPreResolve(() => {
+        if (getPurchaseCounter() >= 3) {
+            addMult(0.10 * traitCount('ShopAddict'));
+            resetPurchaseCounter();
+        }
+    }));
+
+    registerTrait('SacrificeEngine', ({ onResolved, inventoryAPI, traitCount, adjustBalance, random }) => onResolved(() => {
+        if (random() < 0.20) {
+            const removed = inventoryAPI.removeWhere(item => (item.rarity || '').toLowerCase() === 'common', 1, 'SacrificeEngine');
+            if (removed > 0) {
+                adjustBalance(100 * traitCount('SacrificeEngine'), { track: true });
             }
         }
-        if (grantedItems.length) {
-            context.showMessage(`Forged Papers recruited: ${grantedItems.join(', ')}.`, 'bonus');
+    }));
+
+    registerTrait('DebtBond', ({ onPreResolve, addCash, traitCount }) => {
+        let remaining = 5;
+        return onPreResolve(() => {
+            if (remaining > 0) {
+                addCash(-20 * traitCount('DebtBond'));
+                remaining -= 1;
+            }
+        });
+    });
+}
+
+function getItemByName(name) {
+    return itemsList.find(entry => entry.name === name) || null;
+}
+
+function cloneItem(item) {
+    if (!item) return null;
+    if (typeof structuredClone === 'function') {
+        try {
+            return structuredClone(item);
+        } catch (error) {
+            console.warn('structuredClone failed, falling back to JSON clone', error);
         }
-        const extraSummary = grantedItems.length
-            ? `Bonus crew recruited: ${grantedItems.join(', ')}.`
-            : 'Calls in bonus crew instantly.';
-        return registerComboItem({
-            item,
-            state,
-            tags: mergeTags(deriveTags(item), ['crew', 'hustler', 'luck']),
-            extraSummary,
-        });
-    },
+    }
+    return JSON.parse(JSON.stringify(item));
+}
 
-    "Old Gang Leaders Blade": ({ item, state, context }) => {
-        context.showMessage('The blade hums with power. +$9 every roll!', 'bonus');
-        return registerComboItem({
-            item,
-            state,
-            tags: mergeTags(deriveTags(item), ['weapon', 'criminal', 'crew']),
-            baseMultiplier: getBaseMultiplier(item) + 0.012,
-            passiveIncome: 9,
-            extraSummary: 'Adds $9 passive income on every roll.',
-        });
-    },
-
-    "Neighborhood OGs Manual": ({ item, state }) => {
-        const summary = registerComboItem({
-            item,
-            state,
-            tags: mergeTags(deriveTags(item), ['knowledge', 'crew', 'hustler']),
-            extraSummary: 'Stacks harder with hustlers. Manual bonus queued (+5%).',
-        });
-        addManualWinBonus(state, 0.05, item.name);
-        return summary;
-    },
-
-    'Lucky Black Cat': ({ item, state }) => {
-        state.rollCallbacks.push(({ sum }) => (sum === 9 ? 9 : 0));
-        return registerComboItem({
-            item,
-            state,
-            tags: mergeTags(deriveTags(item), ['animal', 'luck', 'token']),
-            extraSummary: 'Pays $9 whenever the roll totals nine.',
-        });
-    },
-
-    'Rusty Revolver': ({ item, state, context }) => {
-        const description = (item.description || '').toLowerCase();
-        let payout = 150;
-        if (description.includes('$150')) {
-            payout = 150;
-        } else if (description.includes('$15')) {
-            payout = 15;
-        }
-        context.adjustBalance(payout, { source: 'Rusty Revolver' });
-        return registerComboItem({
-            item,
-            state,
-            tags: mergeTags(deriveTags(item), ['weapon', 'criminal']),
-            extraSummary: `Immediate payout +$${payout}.`,
-        });
-    },
-
-    'Gamblers Token': ({ item, state }) => {
-        state.rollCallbacks.push(() => (Math.random() < 0.1 ? -2 : 0));
-        return registerComboItem({
-            item,
-            state,
-            tags: mergeTags(deriveTags(item), ['luck', 'token', 'dice']),
-            passiveIncome: 2,
-            extraSummary: '10% chance to lose $2 on a roll.',
-        });
-    },
-
-    'Brown Pay Bump': ({ item, state }) => {
-        return registerComboItem({
-            item,
-            state,
-            tags: mergeTags(deriveTags(item), ['crew', 'finance', 'support']),
-            passiveIncome: 4,
-            extraSummary: 'Crew kickback adds $4 per roll.',
-        });
-    },
-
-    'Gold-Plated Dice': ({ item, state }) => {
-        state.rollCallbacks.push(({ sum }) => (sum > 6 ? 3 : 0));
-        return registerComboItem({
-            item,
-            state,
-            tags: mergeTags(deriveTags(item), ['dice', 'luck']),
-            extraSummary: 'Adds $3 whenever you roll above six.',
-        });
-    },
-
-    'Lucky Horseshoe': ({ item, state }) => {
-        state.winCallbacks.push(() => 3);
-        return registerComboItem({
-            item,
-            state,
-            tags: mergeTags(deriveTags(item), ['luck', 'token', 'dice']),
-            extraSummary: 'Adds $3 flat to every winning roll.',
-        });
-    },
-};
-
-/**
- * Creates a manager that keeps track of purchased item effects and exposes
- * helper utilities for the game loop.
- *
- * @param {Object} context
- * @param {(amount: number, options?: { track?: boolean, source?: string }) => void} context.adjustBalance
- *        Function used to mutate the player's balance.
- * @param {(item: object, options?: { silent?: boolean }) => void} context.awardBonusItem
- *        Function used to add a bonus item to the inventory without deducting cost.
- * @param {(message: string, type?: string) => void} context.showMessage
- *        Function for displaying in-game toast/overlay messages.
- */
-export function createItemEffectsManager(context) {
+export function createItemEffectsManager(context = {}) {
+    const bus = createEventBus();
     const state = {
-        passiveIncomePerRoll: 0,
-        winMultiplierBonus: 0,
-        multiplierBonus: 1,
-        flatMultiplierBonus: 0,
-        loadedDice: false,
         summaries: [],
-        rollCallbacks: [],
-        winCallbacks: [],
-        rentCallbacks: [],
-        tagCounts: new Map(),
-        itemRecords: new Map(),
-        manualBonusSources: new Map(),
-        currentBreakdown: { base: 0, synergy: 0, set: 0, manual: 0, activeSets: [], details: {} },
+        rollIndex: 0,
+        stats: {
+            wins: 0,
+            losses: 0,
+            neutrals: 0,
+            bySum: new Map(),
+            byPair: new Map(),
+        },
+        purchaseCounter: 0,
+        predictedSum: null,
+        availableRerolls: 0,
     };
 
-    /**
-     * Applies an item's effect to the manager state.
-     * @param {object} item - The purchased item definition.
-     * @returns {string} - A short summary describing the applied effect.
-     */
-    function applyItemEffect(item) {
-        const definition = itemEffectDefinitions[item.name] || defaultEffect;
-        const summary = definition({ item, state, context });
-        if (summary) {
-            state.summaries.push({ name: item.name, summary });
-        }
-        return summary;
-    }
+    const inventory = [];
 
-    /**
-     * Executes roll based bonuses and returns the combined reward.
-     * @param {object} rollContext - { dice1, dice2, sum }
-     * @returns {number}
-     */
-    function applyRollBonuses(rollContext) {
-        return state.rollCallbacks.reduce((total, callback) => {
-            const value = Number(callback(rollContext)) || 0;
-            return total + value;
-        }, 0);
-    }
-
-    /**
-     * Calculates additional winnings after a successful roll.
-     * @param {object} winContext - { baseWinnings, sum, dice1, dice2 }
-     * @returns {number}
-     */
-    function applyWinBonuses(winContext) {
-        let extra = 0;
-        if (state.winMultiplierBonus !== 0) {
-            extra += winContext.baseWinnings * state.winMultiplierBonus;
-        }
-        extra += state.winCallbacks.reduce((total, callback) => {
-            const value = Number(callback(winContext)) || 0;
-            return total + value;
-        }, 0);
-        return extra;
-    }
-
-    /**
-     * Executes callbacks when rent is paid.
-     */
-    function handleRentPaid(contextData) {
-        state.rentCallbacks.forEach(callback => {
-            try {
-                callback(contextData);
-            } catch (err) {
-                console.error('Rent callback error:', err);
+    function removeMatching(predicate, maxCount = 1, cause = 'removed') {
+        const removed = [];
+        for (let index = inventory.length - 1; index >= 0 && removed.length < maxCount; index--) {
+            const item = inventory[index];
+            if (predicate(item)) {
+                inventory.splice(index, 1);
+                engine.removeItem(item.name);
+                bus.emit('item:destroyed', { item, cause });
+                removed.push(item);
             }
-        });
+        }
+        return removed;
     }
 
-    function shouldForceReroll(sum) {
-        return state.loadedDice && sum < 7;
+    const inventoryAPI = {
+        getAll: () => inventory.slice(),
+        destroyOne: name => {
+            const removed = removeMatching(item => item.name === name, 1, 'destroyOne');
+            return removed.length ? removed[0] : null;
+        },
+        add: item => {
+            if (item) {
+                inventory.push(cloneItem(item));
+            }
+        },
+        countWhere: predicate => {
+            if (typeof predicate !== 'function') {
+                return 0;
+            }
+            return inventory.reduce((total, item) => (predicate(item) ? total + 1 : total), 0);
+        },
+        removeWhere: (predicate, count = 1, cause = 'removeWhere') => removeMatching(predicate, Math.max(1, count), cause).length,
+    };
+
+    const engine = createEffectsEngine({
+        bus,
+        inventoryAPI,
+        adjustBalance: (delta, options = {}) => {
+            if (typeof context.adjustBalance === 'function') {
+                return context.adjustBalance(delta, { track: true, ...options });
+            }
+            return undefined;
+        },
+        getBalance: () => (typeof context.getBalance === 'function' ? Number(context.getBalance()) || 0 : 0),
+        random: () => Math.random(),
+        grantRerolls: count => {
+            state.availableRerolls += count;
+        },
+        getRollIndex: () => state.rollIndex,
+        getPrediction: () => state.predictedSum,
+        getPurchaseCounter: () => state.purchaseCounter,
+        resetPurchaseCounter: () => {
+            state.purchaseCounter = 0;
+        },
+    });
+
+    initializeTraits(engine, {
+        registerTrait: engine.registerTrait,
+    });
+
+    ITEM_TRAIT_MAPPING.forEach((traits, itemName) => {
+        if (Array.isArray(traits) && traits.length) {
+            engine.defineItem(itemName, traits);
+        }
+    });
+
+    bus.on('trait:glassJackpot:break', () => {
+        const removed = removeMatching(item => (ITEM_TRAIT_MAPPING.get(item.name) || []).includes('GlassJackpot'), 1, 'GlassJackpot break');
+        if (removed.length) {
+            const broken = removed[0];
+            if (typeof context.showMessage === 'function') {
+                context.showMessage(`${broken.name} shattered from the stress!`, 'warning');
+            }
+        }
+    });
+
+    function recordRoll({ dice1, dice2, sum }) {
+        if (Number.isFinite(sum)) {
+            state.stats.bySum.set(sum, (state.stats.bySum.get(sum) || 0) + 1);
+        }
+        if (Number.isFinite(dice1) && Number.isFinite(dice2)) {
+            const key = `${dice1}-${dice2}`;
+            state.stats.byPair.set(key, (state.stats.byPair.get(key) || 0) + 1);
+        }
+        bus.emit('roll', { dice1, dice2, sum });
+    }
+
+    function prepareResolve({ outcome, baseBet = 0, baseWinnings = 0, sum, dice1, dice2 }) {
+        const contextPayload = { outcome, baseBet, baseWinnings, sum, dice1, dice2 };
+        bus.emit('bet:preResolve', contextPayload);
+        const modifiers = engine.collectFrameModifiers();
+        let multiplierBonus = 0;
+        if (outcome === 'win' && baseWinnings > 0) {
+            const effective = Math.max(0, 1 + modifiers.totalMultiplierAdd);
+            const adjusted = baseWinnings * effective;
+            multiplierBonus = adjusted - baseWinnings;
+        }
+        return {
+            totalMultiplierAdd: modifiers.totalMultiplierAdd,
+            multiplierBonus,
+            flatCashAdd: modifiers.flatCashAdd,
+            totalDelta: multiplierBonus + modifiers.flatCashAdd,
+        };
+    }
+
+    function finalizeResolve({ outcome = 'neutral', sum, dice1, dice2, winnings = 0, flatCashAdd = 0, balance }) {
+        if (outcome === 'win') {
+            state.stats.wins += 1;
+        } else if (outcome === 'loss') {
+            state.stats.losses += 1;
+        } else {
+            state.stats.neutrals += 1;
+        }
+        state.rollIndex += 1;
+        bus.emit('bet:resolved', { outcome, sum, dice1, dice2, winnings, flatCashAdd, balance });
+    }
+
+    function applyItemEffect(item, options = {}) {
+        if (!item) {
+            return '';
+        }
+        const fullItem = cloneItem(item) || getItemByName(item.name) || item;
+        const { free = false } = options;
+        if (!free) {
+            state.purchaseCounter += 1;
+        }
+        inventoryAPI.add(fullItem);
+        engine.applyItem(fullItem.name);
+
+        const traits = engine.getTraitsForItem(fullItem.name);
+        let upfrontBonus = 0;
+        const summaryParts = [];
+
+        const specialHandler = SPECIAL_ITEM_HANDLERS[fullItem.name];
+        if (typeof specialHandler === 'function') {
+            const notes = specialHandler({ removeMatching, engine, inventoryAPI, bus });
+            if (Array.isArray(notes)) {
+                summaryParts.push(...notes);
+            }
+        }
+
+        if (traits.includes(DEBT_BOND_TRAIT) && typeof context.adjustBalance === 'function') {
+            context.adjustBalance(200, { track: true });
+            upfrontBonus = 200;
+        }
+
+        traits.forEach(trait => {
+            const description = TRAIT_DEFINITIONS[trait] || 'Stacks with itself for stronger rolls.';
+            summaryParts.push(`${trait}: ${description}`);
+        });
+
+        if (!traits.length) {
+            summaryParts.push('Adds a neutral stack with no special trait attached.');
+        }
+
+        if (upfrontBonus) {
+            summaryParts.push(`Advanced $${upfrontBonus} immediately from debt financing.`);
+        }
+
+        const summary = summaryParts.join(' ');
+        state.summaries.push({ name: fullItem.name, summary });
+        return summary;
     }
 
     function getPassiveIncome() {
-        return state.passiveIncomePerRoll;
+        return 0;
     }
 
     function getSummaries() {
@@ -602,38 +659,43 @@ export function createItemEffectsManager(context) {
     }
 
     function getEffectiveMultiplier(baseMultiplier = 1) {
-        const base = Number.isFinite(baseMultiplier) ? baseMultiplier : 1;
-        const multiplicative = Number.isFinite(state.multiplierBonus) ? state.multiplierBonus : 1;
-        const flat = Number.isFinite(state.flatMultiplierBonus) ? state.flatMultiplierBonus : 0;
-        const additive = Number.isFinite(state.winMultiplierBonus) ? state.winMultiplierBonus : 0;
+        return Number.isFinite(baseMultiplier) ? baseMultiplier : 1;
+    }
 
-        let effective = base * multiplicative;
-        effective += flat;
-        effective *= 1 + additive;
-        return Number.isFinite(effective) ? effective : base;
+    function shouldForceReroll() {
+        return false;
+    }
+
+    function applyRollBonuses() {
+        return 0;
+    }
+
+    function handleRentPaid() {}
+
+    function setPrediction(sum) {
+        if (Number.isFinite(sum) && sum >= 2 && sum <= 12) {
+            state.predictedSum = sum;
+        } else {
+            state.predictedSum = null;
+        }
     }
 
     return {
         applyItemEffect,
-        applyRollBonuses,
-        applyWinBonuses,
-        handleRentPaid,
-        shouldForceReroll,
+        recordRoll,
+        prepareResolve,
+        finalizeResolve,
         getPassiveIncome,
         getSummaries,
         getEffectiveMultiplier,
+        shouldForceReroll,
+        applyRollBonuses,
+        handleRentPaid,
+        setPrediction,
         state,
     };
 }
 
-function cloneData(item) {
-    if (typeof structuredClone === 'function') {
-        return structuredClone(item);
-    }
-    return JSON.parse(JSON.stringify(item));
-}
-
-function getRandomItem() {
-    if (!itemsList || !itemsList.length) return null;
-    return cloneData(itemsList[Math.floor(Math.random() * itemsList.length)]);
+if (!globalObject.itemEffectsRuntime) {
+    globalObject.itemEffectsRuntime = { createItemEffectsManager };
 }
