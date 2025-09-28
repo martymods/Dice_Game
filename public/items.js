@@ -1,4 +1,6 @@
-export const itemsList = [
+import { getItemTraits } from './modules/itemTraits.js';
+
+const baseItems = [
     { name: 'Loaded Dice', emoji: '🎲', rarity: 'Common', cost: 50, description: 'Boosts rolls of 2 and 3, giving you an edge against other players.', purchased: 0 },
     { name: 'Forged Papers', emoji: '📜', rarity: 'Common', cost: 100, description: 'Recruit 3 allies.', purchased: 2 },
     { name: 'Old Gang Leaders Blade', emoji: '🔪', rarity: 'Very Rare', cost: 200, description: 'Yields +9 coins each roll. Loses 1 DreamCoin for each duplicate symbol.', purchased: 0 },
@@ -195,6 +197,11 @@ export const itemsList = [
     { name: 'Shifty Gambler', emoji: '🃏', rarity: 'Rare', cost: 1200, description: 'Doubles payouts for rolls below 4 during a rent phase.', purchased: 0 },
     { name: 'Dice Whiz', emoji: '🧮', rarity: 'Uncommon', cost: 850, description: 'Adds $50 if your roll matches a number you predict each phase.', purchased: 0 },
 ];
+
+export const itemsList = baseItems.map(item => ({
+    ...item,
+    traits: getItemTraits(item.name),
+}));
 
 
 // Certificates

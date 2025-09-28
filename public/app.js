@@ -156,6 +156,7 @@ async function setupSinglePlayer() {
 
     const itemEffectsManager = createItemEffectsManager({
         adjustBalance: (amount, options = {}) => adjustBalance(amount, options),
+        getBalance: () => balance,
         awardBonusItem: (item, options = {}) => handleItemAcquisition(cloneItem(item), {
             free: true,
             silent: options.silent,
@@ -435,7 +436,7 @@ async function setupSinglePlayer() {
 
         purchasedItems.push(item);
         updatePurchasedItemsDisplay(purchasedItems);
-        const summary = itemEffectsManager.applyItemEffect(item);
+        const summary = itemEffectsManager.applyItemEffect(item, { free });
         refreshRollSummaryMultiplier();
 
         if (!silent) {
@@ -581,6 +582,8 @@ async function setupSinglePlayer() {
             const cashBonus = Number.isFinite(hustlerCashBonus) ? hustlerCashBonus : 0;
             const effectiveMultiplier = calculateEffectiveMultiplier(multiplier);
 
+            itemEffectsManager.recordRoll({ dice1, dice2, sum });
+
             animateDice(dice1, dice2, () => {
                 const diceRollSounds = ["/sounds/DiceRoll1.ogg", "/sounds/DiceRoll2.ogg", "/sounds/DiceRoll3.ogg"];
                 const randomSound = diceRollSounds[Math.floor(Math.random() * diceRollSounds.length)];
@@ -590,21 +593,26 @@ async function setupSinglePlayer() {
 
                 let outcome = 'neutral';
                 let winnings = 0;
-                let itemBonus = 0;
                 let totalBonus = cashBonus;
+                let traitResult = { multiplierBonus: 0, flatCashAdd: 0, totalDelta: 0 };
+                let baseWinnings = 0;
+                let finalBalance = balance;
 
                 if (sum === 7 || sum === 11) {
                     outcome = 'win';
-                    const baseWinnings = currentBet * 2 * multiplier;
-                    itemBonus = itemEffectsManager.applyWinBonuses({
+                    baseWinnings = currentBet * 2 * multiplier;
+                    traitResult = itemEffectsManager.prepareResolve({
+                        outcome,
+                        baseBet: currentBet,
                         baseWinnings,
                         sum,
                         dice1,
                         dice2,
                     });
-                    winnings = baseWinnings + cashBonus + itemBonus;
-                    totalBonus += itemBonus;
-                    adjustBalance(winnings);
+                    const traitBonus = (traitResult?.multiplierBonus || 0) + (traitResult?.flatCashAdd || 0);
+                    totalBonus += traitBonus;
+                    winnings = baseWinnings + cashBonus + traitBonus;
+                    finalBalance = adjustBalance(winnings);
                     gameStatus.textContent = `You win! 🎉 Roll: ${sum}`;
                     playSound("/sounds/Winner_0.ogg");
                     flashScreen('gold');
@@ -618,7 +626,22 @@ async function setupSinglePlayer() {
                         activateOnFire();
                     }
                 } else if (sum === 2 || sum === 3 || sum === 12) {
-                    adjustBalance(-currentBet);
+                    outcome = 'loss';
+                    traitResult = itemEffectsManager.prepareResolve({
+                        outcome,
+                        baseBet: currentBet,
+                        baseWinnings: 0,
+                        sum,
+                        dice1,
+                        dice2,
+                    });
+                    finalBalance = adjustBalance(-currentBet);
+                    const lossBonus = (traitResult?.multiplierBonus || 0) + (traitResult?.flatCashAdd || 0);
+                    if (lossBonus !== 0) {
+                        winnings = lossBonus;
+                        finalBalance = adjustBalance(lossBonus);
+                        totalBonus += lossBonus;
+                    }
                     gameStatus.textContent = `You lose! 💔 Roll: ${sum}`;
                     playSound("/sounds/Loser_0.ogg");
                     flashScreen('red');
@@ -629,18 +652,40 @@ async function setupSinglePlayer() {
 
                     winStreak = 0;
                     if (onFire) deactivateOnFire();
-                    outcome = 'loss';
 
                     if (balance <= 0) {
                         handleGameOver();
                     }
                 } else {
-                    if (cashBonus) {
-                        adjustBalance(cashBonus);
+                    traitResult = itemEffectsManager.prepareResolve({
+                        outcome,
+                        baseBet: currentBet,
+                        baseWinnings: 0,
+                        sum,
+                        dice1,
+                        dice2,
+                    });
+                    const neutralBonus = cashBonus + (traitResult?.multiplierBonus || 0) + (traitResult?.flatCashAdd || 0);
+                    totalBonus = neutralBonus;
+                    if (neutralBonus !== 0) {
+                        winnings = neutralBonus;
+                        finalBalance = adjustBalance(neutralBonus);
                     }
                     const multiplierText = formatMultiplierValue(effectiveMultiplier);
-                    gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplierText}x. Bonus: $${cashBonus}`;
+                    gameStatus.textContent = `Roll: ${sum}. Multiplier: ${multiplierText}x. Bonus: $${neutralBonus}`;
                 }
+
+                itemEffectsManager.finalizeResolve({
+                    outcome,
+                    sum,
+                    dice1,
+                    dice2,
+                    baseBet: currentBet,
+                    baseWinnings,
+                    winnings,
+                    flatCashAdd: traitResult?.flatCashAdd || 0,
+                    balance: finalBalance,
+                });
 
                 recordDiceTickerEntry({ dice1, dice2, sum, outcome, onFire });
 
